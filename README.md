@@ -1,2 +1,4 @@
 # PiFunk
-Raspberry Pi Radio Listener/Receiver
+# Raspberry Pi Radio Band - Listener/Receiver/Relais/Beacon/Transmitter - Server
+# (based on PiFM-Script)
+
