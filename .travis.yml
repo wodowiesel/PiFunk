@@ -1,11 +1,11 @@
-# os: osx
-  
-# language: cpp
-# before_install: "./CI/install-dependencies-osx.sh"
-# before_script: "./CI/before-script-osx.sh"
-# script: cd ./build && make -j4 && cd -
-# before_deploy: "./CI/before-deploy-osx.sh"
 
+# language: cpp
+# before_install: "./CI/install-dependencies-linux.sh"
+# before_script: "./CI/before-script-linux.sh"
+# script: cd ./build && make -j4 
+# before_deploy: "./CI/before-deploy-linux.sh"
+
+os: linux
 language: python
 
 
@@ -20,7 +20,7 @@ python:
   
 # command to install dependencies
 #install: "pip install -r requirements.txt"
-# command to run tests
 
-script: nosetests  
+# command to run tests
+# script: nosetests  
 
