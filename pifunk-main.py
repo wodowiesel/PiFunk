@@ -3,24 +3,30 @@
 
 # Imports
 
-!/usr/bin/python
+# !/usr/bin/python
 
 import time
+import os
+import date
+
+# int freq=frequency # in MHz
 
 # Process
 from subprocess import call
 
-
-def play_sound( filename ):
-   call(["./pifm ", filename, freq])
-   return
+#call play_sound
+#def play_sound( filename ):
+ #  call(["./pifunk ", filename, freq])
+   #return
    
 # Commands:
    
-# sudo ./pifm test.wav 103.3 22050 stereo
+printf(" PiFunk ")
+  
+# sudo ./pifunk sound.wav 100.0 22050 stereo
 
 # play MP3
-# ffmpeg -i input.mp3 -f s16le -ar 22.05k -ac 1 - | sudo ./pifm -(freq and file input)
+#ffmpeg -i sound.wav -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.0 # (freq and file input)
 
 # Broadcast from a usb microphone
-# arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifm - ?
+# arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk -100.0
