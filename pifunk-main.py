@@ -23,4 +23,6 @@ def play_sound( filename ):
 # ffmpeg -i input.mp3 -f s16le -ar 22.05k -ac 1 - | sudo ./pifm -(freq and file input)
 
 # Broadcast from a usb microphone
-# arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifm - ?
+# arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifm 
+
+
