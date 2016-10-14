@@ -10,7 +10,7 @@ import sys
 import datetime
 #import date
 import time
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import json
 
 
