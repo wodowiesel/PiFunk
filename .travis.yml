@@ -5,7 +5,7 @@
  # include:
  
 os: linux
-# sudo: false
+sudo: required
 dist: trusty
 language: python
 python:
@@ -64,7 +64,7 @@ notifications:
 
 script:
 # - key
- # - nosetests
+  - nosetests
  # - make test
  # - run sudo pifunk-main.py
  # - cd ./silicator/PiFunk
