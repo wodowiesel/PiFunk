@@ -27,14 +27,14 @@ python:
   
 cache:
 # bundler: true
-# pip: true
+ pip: true
 # timeout: 1000
  
   
  directories:
-  # - .autoconf
+   - .autoconf
    - $HOME/.m2
-  # - $HOME/.cache/pip
+   - $HOME/.cache/pip
   # - $HOME/.pyenv
   
 branches:
