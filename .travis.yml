@@ -27,7 +27,7 @@ python:
   - rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
- bundler: true
+ #bundler: true
  pip: true
 # timeout: 1000
  
@@ -44,7 +44,7 @@ branches:
   - alpha
   
 # command to install dependencies
-before_install: ./install-dependencies-linux.sh
+# before_install: ./install-dependencies-linux.sh
 
 # install: 
  # - key
@@ -57,7 +57,7 @@ before_install: ./install-dependencies-linux.sh
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
  
- notifications:
+notifications:
   email: false 
 
 # command to run tests +scripts
