@@ -18,7 +18,7 @@ python:
   - pypy
   - pypy3
   
-env: DJANGO_VERSION=1.8.2
+# env: DJANGO_VERSION=1.8.2
 
 # fast_finish: false	
  
