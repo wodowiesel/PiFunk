@@ -2,8 +2,10 @@
 
 # language: cpp
 language: python
-# sudo: false # true
-env: - DJANGO_VERSION=1.8.2
+
+sudo: false 
+# true
+env: DJANGO_VERSION=1.8.2
   
 cache:
   directories:
@@ -15,6 +17,7 @@ matrix:
    - os: linux
      dist: trusty
      python: '3.5'
+	 
    - os: osx
      language: objective-c
      env: PYENV_VERSION=3.5.1
@@ -47,17 +50,17 @@ deploy:
  before_deploy: # "./CI/before-deploy-linux.sh"
 
 install: -
- - pip install -r requirements.txt 
- # --user if no sudo-access
+ - pip install --user -r requirements.txt 
+ #  user-param if no sudo-access user
  - pip install -q Django==$DJANGO_VERSION
- - python pifunk.py -q install
+ - python setup.py -q install
  #- virtualenv ./nodeps
  #- ./nodeps/bin/python setup.py install
  #- curl-config --version; pip freeze
  
 
 # command to run tests +scripts
-# before_script: "./CI/before-script-linux.sh"
+before_script: # "./CI/before-script-linux.sh"
 
 script: 
  - key

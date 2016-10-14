@@ -1,3 +1,6 @@
+raspberry pi 
+python
+gpio4 + gnd and antenna
 
 
 
