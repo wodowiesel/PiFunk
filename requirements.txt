@@ -1,5 +1,7 @@
 # raspberry pi , python, gpio4 + gnd and antenna
-Django==$DJANGO_VERSION
+# Django==$DJANGO_VERSION=1.8.2
+
+
 
 
 

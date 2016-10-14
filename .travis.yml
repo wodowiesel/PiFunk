@@ -64,9 +64,10 @@ notifications:
 
 script:
 # - key
- - nosetests
+ # - nosetests
  # - make test
- # - cd silicator/PiFunk
+ # - run sudo pifunk-main.py
+ # - cd ./silicator/PiFunk
  # - cd ./build && make -j4
 
 
