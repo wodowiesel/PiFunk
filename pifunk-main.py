@@ -1,11 +1,17 @@
 # free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 # supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
 
+# !/usr/bin/python
 # Imports
 
-!/usr/bin/python
 
+import os
+import sys
+import date
 import time
+
+import json
+
 
 # Process
 from subprocess import call

@@ -1,26 +1,81 @@
 
+
 # language: cpp
-# before_install: "./CI/install-dependencies-linux.sh"
-# before_script: "./CI/before-script-linux.sh"
-# script: cd ./build && make -j4 
-# before_deploy: "./CI/before-deploy-linux.sh"
-
-os: linux
 language: python
+# sudo: false # true
+env: - DJANGO_VERSION=1.8.2
+  
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+  - "$HOME/.pyenv"
+  
+matrix:
+  include:
+   - os: linux
+     dist: trusty
+     python: '3.5'
+   - os: osx
+     language: objective-c
+     env: PYENV_VERSION=3.5.1
+ #fast_finish: false	
 
-
-
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "3.5"
+# python:
+ # - "2.6"
+ # - "2.7"
+ # - "3.2"
+ # - "3.3"
+ # - "3.4"
+ # - "3.5"
+ # - "pypy3"
+  
+  
+deploy:
+  provider: releases
+ # api_key:
+   # secure: # token-key
+  file: dist/*.py
+  file_glob: true
+  on:
+    repo: silicator/pifunk
+    tags: true
+  skip_cleanup: true
   
 # command to install dependencies
-#install: "pip install -r requirements.txt"
 
-# command to run tests
-# script: nosetests  
+ before_install: # "./CI/install-dependencies-linux.sh"
+ before_deploy: # "./CI/before-deploy-linux.sh"
 
+install: -
+ - pip install -r requirements.txt 
+ # --user if no sudo-access
+ - pip install -q Django==$DJANGO_VERSION
+ - python pifunk.py -q install
+ #- virtualenv ./nodeps
+ #- ./nodeps/bin/python setup.py install
+ #- curl-config --version; pip freeze
+ 
+
+# command to run tests +scripts
+# before_script: "./CI/before-script-linux.sh"
+
+script: 
+- nosetests
+- make test
+# - cd ./build && make -j4
+
+after_success:
+# - coveralls
+# - coverage combine
+# - codecov
+
+ 
+
+
+notifications:
+  email: false 
+  # true
+  
+  branches:
+  only:
+    - master
