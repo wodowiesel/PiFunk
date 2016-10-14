@@ -60,7 +60,7 @@ notifications:
   email: false 
 
 # command to run tests +scripts
-# before_script: ./before-script-linux.sh
+# before_script: before-script-linux.sh
 
 script:
 # - key
