@@ -18,12 +18,11 @@ python:
   - pypy
   - pypy3
   
-# env: 
-# DJANGO_VERSION=1.8.2
+env: DJANGO_VERSION=1.8.2
 
 # fast_finish: false	
  
-# before_cache:
+before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
@@ -44,7 +43,7 @@ branches:
   - alpha
   
 # command to install dependencies
-# before_install: ./install-dependencies-linux.sh
+before_install: ./install-dependencies-linux.sh
 
 # install: 
  # - key
@@ -67,7 +66,7 @@ script:
 # - key
  - nosetests
  # - make test
- - cd silicator/PiFunk
+ # - cd silicator/PiFunk
  # - cd ./build && make -j4
 
 
