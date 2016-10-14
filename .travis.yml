@@ -10,7 +10,7 @@ matrix:
     sudo: false
     dist: trusty
     python: 3.5
-   # env: DJANGO_VERSION=1.8.2
+    #env: DJANGO_VERSION=1.8.2
 
 	 
   #fast_finish: false	
@@ -28,13 +28,12 @@ matrix:
 	
 cache:
   - pip
-  #- ccache
  
 directories:
-    - .autoconf
-    - $HOME/.m2
+   # - .autoconf
+   # - $HOME/.m2
     - $HOME/.cache/pip
-    - $HOME/.pyenv
+   # - $HOME/.pyenv
   
 # command to install dependencies
 before_install: 
@@ -43,7 +42,8 @@ before_install:
 install: 
  - pip install --user -r requirements.txt 
  #  user-param if no sudo-access user
- #- pip install -q Django==$DJANGO_VERSION
+ # -q Django==$DJANGO_VERSION
+
  #- python setup.py -q install
  #- virtualenv ./nodeps
  #- ./nodeps/bin/python setup.py install
@@ -55,9 +55,9 @@ before_script:
  # ./CI/before-script-linux.sh
 
 script: 
- - key
  - nosetests
  - make test
+ - key
  # - cd ./build && make -j4
 
 before_deploy: 
@@ -81,10 +81,10 @@ after_success:
  # - codecov
 
 notifications:
-  email: false 
+ email: false 
   
   
 branches:
  only:
-  - master
-
+  #- master
+  - alpha
