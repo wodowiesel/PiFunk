@@ -15,25 +15,25 @@ python:
   - 3.3
   - 3.4
   - 3.5
-  #- pypy
+ # - pypy
   
 # env: 
 # DJANGO_VERSION=1.8.2
 
 # fast_finish: false	
  
-#before_cache:
+# before_cache:
  # - rm -f $HOME/.cache/pip/log/debug.log
   
-#cache:
+cache:
 # bundler: true
 # pip: true
 # timeout: 1000
  
   
- #directories:
+ directories:
   # - .autoconf
-  # - $HOME/.m2
+   - $HOME/.m2
   # - $HOME/.cache/pip
   # - $HOME/.pyenv
   
@@ -43,13 +43,13 @@ branches:
   - alpha
   
 # command to install dependencies
-#before_install: 
+# before_install: 
  # ./CI/install-dependencies-linux.sh
 
-#install: 
+# install: 
  # - key
-#  - pip install -r requirements.txt 
- #  --user param if no sudo-access user
+ # - pip install -r requirements.txt 
+ # --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
 
  # - python setup.py -q install
@@ -63,7 +63,7 @@ branches:
   
 
 # command to run tests +scripts
-#before_script: 
+# before_script: 
  # ./CI/before-script-linux.sh
 
 script:
@@ -74,11 +74,11 @@ script:
  # - cd ./build && make 
 
 
-#before_deploy: 
+# before_deploy: 
  # ./CI/before-deploy-linux.sh
 
 
-#deploy:
+# deploy:
   # provider: releases
    # api_key:
     # secure: token-key
@@ -93,8 +93,8 @@ script:
   
   
 
-#after_failure:
-#after_success:
+# after_failure:
+# after_success:
  # - coveralls
  # - coverage combine
  # - codecov
