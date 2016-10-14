@@ -43,8 +43,7 @@ branches:
   - alpha
   
 # command to install dependencies
-before_install: 
-#./install-dependencies-linux.sh
+# before_install: install-dependencies-linux.sh
 
 # install: 
  # - key
