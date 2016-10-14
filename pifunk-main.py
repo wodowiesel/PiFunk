@@ -7,9 +7,10 @@
 
 import os
 import sys
+# import datetime
 import date
 import time
-
+import RPi.GPIO as GPIO
 import json
 
 
@@ -17,18 +18,20 @@ import json
 from subprocess import call
 
 
-def play_sound( filename ):
-   call(["./pifm ", filename, freq])
-   return
+def play_sound( filename, freq):
+   call(["./pifunk ", filename, freq])
+   printf( " Playing File: " + filename + ' on Frequency: (MHz) '+ freq)
+   return filename, freq
+   #continue
    
 # Commands:
    
-# sudo ./pifm test.wav 103.3 22050 stereo
+# sudo ./pifunk sound.wav 100.0 22050 stereo
 
 # play MP3
-# ffmpeg -i input.mp3 -f s16le -ar 22.05k -ac 1 - | sudo ./pifm -(freq and file input)
+# ffmpeg -i sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -(freq and file input)
 
-# Broadcast from a usb microphone
-# arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifm 
+# Broadcast from a (usb) microphone
+# arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 
 
 
