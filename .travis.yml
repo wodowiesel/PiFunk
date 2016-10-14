@@ -16,16 +16,16 @@ python:
      - 3.4
      - 3.5
      - pypy
-# env: DJANGO_VERSION=1.8.2
-	
-	
+env: 
+# DJANGO_VERSION=1.8.2
+
 # fast_finish: false	
  
 
 before_cache:
  # - rm -f $HOME/.cache/pip/log/debug.log
   
-cache
+cache:
  # bundler: true
  # - pip
  # timeout: 1000
