@@ -7,8 +7,8 @@
 
 import os
 import sys
-# import datetime
-import date
+import datetime
+#import date
 import time
 import RPi.GPIO as GPIO
 import json
