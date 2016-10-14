@@ -4,7 +4,7 @@
 matrix:
   include:
     os: linux
-    sudo: false
+    #sudo: false
     dist: trusty
     language: python
 
@@ -15,21 +15,23 @@ matrix:
      - 3.3
      - 3.4
      - 3.5
-     - pypy3
+     - pypy
     #env: DJANGO_VERSION=1.8.2
  
  #fast_finish: false	
  
 
-	
+before_cache:
+ # - rm -f $HOME/.cache/pip/log/debug.log
+  
 cache:
- # - pip
- # - ccache
- 
-directories:
-   # - .autoconf
-   # - $HOME/.m2
-   # - $HOME/.cache/pip
+   - pip
+  #timeout: 1000
+  #bundler: true
+ directories:
+    - .autoconf
+    - $HOME/.m2
+    - $HOME/.cache/pip
    # - $HOME/.pyenv
   
 # command to install dependencies
@@ -38,7 +40,7 @@ before_install:
 
 install: 
  - key
- #- pip install --user -r requirements.txt 
+ - pip install --user -r requirements.txt 
  #  user-param if no sudo-access user
  # -q Django==$DJANGO_VERSION
 
@@ -47,6 +49,14 @@ install:
  #- ./nodeps/bin/python setup.py install
  #- curl-config --version; pip freeze
  
+notifications:
+ email: false 
+ 
+branches:
+ only:
+  #- master
+  - alpha
+  
 
 # command to run tests +scripts
 before_script: 
@@ -58,6 +68,7 @@ script:
  - make test
  
  # - cd ./build && make 
+
 
 before_deploy: 
  # ./CI/before-deploy-linux.sh
@@ -73,19 +84,15 @@ deploy:
     #repo: silicator/pifunk
     #tags: true
   #skip_cleanup: true
+
+
   
+  
+
+after_failure:
 after_success:
  #- coveralls
  # - coverage combine
  # - codecov
 
-notifications:
- email: false 
-  
-  
-branches:
- only:
-  #- master
-  - alpha
-
-  
+ 
