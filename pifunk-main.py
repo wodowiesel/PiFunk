@@ -20,13 +20,15 @@ from subprocess import call
 
 def play_sound( filename, freq):
    call(["./pifunk ", filename, freq])
-   printf( " Playing File: " + filename + ' on Frequency: (MHz) '+ freq)
+   printf( " Playing File: " + filename + " on Frequency: (MHz) " + freq)
    return filename, freq
    #continue
    
 # Commands:
-   
-# sudo ./pifunk sound.wav 100.0 22050 stereo
+#filename ="sound.wav"
+# freq=Frequency  
+# sudo ./pifunk sound.wav 100.0 
+#22050 stereo 
 
 # play MP3
 # ffmpeg -i sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -(freq and file input)

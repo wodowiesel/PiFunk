@@ -303,10 +303,10 @@ int main(int argc, char **argv)
     
     if (argc>1) {
       setup_fm();
-      setupDMA(argc>2?atof(argv[2]):103.3);
+      setupDMA(argc>2?atof(argv[2]):100.0);
       playWav(argv[1], argc>3?atof(argv[3]):22500);
     } else
-      fprintf(stderr, "Usage:   program wavfile.wav [freq] [sample rate]\n\nWhere wavfile is 16 bit 22.5kHz Mono.  Set wavfile to '-' to use stdin.\nfreq is in Mhz (default 103.3)\nsample rate of wav file in Hz\n\nPlay an empty file to transmit silence\n");
+      fprintf(stderr, "Usage:   program wavfile.wav [freq] [sample rate] \n\nWhere wavfile is 16 bit 22.5kHz Mono.  Set wavfile to '-' to use stdin.\nfreq is in Mhz (default 100.0)\nsample rate of wav file in Hz\n\nPlay an empty file to transmit silence\n");
     
     return 0;
 

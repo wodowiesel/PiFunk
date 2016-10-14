@@ -66,7 +66,7 @@ script:
 # - key
   - nosetests
  # - make test
-  - sudo phython pifunk-main.py
+  - sudo python pifunk-main.py
  # - sudo python pifunk-temp.py
  # - cd ./silicator/PiFunk
 
