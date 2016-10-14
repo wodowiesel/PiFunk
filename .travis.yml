@@ -23,13 +23,13 @@ matrix:
 
 	
 cache:
-  - pip
- # ccache
+ # - pip
+ # - ccache
  
 directories:
    # - .autoconf
    # - $HOME/.m2
-    - $HOME/.cache/pip
+   # - $HOME/.cache/pip
    # - $HOME/.pyenv
   
 # command to install dependencies
@@ -37,7 +37,7 @@ before_install:
  # ./CI/install-dependencies-linux.sh
 
 install: 
- - pip install --user -r requirements.txt 
+ #- pip install --user -r requirements.txt 
  #  user-param if no sudo-access user
  # -q Django==$DJANGO_VERSION
 
@@ -52,9 +52,10 @@ before_script:
  # ./CI/before-script-linux.sh
 
 script: 
+ - key
  - nosetests
  - make test
- - key
+ 
  # - cd ./build && make -j4
 
 before_deploy: 
