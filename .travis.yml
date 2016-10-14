@@ -2,14 +2,36 @@
 
 
 language: python
-#-c
+#- c
+
+matrix:
+  include:
+   - os: linux
+   - sudo: false
+   - dist: trusty
+   - python: 3.5
+   - env: DJANGO_VERSION=1.8.2
+	  
+   #- os: osx ( not needes for Rpi )
+    #  language: objective-c
+    #  env: PYENV_VERSION=3.5.1
+	 
+  #fast_finish: false	
 
 
-#env: DJANGO_VERSION=1.8.2
-  
+#python:
+ # - 2.6
+ # - 2.7
+ # - 3.2
+ # - 3.3
+ # - 3.4
+ #- 3.5
+ # - pypy3
+    
+	
 cache:
-  - pip
-  #- ccache
+   - pip
+   #- ccache
  
  directories:
     - .autoconf
@@ -17,37 +39,15 @@ cache:
     - $HOME/.cache/pip
     - $HOME/.pyenv
   
-matrix:
-  include:
-   - os: linux
-      dist: trusty
-      python: '3.5'
-	  sudo: false 
-	  
-   #- os: osx
-    #  language: objective-c
-    #  env: PYENV_VERSION=3.5.1
-	 
-  #fast_finish: false	
-
-# python:
- # - 2.6
- # - 2.7
- # - 3.2
- # - 3.3
- # - 3.4
- # - 3.5
- # - pypy3
-    
 # command to install dependencies
 before_install: 
  # ./CI/install-dependencies-linux.sh
 
-install: -
+install: 
  - pip install --user -r requirements.txt 
  #  user-param if no sudo-access user
  #- pip install -q Django==$DJANGO_VERSION
- - python setup.py -q install
+ #- python setup.py -q install
  #- virtualenv ./nodeps
  #- ./nodeps/bin/python setup.py install
  #- curl-config --version; pip freeze
