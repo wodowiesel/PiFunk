@@ -5,7 +5,7 @@
  # include:
  
 os: linux
-#sudo: false
+# sudo: false
 dist: trusty
 language: python
 python:
@@ -34,14 +34,15 @@ cache:
  directories:
    - .autoconf
    - $HOME/.m2
-   - $HOME/.cache/pip
-   # - $HOME/.pyenv
+  # - $HOME/.cache/pip
+  # - $HOME/.pyenv
   
 # command to install dependencies
 before_install: 
  # ./CI/install-dependencies-linux.sh
 
-install: key
+install: 
+ # - key
  # - pip install --user -r requirements.txt 
  #  user-param if no sudo-access user
  # -q Django==$DJANGO_VERSION
@@ -65,7 +66,7 @@ before_script:
  # ./CI/before-script-linux.sh
 
 script:
- - key
+ #- key
  - nosetests
  - make test
  
