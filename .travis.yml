@@ -15,6 +15,7 @@ python:
   - 3.3
   - 3.4
   - 3.5
+  - pypy
   - pypy3
   
 # env: 
@@ -23,10 +24,10 @@ python:
 # fast_finish: false	
  
 # before_cache:
- # - rm -f $HOME/.cache/pip/log/debug.log
+  - rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
-# bundler: true
+ bundler: true
  pip: true
 # timeout: 1000
  
@@ -43,8 +44,7 @@ branches:
   - alpha
   
 # command to install dependencies
-# before_install: 
- # ./CI/install-dependencies-linux.sh
+before_install: ./install-dependencies-linux.sh
 
 # install: 
  # - key
@@ -60,22 +60,18 @@ branches:
  notifications:
   email: false 
 
-  
-
 # command to run tests +scripts
-# before_script: 
- # ./CI/before-script-linux.sh
+# before_script: ./before-script-linux.sh
 
 script:
 # - key
  - nosetests
- #- make test
- 
- # - cd ./build && make 
+ # - make test
+ - cd silicator/PiFunk
+ # - cd ./build && make -j4
 
 
-# before_deploy: 
- # ./CI/before-deploy-linux.sh
+# before_deploy: ./before-deploy-linux.sh
 
 
 # deploy:
