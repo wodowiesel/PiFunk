@@ -9,42 +9,47 @@ os: linux
 dist: trusty
 language: python
 python:
-     - 2.6
-     - 2.7
-     - 3.2
-     - 3.3
-     - 3.4
-     - 3.5
-     - pypy
-env: 
+ # - 2.6
+  - 2.7
+  - 3.2
+  - 3.3
+  - 3.4
+  - 3.5
+  #- pypy
+  
+# env: 
 # DJANGO_VERSION=1.8.2
 
 # fast_finish: false	
  
-
-before_cache:
+#before_cache:
  # - rm -f $HOME/.cache/pip/log/debug.log
   
-cache:
- # bundler: true
- # - pip
- # timeout: 1000
+#cache:
+# bundler: true
+# pip: true
+# timeout: 1000
  
   
- directories:
-   - .autoconf
-   - $HOME/.m2
+ #directories:
+  # - .autoconf
+  # - $HOME/.m2
   # - $HOME/.cache/pip
   # - $HOME/.pyenv
   
+branches:
+ only:
+  # - master
+  - alpha
+  
 # command to install dependencies
-before_install: 
+#before_install: 
  # ./CI/install-dependencies-linux.sh
 
-install: 
+#install: 
  # - key
- # - pip install --user -r requirements.txt 
- #  user-param if no sudo-access user
+#  - pip install -r requirements.txt 
+ #  --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
 
  # - python setup.py -q install
@@ -52,39 +57,35 @@ install:
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
  
-notifications:
- email: false 
- 
-branches:
- only:
-  # - master
-  - alpha
+# notifications:
+#  email: false 
+
   
 
 # command to run tests +scripts
-before_script: 
+#before_script: 
  # ./CI/before-script-linux.sh
 
 script:
- #- key
+# - key
  - nosetests
  - make test
  
  # - cd ./build && make 
 
 
-before_deploy: 
+#before_deploy: 
  # ./CI/before-deploy-linux.sh
 
 
-deploy:
+#deploy:
   # provider: releases
    # api_key:
     # secure: token-key
   # file: dist/*.py
   # file_glob: true
   # on:
-    # repo: silicator/pifunk
+    # repo: silicator/PiFunk
     # tags: true
   # skip_cleanup: true
 
@@ -92,8 +93,8 @@ deploy:
   
   
 
-after_failure:
-after_success:
+#after_failure:
+#after_success:
  # - coveralls
  # - coverage combine
  # - codecov
