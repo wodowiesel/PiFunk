@@ -1,6 +1,4 @@
-raspberry pi 
-python
-gpio4 + gnd and antenna
+# raspberry pi , python, gpio4 + gnd and antenna
 
 
 
