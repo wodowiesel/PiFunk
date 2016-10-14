@@ -60,8 +60,9 @@ install: -
 # before_script: "./CI/before-script-linux.sh"
 
 script: 
-- nosetests
-- make test
+ - key
+ - nosetests
+ - make test
 # - cd ./build && make -j4
 
 after_success:
