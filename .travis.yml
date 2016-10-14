@@ -1,5 +1,5 @@
-#travis+git
 
+#travis+git
 
 matrix:
   include:
@@ -37,6 +37,7 @@ before_install:
  # ./CI/install-dependencies-linux.sh
 
 install: 
+ - key
  #- pip install --user -r requirements.txt 
  #  user-param if no sudo-access user
  # -q Django==$DJANGO_VERSION
@@ -51,12 +52,12 @@ install:
 before_script: 
  # ./CI/before-script-linux.sh
 
-script: 
+script:
  - key
  - nosetests
  - make test
  
- # - cd ./build && make -j4
+ # - cd ./build && make 
 
 before_deploy: 
  # ./CI/before-deploy-linux.sh
@@ -86,3 +87,5 @@ branches:
  only:
   #- master
   - alpha
+
+  
