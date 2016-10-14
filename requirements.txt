@@ -1,5 +1,5 @@
 # raspberry pi , python, gpio4 + gnd and antenna
-Django==1.3
+Django==$DJANGO_VERSION
 
 
 
