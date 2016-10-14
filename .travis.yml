@@ -20,7 +20,7 @@ python:
   
 # env: DJANGO_VERSION=1.8.2
 
-# fast_finish: false	
+# fast_finish: true	
  
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
@@ -66,14 +66,12 @@ script:
 # - key
   - nosetests
  # - make test
- # - sudo phython pifunk-main.py
+  - sudo phython pifunk-main.py
  # - sudo python pifunk-temp.py
  # - cd ./silicator/PiFunk
- # - cd ./build && make -j4
 
 
 # before_deploy: ./before-deploy-linux.sh
-
 
 # deploy:
   # provider: releases
