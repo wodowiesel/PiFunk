@@ -69,7 +69,7 @@ branches:
 script:
 # - key
  - nosetests
- - make test
+ #- make test
  
  # - cd ./build && make 
 
