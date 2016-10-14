@@ -6,15 +6,12 @@ language: python
 
 matrix:
   include:
-   - os: linux
-   - sudo: false
-   - dist: trusty
-   - python: 3.5
-   - env: DJANGO_VERSION=1.8.2
-	  
-   #- os: osx ( not needes for Rpi )
-    #  language: objective-c
-    #  env: PYENV_VERSION=3.5.1
+    os: linux
+    sudo: false
+    dist: trusty
+    python: 3.5
+   # env: DJANGO_VERSION=1.8.2
+
 	 
   #fast_finish: false	
 
@@ -30,10 +27,10 @@ matrix:
     
 	
 cache:
-   - pip
-   #- ccache
+  - pip
+  #- ccache
  
- directories:
+directories:
     - .autoconf
     - $HOME/.m2
     - $HOME/.cache/pip
