@@ -15,10 +15,10 @@ import json
 #import numpy
 import socket
 import subprocess
-import call
+#import call
 import io
 import math
-import scipy.io.wavfile as wavfile
+#import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
 
 ## def variables
