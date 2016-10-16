@@ -1,6 +1,6 @@
 
 #pifunk shell-terminal script addinonaly
-echo
+echo " installing dependencies: "
 sudo pip install RPi.GPIO
 sudo apt-get install python-rpi.gpio
 sudo python setup.py install

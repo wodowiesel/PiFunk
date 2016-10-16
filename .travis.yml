@@ -15,6 +15,9 @@ python:
   - 3.3
   - 3.4
   - 3.5
+  - 3.6-dev 
+  - nightly  curr= 3.7-dev
+
   - pypy
   - pypy3
   
@@ -45,8 +48,9 @@ branches:
   - master
   - alpha
   
-# command to install dependencies
-# before_install: install-dependencies-linux.sh
+## command to install dependencies
+# before_install: sudo apt-get update
+# install-dependencies-linux.sh
 
 install: 
  # - key
@@ -54,8 +58,8 @@ install:
  # --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
  - sudo pip install RPi.GPIO
- #- sudo apt-get install python-rpi.gpio
- - sudo python setup.py install
+ # - sudo apt-get install python-rpi.gpio
+ # - sudo python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
@@ -64,7 +68,8 @@ notifications:
   email: false 
 
 # command to run tests +scripts
-# before_script: before-script-linux.sh
+# before_script: 
+# before-script-linux.sh
 
 script:
 # - key
@@ -78,7 +83,7 @@ script:
  # - sudo python pifm.c
  # - sudo make pifm.c 
  # - cd ./silicator/PiFunk
-
+#after_script:
 
 # before_deploy: ./before-deploy-linux.sh
 
