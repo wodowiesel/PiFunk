@@ -34,12 +34,12 @@ def play_file (filename, freq):
   call (["./pifunk ", filename, freq])
  # call (["./pifm ", sound.wav, -freq])
   print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
- return
+  return
    
 
 
 
-# basic operations
+## basic operations
 # continue
 # break
 # sleep(1)
@@ -47,7 +47,7 @@ def play_file (filename, freq):
    
 ## Commands:
 # normal
-# sudo ./pifunk sound.wav 100.0 
+# sudo ./pifunk sound.wav 100.0
  
 ## play MP3
 # ffmpeg -i sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.0
