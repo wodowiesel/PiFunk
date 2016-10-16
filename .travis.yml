@@ -31,7 +31,7 @@ cache:
  pip: true
 # timeout: 1000
 
- - ccache
+#- ccache
 # bundler: true
  directories:
    - .autoconf
@@ -52,8 +52,9 @@ install:
  # - pip install -r requirements.txt 
  # --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
- - apt-get install python-rpi.gpio
- - python setup.py install
+ #- sudo pip install RPi.GPIO
+ - sudo apt-get install python-rpi.gpio
+ - sudo python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
