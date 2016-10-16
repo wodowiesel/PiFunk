@@ -46,7 +46,7 @@ try:
   #print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
   #return 
    
-#print (" testing script")
+print (" testing script ... ")
 
 
 ## basic operations
