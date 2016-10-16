@@ -46,8 +46,8 @@ try:
   #print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
   #return 
 
-print(' testing script ')
-return
+#print(' testing script ')
+#return
 ## basic operations
 # continue
 # break
