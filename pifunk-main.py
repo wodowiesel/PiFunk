@@ -16,7 +16,7 @@ import json
 #import numpy
 import socket
 import subprocess
-#import call
+from subprocess import call
 import io
 import math
 #import scipy.io.wavfile as wavfile
@@ -36,7 +36,8 @@ try:
 
 
 ## function Play file
-def play_file (filename, freq):
+try:
+ def play_file (filename, freq):
    
   call (["./pifunk ", filename, freq])
  # call (["./pifm ", sound.wav, -freq])
@@ -53,8 +54,9 @@ def play_file (filename, freq):
 
    
 ## Commands:
-# normal
+# standard freq=100.0 or 103.3
 # sudo ./pifunk sound.wav 100.0
+# sudo ./pifm sound.wav 100.0
  
 ## play MP3
 # ffmpeg -i sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.0
