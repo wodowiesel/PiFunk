@@ -17,23 +17,24 @@ import socket
 import subprocess
 import call
 import io
-
+import math
 import scipy.io.wavfile as wavfile
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 ## def variables
-int channels 
-float freq = Frequency 
-char *filename
+
+#int channels 
+#float freq = Frequency 
+#char *filename
 
 
 ## function Play file
-def play_file( filename, freq):
+def play_file (filename, freq):
    
-  call(["./pifunk ", filename, freq])
- # call(["./pifm ", filename, -freq])
+  call (["./pifunk ", filename, freq])
+ # call (["./pifm ", filename, -freq])
    
-   return filename, freq
+ return filename, freq
    
 print ( " Playing file (wave): " + filename + " on frequency (MHz):  " + freq)   
 return
@@ -45,7 +46,7 @@ return
 
    
 ## Commands:
-
+# normal
 # sudo ./pifunk sound.wav 100.0 
  
 ## play MP3
