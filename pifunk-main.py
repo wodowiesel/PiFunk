@@ -51,7 +51,8 @@ try:
 ## basic operations
 # continue
 # break
-# sleep(1)
+
+sleep(1)
 
 
 ## Commands:
@@ -78,4 +79,5 @@ try:
 #subprocess.run(["python", "pifunk-cb.py"])
 #subprocess.run(["python", "pifunk-temp.py"])
 #subprocess.run(["sudo","python", "pifm.py"]
+
 
