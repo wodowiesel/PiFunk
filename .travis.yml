@@ -21,7 +21,7 @@ python:
 # env: DJANGO_VERSION=1.8.2
 
 # fast_finish: true	
-#language: c
+language: c
 
 before_cache: rm -f $HOME/.cache/pip/log/debug.log
   
@@ -31,13 +31,14 @@ cache:
  pip: true
 # timeout: 1000
 
-#- ccache
-# bundler: true
+ - ccache
+
  directories:
    - .autoconf
    - $HOME/.m2
    - $HOME/.cache/pip
    - $HOME/.pyenv
+  # bundler: true
   
 branches:
  only:
@@ -52,7 +53,7 @@ install:
  # - pip install -r requirements.txt 
  # --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
- #- sudo pip install RPi.GPIO
+ - sudo pip install RPi.GPIO
  - sudo apt-get install python-rpi.gpio
  - sudo python setup.py install
  # - virtualenv ./nodeps
@@ -71,6 +72,8 @@ script:
 # - make test
   - sudo python pifunk-main.py
  # - sudo python pifunk-temp.py
+ # - sudo python pifunk-cb.py
+ # - sudo python pifunk-pmr.py
  # - sudo python pifm.py
  # - sudo python pifm.c
  # - sudo make pifm.c 
