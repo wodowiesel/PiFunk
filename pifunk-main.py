@@ -45,21 +45,20 @@ try:
   #call ([" sudo ./pifm ", sound.wav, -freq])
   #print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
   #return 
-   
-print (" testing script ... ")
 
-
+print ( " testing script " )
+return
 ## basic operations
 # continue
 # break
 # sleep(1)
 
-   
+
 ## Commands:
 # standard freq=100.0 or 103.3
 # sudo ./pifunk sound.wav 100.0
 # sudo ./pifm sound.wav 100.0
- 
+
 ## play MP3
 # ffmpeg -i sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.0
 
@@ -67,14 +66,13 @@ print (" testing script ... ")
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
 
 ## streams audio on network
-#port=80
+# $port = 80
 # microphpone device
-#card=0
-#subdevice=0
-# arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1./pifunk 100.0 $port
+#card = 0
+#subdevice = 0
+# arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0 $port
+# arecord -D hw:${0},${0} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0 $port
 
- 
- 
 ## run another py script from shell-terminal (holds main script i think?!
 #subprocess.run(["sudo","python", "pifunk-pmr.py"])
 #subprocess.run(["python", "pifunk-cb.py"])
