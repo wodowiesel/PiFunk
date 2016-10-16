@@ -12,14 +12,14 @@ import datetime
 import time
 import random
 import json
-import numpy
+#import numpy
 import socket
 import subprocess
 import call
 import io
 import math
 import scipy.io.wavfile as wavfile
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 ## def variables
 
