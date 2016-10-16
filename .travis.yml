@@ -54,7 +54,7 @@ install:
  # --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
  - sudo pip install RPi.GPIO
- - sudo apt-get install python-rpi.gpio
+ #- sudo apt-get install python-rpi.gpio
  - sudo python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
