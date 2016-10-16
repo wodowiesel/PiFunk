@@ -25,7 +25,9 @@ import math
 # RPi & GPIO lib bind
 #sudo apt-get install python-rpi.gpio
 #sudo python setup.py install
-import RPi.GPIO as GPIO
+from RPi._GPIO import *
+try: 
+ import RPi.GPIO as GPIO
 
 ## def variables
 #int channels 
