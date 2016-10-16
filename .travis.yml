@@ -21,7 +21,7 @@ python:
 # env: DJANGO_VERSION=1.8.2
 
 # fast_finish: true	
-language: c
+#language: c
 
 before_cache: rm -f $HOME/.cache/pip/log/debug.log
   
@@ -31,14 +31,14 @@ cache:
  pip: true
 # timeout: 1000
 
- - ccache
+ #- ccache
 
  directories:
    - .autoconf
    - $HOME/.m2
    - $HOME/.cache/pip
    - $HOME/.pyenv
-  # bundler: true
+ # bundler: true
   
 branches:
  only:
