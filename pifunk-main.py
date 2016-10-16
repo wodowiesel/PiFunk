@@ -30,17 +30,17 @@ try:
  import RPi.GPIO as GPIO
 
 ## def variables
-int = channels 
-float freq = Frequency 
-char *filename
+#int = channels 
+#float freq = Frequency 
+#char *filename
 
 
 ## function Play file
 
 def play_file (filename, freq):
   print (" testing play_file...")
-  filename = input(" Enter Filename: ")
-  freq = input(" Enter Frequency in MHz: ")
+  #filename = input(" Enter Filename: ")
+  #freq = input(" Enter Frequency in MHz: ")
   call (["./pifunk ", filename, freq])
  # call (["./pifm ", sound.wav, -freq])
   print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
