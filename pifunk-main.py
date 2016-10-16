@@ -67,16 +67,17 @@ try:
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
 
 ## streams audio on network
- port=80
- # microphpone device
- card=0
- subdevice=0
+port=80
+# microphpone device
+card=0
+subdevice=0
 # arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1./pifunk 100.0 $port
 
  
  
 ## run another py script from shell-terminal (holds main script i think?!
-# subprocess.run(["python", "pifunk-pmr.py"])
+#subprocess.run(["sudo","python", "pifunk-pmr.py"])
 #subprocess.run(["python", "pifunk-cb.py"])
 #subprocess.run(["python", "pifunk-temp.py"])
+#subprocess.run(["sudo","python", "pifm.py"]
 
