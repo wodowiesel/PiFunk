@@ -23,15 +23,15 @@ python:
 # fast_finish: true	
 #language: c
 
-before_cache:
-  - rm -f $HOME/.cache/pip/log/debug.log
+before_cache: rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
 
 
  pip: true
 # timeout: 1000
-# - ccache
+
+ - ccache
 # bundler: true
  directories:
    - .autoconf
@@ -47,13 +47,13 @@ branches:
 # command to install dependencies
 # before_install: install-dependencies-linux.sh
 
-# install: 
+install: 
  # - key
  # - pip install -r requirements.txt 
  # --user param if no sudo-access user
  # -q Django==$DJANGO_VERSION
-
- # - python setup.py -q install
+ - apt-get install python-rpi.gpio
+ - python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze

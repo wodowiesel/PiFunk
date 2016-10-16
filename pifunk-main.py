@@ -1,6 +1,8 @@
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
 
+sudo apt-get install python-rpi.gpio
+
 # !/usr/bin/python
 ## Imports
 
@@ -21,8 +23,12 @@ import math
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
 
-## def variables
+# RPi & GPIO lib bind
+#sudo apt-get install python-rpi.gpio
+#sudo python setup.py install
+import RPi.GPIO as GPIO
 
+## def variables
 #int channels 
 #float freq = Frequency 
 #char *filename
