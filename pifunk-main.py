@@ -37,14 +37,14 @@ try:
 
 ## function Play file
 
-def play_file (filename, freq):
-  print (" testing play_file...")
+#def play_file (filename, freq):
+  #print (" testing play_file...")
   #filename = input(" Enter Filename: ")
   #freq = input(" Enter Frequency in MHz: ")
-  call (["./pifunk ", filename, freq])
- # call (["./pifm ", sound.wav, -freq])
-  print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
-  return freq
+  #call ([" sudo ./pifunk ", filename, freq])
+  #call ([" sudo ./pifm ", sound.wav, -freq])
+  #print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
+  #return 
    
 
 
@@ -67,16 +67,16 @@ def play_file (filename, freq):
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
 
 ## streams audio on network
-# port=80
+ port=80
  # microphpone device
-# card=0
-# subdevice=0
+ card=0
+ subdevice=0
 # arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1./pifunk 100.0 $port
 
  
  
 ## run another py script from shell-terminal (holds main script i think?!
-# or from subprocess import bla
 # subprocess.run(["python", "pifunk-pmr.py"])
-
+#subprocess.run(["python", "pifunk-cb.py"])
+#subprocess.run(["python", "pifunk-temp.py"])
 
