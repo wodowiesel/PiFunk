@@ -46,7 +46,7 @@ try:
   #print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
   #return 
    
-
+#print (" testing script")
 
 
 ## basic operations
@@ -67,10 +67,10 @@ try:
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
 
 ## streams audio on network
-port=80
+#port=80
 # microphpone device
-card=0
-subdevice=0
+#card=0
+#subdevice=0
 # arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1./pifunk 100.0 $port
 
  
