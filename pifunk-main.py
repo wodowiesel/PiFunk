@@ -32,12 +32,12 @@ import matplotlib.pyplot as plt
 def play_file (filename, freq):
    
   call (["./pifunk ", filename, freq])
- # call (["./pifm ", filename, -freq])
+ # call (["./pifm ", sound.wav, -freq])
+  print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
+ return
    
- return filename, freq
-   
-print ( " Playing file (wave): " + filename + " on frequency (MHz):  " + freq)   
-return
+
+
 
 # basic operations
 # continue
