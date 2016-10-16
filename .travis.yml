@@ -5,7 +5,7 @@
  # include:
  
 os: linux
-# sudo: false
+sudo: required
 dist: trusty
 language: python
 python:
@@ -20,17 +20,19 @@ python:
   
 # env: DJANGO_VERSION=1.8.2
 
-# fast_finish: false	
- 
+# fast_finish: true	
+#language: c
+
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
-# bundler: true
+
+
  pip: true
 # timeout: 1000
- 
-  
+# - ccache
+# bundler: true
  directories:
    - .autoconf
    - $HOME/.m2
@@ -64,14 +66,17 @@ notifications:
 
 script:
 # - key
- - nosetests
- # - make test
- # - cd silicator/PiFunk
- # - cd ./build && make -j4
+  - nosetests
+# - make test
+  - sudo python pifunk-main.py
+ # - sudo python pifunk-temp.py
+ # - sudo python pifm.py
+ # - sudo python pifm.c
+ # - sudo make pifm.c 
+ # - cd ./silicator/PiFunk
 
 
 # before_deploy: ./before-deploy-linux.sh
-
 
 # deploy:
   # provider: releases
