@@ -1,6 +1,7 @@
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
 
+## ARM -Structure on Pi's !!!
 
 # !/usr/bin/python
 ## Imports
@@ -32,27 +33,27 @@ try:
 ## def variables
 #int = channels 
 #float freq = Frequency 
-#char *filename
+#char filename
 
-
+print ("testing funk script")
 ## function Play file
 
-#def play_file (filename, freq):
+#def play_file (self, filename, freq):
   #print (" testing play_file...")
-  #filename = input(" Enter Filename: ")
+  #filename = input(" Enter filename (*.wav): ")
   #freq = input(" Enter Frequency in MHz: ")
   #call ([" sudo ./pifunk ", filename, freq])
   #call ([" sudo ./pifm ", sound.wav, -freq])
   #print ( " Playing file (*.wav): " + filename + " on frequency (MHz):  " + freq)   
-  #return 
+  #return
 
-#print(' testing script ')
+
 #return
 ## basic operations
 # continue
 # break
 
-sleep(1)
+#sleep(1)
 
 
 ## Commands:
