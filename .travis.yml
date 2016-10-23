@@ -2,14 +2,16 @@
 # travis+git
 
 # matrix:
- # include:
+# include:
+ 
  
 os: linux
 dist: trusty
 sudo: required
 env:
-  - ARCH=x64
-  - ARCH=arm
+ - ARCH=x64
+ - ARCH=arm
+ 
 language: python
 #language: c
 python:
@@ -55,7 +57,7 @@ branches:
 ## command to install dependencies
 before_install: 
   - sudo apt-get update
-  - sudo apt-getinstall qemu-system-arm wget xz-utils sshpass
+  - sudo apt-get install qemu-system-arm wget xz-utils sshpass
  # ARM- architecture needed !
  #- install-dependencies-arm.sh
 
@@ -66,8 +68,8 @@ install:
  # -q Django==$DJANGO_VERSION
  # -q Flask==$Flask_VERSION
  - git clone https://github.com/polaco1782/raspberry-qemu.git
- - wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
- - unxz "2015-11-21-raspbian-jessie-lite.img.xz"
+ #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
+ #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
  - sudo pip install RPi.GPIO
  # - sudo apt-get install python-rpi.gpio
  # - sudo python setup.py install
