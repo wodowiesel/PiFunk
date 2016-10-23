@@ -5,9 +5,13 @@
  # include:
  
 os: linux
-sudo: true
 dist: trusty
+sudo: required
+env:
+  - ARCH=x64
+  - ARCH=arm
 language: python
+#language: c
 python:
   - 2.6
   - 2.7
@@ -20,19 +24,16 @@ python:
   - pypy
   - pypy3
   
-env:
-  - ARCH=x64
-  - ARCH=arm
+
 #DJANGO_VERSION=1.8.2
 
 # fast_finish: true	
-#language: c
+
 
 before_cache: 
  -rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
-
 
  pip: true
 # timeout: 1
@@ -64,9 +65,9 @@ install:
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
  # -q Flask==$Flask_VERSION
+ - git clone https://github.com/polaco1782/raspberry-qemu.git
  - wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
  - unxz "2015-11-21-raspbian-jessie-lite.img.xz"
- - git clone https://github.com/polaco1782/raspberry-qemu.git
  - sudo pip install RPi.GPIO
  # - sudo apt-get install python-rpi.gpio
  # - sudo python setup.py install
@@ -81,7 +82,7 @@ notifications:
 
 # command to run tests +scripts
  before_script: 
-  - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img &
+  - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img 
     
 # before-script-linux.sh
 
