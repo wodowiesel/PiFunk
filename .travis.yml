@@ -22,7 +22,7 @@ python:
 os: linux
 dist: trusty
 #precise
-#family: unix
+family: unix
 group: stable
 #env:
  #- ARCH=x64
@@ -54,7 +54,7 @@ cache:
 branches:
  only:
   - master
-  - alpha
+  #- alpha
   
 ## command to install dependencies
 before_install: 
@@ -67,7 +67,7 @@ before_install:
 install: 
  - sudo apt-get install git
  # - key
- # - pip install 
+  - pip install 
  #-r requirements.txt 
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
@@ -75,7 +75,8 @@ install:
  #- git clone https://github.com/polaco1782/raspberry-qemu.git
  #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
  #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
- - sudo pip install RPi.GPIO
+ #- sudo pip install RPi.GPIO
+ - sudo apt-get install python-rpi.gpio
  # - sudo apt-get install python-rpi.gpio
  # - sudo python setup.py install
  # - virtualenv ./nodeps

@@ -28,8 +28,7 @@ try:
 #import matplotlib.pyplot as plt
 
 # RPi & GPIO lib bind
-try:
- - sudo apt-get install python-rpi.gpio
+
 	#sudo python setup.py install
 
 
