@@ -22,13 +22,14 @@ from RPi._GPIO import *
 try: 
  import RPi.GPIO as GPIO
 #import numpy
+#import scipy
 #import date
 
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
 
 # RPi & GPIO lib bind
-
+sudo apt-get install python-rpi.gpio
 	#sudo python setup.py install
 
 

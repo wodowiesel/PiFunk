@@ -60,8 +60,8 @@ branches:
 before_install: 
   - sudo apt-get update
   #- sudo apt-get upgrade
- #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
- # ARM- architecture needed !
+  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
+  # ARM- architecture needed !
  #- install-dependencies-arm.sh
 
 install: 
@@ -75,10 +75,11 @@ install:
  #- git clone https://github.com/polaco1782/raspberry-qemu.git
  #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
  #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
- #- sudo pip install RPi.GPIO
- - sudo apt-get install python-rpi.gpio
- # - sudo apt-get install python-rpi.gpio
- # - sudo python setup.py install
+ - sudo pip install RPi.GPIO
+ - sudo apt-get install RPi.GPIO
+ #- sudo apt-get install python-rpi.gpio
+ #- sudo pip install python-rpi.gpio
+ #- sudo python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
