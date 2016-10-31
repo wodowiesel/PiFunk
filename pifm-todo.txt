@@ -44,6 +44,14 @@
 # 13 exception & bug-handling (difficult) and progress-versions
 #
 # make extra branch-fork for testing
+#
+#display, temp+hum + RTC incl battery , gps-modul?
+#
+#NEED LOW-PASS-FILTER !!!!  hard ware (but look software-wise too)
+# checkout buffer stuff
+#
+#warning: square-output on: input and x3 ,7, 14
+#
 
 
 

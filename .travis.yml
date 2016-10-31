@@ -6,7 +6,7 @@
  
  
 #os: linux
-dist: trusty
+#dist: trusty
 sudo: required
 env:
  - ARCH=x64
