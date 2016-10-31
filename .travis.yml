@@ -48,7 +48,7 @@ cache:
    - $HOME/.m2
    - $HOME/.cache/pip
    - $HOME/.pyenv
- # bundler: true
+   # bundler: true
   
 #git-branches
 branches:
@@ -62,7 +62,7 @@ before_install:
   #- sudo apt-get upgrade
   #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
   # ARM- architecture needed !
- #- install-dependencies-arm.sh
+  #- install-dependencies-arm.sh
 
 install: 
  - sudo apt-get install git
@@ -76,7 +76,7 @@ install:
  #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
  #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
  - sudo pip install RPi.GPIO
- - sudo apt-get install RPi.GPIO
+ #- sudo apt-get install RPi.GPIO
  #- sudo apt-get install python-rpi.gpio
  #- sudo pip install python-rpi.gpio
  #- sudo python setup.py install
