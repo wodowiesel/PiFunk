@@ -29,7 +29,7 @@ try:
 #import matplotlib.pyplot as plt
 
 # RPi & GPIO lib bind
-sudo apt-get install python-rpi.gpio
+#sudo apt-get install python-rpi.gpio
 	#sudo python setup.py install
 
 
