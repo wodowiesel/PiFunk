@@ -28,16 +28,18 @@ try:
 #import matplotlib.pyplot as plt
 
 # RPi & GPIO lib bind
-#sudo apt-get install python-rpi.gpio
-#sudo python setup.py install
+try:#
+	sudo apt-get install python-rpi.gpio
+	#sudo python setup.py install
 
-print "testing funk script"
+
 
 ## def variables
 int (chan) = channels 
 float (freq) = frequency 
 char (filename) = file
 
+print("testing funk script")
 
 ## function Play file
 
@@ -83,5 +85,6 @@ return
 #subprocess.run(["sudo", "python", "pifunk-cb.py"])
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 #subprocess.run(["sudo", "python", "pifm.py"])
+#subprocess.run(["sudo", "python", "pi-minidisplay.py"])
 
 

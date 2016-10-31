@@ -84,15 +84,14 @@ install:
  # - curl-config --version; pip freeze
  - sudo apt-get install git
  #git clone git@github.com:polaco1782/raspberry-qemu.git
- #git clone git@github.com:silicator/PiFunk.git
+ git clone git@github.com:silicator/PiFunk.git
  
 notifications:
   email: false 
 
 # command to run tests +scripts
 before_script: 
- # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img 
-    
+ # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
  # before-script-linux.sh
 
 script:
