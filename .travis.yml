@@ -2,12 +2,11 @@
 # travis+git
 
 # matrix:
- # include:
- 
-os: linux
-sudo: required
-dist: trusty
+# include:
+
 language: python
+#language: c or ruby
+
 python:
   - 2.6
   - 2.7
@@ -15,66 +14,101 @@ python:
   - 3.3
   - 3.4
   - 3.5
+  - 3.6-dev 
+  - nightly
   - pypy
   - pypy3
-  
-# env: DJANGO_VERSION=1.8.2
+ 
+os: linux
+dist: trusty
+#precise
+#family: unix
+group: stable
+#env:
+ #- ARCH=x64
+ #- ARCH=arm
+sudo: required
+#true
 
-# fast_finish: true	
-#language: c
+#DJANGO_VERSION=1.8.2 --> need flask too
 
-before_cache:
-  - rm -f $HOME/.cache/pip/log/debug.log
+
+before_cache: 
+ -rm -f $HOME/.cache/pip/log/debug.log
   
 cache:
 
-
  pip: true
-# timeout: 1000
-# - ccache
-# bundler: true
+ #-timeout: 1
+
+ #- ccache
+
  directories:
    - .autoconf
    - $HOME/.m2
    - $HOME/.cache/pip
    - $HOME/.pyenv
+ # bundler: true
   
+#git-branches
 branches:
  only:
   - master
   - alpha
   
-# command to install dependencies
-# before_install: install-dependencies-linux.sh
+## command to install dependencies
+before_install: 
+  - sudo apt-get update
+  #- sudo apt-get upgrade
+ #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
+ # ARM- architecture needed !
+ #- install-dependencies-arm.sh
 
-# install: 
+install: 
+ - sudo apt-get install git
  # - key
- # - pip install -r requirements.txt 
- # --user param if no sudo-access user
+ # - pip install 
+ #-r requirements.txt 
+ # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
-
- # - python setup.py -q install
+ # -q Flask==$Flask_VERSION
+ #- git clone https://github.com/polaco1782/raspberry-qemu.git
+ #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
+ #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
+ - sudo pip install RPi.GPIO
+ # - sudo apt-get install python-rpi.gpio
+ # - sudo python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
+ #- git clone git@github.com:polaco1782/raspberry-qemu.git
+ 
  
 notifications:
   email: false 
 
 # command to run tests +scripts
-# before_script: before-script-linux.sh
+before_script: 
+ - git clone git://github.com/silicator/PiFunk.git
+ # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
+ # - before-script-linux.sh
 
+# fast_finish: true	
 script:
 # - key
   - nosetests
-# - make test
+  #- coveralls
+  #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
   - sudo python pifunk-main.py
  # - sudo python pifunk-temp.py
+ # - sudo python pifunk-cb.py
+ # - sudo python pifunk-pmr.py
  # - sudo python pifm.py
  # - sudo python pifm.c
  # - sudo make pifm.c 
  # - cd ./silicator/PiFunk
-
+ 
+#after_script:
 
 # before_deploy: ./before-deploy-linux.sh
 
