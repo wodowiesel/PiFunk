@@ -67,7 +67,7 @@ before_install:
 install: 
  - sudo apt-get install git
  # - key
-  - pip install 
+ #- pip install 
  #-r requirements.txt 
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
