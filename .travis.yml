@@ -3,17 +3,10 @@
 
 # matrix:
 # include:
- 
- 
-os: linux
-dist: trusty
-sudo: true
-#env:
- #- ARCH=x64
- #- ARCH=arm
- 
+
 language: python
-#language: c
+#language: c or ruby
+
 python:
   - 2.6
   - 2.7
@@ -25,9 +18,22 @@ python:
   - nightly
   - pypy
   - pypy3
+ 
+os: linux
+dist: precise
+#trusty
+#group: stable
+
+sudo: true
+#required
+#env:
+ #- ARCH=x64
+ #- ARCH=arm
+ 
+
   
 
-#DJANGO_VERSION=1.8.2
+#DJANGO_VERSION=1.8.2 --> need flask too
 
 # fast_finish: true	
 
@@ -57,7 +63,7 @@ branches:
 ## command to install dependencies
 before_install: 
   - sudo apt-get update
-  - sudo apt-get install qemu-system-arm wget xz-utils sshpass
+ #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
  # ARM- architecture needed !
  #- install-dependencies-arm.sh
 
@@ -67,7 +73,7 @@ install:
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
  # -q Flask==$Flask_VERSION
- - git clone https://github.com/polaco1782/raspberry-qemu.git
+ #- git clone https://github.com/polaco1782/raspberry-qemu.git
  #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
  #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
  - sudo pip install RPi.GPIO
@@ -76,6 +82,7 @@ install:
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
+ - sudo apt-get install git
  #git clone git@github.com:polaco1782/raspberry-qemu.git
  #git clone git@github.com:silicator/PiFunk.git
  
@@ -83,16 +90,16 @@ notifications:
   email: false 
 
 # command to run tests +scripts
- before_script: 
-  - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img 
+before_script: 
+ # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img 
     
-# before-script-linux.sh
+ # before-script-linux.sh
 
 script:
 # - key
   - nosetests
   #- coveralls
-  - sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
+  #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
   - sudo python pifunk-main.py
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cb.py
