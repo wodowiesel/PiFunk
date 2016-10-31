@@ -7,7 +7,7 @@
  
 #os: linux
 #dist: trusty
-sudo: required
+sudo: true
 env:
  - ARCH=x64
  - ARCH=arm
