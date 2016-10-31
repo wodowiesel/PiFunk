@@ -35,16 +35,19 @@ try:
 
 
 ## def variables
-int (chan) = channels 
-float (freq) = frequency 
-char (filename) = file
+#int (chan) 
+#= channels 
+float (freq) 
+#= frequency 
+char (filename) 
+#= file
 
 print("testing funk script")
 
 ## function Play file
 
-#def play_files (self, files, freq):
-  #print (" Testing play_file... ")
+#def play_file (self, filename, freq):
+  #print (" Testing play_file ... ")
   #file = input(" Enter File-Name (*.wav): ")
   #freq = input(" Enter Frequency in MHz: ")
   #call ([" sudo ./pifunk ", filename, freq])
@@ -53,7 +56,7 @@ print("testing funk script")
   #return self , files , freq
 
 
-return
+#return
 ## basic operations
 # continue
 # break
