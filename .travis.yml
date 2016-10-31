@@ -23,20 +23,14 @@ os: linux
 dist: trusty
 #precise
 #family: unix
-#group: stable
+group: stable
 #env:
  #- ARCH=x64
  #- ARCH=arm
 sudo: required
 #true
 
- 
-
-  
-
 #DJANGO_VERSION=1.8.2 --> need flask too
-
-# fast_finish: true	
 
 
 before_cache: 
@@ -45,7 +39,7 @@ before_cache:
 cache:
 
  pip: true
-# timeout: 1
+ #-timeout: 1
 
  #- ccache
 
@@ -56,6 +50,7 @@ cache:
    - $HOME/.pyenv
  # bundler: true
   
+#git-branches
 branches:
  only:
   - master
@@ -64,7 +59,7 @@ branches:
 ## command to install dependencies
 before_install: 
   - sudo apt-get update
-  - sudo apt-get upgrade
+  #- sudo apt-get upgrade
  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
  # ARM- architecture needed !
  #- install-dependencies-arm.sh
@@ -72,7 +67,8 @@ before_install:
 install: 
  - sudo apt-get install git
  # - key
- # - pip install -r requirements.txt 
+ # - pip install 
+ #-r requirements.txt 
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
  # -q Flask==$Flask_VERSION
@@ -95,8 +91,9 @@ notifications:
 before_script: 
  - git clone git://github.com/silicator/PiFunk.git
  # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
- # before-script-linux.sh
+ # - before-script-linux.sh
 
+# fast_finish: true	
 script:
 # - key
   - nosetests
