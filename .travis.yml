@@ -6,11 +6,11 @@
  
  
 os: linux
-#dist: trusty
+dist: trusty
 sudo: true
-env:
- - ARCH=x64
- - ARCH=arm
+#env:
+ #- ARCH=x64
+ #- ARCH=arm
  
 language: python
 #language: c
