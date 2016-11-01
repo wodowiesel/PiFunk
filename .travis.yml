@@ -105,6 +105,7 @@ script:
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cb.py
  # - sudo python pifunk-pmr.py
+ # - sudo python pifunk-cpu-ram-disk.py
  # - sudo python pifm.py
  # - sudo python pifm.c
  # - sudo make pifm.c 

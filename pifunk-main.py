@@ -37,9 +37,9 @@ try:
 ## def variables
 #int (chan) 
 #= channels 
-float (freq) 
+#float (freq) 
 #= frequency 
-char (filename) 
+#char (filename) 
 #= file
 
 print("testing funk script")
