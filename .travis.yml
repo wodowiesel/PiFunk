@@ -22,7 +22,7 @@ python:
 os: linux
 dist: trusty
 #precise
-#family: unix
+family: unix
 group: stable
 #env:
  #- ARCH=x64
@@ -48,26 +48,26 @@ cache:
    - $HOME/.m2
    - $HOME/.cache/pip
    - $HOME/.pyenv
- # bundler: true
+   # bundler: true
   
 #git-branches
 branches:
  only:
   - master
-  - alpha
+  #- alpha
   
 ## command to install dependencies
 before_install: 
   - sudo apt-get update
   #- sudo apt-get upgrade
- #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
- # ARM- architecture needed !
- #- install-dependencies-arm.sh
+  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
+  # ARM- architecture needed !
+  #- install-dependencies-arm.sh
 
 install: 
  - sudo apt-get install git
  # - key
- # - pip install 
+ #- pip install 
  #-r requirements.txt 
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
@@ -76,8 +76,10 @@ install:
  #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
  #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
  - sudo pip install RPi.GPIO
- # - sudo apt-get install python-rpi.gpio
- # - sudo python setup.py install
+ #- sudo apt-get install RPi.GPIO
+ #- sudo apt-get install python-rpi.gpio
+ #- sudo pip install python-rpi.gpio
+ #- sudo python setup.py install
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
@@ -103,6 +105,7 @@ script:
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cb.py
  # - sudo python pifunk-pmr.py
+ # - sudo python pifunk-cpu-ram-disk.py
  # - sudo python pifm.py
  # - sudo python pifm.c
  # - sudo make pifm.c 
