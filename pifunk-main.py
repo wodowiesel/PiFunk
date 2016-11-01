@@ -22,7 +22,7 @@ from RPi._GPIO import *
 try: 
  import RPi.GPIO as GPIO
 #import numpy
-#import scipy
+import scipy
 #import date
 
 #import scipy.io.wavfile as wavfile
@@ -42,7 +42,7 @@ try:
 #char (filename) 
 #= file
 
-#print("testing funk script")
+#print ( " testing funk script " )
 
 ## function Play file
 
@@ -60,7 +60,7 @@ try:
 ## basic operations
 # continue
 # break
-time.sleep(10)
+#time.sleep(10)
 return
 
 ## Commands:
