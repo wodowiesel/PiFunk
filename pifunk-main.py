@@ -42,7 +42,7 @@ try:
 #char (filename) 
 #= file
 
-print("testing funk script")
+#print ( " testing funk script " )
 
 ## function Play file
 
@@ -56,12 +56,12 @@ print("testing funk script")
   #return self , files , freq
 
 
-#return
+
 ## basic operations
 # continue
 # break
-#time.sleep(1)
-
+#time.sleep(10)
+return
 
 ## Commands:
 # standard freq=100.0 or 103.3
