@@ -5,7 +5,7 @@
 
 # !/usr/bin/python
 ## Imports
-
+## py is function scope not lock scope
 
 import os
 import sys
