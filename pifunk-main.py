@@ -13,9 +13,9 @@ import sys
 import glob
 import socket
 import datetime
-from datetime import *
+from datetime import datetime
 import time
-from time import *
+from time import time
 #import date
 import io
 import math
@@ -75,7 +75,7 @@ try:
 #time.sleep(1)
 #print("testing funk script")
 #print(datetime.datetime.now())
-current_time = datetime.now().time()
+current_time = datetime.datetime.now()
 #.strftime('%Y-%m-%d %H:%M:%S')
 #str(datetime.now())
 #current_time.isoformat()
@@ -95,7 +95,7 @@ current_time = datetime.now().time()
 # continue
 # break
 # return
-#time.sleep(1)
+time.sleep(1)
 
 ## Commands:
 ## standard freq=100.0 or pifm original 103.3 
