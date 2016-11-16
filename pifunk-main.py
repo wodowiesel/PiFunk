@@ -71,11 +71,9 @@ try:
 ## 0x10A -->26
 
 ##testing
-#1+1
-#return
 #time.sleep(1)
 #print("testing funk script")
-print(' Date/Time: ' : datetime.datetime.now())
+print(datetime.datetime.now())
 
 
 ## function Play file
