@@ -98,9 +98,22 @@ def main():
     for virtual_memory, process in processes[:5]:
         print virtual_memory // 2**20, process.pid, process.name
 
-
+#show sys-temmp
+def sys_temp(date, temp): 
+		if len(sys.argv) == 3:
+			date = sys.argv[1]
+			temp = sys.argv[2]
+			sys_temp(date, temp)
+			update_temp(date,temp)
+			time.sleep(1)
+	else:
+		print (' Usage: ' + sys.argv[0] + ' date temp ')
+		
 if __name__ == '__main__':
+
     main()
 	
 while not self.asleep():
     sheep += 1
+	
+	
