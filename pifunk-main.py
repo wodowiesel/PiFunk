@@ -1,6 +1,6 @@
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
-
+## pifm GPIO's: 4(pin x) and Z(pin y = Ground)
 ## ARM -Structure on Pi's !!!
 
 # !/usr/bin/python
@@ -9,20 +9,39 @@
 
 import os
 import sys
+import glob
 import socket
 import datetime
 import time
+#import date
 import io
 import math
 from math import *
 import threading
 import subprocess
+from subprocess import *
 import random
+
 import json
+
 from RPi._GPIO import *
 try: 
  import RPi.GPIO as GPIO
-#import date
+ from RPi import GPIO
+## RPi & GPIO lib bind
+#sudo apt-get install python-rpi.gpio
+#sudo python setup.py install
+##loading hardware on startup
+#os.system('sudo modprobe w1-gpio')
+# pullup=1
+#GPIO.initialize()
+#sensor_pin = 4
+#sensor_data=(sensor_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
+#device dir path
+#base_dir = '/sys/bus/w1/devices/'
+#device_folder = glob.glob(base_dir + '28*')[0]
+#device_file = device_folder + '/w1_slave'!
+
 #import numpy
 
 #import scipy -> evtl install
@@ -30,20 +49,17 @@ try:
 
 #import matplotlib.pyplot as plt
 
-## RPi & GPIO lib bind
-#sudo apt-get install python-rpi.gpio
-#sudo python setup.py install
-
 
 
 ## def variables
-#int (chan) = channels 
-type(13.0)
+#channels = chan
+type(9)
 <class 'int'> 
 
-#float (freq) = frequency 
-type(13.0)
-<class 'float'> 
+#frequency = freq 
+#float(27.46) 
+#type(80.1)
+#class 'float'> 
 #alternative long or complex
 
 #char (filename) = file
@@ -52,8 +68,9 @@ type(13.0)
 ##hex-code
 ## 0x10A -->26
 
-
-print("testing funk script")
+##testing
+print(' testing funk script ')
+print(' Date/Time: ': datetime.datetime.now())
 
 ## function Play file
 
@@ -66,9 +83,7 @@ print("testing funk script")
   #print ( " Playing file (*.wav): " + filename + " on Frequency (MHz):  " + freq)   
   #return self , files , freq
 
-
-
-## basic operations
+## basic behavior
 # continue
 # break
 time.sleep(10)
@@ -91,17 +106,22 @@ return
 
 ## streams audio on network
 # $port = 80
-# microphone devices
+## microphone devices
 #card = 0
 #subdevice = 0
 # arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0 $port
 # arecord -D hw:${0},${0} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0 $port
 
-## run another py-script from shell-terminal (holds main script i think?!
+## run another py-script from shell-terminal (holds main script, i think?!)
+##selecting a individual band:
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
+
 #subprocess.run(["sudo", "python", "pifunk-cb.py"])
+
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
+
 #subprocess.run(["sudo", "python", "pifm.py"])
+
 #subprocess.run(["sudo", "python", "pi-minidisplay.py"])
 
 ## blinking function  
@@ -114,9 +134,10 @@ return
 ## to use Raspberry Pi board pin numbers  
 #GPIO.setmode(GPIO.BOARD)  
 ## set up GPIO output channel  
-#GPIO.setup(11, GPIO.OUT)  
+#GPIO.setup(11, GPIO.OUT) 
+#GPIO.output(11, True) 
 ## blink GPIO17 50 times  
-#for i in range(0,50):  
+#for i in range(0,60):
       #  blink(11)  
 #GPIO.cleanup() 
 
