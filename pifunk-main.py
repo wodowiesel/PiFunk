@@ -65,8 +65,10 @@ try:
 #class 'float' 
 #alternative long or complex
 
-#files = filename 
 #string str
+#files = filename 
+print str("files")
+
 
 ##hex-code
 ## 0x10A -->26
@@ -149,5 +151,4 @@ try:
 #for i in range(0,60):
       #  blink(11)  
 #GPIO.cleanup() 
-
 
