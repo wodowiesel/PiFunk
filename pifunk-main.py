@@ -13,6 +13,7 @@ import sys
 import glob
 import socket
 import datetime
+from datetime import *
 import time
 from time import *
 #import date
@@ -73,7 +74,8 @@ try:
 ##testing
 #time.sleep(1)
 #print("testing funk script")
-print(datetime.datetime.now())
+#print(datetime.datetime.now())
+datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 ## function Play file
