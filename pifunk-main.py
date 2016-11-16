@@ -58,7 +58,7 @@ int(9)
 
 #frequency = freq 
 float(26.965) 
-#class 'float'> 
+#class 'float' 
 #alternative long or complex
 
 #char (filename) = file
@@ -68,8 +68,8 @@ float(26.965)
 ## 0x10A -->26
 
 ##testing
-print(' testing funk script ')
-print(' Date/Time: ': datetime.datetime.now())
+print (' testing funk script ')
+print(' Date/Time: ': datetime.datetime.now() )
 
 ## function Play file
 
@@ -104,7 +104,7 @@ return
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
 
 ## streams audio on network
-# $port = 80
+#$port = 80
 ## microphone devices
 #card = 0
 #subdevice = 0
