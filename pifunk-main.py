@@ -53,8 +53,8 @@ try:
 
 ## def variables
 #channels = chan
-9
-<class 'int'> 
+int(9)
+#class 'int'
 
 #frequency = freq 
 float(26.965) 
