@@ -14,7 +14,7 @@ import glob
 import socket
 import datetime
 import time
-from time import sleep
+from time import *
 #import date
 import io
 import math
@@ -71,7 +71,9 @@ try:
 ## 0x10A -->26
 
 ##testing
-time.sleep(10)
+1+1
+return
+time.sleep(1)
 print("testing funk script")
 print(' Date/Time: ' : datetime.datetime.now())
 
