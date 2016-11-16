@@ -1,6 +1,7 @@
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
-## pifm GPIO's: 4(pin x) and Z(pin y = Ground)
+## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
+#21 (pin 40 sclk) --> 39 gnd(pin)
 ## ARM -Structure on Pi's !!!
 
 # !/usr/bin/python
@@ -12,7 +13,9 @@ import sys
 import glob
 import socket
 import datetime
+from datetime import *
 import time
+from time import *
 #import date
 import io
 import math
@@ -33,8 +36,9 @@ try:
 #sudo python setup.py install
 ##loading hardware on startup
 #os.system('sudo modprobe w1-gpio')
-# pullup=1
+#pullup=1
 #GPIO.initialize()
+#GPIO.setwarnings(False)
 #sensor_pin = 4
 #sensor_data=(sensor_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
 #device dir path
@@ -53,24 +57,26 @@ try:
 
 ## def variables
 #channels = chan
-type(9)
-<class 'int'> 
+#int(80)
+#class 'int'
 
 #frequency = freq 
-#float(27.46) 
-#type(80.1)
-#class 'float'> 
+#float(26.965) 
+#class 'float' 
 #alternative long or complex
 
-#char (filename) = file
-#string 
+#files = filename 
+#string str
 
 ##hex-code
 ## 0x10A -->26
 
 ##testing
-print(' testing funk script ')
-print(' Date/Time: ': datetime.datetime.now())
+#time.sleep(1)
+#print("testing funk script")
+#print(datetime.datetime.now())
+datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 
 ## function Play file
 
@@ -86,8 +92,8 @@ print(' Date/Time: ': datetime.datetime.now())
 ## basic behavior
 # continue
 # break
-time.sleep(10)
-return
+# return
+#time.sleep(1)
 
 ## Commands:
 ## standard freq=100.0 or pifm original 103.3 
@@ -103,9 +109,10 @@ return
 
 ## Broadcast from a (usb) microphone, stereo
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
+#arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.0 -
 
 ## streams audio on network
-# $port = 80
+#$port = 80
 ## microphone devices
 #card = 0
 #subdevice = 0
