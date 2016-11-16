@@ -35,7 +35,7 @@ try:
 #os.system('sudo modprobe w1-gpio')
 #pullup=1
 #GPIO.initialize()
-GPIO.setwarnings(False)
+#GPIO.setwarnings(False)
 #sensor_pin = 4
 #sensor_data=(sensor_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
 #device dir path
@@ -62,7 +62,7 @@ GPIO.setwarnings(False)
 #class 'float' 
 #alternative long or complex
 
-files = filename 
+#files = filename 
 #string str
 
 ##hex-code
