@@ -1,6 +1,7 @@
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
-## pifm GPIO's: 4(pin x) and Z(pin y = Ground)
+## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
+#21 (pin 40 sclk) --> 39 gnd(pin)
 ## ARM -Structure on Pi's !!!
 
 # !/usr/bin/python
@@ -13,6 +14,7 @@ import glob
 import socket
 import datetime
 import time
+from time import sleep
 #import date
 import io
 import math
@@ -105,6 +107,7 @@ print(' Date/Time: ' : datetime.datetime.now())
 
 ## Broadcast from a (usb) microphone, stereo
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
+#arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.0 -
 
 ## streams audio on network
 #$port = 80

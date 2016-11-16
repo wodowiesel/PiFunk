@@ -29,7 +29,7 @@
 # text2speech: eng&de
 # (small logger maybe for funcs)
 #----------------------------------------------------------------------------------------------
-# 9 GPIO 1,4 (8? special) -> Watch-Monitoring (mVolt & mAmpere & mW) + core-temp 
+# 9 GPIO 1,4 (8 TXD special) -> Watch-Monitoring (mVolt & mAmpere & mW) + core-temp 
 # --> log + output 
 #
 # Build: check and combine code (less work :D)!
