@@ -53,12 +53,11 @@ try:
 
 ## def variables
 #channels = chan
-type(9)
+9
 <class 'int'> 
 
 #frequency = freq 
-#float(27.46) 
-#type(80.1)
+float(26.965) 
 #class 'float'> 
 #alternative long or complex
 
