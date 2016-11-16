@@ -75,8 +75,10 @@ try:
 #time.sleep(1)
 #print("testing funk script")
 #print(datetime.datetime.now())
-datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+current_time = datetime.now().time()
+#.strftime('%Y-%m-%d %H:%M:%S')
+#str(datetime.now())
+#current_time.isoformat()
 
 ## function Play file
 
