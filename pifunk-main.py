@@ -33,8 +33,9 @@ try:
 #sudo python setup.py install
 ##loading hardware on startup
 #os.system('sudo modprobe w1-gpio')
-# pullup=1
+#pullup=1
 #GPIO.initialize()
+GPIO.setwarnings(False)
 #sensor_pin = 4
 #sensor_data=(sensor_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
 #device dir path
@@ -52,11 +53,11 @@ try:
 
 
 ## def variables
-channels = chan
+#channels = chan
 #int(80)
 #class 'int'
 
-frequency = freq 
+#frequency = freq 
 #float(26.965) 
 #class 'float' 
 #alternative long or complex
@@ -68,9 +69,10 @@ files = filename
 ## 0x10A -->26
 
 ##testing
-print('testing funk script')
-print(' Date/Time: ': datetime.datetime.now() )
 time.sleep(10)
+print("testing funk script")
+print(' Date/Time: ' : datetime.datetime.now())
+
 
 ## function Play file
 
