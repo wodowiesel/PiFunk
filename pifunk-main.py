@@ -52,24 +52,25 @@ try:
 
 
 ## def variables
-#channels = chan
-#int(9)
+channels = chan
+#int(80)
 #class 'int'
 
-#frequency = freq 
+frequency = freq 
 #float(26.965) 
 #class 'float' 
 #alternative long or complex
 
-#char (filename) = file
-#string 
+files = filename 
+#string str
 
 ##hex-code
 ## 0x10A -->26
 
 ##testing
-print (' testing funk script ')
+print('testing funk script')
 print(' Date/Time: ': datetime.datetime.now() )
+time.sleep(10)
 
 ## function Play file
 
@@ -85,8 +86,8 @@ print(' Date/Time: ': datetime.datetime.now() )
 ## basic behavior
 # continue
 # break
-time.sleep(10)
-return
+# return
+#time.sleep(1)
 
 ## Commands:
 ## standard freq=100.0 or pifm original 103.3 
