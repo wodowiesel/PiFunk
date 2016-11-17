@@ -73,9 +73,7 @@ try:
 
 #string str
 #files = filename 
-try:
- print("files")
- pass
+
 
 ##hex-code
 ## 0x10A -->26
@@ -162,4 +160,8 @@ try:
 #for i in range(0,60):
       #  blink(11)  
 #GPIO.cleanup() 
+try:
+	 print("test")
+	 pass
 #
+
