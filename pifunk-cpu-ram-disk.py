@@ -1,12 +1,33 @@
 
+#
 ## RPi Monitoring of CPU Temp Ram
 #!/usr/bin/env python
+
+## basic imports
 import os 
+import io
 import sys
+import glob
+import socket
 import datetime
+import math
+from math import *
+import threading
 from __future__ import division
+import subprocess
 from subprocess import PIPE, Popen
 import psutil
+import random
+
+## extern or special imports
+import json
+from RPi._GPIO import *
+try: 
+ import RPi.GPIO as GPIO
+ from RPi import GPIO
+ 
+## Django incl most plugins
+#
 
 # Return CPU temperature as a character string                                      
 def getCPUtemperature():
@@ -16,7 +37,8 @@ def getCPUtemperature():
 # Return RAM information (unit=kb) in a list                                        
 # Index 0: total RAM                                                                
 # Index 1: used RAM                                                                 
-# Index 2: free RAM                                                                 
+# Index 2: free RAM   
+                                                              
 def getRAMinfo():
     p = os.popen('free')
     i = 0
@@ -46,7 +68,7 @@ def getDiskSpace():
         if i==2:
             return(line.split()[1:5])
 			
-# -----
+
 # CPU informatiom
 CPU_temp = getCPUtemperature()
 CPU_usage = getCPUuse()
@@ -63,8 +85,6 @@ DISK_stats = getDiskSpace()
 DISK_total = DISK_stats[0]
 DISK_free = DISK_stats[1]
 DISK_perc = DISK_stats[3]
-
-#----
 
 
 def get_cpu_temperature():
@@ -115,5 +135,4 @@ if __name__ == '__main__':
 	
 while not self.asleep():
     sheep += 1
-	
-	
+#

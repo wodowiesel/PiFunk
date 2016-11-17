@@ -2,13 +2,40 @@
 
 
 
+#
+## Band: CB - AM /FM type (70 cm) 2 m  
+## channels: 1-20/40/80 in 10 kHz steps 
+## 2 devices i use: a) Albrecht A4400 with 4W max. (10-16V at 2-3A)- 40chan b) added later
+## 2 magnet-feet(threaded-screw) with antennas: a) liniar 33+28=61 cm b) spiral(4 of 19cm at 8 turns) 9+19=28 cm
+## powered by regulator(220V AC @50Hz): output at 12-13,8V DC at 2-3A / portable 12V-car-bat./cigarette-plug)
 
-## Band: CB # AM /FM type
-## 70 cm / 2 m 
-# channels: 1-20/40/80 in 10 kHz steps 
+## !/usr/bin/python
+## Imports
+## py is function scope not lock scope
+##maybe put imports in external file (category sys / rpi&gpio/ radio-ham)
+import os
+import sys
+import glob
+import socket
+import datetime
+from datetime import datetime
+import time
+from time import time
+#import date
+import io
+import math
+from math import *
+import threading
+import subprocess
+from subprocess import *
+import random
+import json
 
-# Auf den CEPT-konformen Kanälen 1 bis 40 sind die Modulationsarten FM, AM und SSB erlaubt.
-# Auf einigen Kanälen ist zusätzlich Datenübertragung erlaubt. Des Weiteren sind national weitere Kanäle für den CB-Funk verfügbar.
+## django imports with most plugins
+#
+
+## Auf den CEPT-konformen Kanälen 1 bis 40 sind die Modulationsarten FM, AM und SSB erlaubt.
+## Auf einigen Kanälen ist zusätzlich Datenübertragung erlaubt. Des Weiteren sind national weitere Kanäle für den CB-Funk verfügbar.
 
 # case [1]:   freq=26.965 #empfohlener Anrufkanal (FM)	
 # case [2]:   freq=26.975 #inoffizieller Berg-DX-Kanal (FM)
@@ -109,5 +136,5 @@
 # case [78]:  freq=26.935
 # case [79]:  freq=26.945
 # case [80]:  freq=26.955 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeräte über eine Internetverbindung“ in Deutschland
-
+#
 

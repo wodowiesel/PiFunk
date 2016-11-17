@@ -1,3 +1,5 @@
+
+#
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
 ## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
@@ -25,8 +27,8 @@ import subprocess
 from subprocess import *
 import random
 
+## external and special imports
 import json
-
 from RPi._GPIO import *
 try: 
  import RPi.GPIO as GPIO
@@ -46,14 +48,18 @@ try:
 #device_folder = glob.glob(base_dir + '28*')[0]
 #device_file = device_folder + '/w1_slave'!
 
-#import numpy
 
+## need a py<-> c/cpp-wrapper!!!
+#
+
+## some other plugins
+#import numpy
 #import scipy -> evtl install
 #import scipy.io.wavfile as wavfile
-
 #import matplotlib.pyplot as plt
 
-
+## django imports with most plugins
+#
 
 ## def variables
 #channels = chan
@@ -67,7 +73,7 @@ try:
 
 #string str
 #files = filename 
-print str("files")
+print("files")
 
 
 ##hex-code
@@ -125,13 +131,17 @@ print str("files")
 
 ## run another py-script from shell-terminal (holds main script, i think?!)
 ##selecting a individual band:
+#subprocess.run(["sudo", "python", "pi-gpio.py"])
+
+#subprocess.run(["sudo", "python", "pifm.py"])
+
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
 #subprocess.run(["sudo", "python", "pifunk-cb.py"])
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
-#subprocess.run(["sudo", "python", "pifm.py"])
+#subprocess.run(["sudo", "python", "pifunk-cpu-ram-disk.py"])
 
 #subprocess.run(["sudo", "python", "pi-minidisplay.py"])
 
@@ -151,4 +161,4 @@ print str("files")
 #for i in range(0,60):
       #  blink(11)  
 #GPIO.cleanup() 
-
+#

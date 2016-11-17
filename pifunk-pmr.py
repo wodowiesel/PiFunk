@@ -1,35 +1,44 @@
 
+#
+## Band: PMR analog & digital 
+## normal spiral 4cmbuilt-in and 17 cm selfmade liniar-Cu-Antenna ontop 
+## @ 446.0 - .1 and .2 MHz in 6.25/12.5 kHz steps with max. 500 mW EIRP. 
+## pmr- stereo-jack (mine: tevion set- V/04/2005, ean: 23139695, CE 0359, ser: 503076883)
+## -> connection: upper= earplug sound mono, lower= mic mono 
 
-## CBand: PMR analog & digital 
-## 17 cm @ 446.0 - .1 and .2 MHz in 6.25/12.5 kHz steps 
-## with max. 500 mW EIRP.	
-
-## Imports
+## basic Imports
 # !/usr/bin/python
 
 import os
 import sys
+import glob
 import datetime
 # import date
 import time
 import io
-import json
-import numpy
 import socket
+import subprocess
+from subprocess import call, pipe
+import math
+from math import *
+import threading
+import random
+##external or special imports
+import json
+#import numpy
 
-import scipy.io.wavfile as wavfile
-import matplotlib.pyplot as plt
+#import scipy.io.wavfile as wavfile
+#import matplotlib.pyplot as plt
 
-
-from subprocess import call
+##
 
 
 ## def variables
-int channels
-int chfrq
-int subchannels
+#int channels
+#int chfrq
+#int subchannels
 
-float freq 
+#float freq 
 # pmr_base = '446.'
 # float Frequency
 # =  pmr_base+chfrq if needed for splitting
@@ -124,7 +133,7 @@ float freq
 # case [38]: freq=446.1
 
 ## more functions here
-
+#
 
 
 
