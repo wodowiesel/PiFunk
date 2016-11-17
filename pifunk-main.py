@@ -73,8 +73,9 @@ try:
 
 #string str
 #files = filename 
-print("files")
-
+try:
+ print("files")
+ pass
 
 ##hex-code
 ## 0x10A -->26
