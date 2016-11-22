@@ -1,20 +1,22 @@
 
-
-
-
 #
 ## Band: CB - AM /FM type (70 cm) 2 m  
 ## channels: 1-20/40/80 in 10 kHz steps 
-## 2 devices i use: a) Albrecht A4400 with 4W max. (10-16V at 2-3A)- 40chan b) added later
-## 2 magnet-feet(threaded-screw) with antennas (PL-plug): a) liniar 33+28=61 cm (later with BNC-adapter)
-## b) spiral(4 of 19cm at 8 turns) 9+19=28 cm
+## 2 devices i use: a) Albrecht A4400 with 4W max. (10-16V / 2-3A)- 40chan, SN: 94062452
+## b) XXX 12V/ 2-3A 40chan -added later
+## 2 magnet-feet(threaded-screw) with antennas (PL-plug): 
+## a) liniar 33+28=61 cm (later with BNC-adapter, maybe modul)
+## b) spiral (4 of 19cm at 8 turns) 9+19=28 cm 
 ## powered by regulator(220V AC @50Hz): output at 12-13,8V DC at 2-3A / 
-## portable 12V-car-bat./cigarette-plug)
+## portable 12V-car-bat./cigarette-plug incl. dig. volt-meter)
+## need PWR-SR/RF-meter for calibration & testing!
+## sending/transmitting should be used WITH a low-pass-filter!!!!
+## receiving should be fine...
 
 ## !/usr/bin/python
 ## Imports
 ## py is function scope not lock scope
-##maybe put imports in external file (category sys / rpi&gpio/ radio-ham)
+# #maybe put imports in external file (category sys / rpi&gpio/ radio-ham)
 import os
 import sys
 import glob

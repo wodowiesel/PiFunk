@@ -3,8 +3,9 @@
 ## Band: PMR analog & digital 
 ## normal spiral 4cmbuilt-in and 17 cm selfmade liniar-Cu-Antenna ontop 
 ## @ 446.0 - .1 and .2 MHz in 6.25/12.5 kHz steps with max. 500 mW EIRP. 
-## pmr- stereo-jack (mine: tevion set- V/04/2005, ean: 23139695, CE 0359, ser: 503076883)
-## -> connection: upper= earplug sound mono, lower= mic mono (later with BNC-adapter)
+## pmr: stereo-jack (mine: ALDI tevion set - V/04/2005, ean: 23139695, CE 0359, sn: 503076883)
+## -> connection: upper= earplug sound mono, lower= mic mono 
+##(later with BNC-adapter/ hardware-module)
 
 ## basic Imports
 # !/usr/bin/python
