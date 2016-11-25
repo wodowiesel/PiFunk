@@ -43,9 +43,10 @@ import json
 ## django imports with most plugins
 #
 
-#-----------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------
 ## Auf den CEPT-konformen Kanälen 1 bis 40 sind die Modulationsarten FM, AM und SSB erlaubt.
-## Auf einigen Kanälen ist zusätzlich Datenübertragung erlaubt. Des Weiteren sind national weitere Kanäle für den CB-Funk verfügbar.
+## Auf einigen Kanälen ist zusätzlich Datenübertragung erlaubt.
+## Des Weiteren sind national weitere Kanäle für den CB-Funk verfügbar.
 
 # maybe switch-modul/class/object?! helpful +input
 # case [1]:   freq=26.965 #empfohlener Anrufkanal (FM)	
@@ -149,8 +150,8 @@ import json
 # case [80]:  freq=26.955 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeräte über eine Internetverbindung“ in Deutschland
 #
 #nonsensetest
-print 'cb'
-
+print ('cb')
+#pass
 #
 
 
