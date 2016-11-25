@@ -79,7 +79,7 @@ try:
 #alternative long or complex
 
 #string str
-#files = filename 
+#files = filename() 
 
 ##hex-code
 ## 0x10A -->26
@@ -159,7 +159,7 @@ try:
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
 #subprocess.run(['sudo', 'python', 'pifunk-cb.py'])
-subprocess.call('./pifunk-cb.py')
+subprocess.call('pifunk-cb.py')
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
