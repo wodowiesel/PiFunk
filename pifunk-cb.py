@@ -92,7 +92,7 @@ import json
 # case [27]:  freq=27.275 
 # case [28]:  freq=27.285 #Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, 
 # wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist.
-# case [29]:  freq=27.295 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete über eine Internetverbindung in Deutschland	
+# case [29]:  freq=27.295 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland	
 # case [30]:  freq=27.305 #inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
 # case [31]:  freq=27.315 #inoffizieller DX-Kanal (FM)
 # case [32]:  freq=27.325 
@@ -111,7 +111,7 @@ import json
 # Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet:
 
 # case [41]:  freq=27.565 #Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete 
-# ueber eine Internetverbindung in Deutschland (FM),inoffizieller DX-Kanal (FM)
+						  #ueber eine Internetverbindung in Deutschland (FM),inoffizieller DX-Kanal (FM)
 # case [42]:  freq=27.575 #inoffizieller DX-Kanal (FM)
 # case [43]:  freq=27.585 
 # case [44]:  freq=27.595 
