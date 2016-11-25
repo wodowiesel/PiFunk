@@ -149,5 +149,9 @@ import json
 # case [80]:  freq=26.955 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeräte über eine Internetverbindung“ in Deutschland
 #
 #nonsensetest
+print 'cb'
+
 #
+
+
 

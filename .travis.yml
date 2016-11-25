@@ -4,6 +4,21 @@
 # matrix:
 # include:
 
+
+ 
+
+os: linux
+dist: trusty
+#precise
+family: unix
+group: stable
+#env:
+ #- ARCH=x86
+ #- ARCH=x64
+ #- ARCH=arm
+sudo: required
+#true
+
 language: python
 #language: c/cpp or (json)
 
@@ -18,20 +33,6 @@ python:
   - nightly
   - pypy
   - pypy3
- 
-family: unix
-os: linux
-dist: trusty
-#precise
-
-group: stable
-#env:
- #- ARCH=x86
- #- ARCH=x64
- #- ARCH=arm
-sudo: required
-#true
-
 #DJANGO_VERSION=1.8.2 --> need flask too
 
 
@@ -100,7 +101,7 @@ before_script:
 # fast_finish: true	
 script:
 # - key
-  - nosetests
+ - nosetests
   #- coveralls
   #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
   #- sudo python pifunk-main.py
