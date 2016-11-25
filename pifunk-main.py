@@ -1,13 +1,13 @@
 
-#
+## additionally installed py 2.7&3.6 + github + travis
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
 ## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
 #21 (pin 40 sclk) --> 39 gnd(pin)
-## ARM -Structure on Pi's !!!
+## ARM - Structure on Pi's !!! (can only be emulated !!) my Pi : rev.2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
 
-# !/usr/bin/python
+!/usr/bin/python
 ## Imports
 ## py is function scope not lock scope
 
@@ -25,11 +25,14 @@ import math
 from math import *
 import threading
 import subprocess
-from subprocess import *
+from subprocess import run, call
 import random
 
 ## external and special imports
 import json
+
+##---------------------------------------------------------
+
 from RPi._GPIO import *
 try: 
  import RPi.GPIO as GPIO
@@ -49,7 +52,7 @@ try:
 #device_folder = glob.glob(base_dir + '28*')[0]
 #device_file = device_folder + '/w1_slave'!
 
-
+##--------------------------------------------------------------------------------
 ## need a py<-> c/cpp-wrapper!!!
 #
 
@@ -76,7 +79,6 @@ try:
 #string str
 #files = filename 
 
-
 ##hex-code
 ## 0x10A -->26
 
@@ -90,6 +92,15 @@ try:
 #str(datetime.now())
 #current_time.isoformat()
 
+#cpid = os.fork()
+#if not cpid:
+  #  import somescript
+   # os._exit(0)
+#os.waitpid(cpid, 0)
+
+#with open('directory_of_logfile/logfile.txt', 'w') as f:
+  # call(['python', 'directory_of_called_python_file/called_python_file.py'], stdout=f)
+   
 ##-----------------------------------------------------------------------------------------
 ## function Play file
 
@@ -145,7 +156,8 @@ try:
 
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
-subprocess.run(["sudo", "python", "pifunk-cb.py"])
+#subprocess.run(['sudo', 'python', 'pifunk-cb.py'])
+#subprocess.call('./pifunk-cb.py')
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
@@ -173,8 +185,10 @@ subprocess.run(["sudo", "python", "pifunk-cb.py"])
 
 ##---------------------------------------------------------------
 ##test-area
+
 print ('test')
-pass
+
+#pass
 #
 
 
