@@ -132,7 +132,7 @@ import json
 # case [59]:  freq=27.745 
 # case [60]:  freq=27.755 
 
-# case [61]:  freq=26.765 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung“ in Deutschland	
+# case [61]:  freq=26.765 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
 # case [62]:  freq=26.775
 # case [63]:  freq=26.785	
 # case [64]:  freq=26.795
@@ -142,7 +142,7 @@ import json
 # case [68]:  freq=26.835
 # case [69]:  freq=26.845
 # case [70]:  freq=26.855
-# case [71]:  freq=26.865 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung“ in Deutschland	
+# case [71]:  freq=26.865 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
 # case [72]:  freq=26.875
 # case [73]:  freq=26.885
 # case [74]:  freq=26.895
@@ -151,7 +151,7 @@ import json
 # case [77]:  freq=26.925 #Datenkanal (D)(FM)
 # case [78]:  freq=26.935
 # case [79]:  freq=26.945
-# case [80]:  freq=26.955 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung“ in Deutschland
+# case [80]:  freq=26.955 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 #
 #nonsensetest
 print ('cb')
