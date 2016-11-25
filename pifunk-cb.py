@@ -63,7 +63,7 @@ import json
 # Bei genauerer Betrachtung obiger Tabelle fallen einige Stellen auf, an denen sich Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz unterscheiden. 
 # Die dazwischen versteckten Kanaele werden ueblicherweise folgenderweise bezeichnet:
 # Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen. 
-# Allerdings werden sie in einigen Laendern, darunter auch Deutschland[3], fuer andere Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Mäuse u. a. verwendet.
+# Allerdings werden sie in einigen Laendern, darunter auch Deutschland[3], fuer andere Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse u. a. verwendet.
 
 # case [7A]:  freq=27.045 
 # case [11A]: freq=27.095 #Eurobalise-Energieversorgung
@@ -74,7 +74,7 @@ import json
 # case [11]:  freq=27.085 #freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete über eine Internetverbindung in Deutschland
 # case [12]:  freq=27.105 
 # case [13]:  freq=27.115 
-# case [14]:  freq=27.125 #oft verwendet für Spielzeug-Fernsteuerungen (mittels Selektivton)
+# case [14]:  freq=27.125 #oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
 # case [15]:  freq=27.135 #inoffizieller Anrufkanal SSB (USB)	
 # case [16]:  freq=27.155 #Funkverkehr mit und zwischen Wasserfahrzeugen
 # case [17]:  freq=27.165 #Kanal wird von dänischen Schwertransportfahrern in Deutschland und Daenemark benutzt.
