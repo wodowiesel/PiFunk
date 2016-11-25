@@ -83,8 +83,8 @@ import json
 # case [20]:  freq=27.205 #zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 ##40ch devices
-# case [21]:  freq=27.215 #türkischer Anrufkanal in Deutschland und Europa (FM)	
-# case [22]:  freq=27.225 #oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal für rumaenische Fernlastfahrer verwendet
+# case [21]:  freq=27.215 #tuerkischer Anrufkanal in Deutschland und Europa (FM)	
+# case [22]:  freq=27.225 #oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
 # case [23]:  freq=27.255 #Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster	
 # case [24]:  freq=27.235 #Datenkanal (D)
 # case [25]:  freq=27.245 #Datenkanal (D), USB ROS Intern.	
@@ -151,7 +151,7 @@ import json
 # case [77]:  freq=26.925 #Datenkanal (D)(FM)
 # case [78]:  freq=26.935
 # case [79]:  freq=26.945
-# case [80]:  freq=26.955 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeraete über eine Internetverbindung“ in Deutschland
+# case [80]:  freq=26.955 #Freigegeben zur „Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung“ in Deutschland
 #
 #nonsensetest
 print ('cb')

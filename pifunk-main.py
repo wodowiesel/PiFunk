@@ -125,7 +125,7 @@ try:
 ##------------------------------------------------------------------------------------------------
 ## Commands:
 ## standard freq=100.0 or pifm original 103.3 
-## -> sending on square-func means transmission on 3 other freqs: example:
+## -> sending on square-func means transmission on 3 other freqs-> example:
 # sudo ./pifunk sound.wav 100.0
 # sudo ./pifm sound.wav 100.0
 # sudo ./pifm wav/stereo.wav 100.0
