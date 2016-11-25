@@ -155,7 +155,7 @@ import logging
 # case [80]:  freq=26.955 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 #
 #nonsensetest
-print('cb')
+print('cbtest')
 #pass
 #
 

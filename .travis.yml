@@ -36,8 +36,7 @@ python:
 #DJANGO_VERSION=1.8.2 --> need flask too
 
 
-before_cache: 
- -f $HOME/.cache/pip/log/debug.log
+#before_cache: -r -f $HOME/.cache/pip/log/debug.log
   
 cache:
 
@@ -105,9 +104,9 @@ script:
   #- coveralls
   #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
  - sudo python pifunk-main.py
- # - sudo python pifunk-temp.py
  - sudo python pifunk-cb.py
- # - sudo python pifunk-pmr.py
+ - sudo python pifunk-pmr.py
+ # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
  # - sudo python pifm.py
  

@@ -28,7 +28,7 @@ import subprocess
 from subprocess import run, call, pipe
 import random
 import logging
-import asyncio #yield from..
+import asyncio #yield from...
 
 ##--------------------------------------------------------------------------
 ## some other plugins
@@ -190,7 +190,7 @@ try:
 ##---------------------------------------------------------------
 ##test-area
 #nosetests
-print ('test')
+print('maintest')
 
 #pass
 #
