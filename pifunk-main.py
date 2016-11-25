@@ -28,7 +28,7 @@ import subprocess
 from subprocess import run, call, pipe
 import random
 import logging
-import asyncio #yield from...
+#import asyncio #yield from...
 
 ##--------------------------------------------------------------------------
 ## some other plugins
@@ -63,7 +63,7 @@ try:
 #device_folder = glob.glob(base_dir + '28*')[0]
 #device_file = device_folder + '/w1_slave'!
 
-
+print('maintestlol')
 
 ##--------------------------------------------------------------------------------
 ## need a py<-> c/cpp-wrapper!!!
@@ -161,7 +161,7 @@ try:
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
 #subprocess.run(['sudo', 'python', 'pifunk-cb.py'])
-#subprocess.call('pifunk-cb.py')
+#subprocess.call('sudo', 'python', 'pifunk-cb.py')
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
@@ -191,8 +191,5 @@ try:
 ##test-area
 #nosetests
 #print('maintest')
-
 #pass
 #
-
-
