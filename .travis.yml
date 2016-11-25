@@ -37,7 +37,7 @@ python:
 
 
 before_cache: 
- -rm -f $HOME/.cache/pip/log/debug.log
+ -f $HOME/.cache/pip/log/debug.log
   
 cache:
 
@@ -49,7 +49,7 @@ cache:
  directories:
    - .autoconf
    - $HOME/.m2
-   - $HOME/.cache/pip/log
+   - $HOME/.cache
    - $HOME/.pyenv
    # bundler: true
   
@@ -70,7 +70,7 @@ before_install:
 install: 
  - sudo apt-get install git
  # - key
- #- pip install 
+ - pip install 
  #-r requirements.txt 
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
