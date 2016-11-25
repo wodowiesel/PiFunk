@@ -49,7 +49,7 @@ cache:
  directories:
    - .autoconf
    - $HOME/.m2
-   - $HOME/.cache/pip
+   - $HOME/.cache
    - $HOME/.pyenv
    # bundler: true
   

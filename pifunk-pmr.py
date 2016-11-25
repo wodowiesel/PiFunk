@@ -6,6 +6,7 @@
 ## pmr: stereo-jack (mine: ALDI tevion set - V/04/2005, ean: 23139695, CE 0359, sn: 503076883)
 ## -> connection: upper= earplug sound mono, lower= mic mono 
 ##(later with BNC-adapter/ hardware-module)
+##---------------------------------------------------------------------------------------------------
 
 ## basic Imports
 # !/usr/bin/python
@@ -24,14 +25,20 @@ import math
 from math import *
 import threading
 import random
+import logging
+
 ##external or special imports
 import json
+
 #import numpy
 
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
 
-##
+## django imports with most plugins
+#
+
+##------------------------------------------------------
 
 
 ## def variables
@@ -43,6 +50,7 @@ import json
 # pmr_base = '446.'
 # float Frequency
 # =  pmr_base+chfrq if needed for splitting
+##------------------------------------------------------------------------------------
 
 ## analog main: (1-8) 12,5 Hz steps
 ## 1 is default chan. with sub 0/1, unless any func does different things
@@ -87,6 +95,7 @@ import json
 # case [15]: freq=446.18125
 # case [16]: freq=446.19375
 
+##-------------------------------------------------------------------------
 ## subchannels: (0/1-38) CTSS/ DCS tone !!!
 
 ## 0 = all subch. -> base/default

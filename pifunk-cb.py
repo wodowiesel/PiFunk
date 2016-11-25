@@ -39,9 +39,10 @@ import subprocess
 from subprocess import *
 import random
 import json
-
+import logging
 ## django imports with most plugins
 #
+
 ## MUST BE ASCII !
 #-------------------------------------------------------------------------------------------------------------------------
 ## Auf den CEPT-konformen Kanaelen 1 bis 40 sind die Modulationsarten FM, AM und SSB erlaubt.

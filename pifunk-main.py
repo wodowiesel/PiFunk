@@ -27,6 +27,7 @@ import threading
 import subprocess
 from subprocess import run, call
 import random
+import logging
 
 ##--------------------------------------------------------------------------
 ## some other plugins
