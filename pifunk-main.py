@@ -63,7 +63,7 @@ try:
 #device_folder = glob.glob(base_dir + '28*')[0]
 #device_file = device_folder + '/w1_slave'!
 
-print('maintestlol')
+#print('maintestlol')
 
 ##--------------------------------------------------------------------------------
 ## need a py<-> c/cpp-wrapper!!!
