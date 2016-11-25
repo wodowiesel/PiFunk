@@ -71,7 +71,7 @@ import json
 # case [19A]: freq=27.195 
 
 
-# case [11]:  freq=27.085 #freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete über eine Internetverbindung in Deutschland
+# case [11]:  freq=27.085 #freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 # case [12]:  freq=27.105 
 # case [13]:  freq=27.115 
 # case [14]:  freq=27.125 #oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
@@ -93,7 +93,7 @@ import json
 # case [28]:  freq=27.285 #Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, 
 # wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist.
 # case [29]:  freq=27.295 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete über eine Internetverbindung in Deutschland	
-# case [30]:  freq=27.305 #inoffizieller DX-Kanal (FM), Anrufkanal für Funker aus dem ehemaligen Jugoslawien
+# case [30]:  freq=27.305 #inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
 # case [31]:  freq=27.315 #inoffizieller DX-Kanal (FM)
 # case [32]:  freq=27.325 
 # case [33]:  freq=27.335 
