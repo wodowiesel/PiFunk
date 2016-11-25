@@ -19,12 +19,14 @@ python:
   - pypy
   - pypy3
  
+family: unix
 os: linux
 dist: trusty
 #precise
-family: unix
+
 group: stable
 #env:
+ #- ARCH=x86
  #- ARCH=x64
  #- ARCH=arm
 sudo: required

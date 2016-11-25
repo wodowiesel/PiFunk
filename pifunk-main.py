@@ -159,7 +159,7 @@ try:
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
 #subprocess.run(['sudo', 'python', 'pifunk-cb.py'])
-subprocess.call('pifunk-cb.py')
+#subprocess.call('pifunk-cb.py')
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
@@ -187,7 +187,7 @@ subprocess.call('pifunk-cb.py')
 
 ##---------------------------------------------------------------
 ##test-area
-#nosetests
+nosetests
 print ('test')
 
 #pass
