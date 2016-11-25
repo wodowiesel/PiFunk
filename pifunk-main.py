@@ -7,7 +7,7 @@
 ## ARM - Structure on Pi's !!! (can only be emulated !!) my Pi : rev.2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
 
-!/usr/bin/python
+#!/usr/bin/python
 ## Imports
 ## py is function scope not lock scope
 
@@ -28,15 +28,24 @@ import subprocess
 from subprocess import run, call
 import random
 
-## external and special imports
+##--------------------------------------------------------------------------
+## some other plugins
 import json
+#import numpy
+#import scipy -> evtl install
+#import scipy.io.wavfile as wavfile
+#import matplotlib.pyplot as plt
 
+## django imports with most plugins
+#
 ##---------------------------------------------------------
 
-from RPi._GPIO import *
+
 try: 
  import RPi.GPIO as GPIO
+ from RPi._GPIO import *
  from RPi import GPIO
+ 
 ## RPi & GPIO lib bind
 #sudo apt-get install python-rpi.gpio
 #sudo python setup.py install
@@ -52,17 +61,10 @@ try:
 #device_folder = glob.glob(base_dir + '28*')[0]
 #device_file = device_folder + '/w1_slave'!
 
+
+
 ##--------------------------------------------------------------------------------
 ## need a py<-> c/cpp-wrapper!!!
-#
-
-## some other plugins
-#import numpy
-#import scipy -> evtl install
-#import scipy.io.wavfile as wavfile
-#import matplotlib.pyplot as plt
-
-## django imports with most plugins
 #
 
 ##------------------------------------------------------------------------
@@ -157,7 +159,7 @@ try:
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
 #subprocess.run(['sudo', 'python', 'pifunk-cb.py'])
-#subprocess.call('./pifunk-cb.py')
+subprocess.call('./pifunk-cb.py')
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
@@ -185,7 +187,7 @@ try:
 
 ##---------------------------------------------------------------
 ##test-area
-
+#nosetests
 print ('test')
 
 #pass
