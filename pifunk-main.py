@@ -25,9 +25,10 @@ import math
 from math import *
 import threading
 import subprocess
-from subprocess import run, call
+from subprocess import run, call, pipe
 import random
 import logging
+import asyncio #yield from..
 
 ##--------------------------------------------------------------------------
 ## some other plugins

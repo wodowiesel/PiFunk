@@ -44,12 +44,12 @@ cache:
  pip: true
  #-timeout: 1
 
- #- ccache
+ - ccache
 
  directories:
    - .autoconf
    - $HOME/.m2
-   - $HOME/.cache
+   - $HOME/.cache/pip/log
    - $HOME/.pyenv
    # bundler: true
   
@@ -104,7 +104,7 @@ script:
  - nosetests
   #- coveralls
   #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
-  #- sudo python pifunk-main.py
+ - sudo python pifunk-main.py
  # - sudo python pifunk-temp.py
  - sudo python pifunk-cb.py
  # - sudo python pifunk-pmr.py
@@ -129,15 +129,12 @@ script:
     # repo: silicator/PiFunk
     # tags: true
   # skip_cleanup: true
-
-
   
-  
-
 # after_failure:
 # after_success:
  # - coveralls
  # - coverage combine
  # - codecov
+#
 
  
