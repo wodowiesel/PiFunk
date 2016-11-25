@@ -190,9 +190,9 @@ try:
 ##---------------------------------------------------------------
 ##test-area
 #nosetests
-print('maintest')
+#print('maintest')
 
-#pass
+pass
 #
 
 
