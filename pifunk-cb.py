@@ -98,7 +98,7 @@ import json
 # case [32]:  freq=27.325 
 # case [33]:  freq=27.335 
 # case [34]:  freq=27.345 #freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-# case [35]:  freq=27.355 #öffentlicher Kanal
+# case [35]:  freq=27.355 #oeffentlicher Kanal
 # case [36]:  freq=27.365 #Datenkanal USB ROS international
 # case [37]:  freq=27.375 #Gateway-Kanal oesterreich, FM	
 # case [38]:  freq=27.385 #inoffizieller internationaler DX-Kanal (LSB)
