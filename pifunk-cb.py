@@ -80,7 +80,7 @@ import json
 # case [17]:  freq=27.165 #Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt.
 # case [18]:  freq=27.175
 # case [19]:  freq=27.185 #empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
-# case [20]:  freq=27.205 #zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft für Schwertransportfahrten benutzt
+# case [20]:  freq=27.205 #zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 ##40ch devices
 # case [21]:  freq=27.215 #türkischer Anrufkanal in Deutschland und Europa (FM)	
