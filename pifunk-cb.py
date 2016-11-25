@@ -2,16 +2,20 @@
 #
 ## Band: CB - AM /FM type (70 cm) 2 m  
 ## channels: 1-20/40/80 in 10 kHz steps 
-## 2 devices i use: a) Albrecht A4400 with 4W max. (10-16V / 2-3A)- 40chan, SN: 94062452
-## b) XXX 12V/ 2-3A 40chan -added later
-## 2 magnet-feet(threaded-screw) with antennas (PL-plug): 
-## a) liniar 33+28=61 cm (later with BNC-adapter, maybe modul)
-## b) spiral (4 of 19cm at 8 turns) 9+19=28 cm 
-## powered by regulator(220V AC @50Hz): output at 12-13,8V DC at 2-3A / 
-## portable 12V-car-bat./cigarette-plug incl. dig. volt-meter)
-## need PWR-SR/RF-meter for calibration & testing!
-## sending/transmitting should be used WITH a low-pass-filter!!!!
+## 2 devices i use: *a) Albrecht GmbH A4400 - 4W max. 
+## (~10-16V / 2-3A) 40 chan. (only FM +scan)
+## SN: 94062452, Deutsche Post Z GW00 310V, CEPT-PR27D, uses ~13,7V !!
+## b) XXX ~12V/ 2-3A 80 chan. (FM & AM) -added later
+## 2 magnet-feet (threaded-screw) with antennas (PL-plug): 
+## *a) liniar 33+28=61 cm (later with BNC-adapter, maybe modul)
+## b) spiral (4 of 19 cm at 8 turns) 9+19=28 cm 
+## powered by regulator (220V - AC @50Hz): output at 12-13,8V DC at 2-3A / 
+## and/or portable: 12V-car-bat./cigarette-plug  with a DC-balun
+## devices incl. dig. volt-meters & passive cooling-pads 5W/mK each)
+## need PWR-SR/RF-meter for calibration & testing! Team Electronic SWR-1180W
+## sending/transmitting should be used WITH a low-pass-filter !!!!
 ## receiving should be fine...
+## using muli-meter for checking :) but no oscillator 
 
 ## !/usr/bin/python
 ## Imports
@@ -22,7 +26,7 @@ import sys
 import glob
 import socket
 import datetime
-from datetime import datetime
+#from datetime import datetime
 import time
 from time import time
 #import date
