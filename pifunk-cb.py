@@ -77,7 +77,7 @@ import json
 # case [14]:  freq=27.125 #oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
 # case [15]:  freq=27.135 #inoffizieller Anrufkanal SSB (USB)	
 # case [16]:  freq=27.155 #Funkverkehr mit und zwischen Wasserfahrzeugen
-# case [17]:  freq=27.165 #Kanal wird von dänischen Schwertransportfahrern in Deutschland und Daenemark benutzt.
+# case [17]:  freq=27.165 #Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt.
 # case [18]:  freq=27.175
 # case [19]:  freq=27.185 #empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
 # case [20]:  freq=27.205 #zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft für Schwertransportfahrten benutzt
