@@ -187,7 +187,7 @@ try:
 
 ##---------------------------------------------------------------
 ##test-area
-nosetests
+#nosetests
 print ('test')
 
 #pass

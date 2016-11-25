@@ -1,11 +1,11 @@
 
-# travis+git
+## travis+git
 
 # matrix:
 # include:
 
 language: python
-#language: c or ruby
+#language: c/cpp or (json)
 
 python:
   - 2.6
@@ -63,7 +63,7 @@ before_install:
   - sudo apt-get update
   #- sudo apt-get upgrade
   #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
-  # ARM- architecture needed !
+  ## ARM- architecture needed !
   #- install-dependencies-arm.sh
 
 install: 
@@ -103,12 +103,13 @@ script:
   - nosetests
   #- coveralls
   #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
-  - sudo python pifunk-main.py
+  #- sudo python pifunk-main.py
  # - sudo python pifunk-temp.py
- # - sudo python pifunk-cb.py
+ - sudo python pifunk-cb.py
  # - sudo python pifunk-pmr.py
  # - sudo python pifunk-cpu-ram-disk.py
  # - sudo python pifm.py
+ 
  # - sudo python pifm.c
  # - sudo make pifm.c 
  # - cd ./silicator/PiFunk
