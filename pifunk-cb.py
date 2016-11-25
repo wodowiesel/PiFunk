@@ -6,7 +6,7 @@
 ## (~10-16V / 2-3A) 40 chan. (only FM +scan)
 ## SN: 94062452, Deutsche Post Z GW00 310V, CEPT-PR27D, uses ~13,7V !!
 ## b) XXX ~12V/ 2-3A 80 chan. (FM & AM) -added later
-## 2 magnet-feet (threaded-screw) with antennas (PL-plug): 
+## 2 magnet-feet (threaded-screw) with antennas (PL-plug and BNC if needed): 
 ## *a) liniar 33+28=61 cm (later with BNC-adapter, maybe modul)
 ## b) spiral (4 of 19 cm at 8 turns) 9+19=28 cm 
 ## powered by regulator (220V - AC @50Hz): output at 12-13,8V DC at 2-3A / 
@@ -16,11 +16,12 @@
 ## sending/transmitting should be used WITH a low-pass-filter !!!!
 ## receiving should be fine...
 ## using muli-meter for checking :) but no oscillator 
+##-------------------------------------------------------------------------------------
 
 ## !/usr/bin/python
 ## Imports
 ## py is function scope not lock scope
-# #maybe put imports in external file (category sys / rpi&gpio/ radio-ham)
+## maybe put imports in external file (category sys / rpi&gpio/ radio-ham)
 import os
 import sys
 import glob
@@ -42,9 +43,11 @@ import json
 ## django imports with most plugins
 #
 
+#-----------------------------------------------------------------------------------------------------------------------------------------
 ## Auf den CEPT-konformen Kanälen 1 bis 40 sind die Modulationsarten FM, AM und SSB erlaubt.
 ## Auf einigen Kanälen ist zusätzlich Datenübertragung erlaubt. Des Weiteren sind national weitere Kanäle für den CB-Funk verfügbar.
 
+# maybe switch-modul/class/object?! helpful +input
 # case [1]:   freq=26.965 #empfohlener Anrufkanal (FM)	
 # case [2]:   freq=26.975 #inoffizieller Berg-DX-Kanal (FM)
 # case [3]:   freq=26.985 

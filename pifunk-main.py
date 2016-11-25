@@ -5,6 +5,7 @@
 ## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
 #21 (pin 40 sclk) --> 39 gnd(pin)
 ## ARM -Structure on Pi's !!!
+##-----------------------------------------------------------------------------------------------------------------------------
 
 # !/usr/bin/python
 ## Imports
@@ -61,6 +62,7 @@ try:
 ## django imports with most plugins
 #
 
+##------------------------------------------------------------------------
 ## def variables
 #channels = chan
 #int(80)
@@ -78,6 +80,7 @@ try:
 ##hex-code
 ## 0x10A -->26
 
+##------------------------------------------------------------------------------------
 ##testing
 #time.sleep(1)
 #print("testing funk script")
@@ -87,6 +90,7 @@ try:
 #str(datetime.now())
 #current_time.isoformat()
 
+##-----------------------------------------------------------------------------------------
 ## function Play file
 
 #def play_file (self, filename, freq):
@@ -98,12 +102,14 @@ try:
   #print ( " Playing file (*.wav): " + filename + " on Frequency (MHz):  " + freq)   
   #return self , files , freq
 
+##---------------------------------------------------------------------------------------------
 ## basic behavior
 # continue
 # break
 # return
-#time.sleep(1)
+# time.sleep(1)
 
+##------------------------------------------------------------------------------------------------
 ## Commands:
 ## standard freq=100.0 or pifm original 103.3 
 ## -> sending on square-func means transmission on 3 other freqs: example:
@@ -112,7 +118,7 @@ try:
 # sudo ./pifm wav/stereo.wav 100.0
 # rpi3: sudo rmmod w1-gpio
 
-
+##-------------------------------------------------------------------------------------------------
 ## play MP3
 # ffmpeg -i mp3/sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.0
 
@@ -120,6 +126,7 @@ try:
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
 #arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.0 -
 
+##--------------------------------------------------------------------------------------------------------
 ## streams audio on network
 #$port = 80
 ## microphone devices
@@ -127,16 +134,18 @@ try:
 #subdevice = 0
 # arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0 $port
 # arecord -D hw:${0},${0} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0 $port
+##------------------------------------------------------------------------------------------------------
 
 ## run another py-script from shell-terminal (holds main script, i think?!)
 ##selecting a individual band:
+
 #subprocess.run(["sudo", "python", "pi-gpio.py"])
 
 #subprocess.run(["sudo", "python", "pifm.py"])
 
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
-#subprocess.run(["sudo", "python", "pifunk-cb.py"])
+subprocess.run(["sudo", "python", "pifunk-cb.py"])
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
 
@@ -144,6 +153,7 @@ try:
 
 #subprocess.run(["sudo", "python", "pi-minidisplay.py"])
 
+##--------------------------------------------------------------------------------------------------------
 ## blinking function  
 # def blink(pin):  
        # GPIO.output(pin,GPIO.HIGH)  
@@ -160,8 +170,11 @@ try:
 #for i in range(0,60):
       #  blink(11)  
 #GPIO.cleanup() 
-try:
-	 print("test")
-	 pass
+
+##---------------------------------------------------------------
+##test-area
+print ('test')
+pass
 #
+
 
