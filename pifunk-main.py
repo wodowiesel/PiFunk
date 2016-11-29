@@ -43,7 +43,6 @@ import json
 #
 ##---------------------------------------------------------
 
-
 try: 
  import RPi.GPIO as GPIO
  from RPi._GPIO import *
@@ -103,8 +102,8 @@ try:
    # os._exit(0)
 #os.waitpid(cpid, 0)
 
-#with open('directory_of_logfile/logfile.txt', 'w') as f:
-  # call(['python', 'directory_of_called_python_file/called_python_file.py'], stdout=f)
+#with open('logs/log.txt', 'w') as f:
+  # call(['python', './pifunk-main.py'], stdout=f)
    
 ##-----------------------------------------------------------------------------------------
 ## function Play file
@@ -170,6 +169,10 @@ try:
 
 #subprocess.run(["sudo", "python", "pi-minidisplay.py"])
 
+## run shell/bat-script
+##
+
+
 ##--------------------------------------------------------------------------------------------------------
 ## blinking function  
 # def blink(pin):  
@@ -192,5 +195,5 @@ try:
 ##test-area
 #nosetests
 #print('maintest')
-#pass
+pass
 #
