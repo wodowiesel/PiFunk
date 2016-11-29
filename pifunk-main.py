@@ -1,9 +1,10 @@
 
 ## additionally installed py 2.7&3.6 + github + travis
 ## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
-## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, mp3/wave-Files , YT, RDS, microphone (usb&jack) etc.
+## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3,  YT, RDS, morse, echolink,
+## microphone (usb&jack) + player&list , mp3/wave-Files.
 ## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
-#21 (pin 40 sclk) --> 39 gnd(pin)
+## 21 (pin 40 sclk) --> 39 gnd(pin)
 ## ARM - Structure on Pi's !!! (can only be emulated !!) my Pi : rev.2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
 
