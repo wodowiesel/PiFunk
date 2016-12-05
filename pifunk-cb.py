@@ -12,8 +12,9 @@
 ## powered by regulator (220V - AC @50Hz): output at 12-13,8V DC at 2-3A / 
 ## and/or portable: 12V-car-bat./cigarette-plug  with a DC-balun
 ## devices incl. dig. volt-meters & passive cooling-pads 5W/mK each)
-## need PWR-SR/RF-meter for calibration & testing! Team Electronic SWR-1180W
-## sending/transmitting should be used WITH a low-pass-filter !!!!
+## have PWR-SR/RF-meter for calibration & testing! Team Electronic SWR-1180W
+## sending/transmitting should be used WITH a low-pass-filter !!!! 
+## --> + square-wave harmonic transmission => attention when sending!
 ## receiving should be fine...
 ## using muli-meter for checking :) but no oscillator 
 ##-------------------------------------------------------------------------------------
