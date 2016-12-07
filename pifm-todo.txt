@@ -6,7 +6,7 @@
 # TO-DO LIST
 # ----------------------------------------------------------------------
 # 1 different files for chan, imp, funcs (...working on it)
-#
+# & implement tactical Alphabet spelling incl spelling with wave-files
 # 2 Split Frequency Ranges (incl. files) (...working on it)
 #   Input (from 1 MHz to 1000 MHz) 
 #   supported for min. and max. Freq by RPi-1-B+ and other types
