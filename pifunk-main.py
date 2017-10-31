@@ -1,40 +1,53 @@
 
 ## additionally installed py 2.7&3.6 + github + travis
-## free Band combo (HAM): listener/transmitter as beacon, gps, internet, relais, aprs by server-client (all-in-one-version)
+## free Band combo (HAM): listener for beacon, gps, internet, relais, aprs by server-client (all-in-one-version) , transmission not yet
 ## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3,  YT, RDS, morse, echolink,
 ## microphone (usb&jack) + player&list , mp3/wave-Files.
 ## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
 ## 21 (pin 40 sclk) --> 39 gnd(pin)
 ## ARM - Structure on Pi's !!! (can only be emulated !!) my Pi : rev.2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
+##Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels, and the FCC takes a dim view ##of voice broadcasts on these frequencies. For that matter, re-broadcast of copyrighted material (sports, news and weather programming) is a ##violation of the law, and could result in fines, jail time, and confiscation of all radio equipment on your premises. 
+#UK law is 4w(4000mW) / ger 100mW
+## py is function-scope not lock-scope!!
 
 #!/usr/bin/python
 ## Imports
-## py is function scope not lock scope
 
+
+import StringIO
+import io
 import os
 import sys
 import glob
 import socket
 import datetime
-from datetime import datetime
 import time
-from time import time
+##from time import time
 #import date
-import io
-import math
-from math import *
+##from datetime import datetime
+
 import threading
 import subprocess
-from subprocess import run, call, pipe
+##from subprocess import run, call, pipe
+
+
+import math
+##from math import *
+import array
+import wave
+
+
 import random
 import logging
-#import asyncio #yield from...
+
+#import asyncio #yield from *
 
 ##--------------------------------------------------------------------------
 ## some other plugins
 import json
-#import numpy
+import csv as csv 
+import numpy as np
 #import scipy -> evtl install
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
@@ -118,6 +131,14 @@ try:
   #return self , files , freq
 
 ##---------------------------------------------------------------------------------------------
+#csv_file_object=
+#csv.reader(open('C://pmr446.csv', 'rb'))
+
+with open('pmr446.csv', 'rb') as f:
+	reader = csv.reader(f, delimiter=',', quotechar='|')
+	 for row in reader:
+		print(', '.join(row))
+##---------------------------------------------------------------------------------------------
 ## basic behavior
 # continue
 # break
@@ -130,7 +151,7 @@ try:
 ## -> sending on square-func means transmission on 3 other freqs-> example:
 # sudo ./pifunk sound.wav 100.0
 # sudo ./pifm sound.wav 100.0
-# sudo ./pifm wav/stereo.wav 100.0
+# sudo ./pifm wav/sound.wav 100.0
 # rpi3: sudo rmmod w1-gpio
 
 ##-------------------------------------------------------------------------------------------------

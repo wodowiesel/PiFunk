@@ -1,16 +1,16 @@
 
 #
-## Band: CB - AM /FM type (70 cm) 2 m  
+## Band: CB - AM /FM type (70 cm) /2 m  
 ## channels: 1-20/40/80 in 10 kHz steps 
 ## 2 devices i use: *a) Albrecht GmbH A4400 - 4W max. 
 ## (~10-16V / 2-3A) 40 chan. (only FM +scan)
 ## SN: 94062452, Deutsche Post Z GW00 310V, CEPT-PR27D, uses ~13,7V !!
-## b) XXX ~12V/ 2-3A 80 chan. (FM & AM) -added later
+## b) XXX ~12V/ 2-3A 80 chan. (FM & AM?!?!) -added later
 ## 2 magnet-feet (threaded-screw) with antennas (PL-plug and BNC if needed): 
 ## *a) liniar 33+28=61 cm (later with BNC-adapter, maybe modul)
 ## b) spiral (4 of 19 cm at 8 turns) 9+19=28 cm 
 ## powered by regulator (220V - AC @50Hz): output at 12-13,8V DC at 2-3A / 
-## and/or portable: 12V-car-bat./cigarette-plug  with a DC-balun
+## and/or portable: 12V-car-bat./cigarette-plug with a DC-balun
 ## devices incl. dig. volt-meters & passive cooling-pads 5W/mK each)
 ## have PWR-SR/RF-meter for calibration & testing! Team Electronic SWR-1180W
 ## sending/transmitting should be used WITH a low-pass-filter !!!! 
@@ -23,24 +23,30 @@
 ## Imports
 ## py is function scope not lock scope
 ## maybe put imports in external file (category sys / rpi&gpio/ radio-ham)
+import StringIO
 import os
 import sys
 import glob
 import socket
 import datetime
 #from datetime import datetime
-import time
-from time import time
+#import time
+#from time import time
 #import date
 import io
 import math
-from math import *
+#from math import *
 import threading
 import subprocess
-from subprocess import *
+#from subprocess import *
 import random
 import json
 import logging
+import csv as csv 
+import numpy as np
+import array
+import wave
+
 ## django imports with most plugins
 #
 
@@ -60,12 +66,14 @@ import logging
 # case [7]:   freq=27.035 #Datenkanal (D)
 # case [8]:   freq=27.055
 # case [9]:   freq=27.065 #Fernfahrerkanal (AM)/weltweiter Notrufkanal	EMG
-# case [10]:  freq=27.075 #antennen-abgleich
+# case [10]:  freq=27.075 #antennen-abgleich - halbe chan-anzahl!! ansonsten nr 20 oder 40
 
-# Bei genauerer Betrachtung obiger Tabelle fallen einige Stellen auf, an denen sich Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz unterscheiden. 
+# Bei genauerer Betrachtung obiger Tabelle fallen einige Stellen auf, 
+#an denen sich Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz unterscheiden. 
 # Die dazwischen versteckten Kanaele werden ueblicherweise folgenderweise bezeichnet:
 # Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen. 
-# Allerdings werden sie in einigen Laendern, darunter auch Deutschland[3], fuer andere Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse u. a. verwendet.
+# Allerdings werden sie in einigen Laendern, darunter auch Deutschland[3], fuer andere Zwecke
+# wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse u. a. verwendet.
 
 # case [7A]:  freq=27.045 
 # case [11A]: freq=27.095 #Eurobalise-Energieversorgung
@@ -81,12 +89,15 @@ import logging
 # case [16]:  freq=27.155 #Funkverkehr mit und zwischen Wasserfahrzeugen
 # case [17]:  freq=27.165 #Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt.
 # case [18]:  freq=27.175
-# case [19]:  freq=27.185 #empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
-# case [20]:  freq=27.205 #zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
+# case [19]:  freq=27.185 #empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise
+# auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
+# case [20]:  freq=27.205 #zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, 
+#wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 ##40ch devices
 # case [21]:  freq=27.215 #tuerkischer Anrufkanal in Deutschland und Europa (FM)	
-# case [22]:  freq=27.225 #oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
+# case [22]:  freq=27.225 #oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt,
+# wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
 # case [23]:  freq=27.255 #Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster	
 # case [24]:  freq=27.235 #Datenkanal (D)
 # case [25]:  freq=27.245 #Datenkanal (D), USB ROS Intern.	
@@ -105,7 +116,8 @@ import logging
 # case [37]:  freq=27.375 #Gateway-Kanal oesterreich, FM	
 # case [38]:  freq=27.385 #inoffizieller internationaler DX-Kanal (LSB)
 # case [39]:  freq=27.395 #Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
-# case [40]:  freq=27.405 #ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
+# case [40]:  freq=27.405 #ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete 
+#ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
 
 
 ## 80 chan devices
@@ -157,6 +169,7 @@ import logging
 #
 #nonsensetest
 print('cbtest')
+return
 #pass
 #
 

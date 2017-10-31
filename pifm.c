@@ -1,33 +1,37 @@
 // To run:
 //  wget -O - http://beta.etherpad.org/p/pihackfm/export/txt 2>/dev/null | gcc -lm -std=c99 -g -xc - && ./a.out beatles.wav
 // Access from ARM Running Linux
+// Pi-FM version - freqency modulation left/right ← ,→ 
 
-
+// includes+defs standartized with pi-am !
+//#include <Python.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <dirent.h>
+#include <stdarg.h>
+#include <stdint.h>
+
 #include <math.h>
-#include <fcntl.h>
+#include <time.h>
+#include <errno.h>
+
 #include <assert.h>
 #include <malloc.h>
-#include <sys/mman.h>
+#include <dirent.h>
+#include <sndfile.h>
+
+#include <fcntl.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <signal.h>
-#include <unistd.h>
+#include <sys/mman.h>
 
+//----------------------------------------------------------------------//
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
+#define	BUFFER_LEN	(8*1024)
 
-int  mem_fd;
-char *gpio_mem, *gpio_map;
-char *spi0_mem, *spi0_map;
-
-
-// I/O access
-volatile unsigned *gpio;
-volatile unsigned *allof7e;
+#define	ln(x) (log(x)/log(2.718281828459045235f))
 
 // GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
 #define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
@@ -48,8 +52,16 @@ volatile unsigned *allof7e;
 #define CLKBASE (0x7E101000)
 #define DMABASE (0x7E007000)
 #define PWMBASE  (0x7e20C000) /* PWM controller */
+//----------------------------------------------------------------------//
+int  mem_fd;
+char *gpio_mem, *gpio_map;
+char *spi0_mem, *spi0_map;
 
 
+// I/O access
+volatile unsigned *gpio;
+volatile unsigned *allof7e;
+//----------------------------------------------------------------------//
 struct GPCTL {
     char SRC         : 4;
     char ENAB        : 1;
@@ -71,7 +83,7 @@ void getRealMemPage(void** vAddr, void** pAddr) {
     
     mlock(a, 4096);  // lock into ram.
     
-    *vAddr = a;  // yay - we know the virtual address
+    *vAddr = a;  //  we know the virtual address now.
     
     unsigned long long frameinfo;
     
@@ -163,7 +175,7 @@ void playWav(char* filename, float samplerate)
 {
     int fp= STDIN_FILENO;
     if(filename[0]!='-') fp = open(filename, 'r');
-    //int sz = lseek(fp, 0L, SEEK_END);
+    //int sz = lseek(fp, 0L, SEEK_END); that does the funcs are doing? probably save/mem space?
     //lseek(fp, 0L, SEEK_SET);
     //short* data = (short*)malloc(sz);
     //read(fp, data, sz);
@@ -283,7 +295,8 @@ void setupDMA( float centerFreq ){
    usleep(1000);
    ACCESS(PWMBASE + 0x4 /* status*/) = -1;  // clear errors
    usleep(1000);
-   ACCESS(PWMBASE + 0x0 /* CTRL*/) = -1; //(1<<13 /* Use fifo */) | (1<<10 /* repeat */) | (1<<9 /* serializer */) | (1<<8 /* enable ch */) ;
+   ACCESS(PWMBASE + 0x0 /* CTRL*/) = -1; //(1<<13 /* Use fifo */) | (1<<10 /* repeat */) | (1<<9 /* serializer */) | (1<<8 /* enable ch */) ; 
+   //what does this parameters mean ???
    usleep(1000);
    ACCESS(PWMBASE + 0x8 /* DMAC*/) = (1<<31 /* DMA enable */) | 0x0707;
    
@@ -303,7 +316,7 @@ int main(int argc, char **argv)
     
     if (argc>1) {
       setup_fm();
-      setupDMA(argc>2?atof(argv[2]):100.0);
+      setupDMA(argc>2?atof(argv[2]):100.0); // default freq, maybe do input here 
       playWav(argv[1], argc>3?atof(argv[3]):22500);
     } else
       fprintf(stderr, "Usage:   program wavfile.wav [freq] [sample rate] \n\nWhere wavfile is 16 bit 22.5kHz Mono.  Set wavfile to '-' to use stdin.\nfreq is in Mhz (default 100.0)\nsample rate of wav file in Hz\n\nPlay an empty file to transmit silence\n");

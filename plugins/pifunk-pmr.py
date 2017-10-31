@@ -10,7 +10,7 @@
 
 ## basic Imports
 # !/usr/bin/python
-
+import StringIO
 import os
 import sys
 import glob
@@ -26,11 +26,13 @@ from math import *
 import threading
 import random
 import logging
+import array
+import wave
+
 #import asyncio
 ##external or special imports
 import json
-
-#import numpy
+import numpy
 
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
@@ -52,6 +54,7 @@ import json
 # =  pmr_base+chfrq if needed for splitting
 ##------------------------------------------------------------------------------------
 
+total range from 446. (00625 - 19375)
 ## analog main: (1-8) 12,5 Hz steps
 ## 1 is default chan. with sub 0/1, unless any func does different things
 
@@ -61,31 +64,12 @@ import json
 # case [4]: freq=446.04375 #at 3-chan-PMR-devices its ch. 2
 # case [5]: freq=446.05625 #Contest
 # case [6]: freq=446.06875 #Events
-# case [7]: freq=446.08125 #at 3-chanl-PMR-devices its ch. 3
-# case [8]: freq=446.09375 #random
+# case [7]: freq=446.08125 #at 3-chanl-PMR-devices it's ch. 3
+# case [8]: freq=446.09375 #random talk stuff
 
 ## dpmr digital new since 28.09.2016
-
-## 12.5 kHz steps
-# case [1]: freq=446.10625
-# case [2]: freq=446.11875
-# case [3]: freq=446.13125
-# case [4]: freq=446.14375
-# case [5]: freq=446.15625
-# case [6]: freq=446.16875
-# case [7]: freq=446.18125
-# case [8]: freq=446.19375
-
-## 6.25 kHz steps
-# case [1]: freq=446.103125
-# case [2]: freq=446.11875
-# case [3]: freq=446.13125
-# case [4]: freq=446.14375
-# case [5]: freq=446.15625
-# case [6]: freq=446.16875
-# case [7]: freq=446.18125
-# case [8]: freq=446.19375
-
+# erweitert um extra 8 chan
+## 12.5 kHz steps too
 # case [9]:  freq=446.10625
 # case [10]: freq=446.11875
 # case [11]: freq=446.13125
@@ -94,9 +78,31 @@ import json
 # case [14]: freq=446.16875
 # case [15]: freq=446.18125
 # case [16]: freq=446.19375
+#------------------------------------------#
+
+#weitere option in halben schritten
+# * bedeutet kommt in 12,5er schritten bereits vor
+## 6.25 kHz steps
+# case [a]: freq=446.10312
+# case [b]: freq=446.11875*
+# case [c]: freq=446.13125*
+# case [d]: freq=446.14375*
+# case [f]: freq=446.15625*
+# case [g]: freq=446.16875*
+# case [h]: freq=446.18125*
+# case [i]: freq=446.19375*
+
+# case [j]: freq=446.10625*
+# case [k]: freq=446.11875
+# case [l]: freq=446.13125
+# case [m]: freq=446.14375
+# case [n]: freq=446.15625
+# case [o]: freq=446.16875
+# case [p]: freq=446.18125
+# case [q]: freq=446.19375*
 
 ##-------------------------------------------------------------------------
-## subchannels: (0/1-38) CTSS/ DCS tone !!!
+## subchannels: (0/1-38) CTSS/ DCS tones !!!
 
 ## 0 = all subch. -> base/default
 ## if subchannels is 0 = all ch. ??? check special stuff
@@ -109,6 +115,7 @@ import json
 # case [4]:  ctss=4
 # case [5]:  ctss=5
 # case [6]:  ctss=6
+
 # case [7]:  freq=446.1
 # case [8]:  freq=446.1
 # case [9]:  freq=446.1
