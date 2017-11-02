@@ -41,7 +41,14 @@ import numpy
 #
 
 ##------------------------------------------------------
-
+import csv
+with open("ctsspmr.csv") as fh:
+    rows = []
+    for row in csv.DictReader(fh):
+        rows.append(row)
+# or, if you like:
+rows = [row for row in csv.DictReader(open("ctsspmr.csv"))]
+print rows
 
 ## def variables
 #int channels
@@ -54,7 +61,7 @@ import numpy
 # =  pmr_base+chfrq if needed for splitting
 ##------------------------------------------------------------------------------------
 
-total range from 446. (00625 - 19375)
+#total range from 446. (00625 - 19375)
 ## analog main: (1-8) 12,5 Hz steps
 ## 1 is default chan. with sub 0/1, unless any func does different things
 
