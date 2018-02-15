@@ -1,0 +1,17 @@
+Unverändert geblieben ist die Zuteilung des Frequenzbereichs 26,957 bis 27,283 MHz für SRD mit einer maximalen Strahlungsleistung von 10 Milliwatt ERP bzw. einer maximalen magnetischen Feldstärke von 42 dBµA/m in 10 Meter Entfernung.
+
+Ebenfalls unverändert geblieben ist die Frequenzzuteilung für SRD im Frequenzbereich 433,050 bis 434,790 MHz (im 70-cm-Amateurfunkband) mit einer maximalen Strahlungsleistung von 10 Milliwatt ERP.
+
+Die 10-kHz-Frequenzbereiche
+
+26,990 bis 27,000 MHz,
+
+27,040 bis 27,050 MHz,
+
+27,090 bis 27,100 MHz,
+
+27,140 bis 27,150 MHz und
+
+27,190 bis 27,200 MHz
+
+(also die sog. CB-"Zwischenkanäle" 3A, 7A, 11A, 15A und 19A), die bisher von SRD mit einer Strahlungsleistung von max. 100 Milliwatt ERP und einem Arbeitszyklus von nur max. 0,1 % betrieben werden durften, dürfen jetzt auch von Modellfernsteuerungen mit einem Arbeitszyklus von 100 % betrieben werden. Dies betrifft auch 860 MHz Bereich.
