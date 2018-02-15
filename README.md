@@ -1,7 +1,5 @@
-# PiFunk
-# Raspberry Pi Radio Band - Listener/Receiver/Relais for CB and PMR446  
-maybe Echolink via Teamspeak or Standalone(Client-Server)?! 
+# PiFunk Radio Transceiver for CB and PMR446  
 Early Experimental! 
 
-# (based on PiFM-Script)
+(based on PiFM-Script)
 
