@@ -106,6 +106,8 @@ try:
 #print(datetime.datetime.now())
 #current_time = datetime.datetime.now()
 #.strftime('%Y-%m-%d %H:%M:%S')
+from datetime import datetime
+datetime.now().strftime('%d-%m-%Y , %H:%M:%S')
 #str(datetime.now())
 #current_time.isoformat()
 
@@ -125,19 +127,19 @@ try:
   #print (" Testing play_file ... ")
   #file = input(" Enter File-Name (*.wav): ")
   #freq = input(" Enter Frequency in MHz: ")
-  #call ([" sudo ./pifunk ", filename, freq])
-  #call ([" sudo ./pifm ", sound.wav, -freq])
+  #call (["sudo ./pifunk ", filename, freq])
+  #call (["sudo ./pifm ", sound.wav, -freq])
   #print ( " Playing file (*.wav): " + filename + " on Frequency (MHz):  " + freq)   
   #return self , files , freq
 
 ##---------------------------------------------------------------------------------------------
 #csv_file_object=
-#csv.reader(open('C://pmr446.csv', 'rb'))
+#csv.reader(open('pmr446.csv', 'rb'))
 
-with open('pmr446.csv', 'rb') as f:
-	reader = csv.reader(f, delimiter=',', quotechar='|')
-	 for row in reader:
-		print(', '.join(row))
+#with open('pmr446.csv', 'rb') as f:
+#	reader = csv.reader(f, delimiter=',', quotechar='|')
+#	 for row in reader:
+#		print(', '.join(row))
 ##---------------------------------------------------------------------------------------------
 ## basic behavior
 # continue
@@ -148,7 +150,8 @@ with open('pmr446.csv', 'rb') as f:
 ##------------------------------------------------------------------------------------------------
 ## Commands:
 ## standard freq=100.0 or pifm original 103.3 
-## -> sending on square-func means transmission on 3 other freqs-> example:
+## -> sending on square-func means transmission on 3 other freqs
+sudo ./pifunk sound.wav 100.00000 22500 fm
 # sudo ./pifunk sound.wav 100.0
 # sudo ./pifm sound.wav 100.0
 # sudo ./pifm wav/sound.wav 100.0
@@ -160,7 +163,7 @@ with open('pmr446.csv', 'rb') as f:
 
 ## Broadcast from a (usb) microphone, stereo
 # arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.0
-#arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.0 -
+# arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.0 -
 
 ##--------------------------------------------------------------------------------------------------------
 ## streams audio on network

@@ -4,6 +4,11 @@
 # Custom for Visual Studio
 *.cs     diff=csharp
 
+# here c and py
+#*.c diff=astextplain
+#*.py diff=astextplain
+*.sh diff=astextplain
+
 # Standard to msysgit
 *.doc	 diff=astextplain
 *.DOC	 diff=astextplain
