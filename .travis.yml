@@ -1,11 +1,26 @@
 
-# travis+git
+## travis+git
 
 # matrix:
 # include:
 
+
+ 
+
+os: linux
+dist: trusty
+#precise
+family: unix
+group: stable
+#env:
+ #- ARCH=x86
+ #- ARCH=x64
+ #- ARCH=arm
+sudo: required
+#true
+
 language: python
-#language: c or ruby
+#language: c/cpp or (json)
 
 python:
   - 2.6
@@ -18,23 +33,10 @@ python:
   - nightly
   - pypy
   - pypy3
- 
-os: linux
-dist: trusty
-#precise
-family: unix
-group: stable
-#env:
- #- ARCH=x64
- #- ARCH=arm
-sudo: required
-#true
-
 #DJANGO_VERSION=1.8.2 --> need flask too
 
 
-before_cache: 
- -rm -f $HOME/.cache/pip/log/debug.log
+#before_cache: -r -f $HOME/.cache/pip/log/debug.log
   
 cache:
 
@@ -46,7 +48,7 @@ cache:
  directories:
    - .autoconf
    - $HOME/.m2
-   - $HOME/.cache/pip
+   - $HOME/.cache
    - $HOME/.pyenv
    # bundler: true
   
@@ -61,13 +63,13 @@ before_install:
   - sudo apt-get update
   #- sudo apt-get upgrade
   #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
-  # ARM- architecture needed !
+  ## ARM- architecture needed !
   #- install-dependencies-arm.sh
 
 install: 
  - sudo apt-get install git
  # - key
- #- pip install 
+ - pip install 
  #-r requirements.txt 
  # --user param if no sudo/root-access
  # -q Django==$DJANGO_VERSION
@@ -98,15 +100,16 @@ before_script:
 # fast_finish: true	
 script:
 # - key
-  - nosetests
+ - nosetests
   #- coveralls
   #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
-  - sudo python pifunk-main.py
+ - sudo python pifunk-main.py
+ - sudo python pifunk-cb.py
+ - sudo python pifunk-pmr.py
  # - sudo python pifunk-temp.py
- # - sudo python pifunk-cb.py
- # - sudo python pifunk-pmr.py
  # - sudo python pifunk-cpu-ram-disk.py
  # - sudo python pifm.py
+ 
  # - sudo python pifm.c
  # - sudo make pifm.c 
  # - cd ./silicator/PiFunk
@@ -125,15 +128,12 @@ script:
     # repo: silicator/PiFunk
     # tags: true
   # skip_cleanup: true
-
-
   
-  
-
 # after_failure:
 # after_success:
  # - coveralls
  # - coverage combine
  # - codecov
+#
 
  

@@ -1,0 +1,1153 @@
+// to run and compile to binary use: gcc -lm -std=c99 pifunk.c -o pifunk with admin/root permissions
+//=> compile with mingw-x64 win 10 tried but errors
+
+// or alternative with everpad:  nor sure about this, rather not using it 
+//wget -O - -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -lm -std=c99 -g -xc - && ./a.out sound.wav
+
+// gcc 5.4.1 compiler  + gdb  debugger
+
+// rewritten for own purpose Sources:
+// Access from ARM Running Linux, mostly on Raspberry Pi (me B+ rev2)
+
+// 1) Pi-FM version - freqency modulation direction left/right ← , → 
+
+// 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
+// Test program using SNDFILE, see http://www.mega-nerd.com/libsndfile/api.html for API
+
+
+// todo: inplement arguments int argc, argv correctly to use them with functions!! 
+//sometimes pointer errors and other stuff
+
+
+// normal includes
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <unistd.h>
+
+#include <math.h>
+#include <time.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <assert.h>
+#include <malloc.h>
+#include <dirent.h>
+#include <conio.h>
+#include <pthread.h>
+//#include <libusb.h>
+
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h> // only on posix linux,
+
+//#include <sndfile.h> //needed for am modulation somehoe ?
+
+// widows headers if needed
+/*
+#include <windows.h>
+#include <win.h>
+#include <windef.h>
+#include <winnt.h>
+#include <winbase.h>
+*/
+//using namespacestd; for c++
+//maybe own headers?  python stuff, maybe wrapper too??
+
+
+//---------------------------------------------------------------//
+#define	ln(x) (log(x)/log(2.718281828459045235f))
+#define PI 3.14159265
+
+
+
+#define PAGE_SIZE (4*1024)
+#define BLOCK_SIZE (4*1024)
+#define	BUFFER_LEN	(8*1024)
+#define BUFFERINSTRUCTIONS 65536
+
+
+
+// GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
+#define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
+#define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
+#define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
+
+#define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
+#define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
+#define GPIO_GET *(gpio+13)  // sets   bits which are 1 ignores bits which are 0
+ 
+#define ACCESS(base) (volatile int*)(allof7e+base-0x7e000000)
+#define SETBIT(base, bit) ACCESS(base) |= 1<<bit
+#define CLRBIT(base, bit) ACCESS(base) &= ~(1<<bit)
+
+#define CM_GP0CTL (0x7e101070)
+#define GPFSEL0 (0x7E200000)
+#define CM_GP0DIV (0x7e101074)
+#define CLKBASE (0x7E101000)
+#define DMABASE (0x7E007000)
+#define PWMBASE (0x7e20C000) // PWM controller 
+
+
+//--------------------------------------------------//
+
+//pi variables:  -> need to be activated and pulled up with python-script, or automaticly by system
+
+int   mem_fd;
+
+char *gpio_mem, *gpio_map;
+char *spi0_mem, *spi0_map;
+
+
+// I/O access
+volatile unsigned *gpio;
+volatile unsigned *allof7e;
+
+
+int volume;
+int i;
+int k   ;
+float x ;
+
+int samplerate;
+int channels;
+
+float freq;
+int FileFreqTiming;
+
+char *filename;
+FILE fp;
+
+
+int timer ()
+{
+   time_t rawtime;
+   struct tm *info;
+   char buffer [80];
+
+   time (&rawtime);
+
+   info = localtime (&rawtime );
+   printf ("Current local time and date: %s", asctime (info));
+
+   return 0;
+}
+
+
+char filenamepath ()
+{
+    
+    printf ("\nPlease Enter the Full Path including Name of the .wav file you want to use: \n");
+    scanf ("%s", filename);
+   
+    if (filename==NULL)
+	{
+	    printf ("\n%s\" File not found! \n", filename);
+	    //getch ();
+	    printf ("Trying to play default sound.wav ... \n");
+	    filename = open ("sound.wav", "r");
+	   
+	    
+	    return filename;
+	}
+	else
+	{
+	    printf ("Trying to play sound.wav) ... \n");
+	    //fp = fopen ("sound.wav", "r");
+	    
+	}
+
+	
+	return 0;
+}
+
+
+
+
+
+int freqselect () // gets freq by typing
+{
+   
+	//printf ("\n*** You selected 1 for Frequency-Mode *** \n"); 
+	printf ("Type in Frequency (1-500.00000 MHz): ");
+	
+	scanf ("%f", freq);
+	
+	printf ("You chose %f MHz \n", freq);
+    
+    return freq;
+}
+
+
+int channelselect ()
+{
+    
+	printf ("*** You selected 1 for Channel-Mode *** \n"); 
+	printf ("Choose your Type [1] PMR // [2] CB // [3] Exit : ");
+    int channelmode;
+    scanf ("%d", &channelmode);
+    
+    switch (channelmode)// from here collecting infos and run it step by setp, same for frq-mode
+            {
+            case 1: printf ("*** PMR CHAN-MODE im FM *** "); 
+					channelmodepmr (); // gets freq from pmr list
+					filenamepath ();
+					int modulationfm (int argc, char **argv);
+					
+					break;
+					
+		    case 2: printf ("*** CB CHAN-MODE SELECT*** "); 
+					channelmodecb (); // gets freq for chan
+					filenamepath (); //gets file
+					modulationselect (); //selects modulation
+					break;
+					 
+            case 3:  printf ("\nExiting... \n");
+					 exit (-1);
+					 break;
+			//default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
+		    }
+	
+	return 0;
+}
+
+
+
+// Channelmode 
+//PMR
+
+int channelmodepmr ()
+{
+	printf ("\nChoose PMR-Channel 0-17 (18 to exit): "); 
+	int channelnumberpmr;
+	scanf ("%d", &channelnumberpmr);
+	switch (channelnumberpmr)
+	{
+	    
+	 //---- Analog &digital 
+	 case 0: freq=446.00625; printf ("DUMMY scan: Chan 0-> default Chan 1 %f ",freq); break;	// Scan all Chan till active , now chan1
+	 case 1: freq=446.00625; break;	 //Standard
+	 case 2: freq=446.01875; break; //Geocaching
+	 case 3: freq=446.03125; break; // random
+	 case 4: freq=446.04375; break; //at 3-chan-PMR-devices its ch. 2
+	 case 5: freq=446.05625; break; //Contest
+	 case 6: freq=446.06875; break; //Events
+	 case 7: freq=446.08125; break; //at 3-chanl-PMR-devices it's ch. 3
+	 case 8: freq=446.09375; break; //random talk stuff
+//---------------------------Digital only
+	// dpmr digital new since 28.09.2016
+	// erweitert um extra 8 chan
+	// 12.5 kHz steps too
+	
+	 case 9:  freq=446.10312; break; // 6.25 kHz steps
+	 case 10: freq=446.10625; break;
+	 case 11: freq=446.11875; break;
+	 case 12: freq=446.13125; break;
+	 case 13: freq=446.14375; break;
+	 case 14: freq=446.15625; break;
+	 case 15: freq=446.16875; break;
+	 case 16: freq=446.18125; break;
+	 case 17: freq=446.19375; break;
+	 case 18: channelselect (); break;
+	 default: freq=446.00625; printf ("\nDefault chan = 1 %f \n", freq);  break;
+	}
+	return freq;
+}
+
+
+int channelmodecb ()
+{
+	printf ("\nChoose CB-Channel 0-80 (81 to exit): "); 
+	int channelnumbercb;
+	scanf ("%d", &channelnumbercb);
+	switch (channelnumbercb)
+	{
+		
+            case 0:   freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq);  break;
+			case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)	
+			case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
+			case 3:   freq=26.9850; break;
+			case 4:   freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
+			case 5:   freq=27.0150; break; //Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
+			case 6:   freq=27.0250; break; //Datenkanal (D)
+			case 7:   freq=27.0350; break; //Datenkanal (D)
+			case 8:   freq=27.0550; break;
+			case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
+			case 10:  freq=27.0750; break; //Antennen-abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
+/*
+			# Bei genauerer Betrachtung obiger Tabelle fallen einige Stellen auf, 
+			# an denen sich Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz unterscheiden. 
+			# Die dazwischen versteckten Kanaele werden ueblicherweise folgenderweise bezeichnet:
+			# Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen. 
+			# Allerdings werden sie in einigen Laendern, darunter auch Deutschland[3], fuer andere Zwecke
+			# wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet
+*/
+
+			 case 11:  freq=27.0850; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 1111: freq=27.0950;  break;//Eurobalise-Energieversorgung
+			 
+			 case 12:  freq=27.1050;  break;
+			 case 13:  freq=27.1150;  break;
+			 case 14:  freq=27.1250;  break;//oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
+			 case 15:  freq=27.1350;  break;//inoffizieller Anrufkanal SSB (USB)	
+			 case 1515: freq=27.1450; break;
+			 
+			 case 16:  freq=27.1550;  break;//Funkverkehr mit und zwischen Wasserfahrzeugen
+			 case 17:  freq=27.1650;  break;//Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
+			 case 18:  freq=27.1750;  break;
+			 case 19:  freq=27.1850;  break;//empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
+			 case 1919: freq=27.1950; break;
+										
+			 case 20:  freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, 
+										//#wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
+
+		 	//## 40 chan devices
+			 case 21:  freq=27.2150;  break;//tuerkischer Anrufkanal in Deutschland und Europa (FM)	
+			 case 22:  freq=27.2250;  break;//oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
+			 case 23:  freq=27.2550;  break;//Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster	
+			 case 24:  freq=27.2350;  break;//Datenkanal (D)
+			 case 25:  freq=27.2450;  break;//Datenkanal (D), USB ROS Intern
+			 case 26:  freq=27.2650;  break;
+			 case 27:  freq=27.2750;  break;
+			 case 28:  freq=27.2850;  break;//Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
+			 case 29:  freq=27.2950;  break;//Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland	
+			 case 30:  freq=27.3050;  break;//inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
+			 case 31:  freq=27.3150;  break;//inoffizieller DX-Kanal (FM)
+			 case 32:  freq=27.3250;  break;
+			 case 33:  freq=27.3350;  break;
+			 case 34:  freq=27.3450;  break;//freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 35:  freq=27.3550;  break;//oeffentlicher Kanal
+			 case 36:  freq=27.3650;  break;//Datenkanal USB ROS international
+			 case 37:  freq=27.3750;  break;//Gateway-Kanal oesterreich, FM	
+			 case 38:  freq=27.3850;  break;//inoffizieller internationaler DX-Kanal (LSB)
+			 case 39:  freq=27.3950;  break;//Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
+			 case 40:  freq=27.4050;  break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete 
+									  //ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
+
+			/* 80 chan devices
+			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt 
+			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: 
+            */
+			case 41:  freq=27.5650; break; //Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM),inoffizieller DX-Kanal (FM)
+			case 42:  freq=27.5750; break; //inoffizieller DX-Kanal (FM)
+			case 43:  freq=27.5850; break;
+			case 44:  freq=27.5950; break;
+			case 45:  freq=27.6050; break;
+			case 46:  freq=27.6150; break;
+			case 47:  freq=27.6250; break;
+			case 48:  freq=27.6350; break;
+			case 49:  freq=27.6450; break;
+			case 50:  freq=27.6550; break;
+			case 51:  freq=27.6650; break;
+			case 52:  freq=27.6750; break;//Datenkanal (D)(FM)
+			case 53:  freq=27.6850; break;//Datenkanal (D)(FM)	
+			case 54:  freq=27.6950; break; 
+			case 55:  freq=27.7050; break;
+			case 56:  freq=27.7150; break;
+			case 57:  freq=27.7250; break;
+			case 58:  freq=27.7350; break;
+			case 59:  freq=27.7450; break;
+			case 60:  freq=27.7550; break;
+            case 61:  freq=26.7650; break;//Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
+			case 62:  freq=26.7750; break;
+			case 63:  freq=26.7850;	break;
+			case 64:  freq=26.7950; break;
+			case 65:  freq=26.8050; break;
+			case 66:  freq=26.8150; break;
+			case 67:  freq=26.8250;	break;
+			case 68:  freq=26.8350; break;
+			case 69:  freq=26.8450; break;
+			case 70:  freq=26.8550; break;
+			case 71:  freq=26.8650; break;//Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
+			case 72:  freq=26.8750; break;
+			case 73:  freq=26.8850; break;
+			case 74:  freq=26.8950; break;
+			case 75:  freq=26.9050; break;
+			case 76:  freq=26.9150; break;//Datenkanal (D)(FM)
+			case 77:  freq=26.9250; break;//Datenkanal (D)(FM)
+			case 78:  freq=26.9350; break;
+			case 79:  freq=26.9450; break;
+			case 80:  freq=26.9550; break;//Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
+			case 81:  return 0; break; 
+			//default:  freq=26.9650; printf ("\nDefault: CB chan = 1 %f \n", &freq); break;
+            return freq;	
+	    
+	}
+	
+}
+
+const unsigned char RDSDATA[] = {
+// RDS data.  Send MSB first.  Google search gr_rds_data_encoder.cc to make your own data.
+    0x50, 0xFF, 0xA9, 0x01, 0x02, 0x1E, 0xB0, 0x00, 0x05, 0xA1, 0x41, 0xA4, 0x12, 
+    0x50, 0xFF, 0xA9, 0x01, 0x02, 0x45, 0x20, 0x00, 0x05, 0xA1, 0x19, 0xB6, 0x8C, 
+    0x50, 0xFF, 0xA9, 0x01, 0x02, 0xA9, 0x90, 0x00, 0x05, 0xA0, 0x80, 0x80, 0xDC, 
+    0x50, 0xFF, 0xA9, 0x01, 0x03, 0xC7, 0xD0, 0x00, 0x05, 0xA0, 0x80, 0x80, 0xDC, 
+    0x50, 0xFF, 0xA9, 0x09, 0x00, 0x14, 0x75, 0x47, 0x51, 0x7D, 0xB9, 0x95, 0x79, 
+    0x50, 0xFF, 0xA9, 0x09, 0x00, 0x4F, 0xE7, 0x32, 0x02, 0x21, 0x99, 0xC8, 0x09, 
+    0x50, 0xFF, 0xA9, 0x09, 0x00, 0xA3, 0x56, 0xF6, 0xD9, 0xE8, 0x81, 0xE5, 0xEE, 
+    0x50, 0xFF, 0xA9, 0x09, 0x00, 0xF8, 0xC6, 0xF7, 0x5B, 0x19, 0xC8, 0x80, 0x88, 
+    0x50, 0xFF, 0xA9, 0x09, 0x01, 0x21, 0xA5, 0x26, 0x19, 0xD5, 0xCD, 0xC3, 0xDC, 
+    0x50, 0xFF, 0xA9, 0x09, 0x01, 0x7A, 0x36, 0x26, 0x56, 0x31, 0xC9, 0xC8, 0x72, 
+    0x50, 0xFF, 0xA9, 0x09, 0x01, 0x96, 0x87, 0x92, 0x09, 0xA5, 0x41, 0xA4, 0x12, 
+    0x50, 0xFF, 0xA9, 0x09, 0x01, 0xCD, 0x12, 0x02, 0x8C, 0x0D, 0xBD, 0xB6, 0xA6, 
+    0x50, 0xFF, 0xA9, 0x09, 0x02, 0x24, 0x46, 0x17, 0x4B, 0xB9, 0xD1, 0xBC, 0xE2, 
+    0x50, 0xFF, 0xA9, 0x09, 0x02, 0x7F, 0xD7, 0x34, 0x09, 0xE1, 0x9D, 0xB5, 0xFF, 
+    0x50, 0xFF, 0xA9, 0x09, 0x02, 0x93, 0x66, 0x16, 0x92, 0xD9, 0xB0, 0xB9, 0x3E, 
+    0x50, 0xFF, 0xA9, 0x09, 0x02, 0xC8, 0xF6, 0x36, 0xF4, 0x85, 0xB4, 0xA4, 0x74, 
+    0x50, 0xFF, 0xA9, 0x09, 0x03, 0x11, 0x92, 0x02, 0x00, 0x00, 0x80, 0x80, 0xDC, 
+    0x50, 0xFF, 0xA9, 0x09, 0x03, 0x4A, 0x02, 0x02, 0x00, 0x00, 0x80, 0x80, 0xDC, 
+    0x50, 0xFF, 0xA9, 0x09, 0x03, 0xA6, 0xB2, 0x02, 0x00, 0x00, 0x80, 0x80, 0xDC, 
+    0x50, 0xFF, 0xA9, 0x09, 0x03, 0xFD, 0x22, 0x02, 0x00, 0x00, 0x80, 0x80, 0xDC
+};
+
+// Structs
+
+struct PageInfo 
+{
+		void* p;  // physical address
+		void* v;  // virtual address
+		int constPage;
+		int instrPage;
+		int instrs [1024];
+};
+
+/*
+*/
+struct GPCTL
+{
+		char SRC         : 4;
+		char ENAB        : 1;
+		char KILL        : 1;
+		char             : 1; // what is the blank char?
+		char BUSY        : 1;
+		char FLIP        : 1;
+		char MASH        : 2;
+		unsigned int     : 13;
+		char PASSWD      : 8;
+};
+
+
+struct CB 
+{
+		volatile unsigned int TI;
+		volatile unsigned int SOURCE_AD;
+		volatile unsigned int DEST_AD;
+		volatile unsigned int TXFR_LEN;
+		volatile unsigned int STRIDE;
+		volatile unsigned int NEXTCONBK;
+		volatile unsigned int RES1;
+		volatile unsigned int RES2;
+};
+
+struct DMAregs 
+{
+		volatile unsigned int CS;
+		volatile unsigned int CONBLK_AD;
+		volatile unsigned int TI;
+		volatile unsigned int SOURCE_AD;
+		volatile unsigned int DEST_AD;
+		volatile unsigned int TXFR_LEN;
+		volatile unsigned int STRIDE;
+		volatile unsigned int NEXTCONBK;
+		volatile unsigned int DEBUG;
+};
+
+/*
+*/
+
+//------------------------------------// 
+// Voids
+// FM ones
+	
+void handSig ()
+{
+		exit (0);
+}
+
+void modulate (int m)
+{
+		ACCESS (CM_GP0DIV) == (0x5a << 24) + 0x4d72 + m;
+}
+
+
+
+
+
+void getRealMemPage (void** vAddr, void** pAddr)
+{
+		void* a = valloc(4096);
+    
+		((int*)a)[0] = 1;  // use page to force allocation
+    
+		mlock(a, 4096);  // lock into ram
+    
+		*vAddr = a;  //  we know the virtual address now
+    
+		unsigned long frameinfo;
+    
+		int fp = open("/proc/self/pagemap", 'r');
+		lseek (fp, ((int)a)/4096*8, SEEK_SET);
+		read (fp, &frameinfo, sizeof (frameinfo));
+    
+		*pAddr = (void*)((int)(frameinfo*4096));
+}
+void freeRealMemPage (void* vAddr)
+{
+    
+		munlock (vAddr, 4096);  // unlock ram
+    
+		free (vAddr); // free the ram
+}
+
+void setupfm ()
+{
+
+    // open /dev/mem 
+    if ((mem_fd = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0) 
+	{
+        printf ("\nCan't open /dev/mem! \n");
+        exit (-1);
+    }
+    
+    allof7e = (unsigned *)mmap(
+                  NULL,
+                  0x01000000,  //len
+                  PROT_READ|PROT_WRITE,
+                  MAP_SHARED,
+                  mem_fd,
+                  0x20000000  //base
+							);
+
+   if ((int)allof7e==-1) exit(-1);
+
+ //SETBIT(GPFSEL0 , 14);
+ //CLRBIT(GPFSEL0 , 13);
+ //CLRBIT(GPFSEL0 , 12);
+
+ 
+   struct GPCTL setupword = {6, 1, 0, 0, 0, 1,0x5a};
+
+   ACCESS(CM_GP0CTL) == *((int*)&setupword);
+    
+}
+
+
+
+
+
+
+void playWav (char *filename, float samplerate)
+{
+   
+    // after getting filename insert then open
+    int fp = STDIN_FILENO;
+    if (filename [0]!=NULL) fp = fopen (filename, 'r');
+	
+	int sz = lseek (fp, 0L, SEEK_END); 
+    lseek (fp, 0L, SEEK_SET);
+    short* data = (short*) malloc (sz);
+    read (fp, data, sz);
+
+ 
+    int bufPtr=0;
+    float datanew, dataold = 0;
+
+    for (int i=0; i<22; i++)
+        read (fp, &data, 2);  // read past header
+    
+    while (read (fp, &data, 2))
+	{
+     
+        float fmconstant = samplerate * 50.0e-6;  // for pre-emphisis filter,  50us time constant
+        int clocksPerSample = 22500.0/samplerate*1400.0;  // for timing
+        
+        datanew = (float)(*data)/32767; //some constant for modulation ??
+        
+        float sample = datanew + (dataold-datanew) / (1-fmconstant);  // fir of 1 + s tau
+        float dval = sample*15.0;  // actual transmitted sample,  15 is bandwidth (about 75 kHz)
+        
+        int intval = (int)(round(dval));  // integer component
+        float frac = (dval - (float)intval)/2 + 0.5;
+        unsigned int fracval = frac*clocksPerSample;
+        int instrPage;
+        int constPage;
+        int instrs [1024];
+        void* p;  // physical address
+		void* v;  // virtual address
+       
+
+		          // CurBlock 0x04 // CurBlock sternchen-backslasch
+        bufPtr++;
+        //(ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p));
+        usleep(1000);
+        //((struct CB*)(instrs[bufPtr].v))->SOURCE_AD = (int)constPage.p + 2048 + intval*4 - 4 ;
+       
+        bufPtr++;
+       // while (ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p)); 
+        usleep(1000);
+       // ((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
+        
+        bufPtr++;
+       // while (ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p)); 
+        usleep(1000);
+       // ((struct CB*)(instrs[bufPtr].v))->SOURCE_AD = (int)constPage.p + 2048 + intval*4+4;
+        
+        bufPtr=(bufPtr+1) % (1024);
+      //  while (ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p));
+        usleep(1000);
+       // ((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = fracval;
+        
+        
+        dataold = datanew;
+        
+    }
+    
+   close (fp);
+    
+ }
+ 
+
+
+void unSetupDMA ()
+{
+		printf("\nExiting...\n");
+		struct DMAregs* DMA0 = (struct DMAregs*)//&(ACCESS(DMABASE));
+		DMA0->CS ==1<<31;  // reset dma controller
+		exit (-1);
+}
+
+void setupDMA (float centerFreq)
+{
+ 
+	atexit (unSetupDMA);
+	signal (SIGINT,  handSig);
+	signal (SIGTERM, handSig);
+	signal (SIGHUP,  handSig);
+	signal (SIGQUIT, handSig);
+
+    int constPage;
+    int instrCnt = 0;
+    int instrPage;
+    int instrs[1024];
+	// allocate a few pages of ram
+//	getRealMemPage (&constPage.v, &constPage.p);
+   
+	int centerFreqDivider = (int)((500.0 / centerFreq) * (float)(1<<12) + 0.5);
+   
+	// make data page contents - it's essientially 1024 different commands for the
+	// DMA controller to send to the clock module at the correct time
+	for (int i=0; i<1024; i++);
+	//	((int*)(constPage.v))[i] = (0x5a << 24) + centerFreqDivider - 512 + i;
+   
+
+/*
+	while (instrCnt<1024) 
+	{
+    
+    
+    getRealMemPage(&instrPage.v, &instrPage.p);
+     
+     // make copy instructions
+	struct CB* instr0= (struct CB*)instrPage.v;
+     
+    for (int i=0; i<4096/sizeof(struct CB); i++) 
+     {
+     
+         instrs[instrCnt].v = (void*)((int)instrPage.v + sizeof(struct CB)*i);
+         instrs[instrCnt].p = (void*)((int)instrPage.p + sizeof(struct CB)*i);
+         instr0->SOURCE_AD = (unsigned int)constPage.p+2048;
+	   
+         instr0->DEST_AD = PWMBASE+0x18; //fifo
+         instr0->TXFR_LEN = 4;
+         instr0->STRIDE = 0;
+	   
+	    // what does it do?
+         instr0->NEXTCONBK = (int)instrPage.p + sizeof(struct CB)*(i+1);
+	   
+	   
+	  // DREQ then PWM then no-wide
+         instr0->TI = (1<<6) | (5<<16) |  (1<<26) ;
+         instr0->RES1 = 0;
+         instr0->RES2 = 0;
+       
+        if (i%2) 
+	    {
+         instr0->DEST_AD = CM_GP0DIV;
+         instr0->STRIDE = 4;
+         instr0->TI = (1<<26) ;
+        }
+      
+        if (instrCnt!=0) ((struct CB*)(instrs[instrCnt-1].v))->NEXTCONBK = (int)instrs[instrCnt].p;
+        instr0++;
+        instrCnt++;
+       
+     } 
+     
+   }
+   
+   ((struct CB*)(instrs[1023].v))->NEXTCONBK = (int)instrs[0].p;
+   */
+    // set up a clock for the 
+   ACCESS (CLKBASE + 40*4) == 0x5A000026; //PWMCLK_CNTL
+   usleep(1000);
+   ACCESS (CLKBASE + 41*4 )  == 0x5A002800; //PWMCLK_DIV
+   ACCESS (CLKBASE + 40*4 ) == 0x5A000016;//PWMCLK_CNTL
+   usleep(1000); 
+
+    // set up pwm
+   ACCESS(PWMBASE + 0x0 ) == 0;
+   usleep(1000);
+   ACCESS(PWMBASE + 0x4 ) == -1;  // status: clear errors
+   usleep(1000);
+  // Use fifo , repeat, serializer, enable ch
+   ACCESS(PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8) ; 
+    //what does this parameters mean ???
+   
+   usleep(1000);
+   ACCESS(PWMBASE + 0x8) == (1<<31) | 0x0707; // DMAC then DMA enable 
+   
+  //activate dma
+   struct DMAregs* DMA0 = (struct DMAregs*)//&(ACCESS(DMABASE));
+   DMA0->CS ==1<<31;  // reset
+   DMA0->CONBLK_AD=0; 
+   DMA0->TI=0; 
+  
+  //DMA0->CONBLK_AD = (unsigned int)(instrPage.p);
+   DMA0->CS =(1<<0)|(255 <<16);  // enable bit = 0, clear end flag = 1, prio=19-16
+  
+}
+
+
+// AM ones
+
+
+void WriteTone (float Frequency, uint32_t Timing)
+{
+	typedef struct 
+	{
+	    float freq;
+	    float Frequency;
+		uint32_t WaitForThisSample;
+	} 
+	
+	samplerf_t;
+	samplerf_t RfSample;
+
+	RfSample.Frequency=Frequency;
+	freq=Frequency;
+	RfSample.WaitForThisSample=Timing; //in 100 of nanoseconds
+	printf ("Freq =%f Timing=%d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	
+	if (write (FileFreqTiming,&RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t)) 
+	{
+		fprintf (stderr, "\nUnable to write sample \n");
+	}
+}
+
+//---------------------//
+// main progs
+
+
+
+//FM
+int modulationfm (int argc, char **argv)
+{
+
+    
+    /// compare to original function in pifm
+    if (argc=2) 
+ 	{
+		
+      setupfm (); // gets filename & path
+	 
+	  
+      setupDMA (argc>2 ? atof (argv[2]):100.0000); // default freq, maybe do input here 
+	  
+	  printf ("\nSetting up DMA ... \n");
+      playWav (argv[1], argc>3 ? atof (argv[3]):22500); // <--- in 22,5 kHz, should be same as AM!!
+	  
+	  printf ("\nNow transmitting... \n");
+    } 
+	else 
+	  fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22500Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-500.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+	
+	
+	
+    
+return 0;
+}
+
+//AM
+
+
+int modulationam (int argc, char **argv) 
+{
+
+    
+
+    float data [2*BUFFER_LEN];
+    float data_filtered [2*BUFFER_LEN]; // we generate complex I/Q samples
+
+
+
+    int		readcount, nb_samples;
+    char	*outfilename, infilename;
+    
+    //SF_INFO		sfinfo;
+    //SNDFILE		*infile, *outfile;
+    char        SFM_READ;     
+    char		*sfinfo;
+    char		*infile, *outfile;
+    
+    
+	if (argc <= 2) 
+	{
+		printf ("\nUsage : %s in.wav [out.wav] \n", argv[0]); 
+		return 1;
+	}
+	
+	
+	
+	if (argc = 3) 
+	{
+		outfilename = argv[2];
+	}
+	else 
+	{
+		outfilename = (char *) malloc (128);
+		sprintf (outfilename, "%s", "out.ft");
+	}
+                              
+    filename = argv[1];
+    if (!(infilename = open (filename, SFM_READ, &sfinfo)))
+    {   // Open failed so print an error message. 
+        printf ("Not able to open input file %s. \n", infilename);
+        // Print the error message from libsndfile. 
+       
+        return  1;
+    }
+
+	if (samplerate != 22500) //(sfinfo.samplerate != 22500) 
+	{   // not really 48k! 22,5k but maybe dual-mono
+		printf ("Input rate must be 22.5kHz (mono)! \n");
+		return 1;
+	}
+    
+	FileFreqTiming = open (outfilename, O_WRONLY|O_CREAT, 0644);
+
+	
+	printf ("Reading file : %s\n", filename );
+	printf ("Sample Rate :  %d\n", samplerate);
+	printf ("Channels :	    %d\n", channels);
+	printf ("Writing file : %s\n", outfilename );
+
+	// While there are frames in the input file, read them, 
+	//process them and write them to the output file 
+
+   // while ((readcount = sf_readf_float (infile, data, BUFFER_LEN)))
+  //  {
+		/*
+		nb_samples = readcount / sfinfo.channels;
+		for (k=0 ; k < nb_samples ; k++)
+		{
+		
+			x = data[k*sfinfo.channels];
+			if (sfinfo.channels == 1)
+			{ // 1 chan
+				// stereo file, avg left + right --> should be mono at 22.5kHz
+				x += data[k*sfinfo.channels+1];
+				x /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
+				
+			}
+		*/
+			printf ("%f \n", x);
+			
+			//maybe here am option for amplitude factor input!?
+			printf ("Factamplitude input print: %s \n", outfilename);
+			float FactAmplitude=1.0; // To be analyzed more deeply !
+			
+			// log Modulation, 
+			double A = 87.7f; // compression parameter,  stauchung
+			 
+			 
+			double ampf=x/32767.0f;
+      		ampf = (fabs(ampf) < 1.0f/A) ? A*fabs(ampf)/(1.0f+ln(A)) : (1.0f+ln(A*fabs(ampf)))/(1.0f+ln(A)); //compand
+							 
+			x= (int)(round(ampf * 32767.0f));
+			
+			
+			WriteTone (x*32767*FactAmplitude,1e9/22500); 
+
+		//}
+    
+   // }
+
+    // Close input and output files 
+    //sf_close (infile); 
+	close (FileFreqTiming);
+	
+    printf ("\nFile saved! \n");
+    return 0;
+	
+}
+
+//------------------//
+
+// shell- MENU
+int modulationselect ()
+{
+    
+	printf ("Choose your Modulation [1] FM // [2] AM [3] Exit : ");
+	int freqmode;
+	scanf ("%d", &freqmode);
+	switch (freqmode)
+	{
+		case 1: printf ("\n*** You selected 1 for FM! \n");
+		        
+		        int modulationfm (int argc, char **argv); 
+		        break;
+
+		case 2: printf ("\n*** You selected 2 for AM! \n");
+		        
+		        int modulationam (int argc, char **argv); 
+		        break;
+	
+		case 3: printf ("\nExiting... \n"); exit (-1); break;
+		//default: printf ("\n Default = 1 \n"); break;
+	}
+
+return 0;
+}
+
+
+
+
+
+// all subch. -> base/default case 0 -> channel 0
+// if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
+// squelch/treshhold to built maybe -> scan function till signal?
+
+
+// read / import csv for pmr
+
+int csvreader()
+{
+    printf ("\nChecking for CSV-file... \n");
+    char *sfp, *dfp;
+    char c;
+
+    *sfp = fopen ("csvpmr.csv","r");
+    *dfp = fopen ("csvwriter.csv","w");
+    while (!feof (sfp))
+    {
+        
+//here check for semicolon or comma delimiter(default)
+    c=fgetc (*sfp);
+    fputc (c,*dfp);
+    }
+    fclose (*sfp);
+    fclose (*dfp);
+    printf ("%c", c);
+    printf ("Import of ctss-List finished! \n");
+    
+    return 0;
+    
+    
+}
+
+/// found somewhere demolulater stuff but needs to be checked
+/*
+void low_pass (struct demod_state *d)
+// simple square window FIR 
+{
+	int i=0, i2=0;
+	while (i < d->lp_len) 
+	{
+		d->now_r += d->lowpassed[i];
+		d->now_j += d->lowpassed[i+1];
+		i += 2;
+		d->prev_index++;
+		if (d->prev_index < d->downsample) 
+		{
+			continue;
+		}
+		d->lowpassed[i2]   = d->now_r; // * d->output_scale;
+		d->lowpassed[i2+1] = d->now_j; // * d->output_scale;
+		d->prev_index = 0;
+		d->now_r = 0;
+		d->now_j = 0;
+		i2 += 2;
+	}
+	d->lp_len = i2;
+}
+*/
+
+int low_pass_simple (int16_t *signal2, int len, int step)
+// no wrap around, length must be multiple of step
+{
+	int i, i2, sum;
+	for (i=0; i < len; i+=step) 
+	{
+		sum = 0;
+		for (i2=0; i2<step; i2++) 
+		{
+			sum += (int)signal2[i + i2];
+		}
+		//signal2[i/step] = (int16_t)(sum / step);
+		signal2[i/step] = (int16_t)(sum);
+	}
+	signal2[i/step + 1] = signal2[i/step];
+	return len / step;
+}
+
+/*
+void low_pass_real (struct demod_state *s)
+///simple square window FIR 
+{
+	int16_t *lp = s->lowpassed;
+	int i=0, i2=0;
+	int fast = (int)s->rate_out;
+	int slow = s->rate_out2;
+	while (i < s->lp_len) {
+		s->now_lpr += lp[i];
+		i++;
+		s->prev_lpr_index += slow;
+		if (s->prev_lpr_index < fast) {
+			continue;
+		}
+		lp[i2] = (int16_t)(s->now_lpr / (fast/slow));
+		s->prev_lpr_index -= fast;
+		s->now_lpr = 0;
+		i2 += 1;
+	}
+	s->lp_len = i2;
+}
+*/
+
+int GetUserInput () //my menu
+{
+    int modeselect;
+    printf ("Welcome to the Pi-Funk Tool! v0.1.x a (experimental) for Raspian ARM \n");
+	printf ("Radio works for 22,5 kHz Mono / 1-500 MHz \n");
+	
+    //Here some Warnings to implement and infos
+    printf ("Pi oparate with square-waves PWM on GIO4 (Pin 7 @ 500mA) \n=> Use Low-/Highpassfilter! Check laws of your Country! \n");
+  
+    printf ("Press Enter to Continue ");
+    while (getchar () != '\n');
+    
+    
+	printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
+	scanf ("%d", &modeselect);
+    
+	switch (modeselect)
+        {
+            case 1: channelselect ();
+				
+					break;
+					 
+		    case 2:	printf ("\n*** You selected 2 for Frequecy-Mode ***\n");
+		            char filenamepath ();
+		            int freqselect ();
+		            int modulationselect ();
+					
+					break;
+					 
+			case 3: printf ("\nReading CSV for PMR: \n");
+					int csvreader ();
+					break; 
+			case 4: printf ("Shell Command-line: \n");
+			        int main (int argc, char **argv); // go back to cmd if you want
+					break;
+			
+			case 5: printf ("Exiting... \n");
+					exit (-1);
+					break;
+			/*
+			default: printf ("\nDefault = 1 \n"); 
+			        
+			        break;
+			 */
+        }
+
+		
+
+    return 0;
+}
+
+int main (int argc, char **argv)
+{
+	
+    
+   // arguments for global use must be in main or with _argv
+    
+   
+   int timer ();
+   printf ("%s/pifunk:", argv[0]);
+   // scan evtl gar nicht nötig da eh command-eingabe passiert sosnt nur bei user-input
+   //scanf  ("%s %s", argv[1], argv[2]);
+
+    
+
+   
+   if (argc=1 & !strcmp (argv[1],"menu"))  
+   {
+      printf ("Menu activated! \n"); 
+      GetUserInput (); //  to menu
+    }
+    
+    
+    if (argc=2 | argc>2) //& !strcmp (argv[1], "sound.wav")
+    { 
+           printf ("Trying to run with %d arguments-> File: %s Freq: %s \n", argc, argv[1], argv[2], argv[3]);
+            
+           //atoll() is meant for integers & it stops parsing when it finds the first non-digit
+           // atof ()/strtof () is for floats. Note that strtof () requires C99 or C++11
+           printf ("Conversion started! \n"); 
+           freq = strtof (argv[2], NULL);
+           samplerate = atoll (argv[3]);
+           
+           
+           //float only accurate to .4 digits idk  , from 5 it will take 1
+           printf ("Returning %s with %f MHz @ %i [Hz]\n", argv[1], freq, samplerate);
+           
+           char mod;
+           char fm;
+           char am;
+           if (argv[4] =="fm")
+           {
+             int modulationfm ();
+           }
+           if (argv[4] =="am")
+           {
+            int modulationam ();
+           }
+           return argv[1], argv[2], argv[3], argv[4], freq; samplerate, mod;
+           //jump here to fm-modulation for now
+           // parsing file and freq to fm/am funcs and run maybe with ? operator
+    }
+    else fprintf (stderr, "Argument-Error! Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22500 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-500.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+  
+     //into the fm or an function to run your file
+    printf ("parsing args to fm-modulator... \n"); 
+    return 0;
+}
+
+//EOF
+
+
+
+
+
+
+
+
+
+
+
+
+
