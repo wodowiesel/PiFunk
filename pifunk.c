@@ -1,5 +1,5 @@
 // to run and compile to binary use:
-// to install gcc run: 
+// install gcc run: 
 //gcc -lm -std=c99 pifunk.c -o pifunk // run with admin/root permissions!!
 
 //=> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
@@ -102,7 +102,7 @@ using namespace std;
  
 // see http://www.mega-nerd.com/libsndfile/api.html for API
 // needed for am -> ALSA sound
-//#include "sndfile.h"
+#include "sndfile.h"
 
 //extra libary https://github.com/libusb/libusb
 //#include "/usr/include/libusb/libusb.h"
