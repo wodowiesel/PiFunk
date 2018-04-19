@@ -58,7 +58,7 @@ name & license stuff
 #include <locale.h>
 #include <malloc.h>
 #include <dirent.h>
-#include <conio.h>
+#include <termios.h>
 #include <pthread.h>
 #include <fenv.h> 
 #include <inttypes.h>
