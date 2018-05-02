@@ -5,8 +5,6 @@
 # include:
 
 
- 
-
 os: linux
 dist: trusty
 #precise
@@ -15,7 +13,7 @@ group: stable
 #env:
  #- ARCH=x86
  #- ARCH=x64
- #- ARCH=arm
+ - ARCH=arm
 sudo: required
 #true
 
@@ -69,19 +67,26 @@ before_install:
 install: 
  - sudo apt-get install git
  # - key
- - pip install 
+ #- pip install 
  #-r requirements.txt 
- # --user param if no sudo/root-access
- # -q Django==$DJANGO_VERSION
- # -q Flask==$Flask_VERSION
- #- git clone https://github.com/polaco1782/raspberry-qemu.git
- #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
- #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
+ # --user # param if no sudo/root-access
+ 
+ #- sudo python setup.py install
+ 
+ #- sudo apt-get install gcc 
+ 
  - sudo pip install RPi.GPIO
  #- sudo apt-get install RPi.GPIO
  #- sudo apt-get install python-rpi.gpio
  #- sudo pip install python-rpi.gpio
- #- sudo python setup.py install
+  
+ # -q Django==$DJANGO_VERSION
+ # -q Flask==$Flask_VERSION
+ 
+ #- git clone https://github.com/polaco1782/raspberry-qemu.git
+ #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
+ #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
+ 
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
@@ -101,19 +106,21 @@ before_script:
 script:
 # - key
  - nosetests
-  #- coveralls
-  #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
- - sudo python pifunk-main.py
- - sudo python pifunk-cb.py
- - sudo python pifunk-pmr.py
+ #- coveralls
+ #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
+  - cd ./PiFunk
+ 
+ #compiling with gcc here 
+ 
+ - gcc -lm -std=c99 pifunk.c -o pifunk
+ - sudo make clean 
+ - sudo make pifunk.c 
+ - sudo pifunk sound.wav 100.0000 22500 fm callsign 
+ - sudo python pifunk.py
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
  # - sudo python pifm.py
- 
- # - sudo python pifm.c
- # - sudo make pifm.c 
- # - cd ./silicator/PiFunk
- 
+
 #after_script:
 
 # before_deploy: ./before-deploy-linux.sh
