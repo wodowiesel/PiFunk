@@ -1,9 +1,9 @@
 # /etc/modules
-#Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
-# the GPIO pin and a 3.3v supply (header pin 1 or 17) for complex circuits, default deactivate
 
-dtoverlay=w1-gpio,gpiopin=4
-#,pullup=1
+dtoverlay=w1-gpio,gpiopin=4,pullup=0
+#pullup=1
+#->Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
+#the GPIO pin and a 3.3v supply (header pin 1 or 17) for complex circuits, default deactivated (0)
 
 #do open path of w1-device 
 #ls /sys/bus/w1/devices/

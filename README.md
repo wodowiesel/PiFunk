@@ -6,13 +6,13 @@ Early Experimental!
 get this programm via: 
 gitclone https://github.com/silicator/pifunk
 
-
-1-Wire(by default BCM4) setting needs to be activated in boot/config.txt
+1-Wire(by default BCM4) setting needs to be activated in boot-config for autostart
 via command: sudo modprobe w1-gpio,gpiopin=4 
-manually: dtoverlay=w1-gpio,gpiopin=4  (add  pullup=1 if nedded)
+manually open with nano-editor: sudo nano /boot/confiig.txt
+add line: dtoverlay=w1-gpio,gpiopin=4,pullup=0 (add pullup=1 if nedded)
 
 Using w1-gpio needs a 4.7 kΩ pullup resistor connected between GPIO pin and
-a 3.3 V supply (header pin 1 or 17) is needed for more complex circuits.
+a 3.3 V supply (header pin 1 or 17) is needed for more complex circuits or leds.
 
 then go to directory:
 cd pifunk
