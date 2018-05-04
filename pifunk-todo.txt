@@ -8,23 +8,24 @@
 # 1 different files for chan, imp, funcs (...working on it)
 # & implement tactical Alphabet spelling incl spelling with wave-files
 # 2 Split Frequency Ranges (incl. files) (...working on it)
-#   Input (from 1 MHz to 1000 MHz) 
-#   supported for min. and max. Freq by RPi-1-B+ and other types
+#   Input (from 1 MHz to 700 MHz) 
+#   supported for min. and max. Freq by RPi-2-B+ and other types
 #
-# 3 (see 1) selecting by tree or dropdown /case ?! --> this & Main-Menu 
+# 3 (see 1) selecting by tree or dropdown /case ?! -> using case for now
 # -----------------------------------------------------------------------
 # Functions/ processes: *=working on it
-# supports UKW radio fm/am , ltp , 433, emg, cb*, pmr*, vhf,  etc.
-# 4 AM/FM switch where needed (cb/ham)
-# File player: mp3/wave-Files + playlist 
-# 5 Microphone (usb&jack) / VOX - double mono from devices (jack-cable)
+# supports UKW radio fm*/am* , ltp , 433, emg, cb*, pmr*, vhf,  etc.
+# 3 AM/FM switch where needed (cb/ham) (...working on it)
+# DMA-controller needs to be implemented/ fixed
+# offline File player: mp3/wave-Files + playlist 
+# 5 Microphone (usb&jack) / VOX - double mono from devices (jack-cable) (...working on it)
 # 6 Squelch (treshhold) & Volume -> compare system-controls
 # 7 Recording possibilities -> check with codec & implement ffmpg
 # add save-ability (saving last window-radio settings too / memory-mode?)
-# add optional identification-code (nick/user-name)
+# add optional identification-code (nick/user-name) or callsign (...working on it
 #
 # 8 add Internet capabilities like 
-# aprs/ gps(+local if available) etc. (lots of stuff -__-)
+# aprs/ gps(+local if available) etc. or gathering infos from internet
 # web-ui support: music playlist, YT, RDS, ts2/3,
 # text2speech: eng&de
 # (small logger maybe for funcs)
@@ -39,18 +40,16 @@
 # and contributing helpful sources & copyright & licences (...working on it)
 #
 # 11 test & release
-# 12 (+ later GUI GTK+)
+# 12 (+ later GUI GTK+/QT)
 #
 # 13 exception & bug-handling (difficult) and progress-versions
-#
-# make extra branch-fork for testing
 #
 #display, temp+hum + RTC incl battery , gps-modul?
 #
 #NEED LOW-PASS-FILTER !!!!  hard ware (but look software-wise too)
 # checkout buffer stuff
 #
-#warning: square-output on: input and x3 ,7, 14
+#warning: square-output on: input and 3 ,7, 14
 #
 
 

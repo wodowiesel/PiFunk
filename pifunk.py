@@ -1,9 +1,9 @@
 
 ## additionally installed py 2.7&3.6 + github + travis
-## free Band combo (HAM): listener for beacon, gps, internet, relais, aprs by server-client (all-in-one-version) , transmission not yet
-## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3,  YT, RDS, morse, echolink,
+## free Band combo (HAM): transmitter forPMR466 /CB  and maybe someday, beacon, gps, internet, relais, aprs
+## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, YT, RDS, morse, echolink,
 ## microphone (usb&jack) + player&list , mp3/wave-Files.
-## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or  14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
+## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or 14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
 ## 21 (pin 40 sclk) --> 39 gnd(pin)
 ## ARM - Structure on Pi's !!! (can only be emulated !!) my Pi : rev.2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
@@ -201,18 +201,19 @@ sudo ./pifunk sound.wav 100.00000 22500 fm
 ## blinking function  
 # def blink(pin):  
        # GPIO.output(pin,GPIO.HIGH)  
-        #time.sleep(1)  
+       # time.sleep(1)  
        # GPIO.output(pin,GPIO.LOW)  
        # time.sleep(1)  
-      #  return  
+       # return  
 ## to use Raspberry Pi board pin numbers  
 #GPIO.setmode(GPIO.BOARD)  
 ## set up GPIO output channel  
 #GPIO.setup(11, GPIO.OUT) 
 #GPIO.output(11, True) 
-## blink GPIO17 50 times  
+
+## blink GPIO17 60 times  
 #for i in range(0,60):
-      #  blink(11)  
+  # blink(11)  
 #GPIO.cleanup() 
 
 ##---------------------------------------------------------------
