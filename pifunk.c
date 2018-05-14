@@ -58,8 +58,7 @@ name & license stuff
 #include <locale.h>
 #include <malloc.h>
 #include <dirent.h>
-//#include <conio.h> // dos header
-#include <curses.h> //ncurses for  gcc version of conio
+
 #include <termios.h>
 #include <pthread.h>
 #include <fenv.h> 
@@ -100,15 +99,15 @@ using namespace std;
 #include <windef.h>
 #include <winnt.h>
 #include <winbase.h>
+#include <conio.h> // dos header
 */
  
-// see http://www.mega-nerd.com/libsndfile/api.html for API
-// needed for am -> ALSA sound
+// see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 #include "sndfile.h"
 
 //extra libary https://github.com/libusb/libusb
 //#include "/usr/include/libusb/libusb.h"
-//#include <libusb.h>
+#include <libusb.h>
 
 //python stuff, maybe wrapper too??
 
