@@ -237,6 +237,7 @@ float factorizer;
 float sampler;
 int readcount, nb_samples;
 int Excursion = 6000;
+char *infilename, *outfilename;
     
 SF_INFO	sfinfo;
 SNDFILE	*infile, *outfile;
