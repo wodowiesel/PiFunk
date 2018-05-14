@@ -1,4 +1,4 @@
-// to run and compile to binary use:
+// gitclone https://github.com/silicator/pifunk
 // install gcc run: 
 //gcc -lm -std=c99 pifunk.c -o pifunk // run with admin/root permissions!!
 
@@ -14,7 +14,7 @@ g++ 5.4.1 c++11 (or 14)
 !!!!!!! needs more testing on real pi !!!!! 
 
 -----Disclaimer-----
-Rewritten for own purpoes! 
+Rewritten for own purposes! 
 no guarantee, waranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps 
 usage of dummyloads 50 ohm @  4 watts , (max 100) possible and compare signals wit swr/pwr-meter!
@@ -213,6 +213,8 @@ int channels = 1;
 int channelmode;
 int channelnumbercb;
 int channelnumberpmr;
+int port = 18500
+char *host = "localhost"
 
 // programm variables
 time_t rawtime;
@@ -235,7 +237,6 @@ float factorizer;
 float sampler;
 int readcount, nb_samples;
 int Excursion = 6000;
-char  *outfilename;
     
 SF_INFO	sfinfo;
 SNDFILE	*infile, *outfile;
@@ -255,8 +256,8 @@ int instrPage;
 
 struct PageInfo 
 {
-		void *p;  // physical address BCM2836_PERI_BASE (0x3F000000)
-		void *v;  // virtual address
+		void *p; // physical address BCM2836_PERI_BASE (0x3F000000)
+		void *v; // virtual address
 		int instrPage;
 		int constPage; 
 		int instrs [BUFFERINSTRUCTIONS]; // [1024];
@@ -303,12 +304,12 @@ struct DMAregs
 
 // basic function then specified one after another
 
-int infos ()
+int infos () //Warnings and infos
 {
-    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n", VERSION, description);
+    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, description);
 	printf ("Radio works with *.wav-file with 16-bit @ 22500 [Hz] Mono / 1-500.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
-    //Here some Warnings to implement and infos
-    printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-caps and resistors if needed! \nCheck laws of your country! \n"); // i try to smooth it out with 1:1 baloon
+    
+    printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n"); 
     printf ("HELP: Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]! \n");
     printf ("for testing (default setting) run: sound.wav 100.0000 22500 fm \n");
     return 0;
@@ -325,7 +326,6 @@ int timer ()
 }
 
 //--------------------------------------------------
-
 
 char filenamepath ()
 {
@@ -387,6 +387,7 @@ int channelselect ()
 return channelmode;
 }
 
+//--------------------------------------------------
 // Channelmode 
 //PMR
 
@@ -548,8 +549,8 @@ int channelmodecb ()
 
 
 
-//------------------------------------// 
-// Voids
+//----------------------------------- Voids
+
 // FM ones
 	
 void handSig ()
@@ -630,22 +631,17 @@ void playWav (char *filename, int samplerate)
         fp = open (filename, 'r');
         printf ("if falename != NULL");
     }   
-   /*
-    if (channel = 2) // bool stereo = true          from git just trying
+   
+    if (channel = 2) // bool stereo = true
         {
-         StereoModulator* sm = new StereoModulator (new RDSEncoder(new Outputter(152000)));
-         ss = new StereoSplitter
-         ( 
-        // left
-        new PreEmp (samplerate, new Resamp (samplerate, 152000, sm->getChannel(0))), 
-        // Right
-        new PreEmp (samplerate, new Resamp (samplerate, 152000, sm->getChannel(1))) );
+     
+        //new PreEmp (samplerate, new Resamp (samplerate, 152000, sm->getChannel(1))) ); // per channel left & right
         }
-        else { ss = new Mono (new PreEmp (samplerate, new Outputter (samplerate))); }
-    */
+       
+    
     for (int i = 0; i<22; i++) 
     { 
-        read (fp, &data, 2);  // read past header  (or sz instead on 2 ?)
+        read (fp, &data, 2); // read past header  (or sz instead on 2 ?)
         printf ("for i=0: read fp ");
         
     }
@@ -653,16 +649,16 @@ void playWav (char *filename, int samplerate)
     while (readBytes = read (fp, &data, 1024)) 
     {
         
-        float value = data[i]*4*volume;  // modulation index (AKA volume)
-        float fmconstant = (samplerate*50.0E-6);  // for pre-emphisis filter, 50us time constant
-        int clocksPerSample = (22500/samplerate*1400.0);  // for timing
+        float value = data[i]*4*volume; // modulation index (AKA volume)
+        float fmconstant = (samplerate*50.0E-6); // for pre-emphisis filter, 50us time constant
+        int clocksPerSample = (22500/samplerate*1400.0); // for timing
         
         datanew = ((float)(*data)/32767.0f); //some constant for modulation ??
         
         float sample = datanew + (dataold-datanew)/(1-fmconstant);  // fir of 1 + s tau
-        float dval = sample*15.0;  // actual transmitted sample,  15 is bandwidth (about 75 kHz)
+        float dval = sample*15.0; // actual transmitted sample,  15 is bandwidth (about 75 kHz)
         
-        int intval = (int)(round (dval));  // integer component
+        int intval = (int)(round (dval)); // integer component
         float frac = ((dval - (float)intval)/2 + 0.5);
         unsigned int fracval = (frac*clocksPerSample);
         
@@ -671,7 +667,7 @@ void playWav (char *filename, int samplerate)
         bufPtr++;
               
 
-        while (ACCESS(DMABASE + 0x04 & ~ 0x7F) ==  (int)(instrs[bufPtr].p) );  // CurBlock 0x04 of struct PageInfo
+        while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 of struct PageInfo
         usleep (1000);
         
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
@@ -714,7 +710,7 @@ void unSetupDMA ()
 {
 	
 	struct DMAregs* DMA0 = (struct DMAregs*)(ACCESS(DMABASE));
-	DMA0->CS == 1<<31;  // reset dma controller
+	DMA0->CS == 1<<31; // reset dma controller
 	printf("\nExiting...\n");
 	exit (-1);
 }
@@ -881,7 +877,7 @@ int modulationam (int argc, char **argv)
      
     nb_samples = (readcount/channels);
     
-    float FactAmplitude = 2.0; 
+    float FactAmplitude = 2.0; //maybe here ampmodulator type input?
 	printf ("Factamplitude: %f \n", FactAmplitude);
 			
 	// log Modulation 
