@@ -3,7 +3,7 @@
  cd PiFunk // goto path
  gcc -lm -g -std=c99 pifunk.c -o pifunk 
  // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
- sudo fifunk sound.wav 100.0000 22500 fm callsign
+ sudo pifunk sound.wav 100.0000 22500 fm callsign
  
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
  virtual maschine possible with qemu

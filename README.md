@@ -4,7 +4,7 @@ Early Experimental!
 (based on PiFM/AM-Script)
 
 get this programm via: 
-gitclone https://github.com/silicator/pifunk
+git clone https://github.com/silicator/pifunk
 
 1-Wire(by default BCM4) setting needs to be activated in boot-config for autostart
 via command: sudo modprobe w1-gpio,gpiopin=4 
@@ -20,15 +20,16 @@ make clean
 make
 
 compile with:
-gcc -lm -std=c99 pifunk.c -o pifunk 
+-lm flag for math lib obligatory, -g for debugger
+gcc -lm -g -std=c99 pifunk.c -o pifunk 
 
 run with admin/root permissions:
-sudo pifunk sound.wav 100.0000 22500 fm callsign
+Arguments: [filename] [freq] [samplerate] [modulation (fm/am)] [callsign (optional)] 
+
+default: sudo pifunk sound.wav 100.0000 22500 fm callsign
 
 Radio works with *.wav-file with 16-bit @ 22500.0 [Hz] mono / 1-700.00000 MHz frequency-range. 
 Use '. dot' as decimal-comma seperator! 
-
-Arguments: [filename] [freq] [samplerate] [modulation (fm/am)] [callsign (optional)] 
 
 [menu] as step-by-step-asistent
 or 
