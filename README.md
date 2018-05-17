@@ -31,14 +31,13 @@ Use '. dot' as decimal-comma seperator!
 Arguments: [filename] [freq] [samplerate] [modulation (fm/am)] [callsign (optional)] 
 
 [menu] as step-by-step-asistent
-or [help] for more infos and arguments
+or 
+[help] for more infos and arguments
 
 Pi oparates with square-waves (²/^2) PWM on GPIO 4/Pin 7 @ ~500 mA (Pi 2B @ 700 MHz ARM processor)
 Use power supply with enough specs only! 
 Use Low-/Highbandpassfilters and/or ~10 uF-caps and resistors/diodes 
 to prevent transmitting on permitted frequencies.
-
-
 
 You can try to smooth it out with 1:1 baloon or dummyload 50W @ 50 Ohm for testing.
 For transmission you can use just a wire or a 2m/70 cm antenna.
