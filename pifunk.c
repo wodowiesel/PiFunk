@@ -1,15 +1,18 @@
-// gitclone https://github.com/silicator/pifunk
-// install gcc run: 
-//gcc -lm -std=c99 pifunk.c -o pifunk // run with admin/root permissions!!
+/* git clone https://github.com/silicator/pifunk
+//instructions: 
+ cd PiFunk // goto path
+ gcc -lm -g -std=c99 pifunk.c -o pifunk 
+ // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
+ sudo fifunk sound.wav 100.0000 22500 fm callsign
+ 
+-> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
+ virtual maschine possible with qemu
+ or alternative with everpad: nor sure about this, rather not using it 
+ wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -lm -std=c99 -g -xc - && ./a.out sound.wav
 
-//=> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
-// virtual maschine possible with qemu
-// or alternative with everpad: nor sure about this, rather not using it 
-// wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -lm -std=c99 -g -xc - && ./a.out sound.wav
-/*
 gcc 5.4.1 compiler + gdb 7.11.1 debugger (online & local)
 g++ 5.4.1 c++11 (or 14)
-// compilation tried with mingw-x64 on win 10 but strange, trying on rabian strech incl desktop v4.14
+compilation tried with mingw-x64 on win 10 but strange, trying on rabian strech incl desktop v4.14
 
 !!!!!!! needs more testing on real pi !!!!! 
 
@@ -17,7 +20,8 @@ g++ 5.4.1 c++11 (or 14)
 Rewritten for own purposes! 
 no guarantee, waranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps 
-usage of dummyloads 50 ohm @  4 watts , (max 100) possible and compare signals wit swr/pwr-meter!
+usage of dummyloads 50 ohm @ 4 watts (S0-level), (max 100) possible and compare signals with swr/pwr-meter!
+do not shortcut or do overstress it bigger than 3.3V! may harm damage-> no warranty
 
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
 used python 2.7.x & 3.6.x on orig. Raspian
@@ -31,7 +35,7 @@ don't forget to apt-get upgrade and update
 todo: 
 pointer & adress corrections 
 make compatible py/shell script with args & mic & mp3
-github link+release package
+github stuff
 name & license stuff
 */
 
@@ -90,8 +94,6 @@ name & license stuff
 using namespace std; 
 */
 
-#include "bcm2835.h" // broadcom arm processor for the pis
-
 // windows (10) if needed for maybe rpi3 
 /*
 #include <windows.h>
@@ -101,39 +103,48 @@ using namespace std;
 #include <winbase.h>
 #include <conio.h> // dos header
 */
- 
+
+#include "bcm2835.h" // broadcom arm processor for the pis
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
-#include "sndfile.h"
+#include "sndfile.h" // has problems with @typedef somehow hmm
 
 //extra libary https://github.com/libusb/libusb
-//#include "/usr/include/libusb/libusb.h"
-#include <libusb.h>
+#include "libusb/libusb.h"
 
+//GPIO includes
+/*
+#include "RPI.GPIO/source/c_gpio.h"
+#include "RPI.GPIO/source/event_gpio.h"
+#include "RPI.GPIO/source/py_pwm.h"
+#include "RPI.GPIO/source/soft_pwm.h"
+#include "RPI.GPIO/source/common.h"
+#include "RPI.GPIO/source/cconstants.h"
+#include "RPI.GPIO/source/cpuinfo.h"
+*/
 //python stuff, maybe wrapper too??
-
 //---------------------------------------------------------------//
-#define VERSION "0.1.6.4 a"
+#define VERSION "0.1.6.5 a"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 #define VERSION_BUILD 6
 #define VERSION_STATUS a
 
-//----------------------------------------------------
-#define	ln(x) log(x)/log(2.718281828459045235f)
-#define PI 3.14159265
-
 //---- PI specific stuff
 #define IN 0
 #define OUT 1
+/* predefine if needed
 #define LOW 0
 #define HIGH 1
-//-------GPIO
+*/
+//-------buffers
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
-#define	BUFFER_LEN (8*1024)
+#define BUFFER_LEN (8*1024)
 #define BUFFERINSTRUCTIONS (65536) // [1024];
+//#define sleep [1000]
+//#define usleep [1000]
 
-// --------I-O access
+// --------I-O access via GPIO
 volatile unsigned *gpio;
 volatile unsigned *allof7e;
 // GPIO setup macros: Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
@@ -167,16 +178,15 @@ volatile unsigned *allof7e;
 //possibility to give argv 0-4 an specific adress or pointer
 //Adresses-> at least on my system-tests
 #define argc_adr (0x7FFFFFFFEB0C) 
-#define Name_adr (0x7FFFFFFEC08)                                                                       
+#define Name_adr (0x7FFFFFFEC08)
 #define File_adr (0x7FFFFFFFEC10) 
-#define Freq_adr (0x7FFFFFFFEC18)                                                                                       
+#define Freq_adr (0x7FFFFFFFEC18)
 #define Samplerate_adr (0x7FFFFFFFEC20) 
 #define Modulation_adr (0x7FFFFFFFEC28)   
 #define callsign_adr (0x6052C0)
 #define callsign2_adr (0x7FFFFFFFEAEF) 
 #define callsign3_adr (0x7FFFFFFFEAE8)
 
- 
 //Pointers->
 #define argc_ptr (0x5) 
 #define Name_ptr (0x2F)
@@ -188,12 +198,15 @@ volatile unsigned *allof7e;
 #define CurBlock (0x04)
 #define DMAref (0x7F) //pwm base reference or sth like that?
 //--------------------------------------------------//
-//pi variables:  -> need to be activated and pulled up with python-script, or automaticly by system
+//mathematical stuff
+#define ln(x) log(x)/log(2.718281828459045235f)
+#define PI 3.14159265
 
+//pi variables:  -> need to be activated and pulled up with python-script, or automaticly by system
 int   mem_fd;
 char *gpio_mem, *gpio_map;
 char *spi0_mem, *spi0_map;
-
+int sleep = usleep (1000)
 //--------------LED stuff with 100 ohm resistor!
 //controlling via py possible but c stuff cant be useful
 
@@ -207,42 +220,42 @@ int samplerate;
 char *mod;
 char *fm = "fm"; 
 char *am = "am";
-int volume, gain = 0;
+int volume, gain = 1;
 char *callsign;
 int channels = 1;
 int channelmode;
 int channelnumbercb;
 int channelnumberpmr;
-int port = 18500
-char *host = "localhost"
+int port = 18500 // here custom port viatcp-ip evtl. udp
+char *host = "localhost"| "127.0.0.1"
+char *DNS = "1.1.1.1"
+char *url = ("%s:%s", host, port);
 
 // programm variables
 time_t rawtime;
-struct tm *info;
 char buffer [80];
 char data [1024];
 int i;
 int k;
 float x;
 
-FILE infile;
-FILE outfile;
+// fm vars
+FILE infiles;
+FILE outfiles;
 int fp = STDIN_FILENO;
 int filebit;
-float datanew, dataold = 0;
 int readBytes;
+float datanew, dataold = 0;
 
+//am
+SF_INFO sfinfo;
+SNDFILE *infile, *outfile;
 float ampf;
 float factorizer;
 float sampler;
 int readcount, nb_samples;
 int Excursion = 6000;
 char *infilename, *outfilename;
-    
-SF_INFO	sfinfo;
-SNDFILE	*infile, *outfile;
-char    SFM_READ;     
-char	sfinfo;
 
 unsigned long frameinfo;
 int FileFreqTiming;
@@ -254,6 +267,7 @@ int instrPage;
 
 //--------------------------------------------------
 // Structs
+struct tm *info;
 
 struct PageInfo 
 {
@@ -265,7 +279,7 @@ struct PageInfo
 
 };
 
-struct GPCTL
+struct GPCTL 
 {
 		char SRC         : 4;
 		char ENAB        : 1;
@@ -323,7 +337,7 @@ int timer ()
    info = localtime (&rawtime);
    printf ("Current local time and date: %s \n", asctime (info));
 
-   return info;
+   return 0;
 }
 
 //--------------------------------------------------
@@ -437,7 +451,7 @@ int channelmodecb ()
 	switch (channelnumbercb)
 	{
 		
-            case 0:   freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq);  break;
+            case 0:   freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq); break;
 			case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)	
 			case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
 			case 3:   freq=26.9850; break;
@@ -541,15 +555,12 @@ int channelmodecb ()
 			case 79:  freq=26.9450; break;
 			case 80:  freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:  return 0; break; 
-			//default:  freq=26.9650; printf ("\nDefault: CB chan = 1 %f \n", &freq); break;
+			//default: freq=26.9650; printf ("\nDefault: CB chan = 1 %f \n", &freq); break;
             return freq;	
 	    
 	}
 	
 }
-
-
-
 //----------------------------------- Voids
 
 // FM ones
@@ -597,13 +608,13 @@ void setupfm ()
         exit (-1);
     }
     
-    allof7e = (unsigned *) mmap (
+    allof7e = (unsigned*)mmap(
                   NULL,
-                  0x01000000,  //length
+                  0x01000000, //length
                   PROT_READ|PROT_WRITE,
                   MAP_SHARED,
                   mem_fd,
-                  0x20000000);  //base
+                  0x20000000); //base
 
    if ((int)allof7e == -1) exit (-1);
 
@@ -611,6 +622,7 @@ void setupfm ()
    CLRBIT(GPFSEL0, 13);
    CLRBIT(GPFSEL0, 12);
    struct GPCTL setupword = {6, 1, 0, 0, 0, 1,0x5A};
+   // alternative setupword
 
    ACCESS (CM_GP0CTL) == *((int*)&setupword);
     
@@ -642,7 +654,7 @@ void playWav (char *filename, int samplerate)
     
     for (int i = 0; i<22; i++) 
     { 
-        read (fp, &data, 2); // read past header  (or sz instead on 2 ?)
+        read (fp, &data, 2); // read past header (or sz instead on 2 ?)
         printf ("for i=0: read fp ");
         
     }
@@ -668,56 +680,56 @@ void playWav (char *filename, int samplerate)
         bufPtr++;
               
 
-        while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 of struct PageInfo
+        //while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 of struct PageInfo
         usleep (1000);
         
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
-        (struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4-4);
+        //(struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4-4);
        
         bufPtr++;
         
-        //while (ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p)); 
+        //while (ACCESS(DMABASE + 0x04) == (int)(instrs[bufPtr].p)); 
         usleep (1000);
         
         // Create DMA command to delay using serializer module for suitable time
-        ((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
+       // ((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
         
         bufPtr++;
         
-        while (ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p)); 
+        //while (ACCESS(DMABASE + 0x04) == (int)(instrs[bufPtr].p)); 
         usleep (1000);
         
         // Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
-        ((struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4+4);
+        //((struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4+4);
         
-        while (ACCESS(DMABASE + 0x04) ==  (int)(instrs[bufPtr].p));
+        //while (ACCESS(DMABASE + 0x04) == (int)(instrs[bufPtr].p));
         usleep (1000);
         // Create DMA command for more delay.
-       ´((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = fracval;
+       ´//((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = fracval;
        
         bufPtr = (bufPtr+1) % (BUFFERINSTRUCTIONS); // [1024] for buffer
         
         dataold = datanew;
         //ss->consume (data, readBytes);// ss-> for stereo
-        printf (" while readbytes");  
     }
     
    close (fp);
    close (filename);
-   printf (" while closing filenames");  
+   printf (" while closing filenames \n"); 
 }
- 
+
 void unSetupDMA ()
 {
 	
 	struct DMAregs* DMA0 = (struct DMAregs*)(ACCESS(DMABASE));
 	DMA0->CS == 1<<31; // reset dma controller
-	printf("\nExiting...\n");
+	printf ("SetupDMA done\n");
 	exit (-1);
 }
 
 void setupDMA (float freq)
 {
+	printf ("SetupDMA starting\n");
 	atexit (unSetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
@@ -725,13 +737,13 @@ void setupDMA (float freq)
 	signal (SIGQUIT, handSig);
 	
 	// allocate a few pages of ram
-  	getRealMemPage (&constPage.v, &constPage.p);
+  	//getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int)((500.0/freq) * (float)(1<<12) + 0.5);
 	// make data page contents - it's essientially 1024 different commands for the
 	// DMA controller to send to the clock module at the correct time
 	for (int i=0; i<1024; i++)
 	{
-	    ((int*)(constPage.v))[i] = (0x5a << 24) + centerFreqDivider - 512 + i;
+	   // ((int*)(constPage.v))[i] = (0x5a << 24) + centerFreqDivider - 512 + i;
 	}
    
 
@@ -744,7 +756,7 @@ void setupDMA (float freq)
      
      for (int i = 0; i<4096 / sizeof (struct CB); i++) 
      {
-         
+         /*
          instrs[instrCnt].v = (void*)((int)instrPage.v + sizeof(struct CB)*i);
          instrs[instrCnt].p = (void*)((int)instrPage.p + sizeof(struct CB)*i);
          instr0->SOURCE_AD = (unsigned int)constPage.p + 2048;
@@ -768,7 +780,7 @@ void setupDMA (float freq)
       
        if (instrCnt!=0) ((struct CB*)(instrs[instrCnt-1].v))->NEXTCONBK = (int)instrs[instrCnt].p;
        instr0++;
-       
+       */
        
        instrCnt++;
        
@@ -776,7 +788,7 @@ void setupDMA (float freq)
      
    }
    
-   ((struct CB*)(instrs[1023].v))->NEXTCONBK = (int)instrs[0].p;
+   //((struct CB*)(instrs[1023].v))->NEXTCONBK = (int)instrs[0].p;
    
     // set up a clock for the base
    ACCESS (CLKBASE + 40*4) == (0x5A000026); //PWMCLK_CNTL
@@ -807,7 +819,7 @@ void setupDMA (float freq)
   
    //DMA0->CONBLK_AD = (unsigned int)(instrPage.p);
    DMA0->CS = (1<<0)|(255 <<16);  // enable bit = 0, clear end flag = 1, prio=19-16
-   printf ("unSetupDMA done");
+   printf ("SetupDMA done \n");
 }
 
 // AM ones
@@ -847,11 +859,11 @@ int modulationfm (int argc, char **argv)
       setupfm (); // gets filename & path
 
 	  printf ("\nSetting up DMA... \n");
-     // setupDMA (freq);
+
       setupDMA (argc>2 ? atof (argv[2]):100.00000); // default freq, maybe do input here? 
-	  
+
 	  printf ("\nTesting Samplerate... \n");
-	  //playWav (argv[1], samplerate);
+
       playWav (argv[1], argc>3 ? atof (argv[3]):22500); // <--- in 22.5 kHz, should be same as AM!!
      
 	  printf ("\nNow transmitting... \n");
@@ -1104,17 +1116,26 @@ int main (int argc, char **argv) // arguments for global use must! be in main
   
    char callname ()
    {
-
-        if (argv[6] == NULL)
-        {
+	   char callasker ()
+	   {
+		   /*
         printf ("\nType in your callsign: ");
 	    scanf  ("%s", callsign);
 	    printf ("\nYour callsign is: %s \n", *callsign);
+		*/
+	   }
+
+        if (argv[6] == NULL)
+        {
+		*callsign = "callsign"; //default callsign
+		
+		printf ("\nUsing Default callsign: %s \n", *callsign);
+		
         }
         else
         {
-        *callsign = "callsign"; //default callsign
-        printf ("\nUsing Default callsign: %s \n", *callsign);
+        *callsign = argv[6];
+        printf ("\nUsing callsign: %s \n", *callsign);
         }
         printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 	    return callsign, &callsign, *callsign;
@@ -1133,7 +1154,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
      int infos ();
      printf ("\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] volume or [menu] or [help]! *.wav-file must be 16-bit @ 22500 [Hz] Mono \n");
    }
-   else if (argc=5) 
+   else if (argc>=5) 
    { 
             printf ("Checking File: %s \n", argv[1]); 
             printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %d [Hz] \n", freq, samplerate);
@@ -1165,10 +1186,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
             }
     
     }
-    else if (argc>5)
-    {
-       callname ();
-    }
     else 
     {
         fprintf (stderr, "Argument-Error! \nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]!  *.wav-file must be 16-bit @ 22500 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-500.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
@@ -1178,20 +1195,15 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     //into the fm or an function to run your file
     printf ("End on main \n"); 
     printf ("Returning args 0 to %d ... \n", argc); 
-    return argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], filename, freq, samplerate, mod, gain;
+    return argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], filename, freq, samplerate, mod, callsign, gain, ;
     //return 0;
 }
 
 
+
+
+
+
+
+
 //EOF
-
-
-
-
-
-
-
-
-
-
-
