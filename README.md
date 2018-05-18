@@ -83,12 +83,12 @@ Testers and feedback apreciated!
 Thank you
 
 
-[Readme guideline for this project](README.md)
+[Readme guideline](README.md)
 
-[Contribution guidelines for this project](docs/CONTRIBUTING.md)
+[Contribution guideline](docs/CONTRIBUTING.md)
 
-[Code of Conduct guidelines for this project](docs/CODE_OF_CONDUCT.md)
+[Code of Conduct guideline](docs/CODE_OF_CONDUCT.md)
 
-[Code of Conduct guidelines for this project](docs/COPYING.md)
+[Copying guideline](docs/COPYING.md)
 
-[Code of Conduct guidelines for this project](docs/LICENSE.md)
+[License guideline](docs/LICENSE.md)
