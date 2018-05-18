@@ -2,8 +2,14 @@
 ->get project:
  git clone https://github.com/silicator/pifunk
 ->instructions: 
+ You will need alsa libary for this:
+ sudo apt-get install libsndfile-dev
+
  cd PiFunk // goto path
  gcc -lm -g -std=c99 pifunk.c -o pifunk 
+ make clean
+ make 
+ make install
  // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
  sudo pifunk sound.wav 100.0000 22500 fm callsign
  
@@ -22,7 +28,7 @@ trying on rabian strech incl. desktop v4.14
 Rewritten for own purposes! 
 no guarantee, waranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps 
-usage of dummyloads 50 ohm @ 4 watts (S0-level), (max 100) possible and compare signals with swr/pwr-meter!
+usage of dummyloads 50 ohm @ 4 watts (S 0-level), (max 100) possible and compare signals with swr/pwr-meter!
 do not shortcut or do overstress it bigger than 3.3V! may harm damage-> no warranty
 
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
@@ -1182,9 +1188,11 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    int gain = atoi (argv[6]);
    char *callsign = argv[5];
    //-- for debugging or information :)
-   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Volume(5): %d / Gain: %d \n", argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], gain);
-   printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Volume: %p / Gain: %p \n", &argc, &argv[0], &argv[1], &argv[2], &argv[3], &argv[4], &argv[5], &gain);
-   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Volume: %p \n", argc, *argv[0], *argv[1], *argv[2], *argv[3], *argv[4], *argv[5]);
+   
+   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %d / Gain(6): %d \n", argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], gain);
+   printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv[0], &argv[1], &argv[2], &argv[3], &argv[4], &argv[5], &argv[6], &gain);
+   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / / Callsign: %p/ Volume: %p \n", argc, *argv[0], *argv[1], *argv[2], *argv[3], *argv[4], *argv[5], *argv[6]);
+   printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n"); 
    
   //---
   
@@ -1208,20 +1216,20 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    { 
             printf ("Checking File: %s \n", argv[1]); 
             printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %d [Hz] \n", freq, samplerate);
-            printf ("Checking Gain/Volume: %d \n", gain); 
+			printf ("Checking Channels: %s \n", channels)
             printf ("Checking Modulation: %s \n", mod); 
+			printf ("Checking Callsign: %s \n", *callsign)
+			printf ("Checking Gain/Volume: %d \n", gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
                 if (!strcmp (mod, "fm"))
                 {
-               
                 printf ("Pushing args to FM Modulator... \n"); 
                 int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
                 return 0; // here bool with true/false instead of compare?
                 }
                 else if (!strcmp (mod, "am"))
                 {
-                
                 printf ("Pushing args to AM Modulator... \n"); 
                 // !!! jumps direcly to func?? maybe sth else here ?
                 int modulationam (int argc, char **argv); 
@@ -1248,12 +1256,5 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     //return argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], filename, freq, samplerate, mod, callsign, gain, channels ;
     return 0;
 }
-
-
-
-
-
-
-
 
 //EOF
