@@ -36,7 +36,7 @@ compile with:
 
 -lsndfile for ALSA snd lib
 
-//sometimes -std=gnu99
+sometimes -std=gnu99 
 
 gcc -lm -g -std=c99 pifunk.c -o pifunk 
 
@@ -79,10 +79,16 @@ For transmission you can use just a wire or a 2m/70 cm or other lamda(1/4)-anten
 Check laws of your country! 
 
 Testers and feedback apreciated!
+
 Thank you
+
 
 [Readme guideline for this project](README.md)
 
 [Contribution guidelines for this project](docs/CONTRIBUTING.md)
 
 [Code of Conduct guidelines for this project](docs/CODE_OF_CONDUCT.md)
+
+[Code of Conduct guidelines for this project](docs/COPYING.md)
+
+[Code of Conduct guidelines for this project](docs/LICENSE.md)
