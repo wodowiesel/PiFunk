@@ -32,7 +32,7 @@ cd pifunk
 compile with:
 
 -lm flag for math lib obligatory, -g for debugger
-
+-lsndfile for ALSA snd lib
 gcc -lm -g -std=c99 pifunk.c -o pifunk // sometimes -std=gnu99
 make clean
 make

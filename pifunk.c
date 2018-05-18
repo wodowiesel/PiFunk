@@ -6,7 +6,7 @@
  sudo apt-get install libsndfile-dev
 
  cd PiFunk // goto path
- gcc -lm -g -std=c99 pifunk.c -o pifunk 
+ gcc -lm -g -std=c99 pifunk.c -o pifunk -pifunk.o -lsndfile
  make clean
  make 
  make install
