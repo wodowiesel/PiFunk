@@ -38,7 +38,7 @@ don't forget to apt-get upgrade and update
 1) Pi-FM version - freqency modulation direction left/right ← , → 
 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
 
---> 500 MHz (max) system clock of the pi -> pls use heatsink (if you want with fan)
+--> 700 MHz (max) system clock of the pi -> pls use heatsink (if you want with fan)
 
 todo: 
 pointer & adress corrections 
@@ -236,12 +236,13 @@ char *description = "(experimental)";
 char *filename;
 float freq;
 int samplerate;
+int channels ;
 char *mod;
 char *fm = "fm"; 
 char *am = "am";
-int volume, gain = 1;
 char *callsign;
-int channels ;
+float volume = 1.0f;
+
 int channelmode;
 int channelnumbercb;
 int channelnumberpmr;
@@ -264,6 +265,13 @@ int i;
 int k;
 float x;
 
+// we generate complex I-Q samples
+float data [2*BUFFER_LEN];
+float data_filtered [2*BUFFER_LEN]; 
+float FactAmplitude = 2.0; //maybe here ampmodulator type input?
+// log Modulation 
+float A = 87.7f; // compression parameter, stauchung
+
 // fm vars
 FILE infiles;
 FILE outfiles;
@@ -281,6 +289,15 @@ float sampler;
 int readcount, nb_samples;
 int Excursion = 6000;
 
+// audio control
+//volume in dB 0db = unity gain, no attenuation, full amplitude signal
+//-20db = 10x attenuation, significantly more quiet
+float volumeLevelDb = -6.f; //cut amplitude in half
+float volbuffer [SAMPLES_PER_BUFFER];
+const float VOLUME_REFERENCE = 1.f;
+const float volumeMultiplier = (VOLUME_REFERENCE * pow(10, (volumeLevelDb / 20.f);
+
+// instructor for access
 unsigned long frameinfo;
 int FileFreqTiming;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
@@ -293,7 +310,7 @@ int instrPage;
 // Structs
 struct tm *info;
 
-struct PageInfo 
+struct PageInfo // should use here bcm intern funcs-> repair
 {
 		void *p; // physical address BCM2836_PERI_BASE (0x3F000000)
 		void *v; // virtual address
@@ -341,50 +358,82 @@ struct DMAregs
 		volatile unsigned int DEBUG;
 };
 
+
+int audiovol ()
+{
+for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
+{
+   volbuffer [i] *= volumeMultiplier;
+   printf ("\n i: %d , volbuffer %f , volumeMultiplier %f \n", i, volbuffer [i], volumeMultiplier);
+}
+return 0
+}
+
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
 // Blinks on RPi Plug P1 pin 11 
-
+	int ledactive ()
+	{
+		//check if transmitting
+		while(!playWav());
+		{
+		cm2835_gpio_write (PIN17, LOW);
+		printf ("LED OFF - No Transmission ");
+		return 0;
+		}
+		retun 0;
+	}
+	
 int led ()
 {
     // simulation of gpio for debug
-//    bcm2835_set_debug(1);
+//    bcm2835_set_debug (1);
 
-    if (!bcm2835_init()) return 1;
-
-    // Set the pin to be an output
-    bcm2835_gpio_fsel(PIN17, BCM2835_GPIO_FSEL_OUTP);
-
-    // Blink while transmitting
-    if (1) //when
-    {
-	// Turn it on
-	bcm2835_gpio_write(PIN17, HIGH);
-	printf ("LED ON - Transmission... ");
-	// wait a bit
-	// bcm2835_delay (500);
-	}// if no trans than turn it off
-	else 
-    {
-	cm2835_gpio_write(PIN17, LOW);
-	printf ("LED OFF - No Transmission ");
+    if (!bcm2835_init ()) 
+	{	
+	printf ("\nBCM 2835 init failed \n");
+	return 0;
 	}
+	else if (1)
+	{
+	
+    // Set the pin to be an output
+    bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
+	printf ("\nBCM 2835 init done and PIN 4 activated \n");
+    // LED is active during transmission
+		while (playWav())// (ledactive != 0)
+		{
+	// Turn it on
+		bcm2835_gpio_write (PIN17, HIGH);
+		printf ("LED ON - Transmission... ");
+	// wait a bit
+		bcm2835_delay (500);
+		}
+		
+	}
+	else // if no trans than turn it off
+    {
+		cm2835_gpio_write (PIN17, LOW);
+		printf ("LED OFF - No Transmission ");
+	}
+	
     bcm2835_close();
+	printf ("\nBCM 2835 closing \n");
     return 0;
 }
 // basic function then specified one after another
 int infos () //Warnings and infos
 {
     printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, *description);
-	printf ("Radio works with *.wav-file with 16-bit @ 22500 [Hz] Mono / 1-500.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
+	printf ("Radio works with *.wav-file with 16-bit @ 22500 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
     
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n"); 
     printf ("HELP: Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]! \n");
     printf ("for testing (default setting) run: sudo sound.wav 100.0000 22500 fm callsign\n");
 
-	//printf("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-	//printf("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
+	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
     return 0;
 }
 
@@ -421,8 +470,8 @@ char filenamepath ()
 int freqselect () // gets freq by typing in
 {
    
-	printf ("\n*** You selected 1 for Frequency-Mode *** \n"); 
-	printf ("Type in Frequency (1-500.00000 MHz): ");
+	printf ("\nYou selected 1 for Frequency-Mode\n"); 
+	printf ("Type in Frequency (1-700.00000 MHz): ");
 	scanf  ("%f", freq);
 	printf ("You chose: %f MHz \n", freq);
     return freq;
@@ -430,22 +479,25 @@ int freqselect () // gets freq by typing in
 
 int channelselect ()
 {
-	printf ("*** You selected 1 for Channel-Mode *** \n"); 
+	printf ("You selected 1 for Channel-Mode\n"); 
 	printf ("Choose your Type [1] PMR // [2] CB // [3] Exit : ");
     
     scanf  ("%d ", &channelmode);
     
     switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
             {
-            case 1: printf ("*** PMR CHAN-MODE in FM *** "); 
+            case 1: printf ("PMR CHAN-MODE in FM"); 
 					int channelmodepmr (); // gets freq from pmr list
 					filenamepath ();
+					printf ("\nChecking volume... \n");
+					audiovol ();
 					int modulationfm (int argc, char **argv);
 					break;
 					
-		    case 2: printf ("*** CB CHAN-MODE SELECT *** "); 
+		    case 2: printf ("CB CHAN-MODE SELECT"); 
 					int channelmodecb (); // gets freq for chan
 					filenamepath (); //gets file
+					audiovol ();
 					int modulationselect (); //selects modulation
 					break;
 					 
@@ -457,7 +509,7 @@ int channelselect ()
 	
 return channelmode;
 }
-
+	
 //--------------------------------------------------
 // Channelmode 
 //PMR
@@ -527,44 +579,44 @@ int channelmodecb ()
 			# wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet
 */
 			 case 11:  freq=27.0850; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 1111: freq=27.0950;  break; //Eurobalise-Energieversorgung
+			 case 1111: freq=27.0950; break; //Eurobalise-Energieversorgung
 			 
-			 case 12:  freq=27.1050;  break;
-			 case 13:  freq=27.1150;  break;
-			 case 14:  freq=27.1250;  break; //oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
-			 case 15:  freq=27.1350;  break; //inoffizieller Anrufkanal SSB (USB)	
+			 case 12:  freq=27.1050; break;
+			 case 13:  freq=27.1150; break;
+			 case 14:  freq=27.1250; break; //oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
+			 case 15:  freq=27.1350; break; //inoffizieller Anrufkanal SSB (USB)	
 			 case 1515: freq=27.1450; break;
 			 
-			 case 16:  freq=27.1550;  break; //Funkverkehr mit und zwischen Wasserfahrzeugen
-			 case 17:  freq=27.1650;  break; //Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
-			 case 18:  freq=27.1750;  break;
-			 case 19:  freq=27.1850;  break; //empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
+			 case 16:  freq=27.1550; break; //Funkverkehr mit und zwischen Wasserfahrzeugen
+			 case 17:  freq=27.1650; break; //Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
+			 case 18:  freq=27.1750; break;
+			 case 19:  freq=27.1850; break; //empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt	
 			 case 1919: freq=27.1950; break;
 										
 			 case 20:  freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, 
 										    //#wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 		 	//## 40 chan devices
-			 case 21:  freq=27.2150;  break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)	
-			 case 22:  freq=27.2250;  break; //oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
-			 case 23:  freq=27.2550;  break; //Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster	
-			 case 24:  freq=27.2350;  break; //Datenkanal (D)
-			 case 25:  freq=27.2450;  break; //Datenkanal (D), USB ROS Intern
-			 case 26:  freq=27.2650;  break;
-			 case 27:  freq=27.2750;  break;
-			 case 28:  freq=27.2850;  break; //Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
-			 case 29:  freq=27.2950;  break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland	
-			 case 30:  freq=27.3050;  break; //inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
-			 case 31:  freq=27.3150;  break; //inoffizieller DX-Kanal (FM)
-			 case 32:  freq=27.3250;  break;
-			 case 33:  freq=27.3350;  break;
-			 case 34:  freq=27.3450;  break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 35:  freq=27.3550;  break; //oeffentlicher Kanal
-			 case 36:  freq=27.3650;  break; //Datenkanal USB ROS international
-			 case 37:  freq=27.3750;  break; //Gateway-Kanal oesterreich, FM	
-			 case 38:  freq=27.3850;  break; //inoffizieller internationaler DX-Kanal (LSB)
-			 case 39:  freq=27.3950;  break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
-			 case 40:  freq=27.4050;  break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete 
+			 case 21:  freq=27.2150; break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)	
+			 case 22:  freq=27.2250; break; //oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
+			 case 23:  freq=27.2550, break; //Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster	
+			 case 24:  freq=27.2350; break; //Datenkanal (D)
+			 case 25:  freq=27.2450; break; //Datenkanal (D), USB ROS Intern
+			 case 26:  freq=27.2650; break;
+			 case 27:  freq=27.2750; break;
+			 case 28:  freq=27.2850; break; //Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
+			 case 29:  freq=27.2950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland	
+			 case 30:  freq=27.3050; break; //inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
+			 case 31:  freq=27.3150; break; //inoffizieller DX-Kanal (FM)
+			 case 32:  freq=27.3250; break;
+			 case 33:  freq=27.3350; break;
+			 case 34:  freq=27.3450; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 35:  freq=27.3550; break; //oeffentlicher Kanal
+			 case 36:  freq=27.3650; break; //Datenkanal USB ROS international
+			 case 37:  freq=27.3750; break; //Gateway-Kanal oesterreich, FM	
+			 case 38:  freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
+			 case 39:  freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
+			 case 40:  freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete 
 									         //ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
 			/* 80 chan devices
 			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt 
@@ -592,11 +644,11 @@ int channelmodecb ()
 			case 60:  freq=27.7550; break;
             case 61:  freq=26.7650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
 			case 62:  freq=26.7750; break;
-			case 63:  freq=26.7850;	break;
+			case 63:  freq=26.7850; break;
 			case 64:  freq=26.7950; break;
 			case 65:  freq=26.8050; break;
 			case 66:  freq=26.8150; break;
-			case 67:  freq=26.8250;	break;
+			case 67:  freq=26.8250; break;
 			case 68:  freq=26.8350; break;
 			case 69:  freq=26.8450; break;
 			case 70:  freq=26.8550; break;
@@ -610,12 +662,12 @@ int channelmodecb ()
 			case 78:  freq=26.9350; break;
 			case 79:  freq=26.9450; break;
 			case 80:  freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
-			case 81:  return 0; break; 
+			case 81: exit (-1); break; 
 			//default: freq=26.9650; printf ("\nDefault: CB chan = 1 %f \n", &freq); break;
             return freq;	
 	    
 	}
-	
+	return freq;
 }
 //----------------------------------- Voids
 
@@ -904,22 +956,24 @@ int modulationfm (int argc, char **argv)
 
     printf ("\nPreparing for FM... \n");
 
-    if (argc>1)
+    if (argc>0)
  	{
 	  printf ("\nChecking Path... \n");
       //setupfm (); // gets filename & path or done by filmename() func 
-
+	  
 	  printf ("\nSetting up DMA... \n");
 
       setupDMA (argc>2 ? atof (argv[2]):100.00000); // default freq, maybe do input here? 
-
+	  
 	  printf ("\nTesting Samplerate... \n");
-
       playWav (argv[1], argc>3 ? atof (argv[3]):22500); // <--- in 22.5 kHz, should be same as AM!!
-     
+	  
+	  printf ("\Checking & Setting LED for Transmission \n");
+	  led ();
+	 
 	  printf ("\nNow transmitting... \n");
     } 
-	else fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22500 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-500.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+	else fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22500 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
 	
 return modulationfm;
 }
@@ -927,6 +981,8 @@ return modulationfm;
 //AM --- not yet adapted, needs revision for freq
 int modulationam (int argc, char **argv) 
 {
+	nb_samples = (readcount/channels);
+	printf ("\n nb_samples: %f \n", nb_samples);
     /*
               {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
               {IQFLOAT (FileInput is a Raw float interlaced I,Q)}
@@ -934,21 +990,8 @@ int modulationam (int argc, char **argv)
               {RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
               {VFO (constant frequency)}
     */
-	
-	// we generate complex I-Q samples
-    float data [2*BUFFER_LEN];
-    float data_filtered [2*BUFFER_LEN]; 
-   
-    float FactAmplitude = 2.0; //maybe here ampmodulator type input?
-	printf ("Factamplitude: %f \n", FactAmplitude);
-			
-	// log Modulation 
-	float A = 87.7f; // compression parameter, stauchung
 	printf ("Compression prameter A: %f \n", A);
-//------------------
-	nb_samples = (readcount/channels);
-	printf ("\n nb_samples: %f \n", nb_samples);
-
+	
 	if (argc>=4) 
 	{
 		printf ("filefreq timing opener test");
@@ -1002,7 +1045,7 @@ int modulationam (int argc, char **argv)
 			
 
 			//maybe here am option for amplitude factor input!?
-			
+			printf ("Factamplitude: %f \n", FactAmplitude);
 			
 			ampf = (x/32767.0f);
 			printf ("ampf1: %f \n", ampf);
@@ -1022,8 +1065,9 @@ int modulationam (int argc, char **argv)
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
             printf ("\nNow writing tone in AM... \n");
             
-	    }    
-	    
+	    }
+	  led ();
+	  return 0;
     }
     printf ("Reading file: %s \n", filename);
     printf ("Freq: %f \n", freq);
@@ -1048,11 +1092,13 @@ int modulationselect ()
 	scanf ("%d", &freqmode);
 	switch (freqmode)
 	{
-		case 1: printf ("\n*** You selected 1 for FM! \n");
+		case 1: printf ("\nYou selected 1 for FM! \n");
+				volaudio ();
 		        int modulationfm (int argc, char **argv); 
 		        break;
 
-		case 2: printf ("\n*** You selected 2 for AM! \n");
+		case 2: printf ("\n You selected 2 for AM! \n");
+				volaudio ();
 		        int modulationam (int argc, char **argv); 
 		        break;
 	
@@ -1184,12 +1230,12 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //-> otherwise in dma or playwav func
    
    char *mod = argv[4];
-   int volume = argv[6]; // argc>4 ? atoi(argv[6]):4  => (atoi gives the value of a string) in playwav possible
+   float volume = argv[6]; // argc>4 ? atoi(argv[6]):4  => (atoi gives the value of a string) in playwav possible
    int gain = atoi (argv[6]);
    char *callsign = argv[5];
    //-- for debugging or information :)
    
-   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %d / Gain(6): %d \n", argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], gain);
+   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %f / Gain(6): %d \n", argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], gain);
    printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv[0], &argv[1], &argv[2], &argv[3], &argv[4], &argv[5], &argv[6], &gain);
    printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / / Callsign: %p/ Volume: %p \n", argc, *argv[0], *argv[1], *argv[2], *argv[3], *argv[4], *argv[5], *argv[6]);
    printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n"); 
@@ -1219,7 +1265,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			printf ("Checking Channels: %s \n", channels)
             printf ("Checking Modulation: %s \n", mod); 
 			printf ("Checking Callsign: %s \n", *callsign)
-			printf ("Checking Gain/Volume: %d \n", gain);
+			printf ("Checking Volume/Gain: %f/%d \n",v olume, gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
                 if (!strcmp (mod, "fm"))
@@ -1246,7 +1292,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     }
     else 
     {
-        fprintf (stderr, "Argument-Error! \nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]!  *.wav-file must be 16-bit @ 22500 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-500.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+        fprintf (stderr, "Argument-Error! \nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]!  *.wav-file must be 16-bit @ 22500 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
         //GetUserInput ();
     }
     
