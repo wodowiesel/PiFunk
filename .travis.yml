@@ -1,5 +1,4 @@
-
-## travis+git
+## travis
 
 # matrix:
 # include:
@@ -31,17 +30,17 @@ python:
   - nightly
   - pypy
   - pypy3
-#DJANGO_VERSION=1.8.2 --> need flask too
+#DJANGO_VERSION=1.8.2 --> need flask too for db
 
 
-#before_cache: -r -f $HOME/.cache/pip/log/debug.log
+before_cache: -r -f $HOME/.cache/pip/log/debug.log
   
 cache:
 
  pip: true
  #-timeout: 1
 
- #- ccache
+ - ccache
 
  directories:
    - .autoconf
@@ -54,18 +53,18 @@ cache:
 branches:
  only:
   - master
-  #- alpha
+  - alpha
   
 ## command to install dependencies
 before_install: 
-  - sudo apt-get update
+  #- sudo apt-get update
   #- sudo apt-get upgrade
   #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
   ## ARM- architecture needed !
   #- install-dependencies-arm.sh
 
 install: 
- - sudo apt-get install git
+ #- sudo apt-get install git
  # - key
  #- pip install 
  #-r requirements.txt 
@@ -77,6 +76,7 @@ install:
  
  - sudo pip install RPi.GPIO
  #- sudo apt-get install RPi.GPIO
+ - sudo apt-get install RPI.GPIO
  #- sudo apt-get install python-rpi.gpio
  #- sudo pip install python-rpi.gpio
   
@@ -112,20 +112,21 @@ script:
  
  #compiling with gcc here 
  
- - gcc -lm -std=c99 pifunk.c -o pifunk
+ - gcc -lm -std=c99 pifunk.c -o pifunk pifunk.o -libsndfile
  - sudo make clean 
- - sudo make pifunk.c 
+ - sudo make
+ - sudo make install 
  - sudo pifunk sound.wav 100.0000 22500 fm callsign 
+# - sudo bin/pifunk sound.wav 100.0000 22500 fm callsign 
  - sudo python pifunk.py
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
- # - sudo python pifm.py
 
-#after_script:
+after_script:
 
 # before_deploy: ./before-deploy-linux.sh
 
-# deploy:
+deploy:
   # provider: releases
    # api_key:
     # secure: token-key
@@ -136,11 +137,10 @@ script:
     # tags: true
   # skip_cleanup: true
   
-# after_failure:
-# after_success:
+ after_failure:
+
+ after_success:
  # - coveralls
  # - coverage combine
  # - codecov
-#
-
- 
+# 
