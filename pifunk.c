@@ -11,7 +11,7 @@
  make 
  make install
  // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
- sudo pifunk sound.wav 100.0000 22500 fm callsign
+ sudo pifunk sound.wav 100.0000 22050 fm callsign
  
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
  virtual maschine possible with qemu
@@ -236,6 +236,7 @@ char *description = "(experimental)";
 char *filename;
 float freq;
 int samplerate;
+// samples max 10 kHz resolution for am / 14.5 kHz FM radio can be recorded with only a little quality loss.
 int channels ;
 char *mod;
 char *fm = "fm"; 
@@ -426,11 +427,11 @@ int led ()
 int infos () //Warnings and infos
 {
     printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, *description);
-	printf ("Radio works with *.wav-file with 16-bit @ 22500 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
+	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
     
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n"); 
     printf ("HELP: Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]! \n");
-    printf ("for testing (default setting) run: sudo sound.wav 100.0000 22500 fm callsign\n");
+    printf ("for testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
 
 	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
@@ -758,7 +759,7 @@ void playWav (char *filename, int samplerate)
     for (int i = 0; i<22; i++) 
     { 
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
-        printf ("for i=0: read fp ");
+        printf ("\nfor i=0: read fp \n");
         
     }
     
@@ -767,12 +768,12 @@ void playWav (char *filename, int samplerate)
         
         float value = data[i]*4*volume; // modulation index (AKA volume)
         float fmconstant = (samplerate*50.0E-6); // for pre-emphisis filter, 50us time constant
-        int clocksPerSample = (22500/samplerate*1400.0); // for timing
+        int clocksPerSample = (22050/samplerate*1400.0); // for timing
         
         datanew = ((float)(*data)/32767.0f); //some constant for modulation ??
         
-        float sample = datanew + (dataold-datanew)/(1-fmconstant);  // fir of 1 + s tau
-        float dval = sample*15.0; // actual transmitted sample,  15 is bandwidth (about 75 kHz)
+        float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
+        float dval = sample*15.0; // actual transmitted sample, 15 is bandwidth (about 75 kHz) better 14.5
         
         int intval = (int)(round (dval)); // integer component
         float frac = ((dval - (float)intval)/2 + 0.5);
@@ -966,14 +967,14 @@ int modulationfm (int argc, char **argv)
       setupDMA (argc>2 ? atof (argv[2]):100.00000); // default freq, maybe do input here? 
 	  
 	  printf ("\nTesting Samplerate... \n");
-      playWav (argv[1], argc>3 ? atof (argv[3]):22500); // <--- in 22.5 kHz, should be same as AM!!
+      playWav (argv[1], argc>3 ? atof (argv[3]):22050); // <--- in 22.5 kHz, should be same as AM!!
 	  
 	  printf ("\Checking & Setting LED for Transmission \n");
 	  led ();
 	 
 	  printf ("\nNow transmitting... \n");
     } 
-	else fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22500 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+	else fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22050 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
 	
 return modulationfm;
 }
@@ -991,7 +992,7 @@ int modulationam (int argc, char **argv)
 	
 	nb_samples = (readcount/channels);
 	printf ("\n nb_samples: %f \n", nb_samples);
-	printf ("Compression prameter A: %f \n", A);
+	printf ("Compression prameter A: %f \n", A); // was defined as global var above
 	
 	
 	if (argc>=4) 
@@ -1012,10 +1013,14 @@ int modulationam (int argc, char **argv)
         return  1;
     }
 //-----------------
-	if (sfinfo.samplerate != 22500) //(samplerate != 22500) 
+	if (sfinfo.samplerate == 22050) //44 or 48 khz needs testing
 	{ 
-		printf ("\nInput samplerate must be 22.5 [kHz] (mono)! \n");
-		return 1;
+		return samplerate;
+	}
+	else if (sfinfo.samplerate == 14500) return samplerate;
+	else {
+	printf ("\nInput samplerate must be 22.05 [kHz] AM/ or 14.5 kHz FM (mono)! \n");
+	return 1;
 	}
 //--------------------
 	if (filebit != 16) 
@@ -1043,7 +1048,7 @@ int modulationam (int argc, char **argv)
 			
 			else if (channels == 1)
 			{
-				// stereo file, avg left + right --> should be mono at 22.5kHz
+				// stereo file, avg left + right --> should be mono at 22.05kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				return b;
@@ -1066,7 +1071,7 @@ int modulationam (int argc, char **argv)
 		    factorizer = (x*32767.0f*FactAmplitude);
 			printf ("factorizer: %f \n", factorizer);
 			
-			sampler = (1E9/samplerate); //44.444
+			sampler = (1E9/samplerate); //44.00
 			printf ("sampler: %f \n", sampler);
 			
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
@@ -1233,7 +1238,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
              
    float freq = strtof (argv[2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-   int samplerate = atof (argv[3]); //maybe check here on != 22500 on 16 bits as fixed value (eventually allow 48k)
+   int samplerate = atof (argv[3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    //-> otherwise in dma or playwav func
    
    char *mod = argv[4];
@@ -1263,7 +1268,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    else if (argc=1 & !strcmp (argv[1], "help"))  
    {
      int infos ();
-     printf ("\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] volume or [menu] or [help]! *.wav-file must be 16-bit @ 22500 [Hz] Mono \n");
+     printf ("\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] volume or [menu] or [help]! *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    }
    else if (argc=4) 
    { 
@@ -1299,7 +1304,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     }
     else 
     {
-        fprintf (stderr, "Argument-Error! \nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]!  *.wav-file must be 16-bit @ 22500 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+        fprintf (stderr, "Argument-Error! \nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]!  *.wav-file must be 16-bit @ 22050 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
         //GetUserInput ();
     }
     

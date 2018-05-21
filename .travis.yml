@@ -17,7 +17,6 @@ sudo: required
 #true
 
 language: python
-#language: c/cpp or (json)
 
 python:
   - 2.6
@@ -34,20 +33,20 @@ python:
 
 
 before_cache: -r -f $HOME/.cache/pip/log/debug.log
-  
-cache:
 
- pip: true
- #-timeout: 1
+language: c
+ cache: - ccache -pip
+  pip: true
+  #-timeout: 1
 
- - ccache
 
- directories:
+
+  directories:
    - .autoconf
    - $HOME/.m2
    - $HOME/.cache
    - $HOME/.pyenv
-   # bundler: true
+     bundler: true
   
 #git-branches
 branches:
@@ -74,7 +73,7 @@ install:
  
  #- sudo apt-get install gcc 
  
- - sudo pip install RPi.GPIO
+ #- sudo pip install RPi.GPIO
  #- sudo apt-get install RPi.GPIO
  - sudo apt-get install RPI.GPIO
  #- sudo apt-get install python-rpi.gpio
@@ -98,7 +97,7 @@ notifications:
 
 # command to run tests +scripts
 before_script: 
- - git clone git://github.com/silicator/PiFunk.git
+ - git clone git://github.com/silicator/PiFunk
  # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
  # - before-script-linux.sh
 
@@ -106,13 +105,13 @@ before_script:
 script:
 # - key
  - nosetests
- #- coveralls
- #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
-  - cd ./PiFunk
+ - coveralls
+ - sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
+ - cd ./PiFunk
  
  #compiling with gcc here 
  
- - gcc -lm -std=c99 pifunk.c -o pifunk pifunk.o -libsndfile
+ - gcc -lm -libsndfile -std=c99 -g pifunk.c -o pifunk pifunk.o 
  - sudo make clean 
  - sudo make
  - sudo make install 
