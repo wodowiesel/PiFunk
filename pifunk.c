@@ -392,13 +392,13 @@ int led ()
 
     if (!bcm2835_init ()) 
 	{	
-	printf ("\nBCM 2835 init failed \n");
+	printf ("\nBCM 2835 init failed! \n");
 	return 0;
 	}
 	else if (1)
 	{
 	
-    // Set the pin to be an output
+    // Set the pin to be an outputannels
     bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
 	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
@@ -693,7 +693,7 @@ void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm head
     
 		*vAddr = a;  //  we know the virtual address now
     
-		int fp = open ("/proc/self/pagemap", 'r');
+		int fp = open ("/proc/self/pagemap", 'w');
 		lseek (fp, ((int)a)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
     
@@ -818,7 +818,7 @@ void playWav (char *filename, int samplerate)
     
    close (fp);
    close (filename);
-   printf (" while closing filenames \n"); 
+   printf ("\nc´Closing filenames \n"); 
 }
 
 void unSetupDMA ()
@@ -826,7 +826,7 @@ void unSetupDMA ()
 	
 	struct DMAregs* DMA0 = (struct DMAregs*)(ACCESS(DMABASE));
 	DMA0->CS == 1<<31; // reset dma controller
-	printf ("SetupDMA done\n");
+	printf ("SetupDMA done \n");
 	exit (-1);
 }
 
@@ -981,16 +981,18 @@ return modulationfm;
 //AM --- not yet adapted, needs revision for freq
 int modulationam (int argc, char **argv) 
 {
-	nb_samples = (readcount/channels);
-	printf ("\n nb_samples: %f \n", nb_samples);
-    /*
+	    /*
               {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
               {IQFLOAT (FileInput is a Raw float interlaced I,Q)}
               {RF (FileInput is a (float) Frequency,Time in nanoseconds}
               {RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
               {VFO (constant frequency)}
     */
+	
+	nb_samples = (readcount/channels);
+	printf ("\n nb_samples: %f \n", nb_samples);
 	printf ("Compression prameter A: %f \n", A);
+	
 	
 	if (argc>=4) 
 	{
@@ -1032,16 +1034,21 @@ int modulationam (int argc, char **argv)
 	  
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
-	        if (channels != 1) printf ("File is NOT mono (1 Channel!) \n"); // >1 in stereo or dual mono with half samplerate
-
-			x = data[k*channels];
-			if (channels == 1)
+		    char b = data [k*channels];
+			printf ("\nb: %s \n", b);
+			if (channels == NULL || 0)
+			{
+				printf ("File is NOT mono ->0 Channels Error!) \n"); // >1 in stereo or dual mono with half samplerate
+			}
+			
+			else if (channels == 1)
 			{
 				// stereo file, avg left + right --> should be mono at 22.5kHz
-				x += data[k*channels+1];
-				x /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
-				return x;
+				b += data [k*channels+1];
+				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
+				return b;
 			}
+			else if (channels >= 2) printf ("File is NOT mono (1 Channel!) \n"); // >1 in stereo or dual mono with half samplerate
 			
 
 			//maybe here am option for amplitude factor input!?
@@ -1064,10 +1071,10 @@ int modulationam (int argc, char **argv)
 			
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
             printf ("\nNow writing tone in AM... \n");
-            
+            return channels, ampf, x, factorizer, sampler;
 	    }
-	  led ();
-	  return 0;
+	led ();
+	return channels, ampf, x, factorizer, sampler;
     }
     printf ("Reading file: %s \n", filename);
     printf ("Freq: %f \n", freq);
@@ -1265,7 +1272,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			printf ("Checking Channels: %s \n", channels)
             printf ("Checking Modulation: %s \n", mod); 
 			printf ("Checking Callsign: %s \n", *callsign)
-			printf ("Checking Volume/Gain: %f/%d \n",v olume, gain);
+			printf ("Checking Volume/Gain: %f/%d \n",volume, gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
                 if (!strcmp (mod, "fm"))
