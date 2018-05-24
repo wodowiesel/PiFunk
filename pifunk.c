@@ -428,11 +428,11 @@ int infos () //Warnings and infos
 {
     printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, *description);
 	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
-    
+    printf("Pi\033[1;4;35mFunk\033[0m colour test \n"); //35 for Magenta, 33 red
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n"); 
     printf ("HELP: Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]! \n");
     printf ("for testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
-
+  // colour text test: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode
 	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
     return 0;
@@ -444,7 +444,6 @@ int timer ()
    time (&rawtime);
    info = localtime (&rawtime);
    printf ("Current local time and date: %s \n", asctime (info));
-
    return 0;
 }
 
@@ -483,11 +482,11 @@ int channelselect ()
 	printf ("You selected 1 for Channel-Mode\n"); 
 	printf ("Choose your Type [1] PMR // [2] CB // [3] Exit : ");
     
-    scanf  ("%d ", &channelmode);
+    scanf  ("%d", &channelmode);
     
     switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
             {
-            case 1: printf ("PMR CHAN-MODE in FM"); 
+            case 1: printf ("PMR CHAN-MODE in FM \n"); 
 					int channelmodepmr (); // gets freq from pmr list
 					filenamepath ();
 					printf ("\nChecking volume... \n");
@@ -495,7 +494,7 @@ int channelselect ()
 					int modulationfm (int argc, char **argv);
 					break;
 					
-		    case 2: printf ("CB CHAN-MODE SELECT"); 
+		    case 2: printf ("CB CHAN-MODE SELECT \n"); 
 					int channelmodecb (); // gets freq for chan
 					filenamepath (); //gets file
 					audiovol ();
@@ -519,7 +518,7 @@ int channelmodepmr ()
 {
 	printf ("\nChoose PMR-Channel 0-17 (18 to exit): "); 
 	
-	scanf ("%d ", &channelnumberpmr);
+	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
 	 //---- Analog & digital 
@@ -701,7 +700,7 @@ void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm head
 		*pAddr = (void*)((int)(frameinfo*4096));
 }
 
-void freeRealMemPage (void* vAddr)
+void freeRealMemPage (void** vAddr)
 {
 		munlock (vAddr, 4096);  // unlock ram
 		free (vAddr); // free the ram
@@ -748,15 +747,8 @@ void playWav (char *filename, int samplerate)
 	int sz = lseek (fp, 0L, SEEK_END); 
     
     short* data = (short*)malloc (sz);
-   /*
-    if (filename [0] != NULL) 
-    {
-        fp = open (filename, 'r');
-        printf ("if filename != NULL");
-		return 1;
-    } */
     
-    for (int i = 0; i<22; i++) 
+    for (int i = 0; i < 22; i++) 
     { 
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
         printf ("\nfor i=0: read fp \n");
@@ -766,7 +758,7 @@ void playWav (char *filename, int samplerate)
     while (readBytes = read (fp, &data, 1024)) 
     {
         
-        float value = data[i]*4*volume; // modulation index (AKA volume)
+        float value = data[i]*4*volume; // modulation index (AKA volume) logar. hearing of human
         float fmconstant = (samplerate*50.0E-6); // for pre-emphisis filter, 50us time constant
         int clocksPerSample = (22050/samplerate*1400.0); // for timing
         
@@ -785,15 +777,15 @@ void playWav (char *filename, int samplerate)
               
 
         //while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 of struct PageInfo
-        usleep (1000);
+        //usleep (1000);
         
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4-4);
        
-        bufPtr++;
+        //bufPtr++;
         
         //while (ACCESS(DMABASE + 0x04) == (int)(instrs[bufPtr].p)); 
-        usleep (1000);
+        //usleep (1000);
         
         // Create DMA command to delay using serializer module for suitable time
        // ((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
@@ -801,13 +793,13 @@ void playWav (char *filename, int samplerate)
         bufPtr++;
         
         //while (ACCESS(DMABASE + 0x04) == (int)(instrs[bufPtr].p)); 
-        usleep (1000);
+        //usleep (1000);
         
         // Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
         //((struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4+4);
         
         //while (ACCESS(DMABASE + 0x04) == (int)(instrs[bufPtr].p));
-        usleep (1000);
+        //usleep (1000);
         // Create DMA command for more delay.
        //((struct CB*)(instrs[bufPtr].v))->TXFR_LEN = fracval;
        
@@ -833,7 +825,7 @@ void unSetupDMA ()
 
 void setupDMA (float freq)
 {
-	printf ("SetupDMA starting\n");
+	printf ("SetupDMA starting \n");
 	atexit (unSetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
@@ -858,7 +850,7 @@ void setupDMA (float freq)
      // make copy instructions
 	 //struct CB* instr0 = (struct CB*)instrPage.v;
      
-     for (int i = 0; i<4096 / sizeof (struct CB); i++) 
+     for (int i=0; i<4096/sizeof(struct CB); i++) 
      {
          /*
          instrs[instrCnt].v = (void*)((int)instrPage.v + sizeof(struct CB)*i);
@@ -896,22 +888,22 @@ void setupDMA (float freq)
    
     // set up a clock for the base
    ACCESS (CLKBASE + 40*4) == (0x5A000026); //PWMCLK_CNTL
-   usleep (1000);
+   //usleep (1000);
    
    ACCESS (CLKBASE + 41*4) == (0x5A002800); //PWMCLK_DIV
    ACCESS (CLKBASE + 40*4) == (0x5A000016); //PWMCLK_CNTL
-   usleep (1000); 
+   //usleep (1000); 
 
-    // set up pwm
+   // set up pwm
    ACCESS (PWMBASE + 0x0) == 0;
-   usleep (1000);
+   //usleep (1000);
    
    ACCESS (PWMBASE + 0x4) == -1;  // status: clear errors
-   usleep (1000);
+   //usleep (1000);
    
    // Use fifo , repeat, serializer, enable ch
    ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8); 
-   usleep (1000);
+   //usleep (1000);
    
    ACCESS (PWMBASE + 0x8) == (1<<31) | 0x0707; // DMAC then DMA enable 
    
@@ -960,14 +952,14 @@ int modulationfm (int argc, char **argv)
     if (argc>0)
  	{
 	  printf ("\nChecking Path... \n");
-      //setupfm (); // gets filename & path or done by filmename() func 
+      setupfm (); // gets filename & path or done by filmename() func 
 	  
 	  printf ("\nSetting up DMA... \n");
 
       setupDMA (argc>2 ? atof (argv[2]):100.00000); // default freq, maybe do input here? 
 	  
 	  printf ("\nTesting Samplerate... \n");
-      playWav (argv[1], argc>3 ? atof (argv[3]):22050); // <--- in 22.5 kHz, should be same as AM!!
+      playWav (argv[1], argc>3 ? atof (argv[3]):22050); // <--- in 22.05 kHz, should be same as AM!!
 	  
 	  printf ("\Checking & Setting LED for Transmission \n");
 	  led ();
@@ -1043,7 +1035,7 @@ int modulationam (int argc, char **argv)
 			printf ("\nb: %s \n", b);
 			if (channels == NULL || 0)
 			{
-				printf ("File is NOT mono ->0 Channels Error!) \n"); // >1 in stereo or dual mono with half samplerate
+				printf ("File is NOT mono ->0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
 			}
 			
 			else if (channels == 1)

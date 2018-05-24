@@ -1,0 +1,1 @@
+add_executable (pifunk pifunk.c)
