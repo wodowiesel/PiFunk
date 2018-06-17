@@ -38,7 +38,7 @@ compile with:
 
 sometimes -std=gnu99 
 
-gcc -lm -g -std=c99 pifunk.c -o pifunk 
+gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o 
 
 make clean
 
@@ -74,7 +74,7 @@ You can try to smooth it out with 1:1 baloon or
 
 dummyload 4-50W @ 50 Ohm cement or cooling-ribs for testing.
 
-For transmission you can use just a wire or a 2m/70 cm or other lamda(1/4)-antenna.
+For transmission you can use just a copper wire or a 2m/70 cm or other lamda(1/4)-antenna.
 
 Check laws of your country! 
 
