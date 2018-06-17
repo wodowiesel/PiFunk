@@ -82,6 +82,7 @@ Testers and feedback apreciated!
 
 Thank you
 
+[GitPage](https://silicator.github.io/PiFunk/)
 
 [Readme guideline](README.md)
 
