@@ -31,6 +31,7 @@ then go to directory:
 cd PiFunk
 
 compile with:
+
 -lm flag for math lib obligatory
 
 -g for debugger
@@ -47,8 +48,8 @@ make
 
 make install
 
-run with admin/root permissions
-:
+run with admin/root permissions:
+
 Arguments: [filename (wav)] [freq (MHz)] [samplerate (kHz] [modulation (fm/am)] [callsign (optional)] 
 
 extra single Arguments:
