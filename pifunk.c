@@ -1183,7 +1183,7 @@ int GetUserInput () //my menu-assistent
 
     
 	printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
-	scanf ("%d ", &modeselect);
+	scanf ("%d", &modeselect);
     
 	switch (modeselect)
     {
@@ -1250,7 +1250,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    timer (); //local time
   
  //---  
-   //if (argc=0||NULL) printf ("No Arguments ..\n "); return -1;
+   //if (argc=0||NULL) printf ("No Arguments ...\n "); return -1;
 
    if (argc=1 & !strcmp (argv[1], "menu"))  
    {
@@ -1299,7 +1299,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
         fprintf (stderr, "Argument-Error! \nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]!  *.wav-file must be 16-bit @ 22050 [Hz] Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
         //GetUserInput ();
     }
-    
     //into the fm or an function to run your file
     printf ("End of main \n"); 
     printf ("Returning args 0 to %d ... \n", argc); 

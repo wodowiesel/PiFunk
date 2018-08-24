@@ -3,7 +3,6 @@
 # matrix:
 # include:
 
-
 os: linux
 dist: trusty
 #precise
@@ -29,8 +28,7 @@ python:
   - nightly
   - pypy
   - pypy3
-#DJANGO_VERSION=1.8.2 --> need flask too for db
-
+#DJANGO_VERSION=1.8.2 --> need flask too for db if used (not yet)
 
 before_cache: -r -f $HOME/.cache/pip/log/debug.log
 
@@ -38,8 +36,6 @@ language: c
  cache: - ccache -pip
   pip: true
   #-timeout: 1
-
-
 
   directories:
    - .autoconf
@@ -52,13 +48,15 @@ language: c
 branches:
  only:
   - master
-  - alpha
+ # - alpha
   
 ## command to install dependencies
 before_install: 
   #- sudo apt-get update
   #- sudo apt-get upgrade
-  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
+  
+  ## for virtualisation/simulation of linux/raspberry pi but hardware gpios not possible!
+  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass 
   ## ARM- architecture needed !
   #- install-dependencies-arm.sh
 
@@ -68,13 +66,10 @@ install:
  #- pip install 
  #-r requirements.txt 
  # --user # param if no sudo/root-access
- 
+  #- sudo apt-get install gcc 
  #- sudo python setup.py install
  
- #- sudo apt-get install gcc 
- 
  #- sudo pip install RPi.GPIO
- #- sudo apt-get install RPi.GPIO
  - sudo apt-get install RPI.GPIO
  #- sudo apt-get install python-rpi.gpio
  #- sudo pip install python-rpi.gpio
@@ -106,7 +101,7 @@ script:
 # - key
  - nosetests
  - coveralls
- - sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
+ #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
  - cd ./PiFunk
  
  #compiling with gcc here 
@@ -115,9 +110,12 @@ script:
  - sudo make clean 
  - sudo make
  - sudo make install 
+ 
  - sudo pifunk sound.wav 100.0000 22500 fm callsign 
-# - sudo bin/pifunk sound.wav 100.0000 22500 fm callsign 
- - sudo python pifunk.py
+
+ #- sudo python pifunk.py
+ 
+ ##script-plugins if needed
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
 
@@ -142,4 +140,3 @@ deploy:
  # - coveralls
  # - coverage combine
  # - codecov
-# 
