@@ -84,7 +84,17 @@ For transmission you can use just a copper wire or example a 2m/70 cm or other l
 
 (depends on what band you wannt to transmit!)
 
+
+DISCLAIMER:
+
+Privat Project! Work in Progress (WiP)
+
+Im not a professional so NO guarantees or warranty for any damage or similar!
+
+Useage at own risk!
+
 Check laws of your country! 
+
 
 Testers and feedback apreciated!
 
