@@ -1,6 +1,9 @@
 # /etc/modules
 
-dtoverlay=w1-gpio,gpiopin=4,pullup=0
+dtoverlay=w1-gpio,gpiopin=4,pullup=0,i2c-rtc,ds3231 (add pullup=1 if nedded)
+snd-bcm2835
+i2c-dev
+rtc-ds1307
 modprobe i2c_bcm2708
 modprobe i2c_dev
 chmod 666 /dev/i2c-1
