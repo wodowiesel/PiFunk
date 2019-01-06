@@ -1,5 +1,5 @@
 
-#mini-i2C-display
+/* mini-i2C-display
 #vcc an 3,3v
 #gnd an gnd
 #sda an pin 3
@@ -16,8 +16,19 @@ i2cdetect -l
 i2cdetect -y 1 
 #(wenn bus 1 sonst bus 0) listet er geräte auf dem bus auf
 #adresse ist bei mir 0x3c (ich nutze wiringPi)
+
+#kompilieren mit: 
+g++ wpi-i2c.c -o wpi-i2c -lwiringPi
+#zuerst wird das display initialisiert, dann gecleared. 
+#mit reset_pos() wird die schreibeposition wieder auf anfang gesetzt auf dem display,
+#dazu bitte die dokumentation lesen, insbesondere das kapitel über die verschiedenen schreibmodi (vertikal/horizontal) etc. 
+#Mit render() werden dann 8 Byte daten geschrieben, mit denen sich ein 8x8 px großes zeichen darstellen lässt,
+#im beispiel ein kleines haus-symbol. im internet gibt es etliche 8x8 header only fonts, mit denen sich dann einfach texte darstellen lassen.
+*/
+
 include <wiringPiI2C.h>
 include <string.h>
+
 void init(int display)
 {
 wiringPiI2CWriteReg8(display,0x00,0xae); // display off
@@ -47,46 +58,59 @@ wiringPiI2CWriteReg8(display,0x00,0xa4); // resume
 wiringPiI2CWriteReg8(display,0x00,0xa6); // normal (not inverted)
 wiringPiI2CWriteReg8(display,0x00,0xaf); // display on
 }
+
 void render(int display,char *bitmap) {
 char m[8], n[8] = {0};
 memcpy(&m,bitmap,8);
+
 for(int y = 0; y < 8; y++) {
+	
 for(int x = 0; x < 8; x++) {
 //choose one:
 n[y] |= (m[x] & (1<<(7-y))) >> (7-y) << x ; // 270 grad drehen
 }
 }
+
 for (int x=7; x >= 0; x--) {
 int a = (int)n[x];
 wiringPiI2CWriteReg8(display,0x40,a);
 }
 }
+
 void reset_pos(int display)
 {
 wiringPiI2CWriteReg8(display,0x00,0xb0);
 wiringPiI2CWriteReg8(display,0x00,0x00);
 wiringPiI2CWriteReg8(display,0x00,0x10);
 }
+
 void clear(int display)
 {
 reset_pos(display);
 for (int x = 0; x < 128; x++) {
+	
 for (int y = 0; y < 8; y++) {
+	
 wiringPiI2CWriteReg8(display,0x40,0x00);
 }
 }
 }
+
 void clear2(int display)
 {
 reset_pos(display);
 for (int x = 0; x < 128; x++) {
+	
 for (int y = 0; y < 8; y++) {
+	
 wiringPiI2CWriteReg8(display,0x40,0xff);
 }
 }
 }
+
 int main(int argc, char *argv[])
 {
+	
 char test[8] = {
 0b00011000,
 0b00111100,
@@ -97,17 +121,11 @@ char test[8] = {
 0b01100110,
 0b00000000,
 };
+
 int display = wiringPiI2CSetup(0x3c);
 init(display);
 clear(display);
 render(display,test);
 }
 
-#kompilieren mit: 
-g++ wpi-i2c.c -o wpi-i2c -lwiringPi
-#zuerst wird das display initialisiert, dann gecleared. 
-#mit reset_pos() wird die schreibeposition wieder auf anfang gesetzt auf dem display,
-#dazu bitte die dokumentation lesen, insbesondere das kapitel über die verschiedenen schreibmodi (vertikal/horizontal) etc. 
-#Mit render() werden dann 8 Byte daten geschrieben, mit denen sich ein 8x8 px großes zeichen darstellen lässt,
-#im beispiel ein kleines haus-symbol. im internet gibt es etliche 8x8 header only fonts, mit denen sich dann einfach texte darstellen lassen.
-
+// EOF

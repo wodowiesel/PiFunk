@@ -4,22 +4,25 @@
 # & implement tactical Alphabet spelling incl spelling with wave-files
 # mosecode as txt and map it to intepreter for print
 # 2 Split Frequency Ranges (incl. files)* done
-# Input (from 1 MHz to 700 MHz) 
+# Input (from 1 MHz to 700 MHz) or multiple freq ( look it up for different pis 
 # supported for min. and max. Freq by RPi-2-B+ and other types
 #
 # 3 (see 1) selecting by tree or dropdown /case ?! -> using case for now * done
 # -----------------------------------------------------------------------
-# Functions/ processes: *=working on it
+# Functions/ processes: *= working on it
 # supports UKW radio fm*/am* , ltp , 433*, emg, cb*, pmr*, vhf,  etc.
 # 3 AM/FM switch where needed (cb/ham)* (done)
 # DMA-controller needs to be implemented/ fixed
-# offline File player: mp3/wave-Files + playlist 
+# offline file player: mp3/wave-files + playlists from a directory 
 # 5 Microphone (usb&jack) / VOX - double mono from devices via py (jack-cable)* 
-# 6 Squelch (treshhold) & Volume -> compare system-controls
+# 6 Squelch (treshhold) noisegate (can be tricky)
+# & Volume -> compare system-controls
 # 7 Recording possibilities -> check with codec & implement ffmpeg or other
 # add save-ability (saving last window-radio settings too / memory-mode?)
-# add optional identification-code (nick/user-name) or callsign (done) maybe RDS later
+# add optional identification-code (nick/user-name) or callsign (done) maybe RDS later*
+# add RTC realtime clock compatibility* work inprogres
 #
+#### in the far future!
 # 8 add Internet capabilities like 
 # host, ip, port (client/server/standalone)
 # aprs/ gps etc. or gathering infos from internet
