@@ -140,7 +140,7 @@ using namespace std;
 //python stuff, maybe wrapper too??
 
 //---------------------------------------------------------------//
-#define VERSION "0.1.6.5 a"
+#define VERSION "0.1.6.6 a"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 #define VERSION_BUILD 6
@@ -149,8 +149,8 @@ using namespace std;
 //---- PI specific stuff
 #define IN 0
 #define OUT 1
-#define FALSE 0
-#define TRUE 1
+//#define FALSE 0
+//#define TRUE 1
 /*
 predefine if needed when not using bcm header
 #define LOW 0
@@ -179,46 +179,46 @@ volatile unsigned *allof7e;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 
-#define length    (0x01000000)
-#define base      (0x20000000) //base=GPIO offset 
-#define ADR       (0x7E000000)
-#define CM_GP0CTL (0x7E101070) //p.107
-#define GPFSEL0   (0x7E200000) //p.90
-#define CM_GP0DIV (0x7E101074) //p.108
-#define CLKBASE   (0x7E101000)
-#define DMABASE   (0x7E007000)
-#define PWMBASE   (0x7E20C000) // PWM controller 
-#define BCM2836_PERI_BASE (0x3F000000) // register physical address
-#define GPIO_BASE (BCM2836_PERI_BASE + base) 
-#define PWMCLK_DIV (0x5A002800) // PWMCLK_DIV
-#define PWMCLK_CNTL (0x5A000016) //PWMCLK_CNTL
+#define length    (0x01000000) // dec: 1
+#define base      (0x20000000) //base=GPIO offset dec:2
+#define ADR       (0x7E000000) // dec: 2113929216
+#define CM_GP0CTL (0x7E101070) //p.107 dec: 2114982000
+#define GPFSEL0   (0x7E200000) //p.90 dec: 2116026368
+#define CM_GP0DIV (0x7E101074) //p.108 dec: 2114982004
+#define CLKBASE   (0x7E101000) // dec: 2114981888
+#define DMABASE   (0x7E007000) // dec: 2113957888
+#define PWMBASE   (0x7E20C000) // PWM controller dec: 2116075520
+#define BCM2836_PERI_BASE (0x3F000000) // register physical address dec: 1056964608
+#define GPIO_BASE (BCM2836_PERI_BASE + base) //hex 0x5F000000 dec: 1593835520
+#define PWMCLK_DIV (0x5A002800) // PWMCLK_DIV dec: 1509959680
+#define PWMCLK_CNTL (0x5A000016) //PWMCLK_CNTL dec: 1509949462
 
 #define ACCESS(base) (volatile int*)(base+(volatile int)allof7e-ADR)
-#define SETBIT(base, bit) ACCESS(base) || 1<<bit //   |=
+#define SETBIT(base, bit) ACCESS(base) || 1<<bit // |=
 #define CLRBIT(base, bit) ACCESS(base) && ~(1<<bit) // &=
 
 //possibility to give argv 0-4 an specific adress or pointer
 //Adresses-> at least on my system-tests
-#define argc_adr (0x7FFFFFFFEB0C) 
-#define Name_adr (0x7FFFFFFEC08)
-#define File_adr (0x7FFFFFFFEC10) 
-#define Freq_adr (0x7FFFFFFFEC18)
-#define Samplerate_adr (0x7FFFFFFFEC20) 
-#define Modulation_adr (0x7FFFFFFFEC28) 
-#define callsign_adr (0x6052C0)
-#define callsign2_adr (0x7FFFFFFFEAEF) 
-#define callsign3_adr (0x7FFFFFFFEAE8)
+#define argc_adr (0x7FFFFFFFEB0C) // dec: 140737488349964
+#define Name_adr (0x7FFFFFFEC08) // dec: 8796093017096
+#define File_adr (0x7FFFFFFFEC10) // dec: 140737488350224
+#define Freq_adr (0x7FFFFFFFEC18) // dec: 140737488350232
+#define Samplerate_adr (0x7FFFFFFFEC20) // dec: 140737488350240
+#define Modulation_adr (0x7FFFFFFFEC28) // dec: 140737488350248
+#define callsign_adr (0x6052C0) // dec: 6312640
+#define callsign2_adr (0x7FFFFFFFEAEF) // dec: 140737488349935
+#define callsign3_adr (0x7FFFFFFFEAE8) // dec: 140737488349928
 
 //Pointers->
-#define argc_ptr (0x5) 
-#define Name_ptr (0x2F)
-#define File_ptr (0x73) 
-#define Freq_ptr (0x31) //$ means is in RDS data
-#define Samplerate_ptr (0x32) //$ means its in RDS data
-#define Modulation_ptr (0x66) //$ means its in RDS data
-#define callsign_ptr (0x6D)
-#define CurBlock (0x04)
-#define DMAref (0x7F) //pwm base reference or sth like that?
+#define argc_ptr (0x5) // dec: 5
+#define Name_ptr (0x2F) // dec: 47
+#define File_ptr (0x73) // dec: 115
+#define Freq_ptr (0x31) //$ means is in RDS data dec: 49
+#define Samplerate_ptr (0x32) //$in RDS data  dec: 50
+#define Modulation_ptr (0x66) //$ means isin RDS data // dec: 102
+#define callsign_ptr (0x6D) // dec: 109
+#define CurBlock (0x04) // dec: 4
+#define DMAref (0x7F) //dma base reference dec: 127
 //--------------------------------------------------//
 //mathematical stuff
 #define ln(x) log(x)/log(2.718281828459045235f)
@@ -234,7 +234,7 @@ char *spi0_mem, *spi0_map;
 // custom programm-name. system default is the filename itself! 
 char *description = "(experimental)";
 char *filename;
-float freq;
+const double freq;
 int samplerate;
 // samples max 10 kHz resolution for am / 14.5 kHz FM radio can be recorded with only a little quality loss.
 int channels ;
@@ -256,7 +256,6 @@ socklen_t addressLength;
 struct sockaddr_in localAddress;
 struct client_addr.sin_addr;
 struct local.sin_addr;
-
 
 // programm variables
 time_t rawtime;
@@ -460,18 +459,18 @@ char filenamepath ()
 	else
 	{
 	   printf ("Trying to play default sound.wav ... \n");
-	   *filename = open ("sound.wav", "r");
+	   *filename = open ("sound.wav", "r"); // sounds/sound.wav direktory should be testet
 	   return filename;
 	    
 	}
 	return filename;
 }
 
-int freqselect () // gets freq by typing in
+double freqselect () // gets freq by typing in
 {
-   
+ // maybe make it as "const" for stability?!
 	printf ("\nYou selected 1 for Frequency-Mode\n"); 
-	printf ("Type in Frequency (1-700.00000 MHz): ");
+	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700mhz chip, pi3 1.2ghz
 	scanf  ("%f", freq);
 	printf ("You chose: %f MHz \n", freq);
     return freq;
@@ -823,7 +822,7 @@ void unSetupDMA ()
 	exit (-1);
 }
 
-void setupDMA (float freq)
+void setupDMA (const double freq)
 {
 	printf ("SetupDMA starting \n");
 	atexit (unSetupDMA);
@@ -919,11 +918,11 @@ void setupDMA (float freq)
 }
 
 // AM ones
-void WriteTone (float Frequency, uint32_t Timing)
+void WriteTone (double Frequency, uint32_t Timing)
 {
 	typedef struct 
 	{
-	    float Frequency;
+	    double Frequency;
 		uint32_t WaitForThisSample;
 	} 
 	samplerf_t;
@@ -1194,7 +1193,7 @@ int GetUserInput () //my menu-assistent
 					 
 		    case 2:	
 		            char filenamepath ();
-		            int freqselect ();
+		            double freqselect ();
 		            int modulationselect ();
 					break;
 					 
@@ -1229,7 +1228,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    // atoll() is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
              
-   float freq = strtof (argv[2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+   const double freq = strtof (argv[2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
    int samplerate = atof (argv[3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    //-> otherwise in dma or playwav func
    

@@ -1,4 +1,4 @@
-/etc/modules
+#/etc/modules
 
 dtoverlay=w1-gpio,gpiopin=4,pullup=0,i2c-rtc,ds3231
 snd-bcm2835
