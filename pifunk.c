@@ -104,9 +104,11 @@ name & license stuff
 #include <uchar.h>
 //for c++14/17
 /*
-#include <iostream>
+#include <iostream.h>
 #include <threads.h>
-using namespace std; 
+#include <cstdlib.h>
+#include <csignal.h>
+using namespace std;
 */
 
 // windows (10) if needed for maybe rpi3 
@@ -830,11 +832,11 @@ void unSetupDMA ()
 
 void setupDMA (const double freq)
 {
-	printf ("SetupDMA starting \n");
+	printf ("SetupDMA starting... \n");
 	atexit (unSetupDMA);
-	signal (SIGINT,  handSig);
+	signal (SIGINT, handSig);
 	signal (SIGTERM, handSig);
-	signal (SIGHUP,  handSig);
+	signal (SIGHUP, handSig);
 	signal (SIGQUIT, handSig);
 	
 	// allocate a few pages of ram
