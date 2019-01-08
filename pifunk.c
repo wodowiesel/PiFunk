@@ -88,7 +88,7 @@ name & license stuff
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/mman.h>#
+#include <sys/mman.h>
 // ip host socket 
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -225,7 +225,7 @@ volatile unsigned *allof7e;
 #define PI 3.14159265
 
 //pi variables: -> need to be activated and pulled up with python-script, or automaticly by system
-int  mem_fd;
+int mem_fd;
 char *gpio_mem, *gpio_map;
 char *spi0_mem, *spi0_map;
 
@@ -235,11 +235,11 @@ char *spi0_mem, *spi0_map;
 char *description = "(experimental)";
 char *filename;
 const double freq;
-int samplerate;
+unsigned int samplerate;
 // samples max 10 kHz resolution for am / 14.5 kHz FM radio can be recorded with only a little quality loss.
-int channels ;
+int channels;
 char *mod;
-char *fm = "fm"; 
+char *fm = "fm";
 char *am = "am";
 char *callsign;
 float volume = 1.0f;
@@ -422,8 +422,13 @@ int led ()
 	printf ("\nBCM 2835 closing \n");
     return 0;
 }
+
+/*
+RTC (DS3231/1307 driver as bcm) stuff here if needed
+*/
+
 // basic function then specified one after another
-int infos () //Warnings and infos
+char infos () //Warnings and infos
 {
     printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, *description);
 	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
@@ -437,13 +442,14 @@ int infos () //Warnings and infos
     return 0;
 }
 
-int timer ()
+char timer ()
 {
    
    time (&rawtime);
    info = localtime (&rawtime);
-   printf ("Current local time and date: %s \n", asctime (info));
-   return 0;
+   asctime (info) = newtime
+   printf ("Current local time and date: %s \n", newtime);
+   return newtime;
 }
 
 char filenamepath ()
@@ -739,7 +745,7 @@ void setupfm ()
 ///------------------------------------
 //relevant for transmitting stuff 
 
-void playWav (char *filename, int samplerate)
+void playWav (char *filename, unsigned int samplerate)
 {
     // after getting filename insert then open
 	lseek (fp, 0L, SEEK_SET);
@@ -918,11 +924,11 @@ void setupDMA (const double freq)
 }
 
 // AM ones
-void WriteTone (double Frequency, uint32_t Timing)
+void WriteTone (const double Frequency, uint32_t Timing)
 {
 	typedef struct 
 	{
-	    double Frequency;
+	    const double Frequency;
 		uint32_t WaitForThisSample;
 	} 
 	samplerf_t;
@@ -1074,7 +1080,7 @@ int modulationam (int argc, char **argv)
     }
     printf ("Reading file: %s \n", filename);
     printf ("Freq: %f \n", freq);
-	printf ("Sample Rate: %d \n", samplerate);
+	printf ("Sample Rate: %u \n", samplerate);
 	printf ("Channels: %d \n", channels);
     printf ("Writing file: %s \n", outfilename);
  
@@ -1229,7 +1235,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
              
    const double freq = strtof (argv[2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-   int samplerate = atof (argv[3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+   unsigned int samplerate = atof (argv[3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    //-> otherwise in dma or playwav func
    
    char *mod = argv[4];
@@ -1240,7 +1246,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    
    printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %f / Gain(6): %d \n", argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], gain);
    printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv[0], &argv[1], &argv[2], &argv[3], &argv[4], &argv[5], &argv[6], &gain);
-   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / / Callsign: %p/ Volume: %p \n", argc, *argv[0], *argv[1], *argv[2], *argv[3], *argv[4], *argv[5], *argv[6]);
+   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p \n", argc, *argv[0], *argv[1], *argv[2], *argv[3], *argv[4], *argv[5], *argv[6]);
    printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n"); 
    
   //---
@@ -1258,13 +1264,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    }
    else if (argc=1 & !strcmp (argv[1], "help"))  
    {
-     int infos ();
+     char infos ();
      printf ("\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] volume or [menu] or [help]! *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    }
    else if (argc=4) 
    { 
             printf ("Checking File: %s \n", argv[1]); 
-            printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %d [Hz] \n", freq, samplerate);
+            printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
 			printf ("Checking Channels: %s \n", channels)
             printf ("Checking Modulation: %s \n", mod); 
 			printf ("Checking Callsign: %s \n", *callsign)
