@@ -139,10 +139,13 @@ using namespace std;
 //extra libary https://github.com/libusb/libusb for usb soundcarts for mic and alsa
 #include "libusb/libusb.h"
 
+//custom header for pifunk (dummy for now)
+#include "pifunk.h"
+
 //python stuff, maybe wrapper too??
 
 //---------------------------------------------------------------//
-#define VERSION "0.1.6.6 a"
+#define VERSION "0.1.6.7 a"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 #define VERSION_BUILD 6
@@ -315,7 +318,7 @@ struct tm *info;
 struct PageInfo // should use here bcm intern funcs-> repair
 {
 		void *p; // physical address BCM2836_PERI_BASE (0x3F000000)
-		void *v; // virtual address
+		void *v; // virtual address -> maybe as char (void does nt return?! values
 		int instrPage;
 		int constPage; 
 		int instrs [BUFFERINSTRUCTIONS]; // [1024];
@@ -331,7 +334,7 @@ struct GPCTL
 		char BUSY        : 1;
 		char FLIP        : 1;
 		char MASH        : 2;
-		unsigned int     : 13;
+		unsigned int     : 13; // what is the blank int?
 		char PASSWD      : 8;
 };
 
@@ -361,14 +364,15 @@ struct DMAregs
 };
 
 
-int audiovol ()
+float audiovol ()
 {
-for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
-{
-   volbuffer [i] *= volumeMultiplier;
-   printf ("\n i: %d , volbuffer %f , volumeMultiplier %f \n", i, volbuffer [i], volumeMultiplier);
-}
-return 0
+	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
+	{
+     volbuffer [i] *= volumeMultiplier;
+     printf ("\n i: %d , volbuffer %f , volumeMultiplier %f \n", i, volbuffer [i], volumeMultiplier);
+   return volbuffer [i], volumeMultiplier
+	}
+return volbuffer [i], volumeMultiplier
 }
 
 //--------------LED stuff
@@ -467,7 +471,7 @@ char filenamepath ()
 	else
 	{
 	   printf ("Trying to play default sound.wav ... \n");
-	   *filename = open ("sound.wav", "r"); // sounds/sound.wav direktory should be testet
+	   *filename = open ("sound.wav", "r"); // sounds/sound.wav directory should be testet
 	   return filename;
 	    
 	}
@@ -478,7 +482,7 @@ double freqselect () // gets freq by typing in
 {
  // maybe make it as "const" for stability?!
 	printf ("\nYou selected 1 for Frequency-Mode\n"); 
-	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700mhz chip, pi3 1.2ghz
+	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700Mhz chip, pi3 1.2ghz
 	scanf  ("%f", freq);
 	printf ("You chose: %f MHz \n", freq);
     return freq;
@@ -554,7 +558,7 @@ int channelmodepmr ()
 	 case 18: channelselect (); break;
 	 //default: freq=446.00625; printf ("\nDefault chan = 1 %f \n", freq);  break;
 	}
-	return freq;
+	return channelnumberpmr, freq;
 }
 
 // CB
@@ -674,7 +678,7 @@ int channelmodecb ()
             return freq;	
 	    
 	}
-	return freq;
+	return channelnumbercb, freq;
 }
 //----------------------------------- Voids
 
@@ -687,18 +691,18 @@ void handSig ()
 
 void modulate (int m)
 {
-		ACCESS (CM_GP0DIV) == (0x5A << 24) + 0x4D72 + m;
+		ACCESS (CM_GP0DIV) == (0x5A << 24) + 0x4D72 + m;  // 0x5A (dec: 90), 0x4D72 (dec: 19826)
 }
 
 void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm header!
 {
 		void* a = valloc (4096);
     
-		((int*)a)[0] = 1;  // use page to force allocation
+		((int*)a)[0] = 1; // use page to force allocation
     
-		mlock (a, 4096);  // lock into ram
+		mlock (a, 4096); // lock into ram
     
-		*vAddr = a;  //  we know the virtual address now
+		*vAddr = a; // we know the virtual address now
     
 		int fp = open ("/proc/self/pagemap", 'w');
 		lseek (fp, ((int)a)/4096*8, SEEK_SET);
@@ -709,7 +713,7 @@ void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm head
 
 void freeRealMemPage (void** vAddr)
 {
-		munlock (vAddr, 4096);  // unlock ram
+		munlock (vAddr, 4096); // unlock ram
 		free (vAddr); // free the ram
 }
 
@@ -724,12 +728,12 @@ void setupfm ()
     }
     
     allof7e = (unsigned*)mmap(
-                  NULL,
-                  0x01000000, //length
-                  PROT_READ|PROT_WRITE,
-                  MAP_SHARED,
-                  mem_fd,
-                  0x20000000); //base
+								NULL,
+								0x01000000, //length
+								PROT_READ|PROT_WRITE,
+								MAP_SHARED,
+								mem_fd,
+								0x20000000); //base
 
    if ((int)allof7e == -1) exit (-1);
 
@@ -767,7 +771,7 @@ void playWav (char *filename, unsigned int samplerate)
         
         float value = data[i]*4*volume; // modulation index (AKA volume) logar. hearing of human
         float fmconstant = (samplerate*50.0E-6); // for pre-emphisis filter, 50us time constant
-        int clocksPerSample = (22050/samplerate*1400.0); // for timing
+        int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
         
         datanew = ((float)(*data)/32767.0f); //some constant for modulation ??
         
@@ -783,11 +787,11 @@ void playWav (char *filename, unsigned int samplerate)
         bufPtr++;
               
 
-        //while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 of struct PageInfo
+        //while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 (dec: 4) of struct PageInfo, 0x7F (dec: 127)
         //usleep (1000);
         
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
-        //(struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4-4);
+        //(struct CB*)(instrs[bufPtr].v))->SOURCE_AD = ((int)constPage.p + 2048 + intval*4 - 4);
        
         //bufPtr++;
         
@@ -894,29 +898,30 @@ void setupDMA (const double freq)
    //((struct CB*)(instrs[1023].v))->NEXTCONBK = (int)instrs[0].p;
    
     // set up a clock for the base
-   ACCESS (CLKBASE + 40*4) == (0x5A000026); //PWMCLK_CNTL
+   ACCESS (CLKBASE + 40*4) == (0x5A000026); //PWMCLK_CNTL (dec: 1509949478)
    //usleep (1000);
    
-   ACCESS (CLKBASE + 41*4) == (0x5A002800); //PWMCLK_DIV
-   ACCESS (CLKBASE + 40*4) == (0x5A000016); //PWMCLK_CNTL
+   ACCESS (CLKBASE + 41*4) == (0x5A002800); //PWMCLK_DIV 
+   ACCESS (CLKBASE + 40*4) == (0x5A000016); //PWMCLK_CNTL 
    //usleep (1000); 
 
    // set up pwm
    ACCESS (PWMBASE + 0x0) == 0;
    //usleep (1000);
    
-   ACCESS (PWMBASE + 0x4) == -1;  // status: clear errors
+   ACCESS (PWMBASE + 0x4) == -1; // status: clear errors (0x4 in dec: 4
    //usleep (1000);
    
    // Use fifo , repeat, serializer, enable ch
    ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8); 
    //usleep (1000);
    
-   ACCESS (PWMBASE + 0x8) == (1<<31) | 0x0707; // DMAC then DMA enable 
+   ACCESS (PWMBASE + 0x8) == (1<<31) | 0x0707; 
+   // DMAC then DMA enable in 0x8 dec:8 / pwm +8 = 7E20C008 (2116075528) / 0x0707 dec: 1799
    
   //activate dma
    struct DMAregs* DMA0 = (struct DMAregs*)(ACCESS(DMABASE));
-   DMA0->CS = 1<<31;  // reset
+   DMA0->CS = 1<<31; // reset
    DMA0->CONBLK_AD = 0; 
    DMA0->TI = 0; 
   
@@ -973,9 +978,11 @@ int modulationfm (int argc, char **argv)
 	 
 	  printf ("\nNow transmitting... \n");
     } 
-	else fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22050 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
-	
-return modulationfm;
+	else 
+	{
+		 fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22050 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+	}
+	//return modulationfm;
 }
 
 //AM --- not yet adapted, needs revision for freq
@@ -998,10 +1005,11 @@ int modulationam (int argc, char **argv)
 	{
 		printf ("filefreq timing opener test");
 		FileFreqTiming = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); //  O_RDWR
+		return FileFreqTiming, outfilename;
 	}
 	else 
 	{
-		outfilename = (char *) malloc (128);// not sure about that in else or what it does
+		outfilename = (char *)malloc (128);// not sure about that in else or what it does
 		sprintf (outfilename, "%s", "out.ft");
 	}
 //-------                           
@@ -1009,7 +1017,7 @@ int modulationam (int argc, char **argv)
     {   // Open failed so print an error message. 
         printf ("\nNot able to open input file %s \n", filename);
         // Print the error message from libsndfile. 
-        return  1;
+        return 1;
     }
 //-----------------
 	if (sfinfo.samplerate == 22050) //44 or 48 khz needs testing
@@ -1091,8 +1099,7 @@ int modulationam (int argc, char **argv)
     fclose (filename); 
     printf ("\nFile saved! \n");
     
-    return channels, ampf, x, factorizer, sampler;
-	//return 0;
+    return FileFreqTiming, filename;
 }
 
 int modulationselect ()
@@ -1126,7 +1133,7 @@ return freqmode;
 
 // read / import csv for pmr
 
-int csvreader()
+char csvreader()
 {
     printf ("\nChecking for CSV-file... \n");
     char *sfp, *dfp;
@@ -1146,12 +1153,12 @@ int csvreader()
     printf ("\n%s\n", c);
     printf ("\nCSV-Import of ctss-List finished! \n");
     
-    return 0;
+    return c, *sfp, *dfp;
 
 }
 
-   char callname ()
-   {
+char callname ()
+{
 
         if (argv[5] == NULL)
         {
@@ -1177,8 +1184,8 @@ int csvreader()
         printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 		return callsign, &callsign, *callsign;
 	
-    } 
-	
+} 
+
 int GetUserInput () //my menu-assistent
 {
     time ();
@@ -1188,7 +1195,6 @@ int GetUserInput () //my menu-assistent
 	int modeselect;
     while (getchar () != '\n');
 
-    
 	printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
 	scanf ("%d", &modeselect);
     
@@ -1199,8 +1205,7 @@ int GetUserInput () //my menu-assistent
 					int callname ();
 					break;
 					 
-		    case 2:	
-		            char filenamepath ();
+		    case 2: char filenamepath ();
 		            double freqselect ();
 		            int modulationselect ();
 					break;
@@ -1219,7 +1224,6 @@ int GetUserInput () //my menu-assistent
 			//default: printf ("\nDefault = 1 \n"); break;
 			 
     }
-
     return modeselect;
 }
 
@@ -1252,7 +1256,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n"); 
    
   //---
-  
+   headertest ();
    infos (); //information, disclaimer
    timer (); //local time
   
