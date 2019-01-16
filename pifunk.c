@@ -292,7 +292,7 @@ float ampf;
 float factorizer;
 float sampler;
 int readcount, nb_samples;
-int Excursion = 6000;
+int excursion = 6000; //32767 another value
 
 // audio control
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
@@ -448,9 +448,9 @@ char infos () //Warnings and infos
     return 0;
 }
 
-char timer ()
+static char timer ()
 {
-   
+
    time (&rawtime);
    info = localtime (&rawtime);
    asctime (info) = newtime
@@ -753,6 +753,18 @@ void setupfm ()
 
 void playWav (char *filename, unsigned int samplerate)
 {
+	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
+NTSC: 44,056 Hz
+    245 × 60 × 3 = 44,100
+    245 active lines/field × 60 fields/second × 3 samples/line = 44,100 samples/second
+    (490 active lines per frame, out of 525 lines total)
+
+PAL:
+    294 × 50 × 3 = 44,100
+    294 active lines/field × 50 fields/second × 3 samples/line = 44,100 samples/second
+    (588 active lines per frame, out of 625 lines total)
+	*/
+	
     // after getting filename insert then open
 	lseek (fp, 0L, SEEK_SET);
 	int sz = lseek (fp, 0L, SEEK_END); 
@@ -770,13 +782,13 @@ void playWav (char *filename, unsigned int samplerate)
     {
         
         float value = data[i]*4*volume; // modulation index (AKA volume) logar. hearing of human
-        float fmconstant = (samplerate*50.0E-6); // for pre-emphisis filter, 50us time constant
-        int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
+        float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
+        int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400(why this?
         
-        datanew = ((float)(*data)/32767.0f); //some constant for modulation ??
+        datanew = ((float)(*data)/excursion); //some constant for modulation ?? int excursion
         
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
-        float dval = sample*15.0; // actual transmitted sample, 15 is bandwidth (about 75 kHz) better 14.5
+        float dval = sample*15.0; // actual transmitted sample, 15 is standard bandwidth (about 75 kHz) better 14.5
         
         int intval = (int)(round (dval)); // integer component
         float frac = ((dval - (float)intval)/2 + 0.5);
@@ -948,7 +960,7 @@ void WriteTone (const double Frequency, uint32_t Timing)
 	
 	if (write (FileFreqTiming, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t)) 
 	{
-		fprintf (stderr, "\nUnable to write sample \n");
+		fprintf (stderr, "\nUnable to write sample! \n");
 	}
 }
 
@@ -970,12 +982,12 @@ int modulationfm (int argc, char **argv)
 
       setupDMA (argc>2 ? atof (argv[2]):100.00000); // default freq, maybe do input here? 
 	  
-	  printf ("\nTesting Samplerate... \n");
-      playWav (argv[1], argc>3 ? atof (argv[3]):22050); // <--- in 22.05 kHz, should be same as AM!!
+	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
+      playWav (argv[1], argc>3 ? atof (argv[3]):22050); // <-- in 22.05 kHz, should be same as AM!!
 	  
 	  printf ("\Checking & Setting LED for Transmission \n");
 	  led ();
-	 
+	  timer ();
 	  printf ("\nNow transmitting... \n");
     } 
 	else 
@@ -1004,12 +1016,12 @@ int modulationam (int argc, char **argv)
 	if (argc>=4) 
 	{
 		printf ("filefreq timing opener test");
-		FileFreqTiming = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); //  O_RDWR
-		return FileFreqTiming, outfilename;
+		FileFreqTiming = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
+		//return FileFreqTiming, outfilename;
 	}
 	else 
 	{
-		outfilename = (char *)malloc (128);// not sure about that in else or what it does
+		outfilename = (char *)malloc (128);// allocatong memory for filename
 		sprintf (outfilename, "%s", "out.ft");
 	}
 //-------                           
@@ -1024,9 +1036,13 @@ int modulationam (int argc, char **argv)
 	{ 
 		return samplerate;
 	}
-	else if (sfinfo.samplerate == 14500) return samplerate;
+	else if (sfinfo.samplerate == 14500)
+			{
+			printf ("Samplerate is 14500 !");
+			return samplerate;
+			}
 	else {
-	printf ("\nInput samplerate must be 22.05 [kHz] AM/ or 14.5 kHz FM (mono)! \n");
+	printf ("\nInput samplerate must be at least 22.05 [kHz] AM/ or 14.5 kHz FM (mono)! \n");
 	return 1;
 	}
 //--------------------
@@ -1081,8 +1097,10 @@ int modulationam (int argc, char **argv)
 			sampler = (1E9/samplerate); //44.00
 			printf ("sampler: %f \n", sampler);
 			
+			timer ();
+			printf ("\nNow writing tone in AM... \n");
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
-            printf ("\nNow writing tone in AM... \n");
+            
             return channels, ampf, x, factorizer, sampler;
 	    }
 	led ();

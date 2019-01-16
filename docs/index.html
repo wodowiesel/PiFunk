@@ -100,7 +100,7 @@ adduser pi i2c<br>
 compile with g++ wpi-i2c.c -o wpi-i2c -lwiringPi<br>
 
 command for lookin device up : <br>
- <img src="../disp/display2708.jpg" width="100" hight="100"><br>
+<img src="../disp/display2708.jpg" width="100" hight="100"><br>
 i2cdetect -l<br>
 i2cdetect -y 1<br>
 -------------------
@@ -119,9 +119,9 @@ compile with:<br>
 
 -lsndfile for ALSA snd lib<br>
 
-sometimes -std=gnu99 (sometimes c99)<br>
+sometimes -std=gnu99
 
-gcc -lm -g -std=gnu99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.so<br>
+gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a<br>
 
 make clean<br>
 
@@ -131,7 +131,7 @@ make install<br>
 
 run with admin/root permissions:<br>
 
-arguments: [filename (wav)] [freq (MHz)] [samplerate (kHz] [modulation (fm/am)] [callsign (optional)]<br>
+arguments: [filename (wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)]<br>
 
 extra single arguments:<br>
 
@@ -139,29 +139,30 @@ extra single arguments:<br>
 
 [help] for more infos and arguments<br>
 
-default: sudo pifunk sound.wav 100.0000 22500 fm callsign<br>
+default: sudo pifunk sound.wav 100.0000 22050 fm callsign<br>
 
-Radio works with *.wav-file with 16-bit @ 22500.0 [Hz] mono / 1-700 MHz range.<br>
+Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono (or 11.025/14500)<br>
+0.1-700 MHz (pi B+) range. you also can use a better pi (pi 3B+ with 1.2 GHz clock) or overclock it<br>
 
 Use '. dot' as decimal-comma seperator!<br>
 
 Pi oparates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA<br>
-	</p>
-	
+</p>
   </article>
   <aside>
 <section>
-    <h2>Links (dummy)</h2>
+    <h2>Links</h2>
     <ul>
       <li><a href="../ctsspmr.csv">CTSS-tones in CSV-file</a></li>
       <li><a href="../bin/pifunk">Client (standalone)</a></li>
       <li><a href="server.html">maybe Server in the future</a></li>
     </ul>
-</section>
+</section><br>
+Pi B+ GPIO Pinout<br>
+<img src="pinout-gpio-pib+.jpg" width="480" hight="300"><br>
   </aside>
   <footer>
-     <p>(C) 2017-2019 by silicator (all rights reserved) </p>
+     <p>(C) 2017-2019 by silicator (all rights reserved) <br> Based on pifm</p>
   </footer>
-
   </body>
 </html>
