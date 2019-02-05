@@ -1,8 +1,8 @@
 README
 
-[logo]:https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico
+[logo](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.png)
 
-# PiFunk Radio Transmitter in FM/AM for CB and PMR446 
+## PiFunk Radio Transmitter in FM/AM for CB and PMR446 
 
 **Early Experimental!**
 
