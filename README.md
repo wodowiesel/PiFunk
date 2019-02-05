@@ -1,13 +1,14 @@
-#README
+# README
 
-##  ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk") PiFunk Radio Transmitter in FM/AM for CB and PMR446 
+![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
+
+## PiFunk Radio Transmitter in FM/AM for CB and PMR446 
 
 **Early Experimental!**
-
-- based on PiFM/AM-Script
+based on PiFM/AM-Script
 ___
 
-### Preparation:
+### Preparations:
 
 get this program via: 
 
@@ -122,4 +123,4 @@ ___
 
 [Copying guideline](docs/COPYING.md)
 
-[License guideline](docs/LICENSE.md) under [GPL](gpl)
+[License guideline](docs/LICENSE.md) under GPL
