@@ -1,16 +1,13 @@
-README
+#README
 
-[logo](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.png)
-
-## PiFunk Radio Transmitter in FM/AM for CB and PMR446 
+##  ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk") PiFunk Radio Transmitter in FM/AM for CB and PMR446 
 
 **Early Experimental!**
 
 - based on PiFM/AM-Script
-
 ___
 
-## Preparation:
+### Preparation:
 
 get this program via: 
 
@@ -27,10 +24,9 @@ manually open with nano-editor: `sudo nano /boot/confiig.txt` (i provide one too
 add line: `dtoverlay=w1-gpio,gpiopin=4,pullup=0` (add pullup=1 if nedded)
 
 Using w1-gpio needs a 4.7 kΩ pullup resistor connected between GPIO pin 
-
 ___
 
-## Build:
+### Build:
 
 You will need ALSA library for this:
 
@@ -39,7 +35,6 @@ You will need ALSA library for this:
 then go to directory:
 
 `cd PiFunk`
-
 
 compile with:
 
@@ -58,10 +53,9 @@ sometimes -std=gnu99
 `make`
 
 `make install`
-
 ___
 
-## Usage:
+### Usage:
 
 run with admin/root permissions:
 
@@ -78,10 +72,9 @@ Use '. dot' as decimal-comma separator!
 default: `sudo pifunk sound.wav 100.0000 22050 fm callsign`
 
 Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700 MHz range.
-
 ___
 
-## Warnings:
+### Warnings:
 
 - Use power supply (~5 V via USB) with enough specifications only! 
 
@@ -100,10 +93,9 @@ ___
 - For transmission you should use tested Antennas! 
 
 - Tip: can use just a copper wire i.e. a 2m/70 cm or other lambda(1/4)-antenna (17.5 cm/6.9 in for PMR)
-
 ___
 
-## Disclaimer:
+### Disclaimer:
 
 - Private Project! Work in Progress (WiP)
 
@@ -116,10 +108,9 @@ ___
 - Testers and feedback appreciated!
 
 *Thank you and have fun!*
-
 ___
 
-## Links:
+### Links:
 
 [GitPage](https://silicator.github.io/PiFunk/)
 
@@ -131,4 +122,4 @@ ___
 
 [Copying guideline](docs/COPYING.md)
 
-[License guideline](docs/LICENSE.md) under gpl
+[License guideline](docs/LICENSE.md) under [GPL](gpl)
