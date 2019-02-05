@@ -1,34 +1,45 @@
 README
 
+[logo]:https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico
+
 # PiFunk Radio Transmitter in FM/AM for CB and PMR446 
 
-Early Experimental! 
+**Early Experimental!**
 
-based on PiFM/AM-Script
+- based on PiFM/AM-Script
 
-get this programm via: 
+___
 
-git clone https://github.com/silicator/PiFunk
+## Preparation:
+
+get this program via: 
+
+`git clone https://github.com/silicator/PiFunk`
 
 1-Wire by default BCM4 setting needs to be activated in boot-config for autostart
 
-via command: sudo modprobe w1-gpio,gpiopin=4 
+via command: `sudo modprobe w1-gpio,gpiopin=4`
 
-manually open with nano-editor: sudo nano /boot/confiig.txt
+(if you have problems deactivate 1-wire config!)
 
-add line: dtoverlay=w1-gpio,gpiopin=4,pullup=0 (add pullup=1 if nedded)
+manually open with nano-editor: `sudo nano /boot/confiig.txt` (i provide one too)
 
-Using w1-gpio needs a 4.7 kΩ pullup resistor connected between GPIO pin and
+add line: `dtoverlay=w1-gpio,gpiopin=4,pullup=0` (add pullup=1 if nedded)
 
-a 3.3 V supply header pin 1 or 17 is needed for more complex circuits or leds.
+Using w1-gpio needs a 4.7 kΩ pullup resistor connected between GPIO pin 
 
-You will need ALSA libary for this:
+___
 
-sudo apt-get install libsndfile-dev
+## Build:
+
+You will need ALSA library for this:
+
+`sudo apt-get install libsndfile-dev`
 
 then go to directory:
 
-cd PiFunk
+`cd PiFunk`
+
 
 compile with:
 
@@ -40,65 +51,75 @@ compile with:
 
 sometimes -std=gnu99 
 
-gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.so 
+`gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a`
 
-make clean
+`make clean`
 
-make
+`make`
 
-make install
+`make install`
+
+___
+
+## Usage:
 
 run with admin/root permissions:
 
-Arguments: [filename (wav)] [freq (MHz)] [samplerate (kHz] [modulation (fm/am)] [callsign (optional)] 
+Arguments: [filename (*.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)] 
 
 extra single Arguments:
 
-[menu] as step-by-step-asistent
+[menu] as step-by-step assistent
 
 [help] for more infos and arguments
 
-default: sudo pifunk sound.wav 100.0000 22500 fm callsign
+Use '. dot' as decimal-comma separator! 
 
-Radio works with *.wav-file with 16-bit @ 22500.0 [Hz] mono / 1-700 MHz range.
+default: `sudo pifunk sound.wav 100.0000 22050 fm callsign`
 
-Use '. dot' as decimal-comma seperator! 
+Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700 MHz range.
 
-Pi oparates with square-waves (²/^2) PWM on GPIO 4/Pin 7 @ ~500 mA 
+___
 
-for example (Pi B+ v1.2 @ 700 MHz ARM processor bcm2835-v1.55)
+## Warnings:
 
-Use power supply with enough specs only! 
+- Use power supply (~5 V via USB) with enough specifications only! 
 
-Use Low-/Highbandpassfilters and/or ~10 uF-caps and resistors/diodes 
+- PWM on GPIO 4/Pin 7 @ ~500 mA max. (in example Pi B+ v1.2 @ 700 MHz ARM processor bcm2835-v1.55)
 
-to prevent transmitting parallel on permitted frequencies (squarewave!).
+- Antenna should be grounded if possible!
 
-You can try to smooth it out with a 1:1-baloon.
+- Use Low-/High-Band-Pass-Filters with ~10 uF caps  resistors/diodes 
 
-Dummyload: 4-100W @ 50 Ohm "cement" or with cooling-ribs with fan for testing.
+- Pi operates with square-waves (²/^2) to prevent transmitting simultaneously on permitted frequencies!
 
-Antanna should be grounded if possible!
+- You can try to smooth it out with a 1:X-balloon.
 
-For transmission you can use just a copper wire or example a 2m/70 cm or other lamda(1/4)-antenna
+- Dummy-load: 4-100 W @ 50 Ohm "cement" or similar with cooling-ribs with fan for testing.
 
-(depends on what band you wannt to transmit!)
+- For transmission you should use tested Antennas! 
 
+- Tip: can use just a copper wire i.e. a 2m/70 cm or other lambda(1/4)-antenna (17.5 cm/6.9 in for PMR)
 
-DISCLAIMER:
+___
 
-Privat Project! Work in Progress (WiP)
+## Disclaimer:
 
-Im not a professional so NO guarantees or warranty for any damage or similar!
+- Private Project! Work in Progress (WiP)
 
-Useage at own risk!
+- I'm not a professional so **NO guarantees or warranty** for any damage or similar!!
 
-Check laws of your country! 
+- Usage at your **own risk** !!
 
+- Check laws of your country! Some Frequencies are prohibited or need a Ham-Licence!
 
-Testers and feedback apreciated!
+- Testers and feedback appreciated!
 
-Thank you
+*Thank you and have fun!*
+
+___
+
+## Links:
 
 [GitPage](https://silicator.github.io/PiFunk/)
 
@@ -110,4 +131,4 @@ Thank you
 
 [Copying guideline](docs/COPYING.md)
 
-[License guideline](docs/LICENSE.md) under GPL
+[License guideline](docs/LICENSE.md) under gpl
