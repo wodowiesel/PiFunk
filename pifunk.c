@@ -1,51 +1,51 @@
 /* PiFunk (C) 2018
-->get project:
+ ->get project:
  git clone https://github.com/silicator/pifunk
-->instructions: 
- You will need alsa libary for this:
+ ->instructions: 
+ You will need alsa library for this:
  sudo apt-get install libsndfile-dev
 
  cd PiFunk // goto path
- gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk -pifunk.o 
+ gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a
  make clean
  make 
  make install
  // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
  sudo pifunk sound.wav 100.0000 22050 fm callsign
  
--> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
+ -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
  virtual maschine possible with qemu
  or alternative with everpad: nor sure about this, rather not using it 
  wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -lm -std=c99 -g -x c - && ./a.out sound.wav
 
-gcc 5.4.1 compiler + gdb 7.11.1 debugger (online & local)
-g++ 5.4.1 c++11 (or 14)
-trying on rabian strech incl. desktop v4.14
-
-!!!!!!! needs more testing on real pi !!!!! 
+ gcc 5.4.1 compiler + gdb 7.11.1 debugger (online & local)
+ g++ 5.4.1 c++11 (or 14)
+ trying on raspbian (stretch) incl. desktop v4.14 (Nov. 2018) based on debian
+ -> get it here https://www.raspberrypi.org/downloads/raspbian/
+ 
+ !!!!!!! program needs more testing on real pi See Disclaimer!!!!! 
 
 -----Disclaimer-----
 Rewritten for own purposes! 
-no guarantee, waranty for anything! Usage at own risk!
+no guarantee, warranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps 
-usage of dummyloads 50 ohm @ 4 watts (S 0-level), (max 100) possible and compare signals with swr/pwr-meter!
-do not shortcut or do overstress it bigger than 3.3V! may harm damage-> no warranty
+usage of dummyloads 50 ohm @ 4 watts (S= 0-level), (max. 100) possible and compare signals with swr/pwr-meter!
+do not shortout or do overstress it bigger than 3.3V! may harm damage-> no warranty
 
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
-used python 2.7.x & 3.6.x on orig. Raspian
+used python 2.7.x & 3.6.x on orig. Raspbian
 don't forget to apt-get upgrade and update
 
-1) Pi-FM version - freqency modulation direction left/right ← , → 
+1) Pi-FM version - frequency modulation direction left/right ← , → 
 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
 
---> 700 MHz (max) system clock of the pi -> pls use heatsink (if you want with fan)
+--> 700 MHz  system clock of the pi -> please use heatsink (if you want with fan)
 
 todo: 
 pointer & adress corrections 
-make compatible py/shell scripts for debugg/install/run with args 
+make compatible py/shell scripts for debug/install/run with args 
 playlist & wave/mp3 + microphone (usb)
-github stuff
-name & license stuff
+tone generator for ctss (sin?)
 */
 
 //std includes
@@ -57,9 +57,12 @@ name & license stuff
 #include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>
+
 // functionality includes
-#include <iso646.h> //c95 - backcompatible
+#include <iso646.h> //c95 - back-compatible
+#include <getopt.h>
 #include <time.h>
+#include <sched.h>
 #include <float.h>
 #include <locale.h>
 #include <errno.h>
@@ -83,6 +86,7 @@ name & license stuff
 #include <fenv.h>
 #include <grp.h>
 #include <pwd.h>
+
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -118,7 +122,7 @@ using namespace std;
 #include <windef.h>
 #include <winnt.h>
 #include <winbase.h>
-#include <conio.h> // dos header
+#include <conio.h> // dos-header
 */
 
 // broadcom arm processor for mapping phys. adresses
@@ -126,17 +130,20 @@ using namespace std;
 
 //GPIO includes´
 //#include "RPI.GPIO/source/c_gpio.h"
-#include "RPI.GPIO/source/event_gpio.h"
 //#include "RPI.GPIO/source/py_pwm.h"
+//#include "RPI.GPIO/source/constants.h"
+#include "RPI.GPIO/source/event_gpio.h"
 #include "RPI.GPIO/source/soft_pwm.h"
 #include "RPI.GPIO/source/common.h"
-//#include "RPI.GPIO/source/constants.h"
 #include "RPI.GPIO/source/cpuinfo.h"
 
+
+
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
+// download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
 #include "sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
-//extra libary https://github.com/libusb/libusb for usb soundcarts for mic and alsa
+//extra library https://github.com/libusb/libusb for usb soundcards for mic and alsa usage
 #include "libusb/libusb.h"
 
 //custom header for pifunk (dummy for now)
@@ -154,8 +161,8 @@ using namespace std;
 //---- PI specific stuff
 #define IN 0
 #define OUT 1
-//#define FALSE 0
-//#define TRUE 1
+#define FALSE 0
+#define TRUE 1
 /*
 predefine if needed when not using bcm header
 #define LOW 0
@@ -185,25 +192,25 @@ volatile unsigned *allof7e;
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 
 #define length    (0x01000000) // dec: 1
-#define base      (0x20000000) //base=GPIO offset dec:2
+#define base      (0x20000000) // base=GPIO offset dec:2
 #define ADR       (0x7E000000) // dec: 2113929216
-#define CM_GP0CTL (0x7E101070) //p.107 dec: 2114982000
-#define GPFSEL0   (0x7E200000) //p.90 dec: 2116026368
-#define CM_GP0DIV (0x7E101074) //p.108 dec: 2114982004
+#define CM_GP0CTL (0x7E101070) // p.107 dec: 2114982000
+#define GPFSEL0   (0x7E200000) // p.90 dec: 2116026368
+#define CM_GP0DIV (0x7E101074) // p.108 dec: 2114982004
 #define CLKBASE   (0x7E101000) // dec: 2114981888
 #define DMABASE   (0x7E007000) // dec: 2113957888
 #define PWMBASE   (0x7E20C000) // PWM controller dec: 2116075520
 #define BCM2836_PERI_BASE (0x3F000000) // register physical address dec: 1056964608
 #define GPIO_BASE (BCM2836_PERI_BASE + base) //hex 0x5F000000 dec: 1593835520
 #define PWMCLK_DIV (0x5A002800) // PWMCLK_DIV dec: 1509959680
-#define PWMCLK_CNTL (0x5A000016) //PWMCLK_CNTL dec: 1509949462
+#define PWMCLK_CNTL (0x5A000016) // PWMCLK_CNTL dec: 1509949462
 
 #define ACCESS(base) (volatile int*)(base+(volatile int)allof7e-ADR)
 #define SETBIT(base, bit) ACCESS(base) || 1<<bit // |=
 #define CLRBIT(base, bit) ACCESS(base) && ~(1<<bit) // &=
 
-//possibility to give argv 0-4 an specific adress or pointer
-//Adresses-> at least on my system-tests
+// possibility to give argv 0-4 an specific adress or pointer
+// adresses -> at least on my system-tests
 #define argc_adr (0x7FFFFFFFEB0C) // dec: 140737488349964
 #define Name_adr (0x7FFFFFFEC08) // dec: 8796093017096
 #define File_adr (0x7FFFFFFFEC10) // dec: 140737488350224
@@ -214,7 +221,7 @@ volatile unsigned *allof7e;
 #define callsign2_adr (0x7FFFFFFFEAEF) // dec: 140737488349935
 #define callsign3_adr (0x7FFFFFFFEAE8) // dec: 140737488349928
 
-//Pointers->
+// Pointers
 #define argc_ptr (0x5) // dec: 5
 #define Name_ptr (0x2F) // dec: 47
 #define File_ptr (0x73) // dec: 115
@@ -235,13 +242,17 @@ char *gpio_mem, *gpio_map;
 char *spi0_mem, *spi0_map;
 
 //-----------------------------------------
-// programm Arguments
-// custom programm-name. system default is the filename itself! 
-char *description = "(experimental)";
+// program Arguments
+// custom program-name. system default is the filename itself! 
+char *description = "(experimental)"; // version-stage
+static char *device = "default"; // playback device 
+snd_output_t *output = NULL;
+
 char *filename;
 const double freq;
 unsigned int samplerate;
-// samples max 10 kHz resolution for am / 14.5 kHz FM radio can be recorded with only a little quality loss.
+
+// samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded with only a little quality loss.
 int channels;
 char *mod;
 char *fm = "fm";
@@ -254,28 +265,29 @@ int channelnumbercb;
 int channelnumberpmr;
 
 //--network sockets for later
-
 // here custom port via tcp-ip evtl. udp
 socklen_t addressLength;
-
+unsigned int port;
 struct sockaddr_in localAddress;
 struct client_addr.sin_addr;
 struct local.sin_addr;
 
-// programm variables
+// program variables
 time_t rawtime;
 char buffer [80];
-char data [1024];
+char data_name [1024];
 int i;
 int k;
 float x;
+ 
 
 // we generate complex I-Q samples
 float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN]; 
 float FactAmplitude = 2.0; //maybe here ampmodulator type input?
 // log Modulation 
-float A = 87.7f; // compression parameter, stauchung
+float A = 87.7f; // compression parameter (stauchung) -> why this value?
+float ctss_freq;
 
 // fm vars
 FILE infiles;
@@ -300,7 +312,7 @@ int excursion = 6000; //32767 another value
 float volumeLevelDb = -6.f; //cut amplitude in half
 float volbuffer [SAMPLES_PER_BUFFER];
 const float VOLUME_REFERENCE = 1.f;
-const float volumeMultiplier = (VOLUME_REFERENCE * pow(10, (volumeLevelDb / 20.f);
+const float volumeMultiplier = (VOLUME_REFERENCE * pow(10, (volumeLevelDb/20.f);
 
 // instructor for access
 unsigned long frameinfo;
@@ -308,8 +320,9 @@ int FileFreqTiming;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
 int bufPtr = 0;
 int instrCnt = 0;
-int constPage;
 int instrPage;
+int constPage;
+
 
 //--------------------------------------------------
 // Structs
@@ -318,7 +331,7 @@ struct tm *info;
 struct PageInfo // should use here bcm intern funcs-> repair
 {
 		void *p; // physical address BCM2836_PERI_BASE (0x3F000000)
-		void *v; // virtual address -> maybe as char (void does nt return?! values
+		void *v; // virtual address 
 		int instrPage;
 		int constPage; 
 		int instrs [BUFFERINSTRUCTIONS]; // [1024];
@@ -330,11 +343,11 @@ struct GPCTL
 		char SRC         : 4;
 		char ENAB        : 1;
 		char KILL        : 1;
-		char             : 1; // what is the blank char?
+		char WHAT        : 1; // what is the blank char?
 		char BUSY        : 1;
 		char FLIP        : 1;
 		char MASH        : 2;
-		unsigned int     : 13; // what is the blank int?
+		unsigned int IDK : 13; // what is the blank int?
 		char PASSWD      : 8;
 };
 
@@ -369,8 +382,8 @@ float audiovol ()
 	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
 	{
      volbuffer [i] *= volumeMultiplier;
-     printf ("\n i: %d , volbuffer %f , volumeMultiplier %f \n", i, volbuffer [i], volumeMultiplier);
-   return volbuffer [i], volumeMultiplier
+     printf ("\n i: %d , volbuffer: %f , volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+     return volbuffer [i], volumeMultiplier
 	}
 return volbuffer [i], volumeMultiplier
 }
@@ -385,7 +398,7 @@ return volbuffer [i], volumeMultiplier
 		while(!playWav());
 		{
 		cm2835_gpio_write (PIN17, LOW);
-		printf ("LED OFF - No Transmission ");
+		printf ("LED OFF - No Transmission!");
 		return 0;
 		}
 		retun 0;
@@ -412,7 +425,7 @@ int led ()
 		{
 	// Turn it on
 		bcm2835_gpio_write (PIN17, HIGH);
-		printf ("LED ON - Transmission... ");
+		printf ("LED ON - Transmission...!");
 	// wait a bit
 		bcm2835_delay (500);
 		}
@@ -480,7 +493,7 @@ char filenamepath ()
 
 double freqselect () // gets freq by typing in
 {
- // maybe make it as "const" for stability?!
+
 	printf ("\nYou selected 1 for Frequency-Mode\n"); 
 	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700Mhz chip, pi3 1.2ghz
 	scanf  ("%f", freq);
@@ -522,7 +535,7 @@ return channelmode;
 }
 	
 //--------------------------------------------------
-// Channelmode 
+// Channel-mode 
 //PMR
 
 int channelmodepmr ()
@@ -534,14 +547,15 @@ int channelmodepmr ()
 	{
 	 //---- Analog & digital 
 	 case 0: freq=446.00625; printf ("\nDUMMY all-chan: Chan 0-> default Chan 1 %f ", freq); break;	// Scan all Chan till active , now chan1
-	 case 1: freq=446.00625; break;	 //Standard
-	 case 2: freq=446.01875; break; //Geocaching
-	 case 3: freq=446.03125; break; // random
-	 case 4: freq=446.04375; break; //at 3-chan-PMR-devices its ch. 2
-	 case 5: freq=446.05625; break; //Contest
-	 case 6: freq=446.06875; break; //Events
-	 case 7: freq=446.08125; break; //at 3-chanl-PMR-devices it's ch. 3
-	 case 8: freq=446.09375; break; //random talk stuff
+	 case 1: freq=446.00625; break;	// Standard
+	 case 2: freq=446.01875; break; // Geocaching
+	 case 3: freq=446.03125; break; // Standard
+	 case 4: freq=446.04375; break; // at 3-chan-PMR-devices its ch. 2
+	 case 5: freq=446.05625; break; // Contest
+	 case 6: freq=446.06875; break; // Events
+	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
+	 case 8: freq=446.09375; break; // Standard
+	 
 //---------------------------Digital only
 	// dpmr digital new since 28.09.2016
 	// extra 8 chan
@@ -569,7 +583,7 @@ int channelmodecb ()
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
-		
+		// --> translation of infos in english in future updates!
             case 0:   freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq); break;
 			case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)	
 			case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
@@ -580,16 +594,13 @@ int channelmodecb ()
 			case 7:   freq=27.0350; break; //Datenkanal (D)
 			case 8:   freq=27.0550; break;
 			case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
-			case 10:  freq=27.0750; break; //Antennen-abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
+			case 10:  freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
 /*
-			# Bei genauerer Betrachtung obiger Tabelle fallen einige Stellen auf, 
-			# an denen sich Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz unterscheiden. 
-			# Die dazwischen versteckten Kanaele werden ueblicherweise folgenderweise bezeichnet:
+			# Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
 			# Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen. 
-			# Allerdings werden sie in einigen Laendern, darunter auch Deutschland[3], fuer andere Zwecke
-			# wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet
+			# Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet
 */
-			 case 11:  freq=27.0850; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 11:  freq=27.0850; break;  //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			 case 1111: freq=27.0950; break; //Eurobalise-Energieversorgung
 			 
 			 case 12:  freq=27.1050; break;
@@ -628,7 +639,7 @@ int channelmodecb ()
 			 case 38:  freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
 			 case 39:  freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland	
 			 case 40:  freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete 
-									         //ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
+									        //ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
 			/* 80 chan devices
 			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt 
 			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: 
@@ -729,11 +740,11 @@ void setupfm ()
     
     allof7e = (unsigned*)mmap(
 								NULL,
-								0x01000000, //length
+								0x01000000, // length
 								PROT_READ|PROT_WRITE,
 								MAP_SHARED,
 								mem_fd,
-								0x20000000); //base
+								0x20000000); // base
 
    if ((int)allof7e == -1) exit (-1);
 
