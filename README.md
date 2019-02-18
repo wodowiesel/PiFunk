@@ -123,4 +123,4 @@ ___
 
 [Copying guideline](docs/COPYING.md)
 
-[License guideline](docs/LICENSE.md) under GPL
+[License guideline](LICENSE.md) under GPLv3.0
