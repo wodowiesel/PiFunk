@@ -10,8 +10,6 @@ chmod 666 /dev/i2c-1
 adduser pi i2c
 
 #->Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
-#the GPIO pin and a 3.3v supply (header pin 1 or 17) for complex circuits, default deactivated (0)
-
 #do open path of w1-device 
 ls /sys/bus/w1/devices/
 
