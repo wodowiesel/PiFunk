@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="silicator a.k.a. wiesel">
-  <meta name="date" content="2018-06-17T02:25:37+01:00">
+  <meta name="date" content="2019-01-17T02:25:37+01:00">
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="mstile-144x144.png">
   <link rel="shortcut icon" href="favicon.ico">
@@ -87,7 +87,7 @@ read time directly from rtc module<br>
 hwclock -r<br>
 update rtc module time from system time (system time should be regularly updated by ntp from the internet if your pi is networked):<br>
 hwclock -w<br>
-update system time from the rtc module (this should happen on startup):<br>
+update system time from the rtc module (this should happen on start-up):<br>
 hwclock -s<br>
 and the most fun of all - monitor the "drift" between your system clock and the rtc module:<br>
 hwclock -c<br>
@@ -147,12 +147,12 @@ Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono (or 11.025/14500)<br
 
 Use '. dot' as decimal-comma separator!<br>
 
-Pi operates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA<br>
+Pi operates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA!<br>
 </p>
   </article>
   <aside>
 <section>
-    <h2>Links</h2>
+    <h2>Links:</h2>
     <ul>
       <li><a href="../ctsspmr.csv">CTSS-tones in CSV-file</a></li>
       <li><a href="../bin/pifunk">Client (standalone)</a></li>
