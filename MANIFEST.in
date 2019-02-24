@@ -1,0 +1,8 @@
+
+include README.md INSTALL.md COPYING.md LICENSE.md CMakeLists.txt pifunk.py 
+
+include Makefile
+recursive-include docs/ *.
+recursive-include *.py *.csv *.c *.h *.html *.txt
+
+prune logs
