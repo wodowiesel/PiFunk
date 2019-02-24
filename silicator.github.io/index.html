@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="author" content="silicator">
+  <meta name="author" content="silicator a.k.a. wiesel">
   <meta name="date" content="2018-06-17T02:25:37+01:00">
   <meta name="msapplication-TileColor" content="#ffffff">
-  <meta name="msapplication-TileImage" content="/mstile-144x144.png">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
-  <link rel="icon" type="image/png" href="favicon.png" sizes="96x96">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" sizes="any">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <meta name="msapplication-TileImage" content="../docs/mstile-144x144.png">
+  <link rel="shortcut icon" href="../docs/favicon.ico">
+  <link rel="icon" type="image/png" href="../docs/favicon.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="../docs/favicon.png" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="../docs/favicon.svg" sizes="any">
+  <link rel="apple-touch-icon" sizes="180x180" href="../docs/apple-touch-icon.png">
 
   <style>
 
@@ -52,8 +52,8 @@
   </head>
   <body>
  <header>
-    <img src="favicon.png" alt="logo">
-    <h1>PiFunk PMR/CB Transmitter with FM/AM-Modulation</h1>
+    <img src="../docs/favicon.png" alt="logo"> 
+    <h2>PiFunk PMR/CB Transmitter with FM/AM-Modulation</h2>
   </header>
 <main>
 <article>
@@ -61,7 +61,7 @@
 changing config.txt of the pi obligatory!<br>
 for 1-wire configuration add line: <br>
 
-dtoverlay=w1-gpio,gpiopin=4,pullup=0,i2c-rtc,ds3231 (add pullup=1 if nedded)<br>
+dtoverlay=w1-gpio,gpiopin=4,pullup=0,i2c-rtc,ds3231 (add pullup=1 if needed)<br>
 snd-bcm2835<br>
 i2c-dev<br>
 rtc-ds1307<br>
@@ -74,8 +74,8 @@ Pin#5 SCL<br>
 Pin#7 GPIO4 <br>
 Pin#9 GND<br>
 temp-Range -40 to +85 C -> -40 to 185 F<br>
-Aacuracy +- 5 ppm (+- 0,432 s / day) <br>
-output: 1Hz - 32,768kHz <br>
+Accuracy +- 5 ppm (+- 0,432 s / day) <br>
+output: 1 Hz - 32,768 kHz <br>
 400 kHz I2C <br>
 16-pol SO-Plug (300 mil) <br>
 +2,3 V to +5,5 V<br>
@@ -87,25 +87,25 @@ read time directly from rtc module<br>
 hwclock -r<br>
 update rtc module time from system time (system time should be regularly updated by ntp from the internet if your pi is networked):<br>
 hwclock -w<br>
-update system time from the rtc module (this should happen on startup):<br>
+update system time from the rtc module (this should happen on start-up):<br>
 hwclock -s<br>
 and the most fun of all - monitor the "drift" between your system clock and the rtc module:<br>
 hwclock -c<br>
 
-for displayscript:<br>
+for display-script:<br>
 modprobe i2c_bcm2708<br>
 modprobe i2c_dev<br>
 chmod 666 /dev/i2c-1<br>
 adduser pi i2c<br>
 compile with g++ wpi-i2c.c -o wpi-i2c -lwiringPi<br>
 
-command for lookin device up : <br>
+command for looking device up : <br>
  <img src="../disp/display2708.jpg" width="100" hight="100"><br>
 i2cdetect -l<br>
 i2cdetect -y 1<br>
 -------------------
 
-for installation of the Programm:<br>
+for installation of the program:<br>
 sudo apt-get install libsndfile-dev<br>
 then go to directory:<br>
 
@@ -119,9 +119,9 @@ compile with:<br>
 
 -lsndfile for ALSA snd lib<br>
 
-sometimes -std=gnu99 (sometimes c99)<br>
+sometimes -std=gnu99 <br>
 
-gcc -lm -g -std=gnu99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.so<br>
+gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a<br>
 
 make clean<br>
 
@@ -131,21 +131,21 @@ make install<br>
 
 run with admin/root permissions:<br>
 
-arguments: [filename (wav)] [freq (MHz)] [samplerate (kHz] [modulation (fm/am)] [callsign (optional)]<br>
+arguments: [filename (*.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)]<br>
 
 extra single arguments:<br>
 
-[menu] as step-by-step-asistent<br>
+[menu] as step-by-step-assistent<br>
 
 [help] for more infos and arguments<br>
 
-default: sudo pifunk sound.wav 100.0000 22500 fm callsign<br>
+default: sudo pifunk sound.wav 100.0000 22050 fm callsign<br>
 
-Radio works with *.wav-file with 16-bit @ 22500.0 [Hz] mono / 1-700 MHz range.<br>
+Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700 [MHz] range.<br>
 
-Use '. dot' as decimal-comma seperator!<br>
+Use '. dot' as decimal-comma separator!<br>
 
-Pi oparates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA<br>
+Pi operates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA<br>
 	</p>
 	
   </article>
@@ -156,11 +156,12 @@ Pi oparates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA<br>
       <li><a href="../ctsspmr.csv">CTSS-tones in CSV-file</a></li>
       <li><a href="../bin/pifunk">Client (standalone)</a></li>
       <li><a href="server.html">maybe Server in the future</a></li>
+	  <li><a href="german-srd-law.txt">German SRD law</a></li>
     </ul>
 </section>
   </aside>
   <footer>
-     <p>(C) 2017-2019 by silicator (all rights reserved) </p>
+     <p>(C) 2017-2019 by silicator a.k.a. wiesel (all rights reserved) </p>
   </footer>
 
   </body>
