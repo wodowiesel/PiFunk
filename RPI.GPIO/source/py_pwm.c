@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013 Ben Croston
+Copyright (c) 2013-2018 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -46,6 +46,13 @@ static int PWM_init(PWMObject *self, PyObject *args, PyObject *kwds)
     // convert channel to gpio
     if (get_gpio_number(channel, &(self->gpio)))
         return -1;
+
+    // does soft pwm already exist on this channel?
+    if (pwm_exists(self->gpio))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "A PWM object already exists for this GPIO channel");
+        return -1;
+    }
 
     // ensure channel set as output
     if (gpio_direction[self->gpio] != OUTPUT)

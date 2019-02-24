@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: RPi.GPIO
-Version: 0.6.2
+Version: 0.6.5
 Summary: A module to control Raspberry Pi GPIO channels
 Home-page: http://sourceforge.net/projects/raspberry-gpio-python/
 Author: Ben Croston
@@ -23,6 +23,24 @@ Description: This package provides a class to control the GPIO on a Raspberry Pi
         
         Change Log
         ==========
+        
+        0.6.5
+        -----
+        - Fix exception on re-export of /sys/class/gpio/gpioNN
+        
+        0.6.4
+        -----
+        - Event cleanup bug (issue 145)
+        - Raise exception for duplicate PWM objects (issue 54 - Thijs Schreijer <thijs@thijsschreijer.nl>)
+        - Fix build warnings (Issue 146 - Dominik George) 
+        - test.py runs unchanged for both python 2+3
+        - Soft PWM stops running fix (Issues 94, 111, 154)
+        - Soft PWM segfault fix (Luke Allen pull request)
+        
+        0.6.3
+        -----
+        - Fix code so it builds under PyPy (Gasper Zejn)
+        - os.system breaks event detection - Matt Kimball (issue 127)
         
         0.6.2
         -----

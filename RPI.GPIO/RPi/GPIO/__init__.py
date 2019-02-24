@@ -1,5 +1,5 @@
 """
-Copyright (c) 2012-2016 Ben Croston
+Copyright (c) 2012-2018 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -22,4 +22,4 @@ SOFTWARE.
 
 from RPi._GPIO import *
 
-VERSION = '0.6.2'
+VERSION = '0.6.5'

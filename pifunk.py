@@ -1,11 +1,11 @@
 
 ## additionally installed py 2.7&3.6 + github + travis
 ## free Band combo (HAM): transmitter forPMR466 /CB  and maybe someday, beacon, gps, internet, relais, aprs
-## supports UKW radio fm/am , ltp , 433, emg, cb, pmr, vhf, ts2/3, YT, RDS, morse, echolink,
-## microphone (usb&jack) + player&list , mp3/wave-Files.
+## supports UKW radio fm/am, ltp, 433, emg, cb, pmr, vhf, ts2/3, RDS, morse, echolink,
+## microphone (usb & jack) + player & list , mp3/wav-Files.
 ## pifm GPIO's: 4(pin 7 gp-clk0) and GND(pin 9 = Ground) or 14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
 ## 21 (pin 40 sclk) --> 39 gnd(pin)
-## ARM - Structure on Pi's !!! (can only be emulated !!) my Pi : rev.2 B+
+## ARM - Structure on Pis !!! (can only be emulated !!) my Pi : rev.2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
 ##Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels, and the FCC takes a dim view ##of voice broadcasts on these frequencies. For that matter, re-broadcast of copyrighted material (sports, news and weather programming) is a ##violation of the law, and could result in fines, jail time, and confiscation of all radio equipment on your premises. 
 #UK law is 4w(4000mW) / ger 100mW
@@ -13,7 +13,6 @@
 
 #!/usr/bin/python
 ## Imports
-
 
 import StringIO
 import io
@@ -37,7 +36,6 @@ import math
 import array
 import wave
 
-
 import random
 import logging
 
@@ -52,15 +50,20 @@ import numpy as np
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
 
-## django imports with most plugins
-#
 ##---------------------------------------------------------
 
 try: 
  import RPi.GPIO as GPIO
- from RPi._GPIO import *
+ from RPi._GPIO import GPIO
  from RPi import GPIO
  
+GPIO.setmode(GPIO.BCM)
+DEBUG = 1
+LOGGER = 1
+
+GPIO.setup(4, GPIO.OUT)
+output = GPIO.output(4) 
+
 ## RPi & GPIO lib bind
 #sudo apt-get install python-rpi.gpio
 #sudo python setup.py install
@@ -78,11 +81,11 @@ try:
 
 #print('maintestlol')
 
-##--------------------------------------------------------------------------------
+##------------------------------------------------------------------------
 ## need a py<-> c/cpp-wrapper!!!
-#
 
 ##------------------------------------------------------------------------
+
 ## def variables
 #channels = chan
 #int(80)
@@ -113,14 +116,14 @@ datetime.now().strftime('%d-%m-%Y , %H:%M:%S')
 
 #cpid = os.fork()
 #if not cpid:
-  #  import somescript
+   # import somescript
    # os._exit(0)
 #os.waitpid(cpid, 0)
 
 #with open('logs/log.txt', 'w') as f:
   # call(['python', './pifunk-main.py'], stdout=f)
    
-##-----------------------------------------------------------------------------------------
+##------------------------------------------------------------------------------------
 ## function Play file
 
 #def play_file (self, filename, freq):
@@ -178,13 +181,14 @@ sudo ./pifunk sound.wav 100.00000 22500 fm
 ## run another py-script from shell-terminal (holds main script, i think?!)
 ##selecting a individual band:
 
-#subprocess.run(["sudo", "python", "pi-gpio.py"])
+subprocess.run(["sudo", "python", "pi-gpio.py"])
 
-#subprocess.run(["sudo", "python", "pifm.py"])
+subprocess.run(["sudo", "python", "pifm.py"])
 
 #subprocess.run(["sudo", "python", "pifunk-pmr.py"])
 
 #subprocess.run(['sudo', 'python', 'pifunk-cb.py'])
+
 #subprocess.call('sudo', 'python', 'pifunk-cb.py')
 
 #subprocess.run(["sudo", "python", "pifunk-temp.py"])
@@ -206,10 +210,10 @@ sudo ./pifunk sound.wav 100.00000 22500 fm
        # time.sleep(1)  
        # return  
 ## to use Raspberry Pi board pin numbers  
-#GPIO.setmode(GPIO.BOARD)  
+GPIO.setmode(GPIO.BOARD)  
 ## set up GPIO output channel  
-#GPIO.setup(11, GPIO.OUT) 
-#GPIO.output(11, True) 
+GPIO.setup(11, GPIO.OUT) 
+GPIO.output(11, TRUE) 
 
 ## blink GPIO17 60 times  
 #for i in range(0,60):
@@ -219,6 +223,6 @@ sudo ./pifunk sound.wav 100.00000 22500 fm
 ##---------------------------------------------------------------
 ##test-area
 #nosetests
-#print('maintest')
+print('pifunk')
 pass
 #

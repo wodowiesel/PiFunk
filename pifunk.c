@@ -125,17 +125,17 @@ using namespace std;
 #include <conio.h> // dos-header
 */
 
-// broadcom arm processor for mapping phys. adresses
+// broadcom arm processor for mapping phys. addresses
 #include "bcm2835/src/bcm2835.h" 
 
-//GPIO includes´
-//#include "RPI.GPIO/source/c_gpio.h"
-//#include "RPI.GPIO/source/py_pwm.h"
-//#include "RPI.GPIO/source/constants.h"
-#include "RPI.GPIO/source/event_gpio.h"
-#include "RPI.GPIO/source/soft_pwm.h"
-#include "RPI.GPIO/source/common.h"
-#include "RPI.GPIO/source/cpuinfo.h"
+//GPIO includes here 0.6.5 used
+#include "RPi.GPIO/source/c_gpio.h"
+#include "RPi.GPIO/source/py_pwm.h"
+#include "RPi.GPIO/source/constants.h"
+#include "RPi.GPIO/source/event_gpio.h"
+#include "RPi.GPIO/source/soft_pwm.h"
+#include "RPi.GPIO/source/common.h"
+#include "RPi.GPIO/source/cpuinfo.h"
 
 
 
@@ -152,10 +152,11 @@ using namespace std;
 //python stuff, maybe wrapper too??
 
 //---------------------------------------------------------------//
-#define VERSION "0.1.6.7 a"
+#define VERSION "0.1.6.8a"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 #define VERSION_BUILD 6
+#define VERSION_PATCHLEVEL 8
 #define VERSION_STATUS a
 
 //---- PI specific stuff
@@ -209,8 +210,8 @@ volatile unsigned *allof7e;
 #define SETBIT(base, bit) ACCESS(base) || 1<<bit // |=
 #define CLRBIT(base, bit) ACCESS(base) && ~(1<<bit) // &=
 
-// possibility to give argv 0-4 an specific adress or pointer
-// adresses -> at least on my system-tests
+// possibility to give argv 0-4 an specific address or pointer
+// addresses -> at least on my system-tests
 #define argc_adr (0x7FFFFFFFEB0C) // dec: 140737488349964
 #define Name_adr (0x7FFFFFFEC08) // dec: 8796093017096
 #define File_adr (0x7FFFFFFFEC10) // dec: 140737488350224
