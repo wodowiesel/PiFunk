@@ -1,0 +1,19 @@
+#1 Shows at first all used console args
+
+#2 Infos & Warnings + Datetime
+
+#3 Main.c Choose : 
+
+(1) Ch-Mode: 					(2) Frq-Mode (3) CSV 	(5) Quit
+		(1) PMR 	(2) CB 		||			 ||
+		||			||			||		Im-/Export Config/Frq's
+		||			||			Manual Frq (1) AM (2) FM
+		||			||
+		(2) FM		CB: (1) AM 	(2) FM
+		||			|| 
+		Ch (1-16)	Ch (1-80)
+										
+										
+-menu arg asks you through all that steps incl. samplerate, mono/stereo
+-help shows all possible args
+- Strg/Ctrl + C break task or close Program

@@ -1,3 +1,1 @@
-# raspberry pi , python 2+, gpio4 + gnd and antenna
-# Django==$DJANGO_VERSION=1.8.2 (not yet maybe for databank someday)
-
+# raspberian pi image, python 2-3.x, gcc/++, gpio4 + gnd for antenna

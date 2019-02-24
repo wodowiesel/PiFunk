@@ -1,9 +1,7 @@
-
-## travis+git
+## travis
 
 # matrix:
 # include:
-
 
 os: linux
 dist: trusty
@@ -18,7 +16,6 @@ sudo: required
 #true
 
 language: python
-#language: c/cpp or (json)
 
 python:
   - 2.6
@@ -31,52 +28,49 @@ python:
   - nightly
   - pypy
   - pypy3
-#DJANGO_VERSION=1.8.2 --> need flask too
+#DJANGO_VERSION=1.8.2 --> need flask too for db if used (not yet)
 
+before_cache: -r -f $HOME/.cache/pip/log/debug.log
 
-#before_cache: -r -f $HOME/.cache/pip/log/debug.log
-  
-cache:
+language: c
+ cache: - ccache -pip
+  pip: true
+  #-timeout: 1
 
- pip: true
- #-timeout: 1
-
- #- ccache
-
- directories:
+  directories:
    - .autoconf
    - $HOME/.m2
    - $HOME/.cache
    - $HOME/.pyenv
-   # bundler: true
+     bundler: true
   
 #git-branches
 branches:
  only:
   - master
-  #- alpha
+ # - alpha
   
 ## command to install dependencies
 before_install: 
-  - sudo apt-get update
+  #- sudo apt-get update
   #- sudo apt-get upgrade
-  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
+  
+  ## for virtualisation/simulation of linux/raspberry pi but hardware gpios not possible!
+  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass 
   ## ARM- architecture needed !
   #- install-dependencies-arm.sh
 
 install: 
- - sudo apt-get install git
+ #- sudo apt-get install git
  # - key
  #- pip install 
  #-r requirements.txt 
  # --user # param if no sudo/root-access
- 
+  #- sudo apt-get install gcc 
  #- sudo python setup.py install
  
- #- sudo apt-get install gcc 
- 
- - sudo pip install RPi.GPIO
- #- sudo apt-get install RPi.GPIO
+ #- sudo pip install RPi.GPIO
+ - sudo apt-get install RPI.GPIO
  #- sudo apt-get install python-rpi.gpio
  #- sudo pip install python-rpi.gpio
   
@@ -98,7 +92,7 @@ notifications:
 
 # command to run tests +scripts
 before_script: 
- - git clone git://github.com/silicator/PiFunk.git
+ - git clone git://github.com/silicator/PiFunk
  # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
  # - before-script-linux.sh
 
@@ -106,26 +100,30 @@ before_script:
 script:
 # - key
  - nosetests
- #- coveralls
+ - coveralls
  #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
-  - cd ./PiFunk
+ - cd ./PiFunk
  
  #compiling with gcc here 
  
- - gcc -lm -std=c99 pifunk.c -o pifunk
+ - gcc -lm -libsndfile -std=c99 -g pifunk.c -o pifunk pifunk.o 
  - sudo make clean 
- - sudo make pifunk.c 
+ - sudo make
+ - sudo make install 
+ 
  - sudo pifunk sound.wav 100.0000 22500 fm callsign 
- - sudo python pifunk.py
+
+ #- sudo python pifunk.py
+ 
+ ##script-plugins if needed
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
- # - sudo python pifm.py
 
-#after_script:
+after_script:
 
 # before_deploy: ./before-deploy-linux.sh
 
-# deploy:
+deploy:
   # provider: releases
    # api_key:
     # secure: token-key
@@ -136,11 +134,9 @@ script:
     # tags: true
   # skip_cleanup: true
   
-# after_failure:
-# after_success:
+ after_failure:
+
+ after_success:
  # - coveralls
  # - coverage combine
  # - codecov
-#
-
- 

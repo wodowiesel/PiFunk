@@ -1,0 +1,137 @@
+pi@pifunk:~/PiFunk $ gcc -lm -g -std=c99 pifunk.c -o pifunk
+pifunk.c: In function ‘filenamepath’:
+pifunk.c:358:36: warning: passing argument 2 of ‘open’ makes integer from pointer without a cast [-Wint-conversion]
+     *filename = open ("sound.wav", "r");
+                                    ^~~
+In file included from pifunk.c:56:0:
+/usr/include/fcntl.h:158:12: note: expected ‘int’ but argument is of type ‘char *’
+ extern int open (const char *__file, int __oflag, ...) __nonnull ((1));
+            ^~~~
+pifunk.c:359:12: warning: return makes integer from pointer without a cast [-Wint-conversion]
+     return filename;
+            ^~~~~~~~
+pifunk.c:362:9: warning: return makes integer from pointer without a cast [-Wint-conversion]
+  return filename;
+         ^~~~~~~~
+pifunk.c: In function ‘modulate’:
+pifunk.c:575:22: warning: comparison between pointer and integer
+   ACCESS (CM_GP0DIV) == (0x5A << 24) + 0x4D72 + m;
+                      ^~
+pifunk.c: In function ‘setupfm’:
+pifunk.c:627:23: warning: comparison between pointer and integer
+    ACCESS (CM_GP0CTL) == *((int*)&setupword);
+                       ^~
+pifunk.c: In function ‘playWav’:
+pifunk.c:642:22: warning: comparison between pointer and integer
+     if (filename [0] != NULL) 
+                      ^~
+pifunk.c:684:9: warning: implicit declaration of function ‘usleep’ [-Wimplicit-function-declaration]
+         usleep (1000);
+         ^~~~~~
+pifunk.c:717:11: warning: passing argument 1 of ‘close’ makes integer from pointer without a cast [-Wint-conversion]
+    close (filename);
+           ^~~~~~~~
+In file included from pifunk.c:50:0:
+/usr/include/unistd.h:356:12: note: expected ‘int’ but argument is of type ‘char *’
+ extern int close (int __fd);
+            ^~~~~
+pifunk.c: In function ‘setupDMA’:
+pifunk.c:794:28: warning: comparison between pointer and integer
+    ACCESS (CLKBASE + 40*4) == (0x5A000026); //PWMCLK_CNTL
+                            ^~
+pifunk.c:797:28: warning: comparison between pointer and integer
+    ACCESS (CLKBASE + 41*4) == (0x5A002800); //PWMCLK_DIV
+                            ^~
+pifunk.c:798:28: warning: comparison between pointer and integer
+    ACCESS (CLKBASE + 40*4) == (0x5A000016); //PWMCLK_CNTL
+                            ^~
+pifunk.c:805:27: warning: comparison between pointer and integer
+    ACCESS (PWMBASE + 0x4) == -1;  // status: clear errors
+                           ^~
+pifunk.c:809:27: warning: comparison between pointer and integer
+    ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8); 
+                           ^~
+pifunk.c:812:27: warning: comparison between pointer and integer
+    ACCESS (PWMBASE + 0x8) == (1<<31) | 0x0707; // DMAC then DMA enable 
+                           ^~
+pifunk.c: In function ‘modulationfm’:
+pifunk.c:873:8: warning: return makes integer from pointer without a cast [-Wint-conversion]
+ return modulationfm;
+        ^~~~~~~~~~~~
+pifunk.c: In function ‘modulationam’:
+pifunk.c:911:20: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+     if (!(filename = open (filename, SFM_READ, &sfinfo)))
+                    ^
+pifunk.c:934:30: warning: passing argument 1 of ‘read’ makes integer from pointer without a cast [-Wint-conversion]
+     while (readcount = read (filename, data, BUFFER_LEN))
+                              ^~~~~~~~
+In file included from pifunk.c:50:0:
+/usr/include/unistd.h:363:16: note: expected ‘int’ but argument is of type ‘char *’
+ extern ssize_t read (int __fd, void *__buf, size_t __nbytes) __wur;
+                ^~~~
+pifunk.c:985:13: warning: passing argument 1 of ‘fclose’ makes pointer from integer without a cast [-Wint-conversion]
+     fclose (FileFreqTiming);
+             ^~~~~~~~~~~~~~
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:239:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘int’
+ extern int fclose (FILE *__stream);
+            ^~~~~~
+pifunk.c:986:13: warning: passing argument 1 of ‘fclose’ from incompatible pointer type [-Wincompatible-pointer-types]
+     fclose (filename); 
+             ^~~~~~~~
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:239:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘char *’
+ extern int fclose (FILE *__stream);
+            ^~~~~~
+pifunk.c: In function ‘csvreader’:
+pifunk.c:1028:10: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+     *sfp = fopen ("csvpmr.csv","r");// readonly!
+          ^
+pifunk.c:1029:10: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+     *dfp = fopen ("csvwriter.csv","w+"); // with + it updates , if exists overwrites
+          ^
+pifunk.c:1030:19: warning: passing argument 1 of ‘feof’ makes pointer from integer without a cast [-Wint-conversion]
+     while (!feof (*sfp))
+                   ^
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:830:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘char’
+ extern int feof (FILE *__stream) __THROW __wur;
+            ^~~~
+pifunk.c:1033:16: warning: passing argument 1 of ‘fgetc’ makes pointer from integer without a cast [-Wint-conversion]
+     c = fgetc (*sfp);
+                ^
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:533:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘char’
+ extern int fgetc (FILE *__stream);
+            ^~~~~
+pifunk.c:1034:14: warning: passing argument 2 of ‘fputc’ makes pointer from integer without a cast [-Wint-conversion]
+     fputc (c,*dfp);
+              ^
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:575:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘char’
+ extern int fputc (int __c, FILE *__stream);
+            ^~~~~
+pifunk.c:1037:13: warning: passing argument 1 of ‘fclose’ makes pointer from integer without a cast [-Wint-conversion]
+     fclose (*sfp);
+             ^
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:239:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘char’
+ extern int fclose (FILE *__stream);
+            ^~~~~~
+pifunk.c:1038:13: warning: passing argument 1 of ‘fclose’ makes pointer from integer without a cast [-Wint-conversion]
+     fclose (*dfp);
+             ^
+In file included from pifunk.c:43:0:
+/usr/include/stdio.h:239:12: note: expected ‘FILE * {aka struct _IO_FILE *}’ but argument is of type ‘char’
+ extern int fclose (FILE *__stream);
+            ^~~~~~
+pifunk.c: In function ‘main’:
+pifunk.c:1104:17: warning: initialization makes integer from pointer without a cast [-Wint-conversion]
+    int volume = argv[5]; // argc>4 ? atoi(argv[5]):4  => (atoi gives the value of a string) in playwav possible
+                 ^~~~
+pifunk.c: In function ‘callname’:
+pifunk.c:1130:13: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+   *callsign = "callsign"; //default callsign
+             ^
+pifunk.c:1137:19: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+         *callsign = argv[6];

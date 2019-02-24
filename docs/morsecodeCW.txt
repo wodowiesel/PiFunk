@@ -1,0 +1,35 @@
+// morsecode
+
+A  *-          N  -*          1  *----       .  *-*-*-
+B  -***        O  ---         2  **---       ,  --**--
+C  -*-*        P  *--*        3  ***--       ?  **--**
+D  -**         Q  --*-        4  ****-       (  -*--*
+E  *           R  *-*         5  *****       )  -*--*-
+F  **-*        S  ***         6  -****       -  -****-
+G  --*         T  -           7  --***       "  *-**-*
+H  ****        U  **-         8  ---**       _  **--*-
+I  **          V  ***-        9  ----*       '  *----*
+J  *---        W  *--         0  -----       :  ---***
+K  -*-         X  -**-        /  -**-*       ;  -*-*-*
+L  *-**        Y  -*--        +  *-*-*       $  ***-**-
+M  --          Z  --**        =  -***-       !  -*-*--
+
+:U  **--
+`E  **-**
+:O  ---*  Also for (oe)
+:A  *-*-  Also for:(ae)
+~N  --*--
+`A  *--*- Also (a) with ring
+CH or Bar-H  ----
+]p (thorn) *--**
+-D (eth) **--*
+
+CQ          Calling any station  (does any ham *not* know this one?)
+AR          "+" over, end of message
+K           go, invite any station to transmit
+KN          "(" go only, invite a specific station to transmit
+BK          invite receiving station to transmit
+R           all received OK
+AS          please stand by   (AS 5  Wait 5 Minutes)
+SK          end of contact (sent before call)
+CL          going off the air (clear)
