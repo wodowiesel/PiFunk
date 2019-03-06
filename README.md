@@ -18,18 +18,19 @@ get this program via:
 
 via command: `sudo modprobe w1-gpio,gpiopin=4`
 
+Using w1-gpio sometimes needs a 4.7 kΩ pullup resistor connected on GPIO pin 
+
 (if you have problems deactivate 1-wire config!)
 
 manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
 
 add line: `dtoverlay=w1-gpio,gpiopin=4,pullup=0` (add pullup=1 if needed)
-
-Using w1-gpio sometimes needs a 4.7 kΩ pullup resistor connected on GPIO pin 
 ___
 
 ### Build:
 
 You will need some libraries for this:
+
 `sudo apt update` for system updates
 
 `sudo apt upgrade` for system upgrades
@@ -98,7 +99,7 @@ ___
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max.)
+- PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max. !!!)
 (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 for more Specifications just visit adafruit.com
 
@@ -125,7 +126,6 @@ ___
 
 - Pi operates with square-waves (²/^2)!!- Use Low-/High-Band-Pass-Filters with ~10 uF caps 
 with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
-
 
 *Help / Testers and Feedback always appreciated!*
 
