@@ -5,7 +5,7 @@
 ## PiFunk Radio Transmitter in FM/AM for CB and PMR446 
 
 **Early Experimental!**
-based on PiFM/AM-Script
+based on PiFM/AM-Scripts
 ___
 
 ### Preparations:
@@ -20,36 +20,45 @@ via command: `sudo modprobe w1-gpio,gpiopin=4`
 
 (if you have problems deactivate 1-wire config!)
 
-manually open with nano-editor: `sudo nano /boot/confiig.txt` (i provide one too)
+manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
 
-add line: `dtoverlay=w1-gpio,gpiopin=4,pullup=0` (add pullup=1 if nedded)
+add line: `dtoverlay=w1-gpio,gpiopin=4,pullup=0` (add pullup=1 if needed)
 
-Using w1-gpio needs a 4.7 kΩ pullup resistor connected between GPIO pin 
+Using w1-gpio sometimes needs a 4.7 kΩ pullup resistor connected on GPIO pin 
 ___
 
 ### Build:
 
-You will need ALSA library for this:
-
+You will need some libraries for this:
+`sudo apt update` for system updates
+`sudo apt upgrade` for system upgrades
 `sudo apt-get install libsndfile-dev`
+`sudo apt-get install python-dev python3-dev` for py3
+
+[RPi-lib](https://pypi.org/project/RPi.GPIO/) (i use v0.6.5 from Nov 2018)
+`sudo pip-3.2 install RPi.GPIO` for Py3 (easiest way)
+`sudo pip install RPi.GPIO` for Py2
+
+or alternative ways: sudo apt-get -y install python3-rpi.gpio
+`wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
+then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install
 
 then go to directory:
-
 `cd PiFunk`
 
-compile with:
+compile with: 
+GNU installer `sudo apt-get install gcc`
 
--lm flag for math lib obligatory
+-lm flag for math lib is obligatory!
 
--g for debugger
+-g flag for debugger (optional)
 
 -lsndfile for ALSA snd lib
 
-sometimes -std=gnu99 
+-std=c99 (sometimes gnu99) for C-standard 
 
-`gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a`
-
-`make clean`
+command:
+`gcc -g -std=c99 -lm -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a`
 
 `make`
 
@@ -72,41 +81,43 @@ Use '. dot' as decimal-comma separator!
 
 default: `sudo pifunk sound.wav 100.0000 22050 fm callsign`
 
-Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700 MHz range.
+Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700+ MHz range.
 ___
 
 ### Warnings:
 
-- Use power supply (~5 V via USB) with enough specifications only! 
+- Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
+- PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max.)
+(in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
+for more Specifications just visit adafruit.com
 
-- PWM on GPIO 4/Pin 7 @ ~500 mA max. (in example Pi B+ v1.2 @ 700 MHz ARM processor bcm2835-v1.55)
+- Antenna should be grounded if possible (PIN 9 right one next to GPIO4)!
+[Pinout](docs/pinout-gpio-pib+.jpg)
 
-- Antenna should be grounded if possible!
-
-- Use Low-/High-Band-Pass-Filters with ~10 uF caps  resistors/diodes 
-
-- Pi operates with square-waves (²/^2) to prevent transmitting simultaneously on permitted frequencies!
-
-- You can try to smooth it out with a 1:X-balloon.
+- You can try to smooth it out with a 1:X-balloon if using long HF antenna
 
 - Dummy-load: 4-100 W @ 50 Ohm "cement" or similar with cooling-ribs with fan for testing.
 
 - For transmission you should use tested Antennas! 
 
-- Tip: can use just a copper wire i.e. a 2m/70 cm or other lambda(1/4)-antenna (17.5 cm/6.9 in for PMR)
+- Tip: You could use just a copper wire for 2m/70cm-band or other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
 ___
 
 ### Disclaimer:
 
-- Private Project! Work in Progress (WiP)
+- Private Project! Work in Progress (WIP)
 
 - I'm not a professional so **NO guarantees or warranty** for any damage or similar!!
 
 - Usage at your **own risk** !!
 
-- Check laws of your country! Some Frequencies are prohibited or need a Ham-Licence!
+- Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Testers and feedback appreciated!
+- Pi operates with square-waves (²/^2)!!- Use Low-/High-Band-Pass-Filters with ~10 uF caps 
+with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
+
+
+*Help / Testers and Feedback always appreciated!*
 
 *Thank you and have fun!*
 ___
@@ -115,12 +126,13 @@ ___
 
 [GitPage](https://silicator.github.io/PiFunk/)
 
-[Readme guideline](README.md)
+[Readme Guideline](README.md)
 
-[Contribution guideline](docs/CONTRIBUTING.md)
+[Contribution Guideline](docs/CONTRIBUTING.md)
 
-[Code of Conduct guideline](docs/CODE_OF_CONDUCT.md)
+[Code of Conduct Guideline](docs/CODE_OF_CONDUCT.md)
 
-[Copying guideline](docs/COPYING.md)
+[Copying Guideline](docs/COPYING.md)
 
-[License guideline](LICENSE.md) under GPLv3.0
+[License Guideline](LICENSE.md) under Open-Source GPLv3.0
+Would appreciate beeing Named in the Source
