@@ -5,7 +5,7 @@
 ## PiFunk Radio Transmitter in FM/AM for CB and PMR446 
 
 **Early Experimental!**
-based on PiFM/AM-Scripts
+based on PiFM/AM-Scripts 
 ___
 
 ### Preparations:
@@ -31,22 +31,31 @@ ___
 
 You will need some libraries for this:
 `sudo apt update` for system updates
+
 `sudo apt upgrade` for system upgrades
+
 `sudo apt-get install libsndfile-dev`
+
 `sudo apt-get install python-dev python3-dev` for py3
 
 [RPi-lib](https://pypi.org/project/RPi.GPIO/) (i use v0.6.5 from Nov 2018)
+
 `sudo pip-3.2 install RPi.GPIO` for Py3 (easiest way)
+
 `sudo pip install RPi.GPIO` for Py2
 
 or alternative ways: sudo apt-get -y install python3-rpi.gpio
+
 `wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
+
 then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install
 
 then go to directory:
+
 `cd PiFunk`
 
-compile with: 
+compile with:
+
 GNU installer `sudo apt-get install gcc`
 
 -lm flag for math lib is obligatory!
@@ -58,6 +67,7 @@ GNU installer `sudo apt-get install gcc`
 -std=c99 (sometimes gnu99) for C-standard 
 
 command:
+
 `gcc -g -std=c99 -lm -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a`
 
 `make`
@@ -87,12 +97,12 @@ ___
 ### Warnings:
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
+
 - PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max.)
 (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 for more Specifications just visit adafruit.com
 
-- Antenna should be grounded if possible (PIN 9 right one next to GPIO4)!
-[Pinout](docs/pinout-gpio-pib+.jpg)
+- Antenna should be grounded if possible (PIN 9 right one next to GPIO4)![Pinout](docs/pinout-gpio-pib+.jpg)
 
 - You can try to smooth it out with a 1:X-balloon if using long HF antenna
 
@@ -135,4 +145,5 @@ ___
 [Copying Guideline](docs/COPYING.md)
 
 [License Guideline](LICENSE.md) under Open-Source GPLv3.0
+
 Would appreciate beeing Named in the Source
