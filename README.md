@@ -2,10 +2,10 @@
 
 ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
-## PiFunk Radio Transmitter in FM/AM for CB and PMR446 
+## PiFunk Radio Transmitter in FM/AM for CB and PMR446 etc.
 
 **Early Experimental!**
-based on PiFM/AM-Scripts 
+based on PiFM/AM-Scripts
 ___
 
 ### Preparations:
@@ -45,7 +45,7 @@ You will need some libraries for this:
 
 `sudo pip install RPi.GPIO` for Py2
 
-or alternative ways: sudo apt-get -y install python3-rpi.gpio
+or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
 `wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
 
@@ -59,17 +59,17 @@ compile with:
 
 GNU installer `sudo apt-get install gcc`
 
--lm flag for math lib is obligatory!
+`-lm` flag for math lib is obligatory!
 
--g flag for debugger (optional)
+`-g` flag for debugger (optional)
 
--lsndfile for ALSA snd lib
+`-lsndfile` for ALSA snd lib
 
--std=c99 (sometimes gnu99) for C-standard 
+`-std=c99` (sometimes gnu99) for C-standard 
 
 command:
 
-`gcc -g -std=c99 -lm -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a`
+`gcc -g -std=c99 -lm -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out`
 
 `make`
 
@@ -80,34 +80,39 @@ ___
 
 run with admin/root permissions:
 
-Arguments: [filename (*.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)] 
+Arguments: `[filename (.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)] `
 
 extra single Arguments:
 
-[menu] as step-by-step assistent
+[`menu`] as step-by-step assistent
 
-[help] for more infos and arguments
+[`help`] for more infos and arguments
 
 Use '. dot' as decimal-comma separator! 
 
-default: `sudo pifunk sound.wav 100.0000 22050 fm callsign`
+default: `sudo pifunk sound.wav 100.000 22050 fm callsign`
 
-Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700+ MHz range.
+Radio works with *.wav-file with 16-bit @ 22050.000 [Hz] mono / 1-700+ MHz range.
+
+CTSS-Tones for PMR can be found here [CTSS](ctss.csv) 
+
 ___
 
 ### Warnings:
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max. !!!)
+- PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max. on ALL pins or 16 per bank!!!)
+
 (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
-for more Specifications just visit adafruit.com
+
+for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
 - Antenna should be grounded if possible (PIN 9 right one next to GPIO4)![Pinout](docs/pinout-gpio-pib+.jpg)
 
 - You can try to smooth it out with a 1:X-balloon if using long HF antenna
 
-- Dummy-load: 4-100 W @ 50 Ohm "cement" or similar with cooling-ribs with fan for testing.
+- Dummy-load: 1-100 W @ 50 Ohm "cement" or similar with cooling-ribs with fan for testing.
 
 - For transmission you should use tested Antennas! 
 
@@ -127,9 +132,9 @@ ___
 - Pi operates with square-waves (²/^2)!!- Use Low-/High-Band-Pass-Filters with ~10 uF caps 
 with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
 
-*Help / Testers and Feedback always appreciated!*
+* Help / Testers and Feedback always appreciated!*
 
-*Thank you and have fun!*
+* Thank you and have fun!*
 ___
 
 ### Links:
