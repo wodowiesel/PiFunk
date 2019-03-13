@@ -95,7 +95,7 @@ default: `sudo pifunk sound.wav 100.000 22050 fm callsign`
 
 Radio works with *.wav-file with 16-bit @ 22050.000 [Hz] mono / 1-700+ MHz range.
 
-CTSS-Tones for PMR can be found here [CTSS](ctss.csv) 
+CTSS-Tones for PMR can be found here [CTSS](ctsspmr.csv) 
 
 ___
 
@@ -117,7 +117,8 @@ for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
 - For transmission you should use tested Antennas! 
 
-- Tip: You could use just a copper wire for 2m/70cm-band or other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
+- Tip: You could use just a copper wire for 2m/70cm-band or 
+other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
 ___
 
 ### Disclaimer:
