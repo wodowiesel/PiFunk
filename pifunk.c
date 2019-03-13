@@ -1,4 +1,4 @@
-/* PiFunk (C) 2018
+/* PiFunk (C) 2018-2019
  ->get project:
  git clone https://github.com/silicator/pifunk
  ->instructions: 
@@ -6,12 +6,12 @@
  sudo apt-get install libsndfile-dev
 
  cd PiFunk // goto path
- gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a
+ gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out
  make clean
  make 
  make install
  // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
- sudo pifunk sound.wav 100.0000 22050 fm callsign
+ sudo pifunk sound.wav 100.000 22050 fm callsign
  
  -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux 
  virtual maschine possible with qemu
@@ -93,19 +93,26 @@ tone generator for ctss (sin?)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/select.h>	
+#include <sys/file.h>	
+#include <sys/sysmacros.h>
+
 // ip host socket 
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <arpa/inet.h>
 #include <netinet/in.h> 
+#include <netinet/tcp.h>
+#include <net/if.h>
 #include <netdb.h>
 #include <ifaddrs.h>
-#include <net/if.h>
+
 //-- c11 
 #include <stdalign.h>
 #include <stdnoreturn.h>
 #include <stdatomic.h>
-#include <uchar.h>
+#include <uchar.h>	
+
 //for c++14/17
 /*
 #include <iostream.h>
@@ -136,8 +143,6 @@ using namespace std;
 #include "RPi.GPIO/source/soft_pwm.h"
 #include "RPi.GPIO/source/common.h"
 #include "RPi.GPIO/source/cpuinfo.h"
-
-
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
@@ -237,6 +242,11 @@ volatile unsigned *allof7e;
 #define ln(x) log(x)/log(2.718281828459045235f)
 #define PI 3.14159265
 
+/* try a modprobe */
+if (system("/sbin/modprobe i2c_dev") == -1) { /* ignore errors */}
+if (system("/sbin/modprobe i2c_bcm2835") == -1) { /* ignore errors */}
+#myGpioDelay(100000);
+ 
 //pi variables: -> need to be activated and pulled up with python-script, or automaticly by system
 int mem_fd;
 char *gpio_mem, *gpio_map;
