@@ -1,13 +1,11 @@
 /* PiFunk (C) 2018-2019
  ->get project:
- git clone https://github.com/silicator/pifunk
+ git clone https://github.com/silicator/PiFunk
  ->instructions: 
  You will need alsa library for this:
  sudo apt-get install libsndfile-dev
-
  cd PiFunk // goto path
  gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out
- make clean
  make 
  make install
  // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
@@ -23,8 +21,12 @@
  trying on raspbian (stretch) incl. desktop v4.14 (Nov. 2018) based on debian
  -> get it here https://www.raspberrypi.org/downloads/raspbian/
  
- !!!!!!! program needs more testing on real pi See Disclaimer!!!!! 
-
+LICENSE: GPLv2/3 !!
+ 
+Credits: PiFM scripts from http://www.icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter
+ 
+!!!!!!! program needs more testing on real pi -> See Disclaimer!!!!! 
+ 
 -----Disclaimer-----
 Rewritten for own purposes! 
 no guarantee, warranty for anything! Usage at own risk!
