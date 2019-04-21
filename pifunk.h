@@ -2,13 +2,13 @@
 header for pifunk.c (dummy for now)
 */
 
-#ifndef HEADER_FILE
-#define HEADER_FILE
+#ifndef _PIFUNK_H_
+#define _PIFUNK_H_
 
 
 char headertest ()
 {
-printf ("\nHeadertest! \n");
+printf ("\nPifunk Header! \n");
 return 0;
 }
 

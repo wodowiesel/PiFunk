@@ -1,6 +1,6 @@
 CC = gcc
-STD_CFLAGS = -Wall -std=gnu99 -c -g 
-#-std=c99
+STD_CFLAGS = -Wall -std=c99 -c -g
+#-std=gnu99 as alternative
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 UNAME := $(shell uname -m)
 
@@ -19,16 +19,15 @@ endif
 
 ifneq ($(TARGET), other)
 
-app: pifunk.o 
+app: pifunk.o
 	$(CC) -o pifunk pifunk.o -lm -lsndfile
 
 endif
 
-pifunk: rds.o 
+pifunk: pifunk2.o 
 	$(CC) -o pifunk pifunk.o -lm -lsndfile
 
-pifunk.o: pifunk.c 
+pifunk.o: pifunk.c
 	$(CC) $(CFLAGS) pifunk.c
 
 clean:
-	rm -f *.o
