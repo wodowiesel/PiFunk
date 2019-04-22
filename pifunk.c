@@ -62,6 +62,7 @@ tone generator for ctss (sin?)
 
 // functionality includes
 #include <iso646.h> //c95 - back-compatible
+#include <argp.h>
 #include <getopt.h>
 #include <time.h>
 #include <sched.h>
