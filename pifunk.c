@@ -139,20 +139,29 @@ using namespace std;
 #include "bcm2835/src/bcm2835.h"
 
 //GPIO includes here 0.6.5 used
-#include "RPi.GPIO/source/c_gpio.h"
-#include "RPi.GPIO/source/py_pwm.h"
-#include "RPi.GPIO/source/constants.h"
-#include "RPi.GPIO/source/event_gpio.h"
-#include "RPi.GPIO/source/soft_pwm.h"
-#include "RPi.GPIO/source/common.h"
-#include "RPi.GPIO/source/cpuinfo.h"
+#include "RPI.GPIO/source/c_gpio.h"
+#include "RPI.GPIO/source/event_gpio.h"
+#include "RPI.GPIO/source/py_pwm.h"
+#include "RPI.GPIO/source/soft_pwm.h"
+#include "RPI.GPIO/source/constants.h"
+#include "RPI.GPIO/source/common.h"
+#include "RPI.GPIO/source/cpuinfo.h"
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
 #include "sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
 //extra library https://github.com/libusb/libusb for usb soundcards for mic and alsa usage
-#include "libusb/libusb.h"
+//#include "libusb/libusb.h"
+#include "libusb/libusb/libusb.h"
+
+#include "libusb/libusb/libusbi.h"
+#include "libusb/libusb/hotplug.h"
+//#include "libusb/libusb/version.h"
+//#include "libusb/libusb/version_name.h"
+#include "libusb/libusb/os/linux_usbfs.h"
+#include "libusb/libusb/os/poll_posix.h"
+#include "libusb/libusb/os/threads_posix.h"
 
 //custom header for pifunk (dummy for now)
 #include "pifunk.h"
