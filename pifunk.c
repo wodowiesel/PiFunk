@@ -154,7 +154,6 @@ using namespace std;
 //extra library https://github.com/libusb/libusb for usb soundcards for mic and alsa usage
 //#include "libusb/libusb.h"
 #include "libusb/libusb/libusb.h"
-
 #include "libusb/libusb/libusbi.h"
 #include "libusb/libusb/hotplug.h"
 //#include "libusb/libusb/version.h"
@@ -752,6 +751,19 @@ void freeRealMemPage (void** vAddr)
 		free (vAddr); // free the ram
 }
 
+void carrierhigh () // enables it
+{
+	/* Added functions to enable and disable carrier */
+	// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) // 0x5A dec: 90
+struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};// set it to ! = LOW
+ACCESS (CM_GP0CTL) == *((int*)&setupword); //setting cm
+}
+
+void carrierlow () // disables it
+{
+struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
+ACCESS (CM_GP0CTL) == *((int*)&setupword);
+}
 void setupfm ()
 {
     printf ("\nSetting up FM... \n");
@@ -776,18 +788,10 @@ void setupfm ()
    CLRBIT(GPFSEL0, 13);
    CLRBIT(GPFSEL0, 12);
 
-   /* Added functions to enable and disable carrier */
-   // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number)
-   struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // 0x5A dec: 90
-   ACCESS (CM_GP0CTL) == *((int*)&setupword); //setting cm
-
+	 void carrierhigh ()
 
 }
-void carrierlow () // disables it
-{
-struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
-ACCESS (CM_GP0CTL) == *((int*)&setupword);7
-}
+
 ///------------------------------------
 //relevant for transmitting stuff
 
@@ -815,7 +819,6 @@ PAL:
     {
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
         printf ("\nFor i=0: read fp \n");
-
     }
 
   while (readBytes = read (fp, &data, 1024))
@@ -837,7 +840,6 @@ PAL:
         //problem still with .v & .p endings for struct!!
         //time++;
         bufPtr++;
-
 
         //while (ACCESS(DMABASE + 0x04 & ~ 0x7F) == (int)(instrs[bufPtr].p) ); // CurBlock 0x04 (dec: 4) of struct PageInfo, 0x7F (dec: 127)
         //usleep (1000);
@@ -879,7 +881,6 @@ PAL:
 
 void unSetupDMA ()
 {
-
 	struct DMAregs* DMA0 = (struct DMAregs*)(ACCESS(DMABASE));
 	DMA0->CS == 1<<31; // reset dma controller
 	printf ("SetupDMA done \n");
@@ -911,7 +912,7 @@ void setupDMA (const double freq)
      //getRealMemPage (&instrPage.v, &instrPage.p);
 
      // make copy instructions
-	 //struct CB* instr0 = (struct CB*)instrPage.v;
+  	 //struct CB* instr0 = (struct CB*)instrPage.v;
 
      for (int i=0; i<4096/sizeof(struct CB); i++)
      {
@@ -1229,15 +1230,11 @@ char callname ()
 				break;
 
 		case 2: *callsign = "callsign"; //default callsign
-				printf ("\nUsing default callsign: %s \n", *callsign);
-				break;
-        }
-        else
-        {
         *callsign = argv[5];
-        printf ("\nUsing given callsign: %s \n", *callsign);
-        }
+				printf ("\nUsing default callsign: %s \n", *callsign);
         printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
+				break;
+
 		return callsign, &callsign, *callsign;
 
 }
@@ -1256,8 +1253,8 @@ int GetUserInput () //my menu-assistent
 	switch (modeselect)
     {
           case 1: unsigned int channelselect ();
-					char filenamepath ();
-					char callname ();
+									char filenamepath ();
+									char callname ();
 					break;
 
 		    case 2: char filenamepath ();
