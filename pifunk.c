@@ -1332,7 +1332,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			      printf ("Checking Channels: %s \n", channels)
             printf ("Checking Modulation: %s \n", mod);
 		      	printf ("Checking Callsign: %s \n", *callsign)
-		      	printf ("Checking Volume/Gain: %f/%d \n", volume, gain);
+		      	printf ("Checking Volume/Gain: %f / %d \n", volume, gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
                 if (!strcmp (mod, "fm"))
