@@ -151,7 +151,9 @@ using namespace std;
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
 #include "sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
-//extra library https://github.com/libusb/libusb for usb soundcards for mic and alsa usage
+//extra library https://github.com/libusb/libusb
+//for usb soundcards for mic and alsa usage
+
 //#include "libusb/libusb.h"
 #include "libusb/libusb/libusb.h"
 #include "libusb/libusb/libusbi.h"
@@ -165,9 +167,26 @@ using namespace std;
 //custom header for pifunk (dummy for now)
 #include "pifunk.h"
 
-//python stuff, maybe wrapper too??
+//python stuff, here if needed
 
-//---------------------------------------------------------------//
+//------------------------------------------------------------------------------
+//preproccessor definitions
+#ifdef (__unix__ || __linux__)
+   printf ("Program runs under UNIX/LINUX\n");
+	//#pragma GCC dependency "pifunk.h"
+#else
+   #error "Unknnown OS! or not Linux! \n"
+#endif
+
+#ifdef _GNUC_ &&__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+   printf ("\nUsing Gnu C with ANSI C99!!\n");
+#elif _GNUC_
+   #warning "Using Gnu C without C99 stadard!! Please complie with flag -std=c99 \n"
+#else
+   #error "Program  was not compiled with GNU C99 standard! \n"
+   exit (-1)
+#endif
+//------------------------------------------------------------------------------
 // Definitions & Makros
 #define VERSION "0.1.6.8a"
 #define VERSION_MAJOR 0
@@ -251,12 +270,12 @@ volatile unsigned *allof7e;
 #define DMAref (0x7F) //dma base reference dec: 127
 //--------------------------------------------------//
 //mathematical stuff
-#define ln(x) log(x)/log(2.718281828459045235f)
+#define ln(x) (log (x)/log (2.718281828459045235f))
 #define PI 3.14159265
 
 /* try a modprobe */
-if (system("/sbin/modprobe i2c_dev") == -1) { /* ignore errors */}
-if (system("/sbin/modprobe i2c_bcm2835") == -1) { /* ignore errors */}
+if (system ("/sbin/modprobe i2c_dev") == -1) { /* ignore errors */}
+if (system ("/sbin/modprobe i2c_bcm2835") == -1) { /* ignore errors */}
 //myGpioDelay(100000);
 
 //pi variables: -> need to be activated and pulled up with python-script, or automaticly by system
@@ -346,7 +365,6 @@ int instrCnt = 0;
 int instrPage;
 int constPage;
 
-
 //--------------------------------------------------
 // Structs
 struct tm *info;
@@ -405,7 +423,8 @@ float audiovol ()
 	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
 	{
      volbuffer [i] *= volumeMultiplier;
-     printf ("\n i: %d , volbuffer: %f , volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+     printf ("\nValues: i: %d , volbuffer: %f , volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+		  printf ("\nAdresses: i: %p , volbuffer: %p , volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
      return volbuffer [i], volumeMultiplier
 	}
 return volbuffer [i], volumeMultiplier
@@ -415,10 +434,13 @@ return volbuffer [i], volumeMultiplier
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
 // Blinks on RPi Plug P1 pin 11
+void clearscreen () {clsscr ();}
+
+
 void ledactive ()
 {
 		//check if transmitting
-		while(!playWav());
+		while (!play_wav ());
 		{
 		cm2835_gpio_write (PIN17, LOW);
 		printf ("LED OFF - No Transmission!");
@@ -1282,9 +1304,10 @@ int GetUserInput () //my menu-assistent
 int main (int argc, char **argv) // arguments for global use must! be in main
 {
 
-   argv[0] = "pifunk"; // for custom  programename, default is the fiename
-   printf ("%s: ", argv[0]);
-
+   argv[0] = "pifunk"; // for custom  programname, default is the fiename
+   printf ("%s \n", argv[0]);
+   printf ("File was proccessed on %s at %s \n", __DATE__, __TIME__);
+	 printf ("Filename is %s \n", __FILE__)
    //scanf  ("%s %f %d %s", argv[1], argv[2], argv[3], argv[4]); //direct input if needed
 
    char *filename = argv[1];
