@@ -1,18 +1,18 @@
 
-## additionally installed py 2.7.x & 3.6.x
-## free Band combo (HAM): transmitter for PMR466 /CB  and maybe someday, beacon, gps, internet, relais, aprs
-## supports UKW radio fm/am, ltp, 433, emg, cb, pmr, vhf, ts2/3, RDS, morse, echolink,
-## microphone (usb & jack) + player & list , mp3/wav-Files.
-## pifm GPIO's: 4 (pin 7 gp-clk0) and GND (pin 9 = Ground) or 14 ( pin 8 TXD) & gnd (pin 6) & 15(pin 10 rdx)
-## 21 (pin 40 sclk) --> 39 gnd(pin)
-## ARM - Structure on Pis !!! (can only be emulated !!) my Pi : rev.2 B+
+##additionally installed py 2.7.x & 3.7.x
+##Radio transmitter for PMR446/CB on FM & AM ltp, 433, emg, cb, pmr
+##and maybe someday, beacon, gps, internet, relais, aprs, , vhf, ts2/3, RDS, morse, echolink,
+##microphone (usb & jack) + player & list, mp3/wav-Files. (WIP)
+
+##pifm GPIO's: 4 (pin 7 GP-CLK0) and GND (pin 9 = GND) or 14 (pin 8 TXD) & GND (pin 6) & 15 (pin 10 RDX) & 21 (pin 40 SCLK) --> 39 GND
+##ARM - Structure on Pi's !!! (can only be emulated on PC, so no real GPIO access!!) my Pi : rev. 2 B+
 ##-----------------------------------------------------------------------------------------------------------------------------
-##Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels,
-#and the FCC takes a dim view ##of voice broadcasts on these frequencies. For that matter,
+#Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-controll channels,
+#and the FCC takes a dim view of voice broadcasts on these frequencies. For that matter,
 #re-broadcast of copyrighted material (sports, news and weather programming) is a ##violation of the law,
 #and could result in fines, jail time, and confiscation of all radio equipment on your premises.
 #UK law is 4 W (4000 mW) / GER 100 mW ERP for PMR and 4 W for CB
-## -> sending on square-func means transmission on 3 other freqs
+#-> sending on square-func means transmission on 3 other freqs so please use a low-pass-filter!
 #-------------------------------------------------------------------------------------------
 ## py is function-scope not lock-scope!!
 
@@ -58,136 +58,161 @@ try:
 ##------------------------------------------------------------------------------
 #loading hardware on startup
 def initialisation ():
-  os.system("sudo modprobe w1-gpio")
-  # rpi3:
-  #os.system("sudo rmmod w1-gpio")
-
-  cpid = os.fork ()
-  if not cpid:
-  os._exit (0)
-  os.waitpid (cpid, 0)
+  try:
+        os.system ("sudo modprobe w1-gpio") #rpi 1-2
+  else: os.system ("sudo rmmod w1-gpio") # rpi3:
 
   base_dir = "/sys/bus/w1/devices/"
   device_folder = glob.glob (base_dir + "28*") [0]
   device_file = device_folder + "/w1_slave"
 
+  cpid = os.fork ()
+  if not cpid:
+      os._exit (0)
+      os.waitpid (cpid, 0)
+
   pullup = 0
-  GPIO.initialize ()
-  GPIO.setwarnings (False)
-  sensor_pin = 4
-  GPIO.setmode (GPIO.BCM)
   DEBUG = 1
   LOGGER = 1
+  GPIO.initialize ()
+  GPIO.setwarnings (False)
+  GPIO.setmode (GPIO.BCM)
   GPIO.setmode (GPIO.BOARD)
-  GPIO.setup (4, GPIO.OUT)
-  GPIO.setup (11, GPIO.OUT)
-  output = GPIO.output (4)
-  GPIO.output (11, TRUE)
+  GPIO.setup (4, GPIO.OUT) #or 11 if used
+  output = GPIO.output (4, TRUE)
+  GPIO.output (4, TRUE)
+  sensor_pin = 4
   sensor_data = (sensor_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
 
 #hex-code: 0x10A --> dec:26
 
 ##------------------------------------------------------------------------------
 
-def soundfile (self, filename):
-  filename = input ("Enter filename (*.wav): ")
-  print ("Filename is: " + filename + " \n")
-  return self, filename
+def soundfile (filename):
+  filename = char (input ("\nEnter filename (*.wav): "))
+  if filename != 0:
+      print ("\nFilename is: " + filename + " \n")
+      return filename
+  else:
+      print ("\nNo custom filename specified! using standard file sound.wav !! \n")
+      filename_std = char ("sound.wav")
+      return filename_std
 
-def frequency (self, freq):
-  float (freq) = input ("Enter frequency (MHz) with . dot as decimal (5 digit accuracy):  ")
-  print ("\nFrequency is: " + freq " (MHz) " + " \n")
-  return self, freq
+def frequency (freq_std, freq):
+  freq_std = float (446.00000)
+  freq = float (input ("\nEnter frequency (MHz) with . as decimal (5 digit accuracy):  "))
+  if freq > 0:
+      print ("\nFrequency is: " + freq " (MHz) " + " \n")
+      return freq
+  else:
+      print ("\nFrequency must be > 0 !! Using 446.00000 MHz instead! \n")
+      return freq_std
 
-def sampler (self, samplerate):
-  int(samplerate_std) = 22050
-  int(samplerate) = input ("Enter samplerate (kHz): ") || samplerate_std
-  print ("Samplerate is: " + samplerate + " \n")
-  return self, samplerate, samplerate_std
+def sampler (samplerate_std, samplerate):
+  samplerate_std = int (22050)
+  samplerate = int (input ("\nEnter samplerate (22050/44100/48000 kHz): "))
+  print ("\nSamplerate is: " + samplerate + " \n")
+  if samplerate > 0:
+      return samplerate
+  else:
+      print ("\nNo custom samplerate specified or negative! Using standard 22050 kHz!! \n")
+      return samplerate_std
 
-def modulation (self, mod):
-  char (mode) = input ("Enter modulation type (FM/AM): ")
-  print ("\nModulation is: " + mod + " \n")
-  return self, mod
+def modulation (mod_std, mod):
+  mod_std = char ("FM")
+  mod = char (input ("\nEnter modulation type (FM/AM): "))
+  if mod == "FM" || "AM":
+      print ("\nModulation is: " + mod + " \n")
+      return mod
+  else:
+      print ("\nNo mode specified! Using standard FM \n")
+      return mod_std
 
-def channel (self, channels):
-  int (channels) = input ("Enter number of channels (1 or 2): ")
+def channel (channels):
+  channels = int (input ("\nEnter number of channels (1 mono or 2 stereo): "))
   print ("\nChannels: " + channels + " \n")
-  return self, channels
+  return channels
 
-def callname (self, callsign):
-  callsign = input ("Enter callsign: ")
-  print ("Callsign is: " + callsigne + " \n")
-  return self, callsign
+def callname (callsign):
+  callsign_std = char ("callsign")
+  callsign = char (input ("\nEnter callsign: "))
+  if callsign != 0:
+      print ("\nCallsign is: " + callsign + " \n")
+      return callsign
+  else:
+      print ("\nNo callsign specified! Using standard *callsign* \n")
+      return callsign_std
 
-def play_wav (self):
+def play_wav ():
   #print ("Playing soundfile " + filename + " on frequency: " + freq " (MHz) and samplerate " + samplerate " (kHz) and modulation")
-  print ("Playing wav ... \n")
+  print ("\nPlaying wav ... \n")
   if (filename && freq && samplerate && mod != 0): call (["sudo ./pifunk ", filename, freq, samplerate, mod, callsign])
   else: call (["sudo ./pifunk sound.wav 100.00000 22050 fm callsign"])
 
-def play_mp3 (self):
-  print ("Playing mp3 ... \n")
+def play_mp3 ():
+  print ("\nPlaying mp3 ... \n")
   ffmpeg -i sounds/sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.00000 fm
 
-def microfone (self):
+def microfone ():
   ## Broadcast from a (usb) microphone, stereo
-  print ("Using mic ... \n")
+  print ("\nUsing mic ... \n")
   arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.00000 fm
   arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./pifunk -f 100.00000 fm
 
-def stream_net (self):
+def stream_net ():
   $port = 80
   card = 0 # microphone devices
   subdevice = 0
-  print ("Using net stream ... \n")
+  print ("\nUsing network stream ... \n")
   arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0000 $port
   arecord -D hw:${0},${0} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.00000 $port
 
-def led_on (self, pin):
-  GPIO.output(pin, GPIO.HIGH)
+def led_on (pin):
+  GPIO.output (pin, GPIO.HIGH)
   #time.sleep(1)
-  print("LED on \n")
-
-def led_off (self, pin):
-  GPIO.output (pin, GPIO.LOW)
-  #time.sleep(1)
-  print ("LED off \n")
+  print ("\nLED on \n")
   return pin
 
-def blink (self):
-  led_on ()
+def led_off (pin):
+  GPIO.output (pin, GPIO.LOW)
+  #time.sleep(1)
+  print ("\nLED off \n")
+  return pin
+
+def blink (pin):
+  led_on (pin)
   time.sleep (1)
-  led_off ()
+  led_off (pin)
   time.sleep (1)
 
-def blinking (self):
-  print ("Blinking 1/sec \n")
+def blinking (pin):
+  print ("\nBlinking 1/sec \n")
   for i in range (0, 60): blink (11)
   GPIO.cleanup ()
 
-def csv_reader (self):
-  csv_file_object = csv.reader (open("docs/ctsspmr.csv", 'rb'))
-  print ("Importing CTSS-Table \n")
-  with open("docs/ctsspmr.csv", "rb") as f:
-  reader = csv.reader(f, delimiter = "," , quotechar = "|")
-  for row in reader: print(",".join(row))
+def csv_reader ():
+  csv_file_object = csv.reader (open ("docs/ctsspmr.csv", 'rb'))
+  print ("\nImporting CTSS-Table \n")
+  with open ("docs/ctsspmr.csv", "rb") as f:
+  reader = csv.reader (f, delimiter = "," , quotechar = "|")
+  for row in reader: print (",".join(row))
   # reading single infos of ctss tones later (wip)
   print ("Importing completed \n")
   return reader
 
-def logger (self):
+def logger ():
   with open ("logs/log.txt", "w") as f:
   #call(["python ", "./pifunk-main.py"], stdout = f)
-  print ("Logging... \n")
+  print ("\nLogging ... \n")
 
-def c_arg_parser (self):
+def c_arg_parser ():
+  print ("\nParsing args to C ... \n")
+  #return 0
   pass
-
 
 ##------------------------------------------------------------------------------------------------------
 
-## run another py-script from shell-terminal (holds main script, i think?!)
+## run another py-script from shell-terminal (holds main script)
 ##selecting a individual band:
 
 #subprocess.run(["sudo", "python", "pi-gpio.py"])
@@ -209,7 +234,7 @@ def c_arg_parser (self):
 ##------------------------------------------------------------------------------
 # main programm
 
-print("pifunk py-script \n")
+print("\npifunk py-script \n")
 datetime.now().strftime("%d-%m-%Y, %H:%M:%S \n")
 #print(datetime.datetime.now())
 #current_time = datetime.datetime.now()
@@ -217,8 +242,7 @@ datetime.now().strftime("%d-%m-%Y, %H:%M:%S \n")
 #str(datetime.now())
 #current_time.isoformat()
 
-
 ##------------------------------------------------------------------------------
 ##test-area
 #nosetests
-#print('end of scriipt')
+#print ('end of scriipt')
