@@ -48,6 +48,7 @@ import csv as csv
 try:
  import RPi.GPIO as GPIO1
  import RPI.GPIO as GPIO2
+except:
  from RPi._GPIO import GPIO3
  from RPi import GPIO4
 
@@ -60,7 +61,7 @@ try:
 def initialisation ():
   try:
         os.system ("sudo modprobe w1-gpio") #rpi 1-2
-  else: os.system ("sudo rmmod w1-gpio") # rpi3:
+  except: os.system ("sudo rmmod w1-gpio") # rpi3:
 
   base_dir = "/sys/bus/w1/devices/"
   device_folder = glob.glob (base_dir + "28*") [0]
