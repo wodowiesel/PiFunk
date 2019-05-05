@@ -1,53 +1,55 @@
-/* PiFunk (C) 2018-2019
- ->get project:
+/* PiFunk (C) 2018-2019 silicator a.k.a wiesel
+
+OS: raspbian (stretch) incl. desktop & recommended software v4.14 (8. April 2019) based on debian
+SHA-256:a3ced697ca0481bb0ab3b1bd42c93eb24de6264f4b70ea0f7b6ecd74b33d83eb
+-> get it here https://www.raspberrypi.org/downloads/raspbian/
+-> or direct link https://downloads.raspberrypi.org/raspbian_full_latest => 2019-04-08-raspbian-stretch-full.zip
+gcc 5.4.1 compiler or g++ 5.4.1 c++11/14
+gdb 7.11.1 debugger
+
+->get project:
  git clone https://github.com/silicator/PiFunk
- ->instructions:
+->instructions:
  You will need alsa library for this:
  sudo apt-get install libsndfile-dev
  cd PiFunk // goto path
+ lm flag for math lib obligatory, -g for debugger
  gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out
  make
  make install
- // compile & run with admin/root permissions!! lm flag for math lib obligatory, -g for debugger
+
+//compile & run with admin/root permissions!!
  sudo pifunk sound.wav 100.000 22050 fm callsign
 
- -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
- virtual maschine possible with qemu
- or alternative with everpad: nor sure about this, rather not using it
+-> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
+virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
  wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -lm -std=c99 -g -x c - && ./a.out sound.wav
 
- gcc 5.4.1 compiler + gdb 7.11.1 debugger (online & local)
- g++ 5.4.1 c++11 (or 14)
- trying on raspbian (stretch) incl. desktop v4.14 (Nov. 2018) based on debian
- -> get it here https://www.raspberrypi.org/downloads/raspbian/
-
 LICENSE: GPLv2/3 !!
-
 Credits: PiFM scripts from http://www.icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter
-
 !!!!!!! program needs more testing on real pi -> See Disclaimer!!!!!
 
 -----Disclaimer-----
 Rewritten for own purposes!
 no guarantee, warranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps
-usage of dummyloads 50 ohm @ 4 watts (S= 0-level), (max. 100) possible and compare signals with swr/pwr-meter!
-do not shortout or do overstress it bigger than 3.3V! may harm damage-> no warranty
+at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
+do not shortout or do overstress it with more than 3.3V! it may cause damages
 
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
-used python 2.7.x & 3.6.x on orig. Raspbian
+used python 3.7.x on orig. Raspbian
 don't forget to apt-get upgrade and update
 
 1) Pi-FM version - frequency modulation direction left/right ← , →
 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
-
---> 700 MHz  system clock of the pi -> please use heatsink (if you want with fan)
+--> 700 MHz system clock of the pi1 -> please use heatsink (if you want with fan)
 
 todo:
+more definitions for memory-stuff
 pointer & adress corrections
-make compatible py/shell scripts for debug/install/run with args
-playlist & wave/mp3 + microphone (usb)
+playlist func
 tone generator for ctss (sin?)
+make compatible arguments/funcs for py/shell scripts
 */
 
 //std includes
@@ -153,7 +155,6 @@ using namespace std;
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
-
 //#include "libusb/libusb.h"
 #include "libusb/libusb/libusb.h"
 #include "libusb/libusb/libusbi.h"
@@ -166,8 +167,6 @@ using namespace std;
 
 //custom header for pifunk (dummy for now)
 #include "pifunk.h"
-
-//python stuff, here if needed
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
@@ -205,7 +204,6 @@ predefine if needed when not using bcm header
 #define LOW 0
 #define HIGH 1
 */
-
 //-------buffers
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
@@ -214,7 +212,7 @@ predefine if needed when not using bcm header
 //#define sleep [1000]
 //#define usleep [1000]
 
-// --------I-O access via GPIO
+//--------I-O access via GPIO
 volatile unsigned *gpio;
 volatile unsigned *allof7e;
 
@@ -227,26 +225,40 @@ volatile unsigned *allof7e;
 #define GPIO_SET *(gpio+7)  // setsbits which are 1 ignores bits which are 0
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
+//-----
+#if (RASPI) == 1                       // Original Raspberry Pi 1
+// #define PERIPH_VIRT_BASE               (0x20000000)
+#define BASE                           (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+//#define MEM_FLAG                     (0x0C) alternative
+#define CURBLOCK                       (0x0C) //dec: 12
 
-#define LENGTH    (0x01000000) // dec: 1
-#define BASE      (0x20000000) // base=GPIO_offset dec: 2
-#define ADR       (0x7E000000) // dec: 2113929216
-#define CM_GP0CTL (0x7E101070) // p.107 dec: 2114982000
-#define GPFSEL0   (0x7E200000) // p.90 dec: 2116026368
-#define CM_GP0DIV (0x7E101074) // p.108 dec: 2114982004
-#define CLKBASE   (0x7E101000) // dec: 2114981888
-#define DMABASE   (0x7E007000) // dec: 2113957888
-#define PWMBASE   (0x7E20C000) // PWM controller dec: 2116075520
-#define BCM2836_PERI_BASE (0x3F000000) // register physical address dec: 1056964608
-#define GPIO_BASE (BCM2836_PERI_BASE + BASE) // hex 0x5F000000 dec: 1593835520
-#define PWMCLK_DIV (0x5A002800) // PWMCLK_DIV dec: 1509959680
-#define PWMCLK_CNTL (0x5A000016) // PWMCLK_CNTL dec: 1509949462
-#define FIFO      (0x18) // dec: 24
-#define CARRIER   (0x5A) // dec: 90
-#define MODULATE  (0x4D72) // dec: 19826
-#define DMAC     (0x0707) // dec: 1799
-#define CURBLOCK (0x04) // dec: 4
-#define DMAREF (0x7F) //dma base reference dec: 127
+#elif (RASPI) >= 2                     // Raspberry Pi 2 & 3
+//#define PERIPH_VIRT_BASE             (0x3F000000)
+#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
+#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
+//#define MEM_FLAG                     (0x04)
+#define CURBLOCK                       (0x04) // dec: 4 memflag?
+#endif
+
+//---
+#define LENGTH                         (0x01000000) // dec: 1
+#define GPIO_BASE (BCM2836_PERI_BASE + BASE)        // hex: 0x5F000000 dec: 1593835520
+#define PWMCLK_CNTL                    (0x5A000016) // PWMCLK_CNTL dec: 1509949462
+#define PWMCLK_DIV                     (0x5A002800) // PWMCLK_DIV dec: 1509959680
+#define ADR                            (0x7E000000) // dec: 2113929216 phys base
+#define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
+#define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
+#define DMABASE                        (0x7E007000) // dec: 2113957888
+#define CLKBASE                        (0x7E101000) // dec: 2114981888
+#define GPFSEL0                        (0x7E200000) // p.90 dec: 2116026368
+#define PWMBASE                        (0x7E20C000) // PWM controller dec: 2116075520
+
+#define FIFO                           (0x18)   // dec: 24
+#define CARRIER                        (0x5A)   // dec: 90
+#define DMAREF                         (0x7F)   // dec: 127 dma base reference
+#define MODULATE                       (0x4D72) // dec: 19826
+#define DMAC                           (0x0707) // dec: 1799
 
 #define ACCESS(BASE) (volatile int*)(BASE + (volatile int) allof7e-ADR)
 #define SETBIT(BASE, bit) ACCESS(BASE) || 1<<bit // |=
@@ -254,38 +266,242 @@ volatile unsigned *allof7e;
 
 // possibility to give argv 0-4 an specific address or pointer
 // addresses -> at least on my system-tests
-#define ARGC_ADR (0x7FFFFFFFEB0C) // dec: 140737488349964
-#define NAME_ADR (0x7FFFFFFEC08) // dec: 8796093017096
-#define FILE_ADR (0x7FFFFFFFEC10) // dec: 140737488350224
-#define FREQ_ADR (0x7FFFFFFFEC18) // dec: 140737488350232
-#define SAMPLERATE_ADR (0x7FFFFFFFEC20) // dec: 140737488350240
-#define MODULATION_ADR (0x7FFFFFFFEC28) // dec: 140737488350248
-#define CALLSIGN1_ADR (0x6052C0) // dec: 6312640
-#define CALLSIGN2_ADR (0x7FFFFFFFEAEF) // dec: 140737488349935
-#define CALLSIGN3_ADR (0x7FFFFFFFEAE8) // dec: 140737488349928
+#define CALLSIGN1_ADR    (0x6052C0)       // dec: 6312640
+#define NAME_ADR         (0x7FFFFFFEC08)  // dec: 8796093017096
+#define FILE_ADR         (0x7FFFFFFFEC10) // dec: 140737488350224
+#define CALLSIGN3_ADR    (0x7FFFFFFFEAE8) // dec: 140737488349928
+#define CALLSIGN2_ADR    (0x7FFFFFFFEAEF) // dec: 140737488349935
+#define FREQ_ADR         (0x7FFFFFFFEC18) // dec: 140737488350232
+#define SAMPLERATE_ADR   (0x7FFFFFFFEC20) // dec: 140737488350240
+#define MODULATION_ADR   (0x7FFFFFFFEC28) // dec: 140737488350248
+#define ARGC_ADR         (0x7FFFFFFFEB0C) // dec: 140737488349964
 
 // Pointers
-#define ARGC_PTR (0x5) // dec: 5
-#define NAME_PTR (0x2F) // dec: 47
-#define FILE_PTR (0x73) // dec: 115
-#define FREQ_PTR (0x31) //$ means is in RDS data dec: 49
-#define SAMPLERATE_PTR (0x32) //$in RDS data  dec: 50
-#define MODULATION_PTR (0x66) //$ means isin RDS data // dec: 102
-#define CALLSIGN_PTR (0x6D) // dec: 109
+#define ARGC_PTR         (0x5) // dec: 5
+#define NAME_PTR         (0x2F) // dec: 47
+#define FREQ_PTR         (0x31) //$ means is in RDS data dec: 49
+#define SAMPLERATE_PTR   (0x32) //$in RDS data  dec: 50
+#define MODULATION_PTR   (0x66) //$ means isin RDS data // dec: 102
+#define CALLSIGN_PTR     (0x6D) // dec: 109
+#define FILE_PTR         (0x73) // dec: 115
 
-//--------------------------------------------------//
 //mathematical stuff
-#define ln(x) (log (x)/log (2.718281828459045235f))
-#define PI (3.14159265)
-#define FLOOR (0x0) // dec 0
-#define PWMADD1 (0x4) // dec 4
-#define PWMADD2 (0x8) // dec 8
+#define ln(x) (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
+#define PI      (3.14159265358979323846)
+#define FLOOR   (0x0) // dec: 0
+#define PWMADD1 (0x4) // dec: 4
+#define PWMADD2 (0x8) // dec: 8
 
-/* try a modprobe */
-if (system ("/sbin/modprobe i2c_dev") == -1) { /* ignore errors */}
-if (system ("/sbin/modprobe i2c_bcm2835") == -1) { /* ignore errors */}
-//myGpioDelay (100000);
+//----------from pifmadv -> helps to understand the things the normal fm-script didnt specified
+#define DMA_BASE_OFFSET                 (0x00007000)
+#define PWM_BASE_OFFSET                 (0x0020C000)
+#define PWM_LEN                         (0x28)
+#define CLK_BASE_OFFSET                 (0x00101000)
+#define CLK_LEN                         (0x1300)
+#define GPIO_BASE_OFFSET                (0x00200000)
+#define GPIO_LEN                        (0x100)
+#define PCM_BASE_OFFSET                 (0x00203000)
+#define PCM_LEN                         (0x24)
+#define PAD_BASE_OFFSET                 (0x00100000)
+#define PAD_LEN                         (0x40/4) //0x64
 
+#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET)
+#define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET)
+#define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET)
+#define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET)
+#define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET)
+#define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET)
+
+#define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET)
+#define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET)
+#define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET)
+
+// GPIO
+#define GPFSEL0                         (0x00/4)
+#define GPFSEL1                         (0x04/4)
+#define GPFSEL2                         (0x08/4)
+#define GPPUD                           (0x94/4)
+#define GPPUDCLK0                       (0x98/4)
+#define GPPUDCLK1                       (0x9C/4)
+
+#define CORECLK_CNTL                    (0x08/4)
+#define CORECLK_DIV                     (0x0c/4)
+#define GPCLK_CNTL                      (0x70/4)
+#define GPCLK_DIV                       (0x74/4)
+#define EMMCCLK_CNTL                    (0x1C0/4)
+#define EMMCCLK_DIV                     (0x1C4/4)
+
+#define CM_LOCK                         (0x114/4)
+#define CM_LOCK_FLOCKA                  (1<<8)
+#define CM_LOCK_FLOCKB                  (1<<9)
+#define CM_LOCK_FLOCKC                  (1<<10)
+#define CM_LOCK_FLOCKD                  (1<<11)
+#define CM_LOCK_FLOCKH                  (1<<12)
+
+#define CM_PLLA                         (0x104/4)
+#define CM_PLLC                         (0x108/4)
+#define CM_PLLD                         (0x10C/4)
+#define CM_PLLH                         (0x110/4)
+#define CM_PLLB                         (0x170/4)
+
+#define A2W_PLLA_ANA0                   (0x1010/4)
+#define A2W_PLLC_ANA0                   (0x1030/4)
+#define A2W_PLLD_ANA0                   (0x1050/4)
+#define A2W_PLLH_ANA0                   (0x1070/4)
+#define A2W_PLLB_ANA0                   (0x10F0/4)
+#define A2W_PLL_KA_SHIFT                (7)
+#define A2W_PLL_KI_SHIFT                (19)
+#define A2W_PLL_KP_SHIFT                (15)
+
+#define PLLA_CTRL                       (0x1100/4)
+#define PLLA_FRAC                       (0x1200/4)
+#define PLLA_DSI0                       (0x1300/4)
+#define PLLA_CORE                       (0x1400/4)
+#define PLLA_PER                        (0x1500/4)
+#define PLLA_CCP2                       (0x1600/4)
+
+#define PLLB_CTRL                       (0x11e0/4)
+#define PLLB_FRAC                       (0x12e0/4)
+#define PLLB_ARM                        (0x13e0/4)
+#define PLLB_SP0                        (0x14e0/4)
+#define PLLB_SP1                        (0x15e0/4)
+#define PLLB_SP2                        (0x16e0/4)
+
+#define PLLC_CTRL                       (0x1120/4)
+#define PLLC_FRAC                       (0x1220/4)
+#define PLLC_CORE2                      (0x1320/4)
+#define PLLC_CORE1                      (0x1420/4)
+#define PLLC_PER                        (0x1520/4)
+#define PLLC_CORE0                      (0x1620/4)
+
+#define PLLD_CTRL                       (0x1140/4)
+#define PLLD_FRAC                       (0x1240/4)
+#define PLLD_DSI0                       (0x1340/4)
+#define PLLD_CORE                       (0x1440/4)
+#define PLLD_PER                        (0x1540/4)
+#define PLLD_DSI1                       (0x1640/4)
+
+#define PLLH_CTRL                       (0x1160/4)
+#define PLLH_FRAC                       (0x1260/4)
+#define PLLH_AUX                        (0x1360/4)
+#define PLLH_RCAL                       (0x1460/4)
+#define PLLH_PIX                        (0x1560/4)
+#define PLLH_STS                        (0x1660/4)
+
+// PWM
+#define PWM_CTL                         (0x00/4)
+#define PWM_DMAC                        (0x08/4)
+#define PWM_RNG1                        (0x10/4)
+#define PWM_RNG2                        (0x20/4)
+#define PWM_FIFO                        (0x18/4)
+
+#define PWMCLK_CNTL                     (40)
+#define PWMCLK_DIV                      (41)
+
+#define PWMCTL_PWEN1                    (1<<0)
+#define PWMCTL_MODE1                    (1<<1)
+#define PWMCTL_RPTL1                    (1<<2)
+#define PWMCTL_POLA1                    (1<<4)
+#define PWMCTL_USEF1                    (1<<5)
+#define PWMCTL_CLRF                     (1<<6)
+#define PWMCTL_MSEN1                    (1<<7)
+#define PWMCTL_PWEN2                    (1<<8)
+#define PWMCTL_MODE2                    (1<<9)
+#define PWMCTL_RPTL2                    (1<<10)
+#define PWMCTL_USEF2                    (1<<13)
+#define PWMCTL_MSEN2                    (1<<15)
+
+#define PWMDMAC_ENAB                    (1<<31)
+#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0))
+
+// PCM
+#define PCM_CS_A                        (0x00/4)
+#define PCM_FIFO_A                      (0x04/4)
+#define PCM_MODE_A                      (0x08/4)
+#define PCM_RXC_A                       (0x0C/4)
+#define PCM_TXC_A                       (0x10/4)
+#define PCM_DREQ_A                      (0x14/4)
+#define PCM_INTEN_A                     (0x18/4)
+#define PCM_INT_STC_A                   (0x1C/4)
+#define PCM_GRAY                        (0x20/4)
+
+#define PCMCLK_CNTL                     (38)
+#define PCMCLK_DIV                      (39)
+
+// PAD
+#define GPIO_PAD_0_27                   (0x2C/4)
+#define GPIO_PAD_28_45                  (0x30/4)
+#define GPIO_PAD_46_52                  (0x34/4)
+
+// DMA
+#define DMA_CHANNEL                     (14)
+#define DMA_CHANNEL_MAX                 (14)
+#define DMA_CHANNEL_SIZE                (0x100)
+
+#define BCM2708_DMA_ACTIVE              (1<<0)
+#define BCM2708_DMA_END                 (1<<1)
+#define BCM2708_DMA_INT                 (1<<2)
+#define BCM2708_DMA_WAIT_RESP           (1<<3)
+#define BCM2708_DMA_D_DREQ              (1<<6)
+#define BCM2708_DMA_DST_IGNOR           (1<<7)
+#define BCM2708_DMA_SRC_INC             (1<<8)
+#define BCM2708_DMA_SRC_IGNOR           (1<<11)
+#define BCM2708_DMA_NO_WIDE_BURSTS      (1<<26)
+#define BCM2708_DMA_DISDEBUG            (1<<28)
+#define BCM2708_DMA_ABORT               (1<<30)
+#define BCM2708_DMA_RESET               (1<<31)
+#define BCM2708_DMA_PER_MAP(x)          ((x)<<16)
+#define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16)
+#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20)
+
+#define DMA_CS                          (0x00/4)
+#define DMA_CONBLK_AD                   (0x04/4)
+#define DMA_DEBUG                       (0x20/4)
+
+#define DMA_CS_RESET		                  	(1<<31)
+#define DMA_CS_ABORT			                  (1<<30)
+#define DMA_CS_DISDEBUG		                 	(1<<29)
+#define DMA_CS_WAIT_FOR_OUTSTANDING_WRITES  (1<<28)
+#define DMA_CS_INT			                    (1<<2)
+#define DMA_CS_END			                    (1<<1)
+#define DMA_CS_ACTIVE			                  (1<<0)
+#define DMA_CS_PRIORITY(x)		              ((x)&0xF << 16)
+#define DMA_CS_PANIC_PRIORITY(x)	          ((x)&0xF << 20)
+
+#define DREQ_PCM_TX                     (2)
+#define DREQ_PCM_RX                     (3)
+#define DREQ_SMI                        (4)
+#define DREQ_PWM                        (5)
+#define DREQ_SPI_TX                     (6)
+#define DREQ_SPI_RX                     (7)
+#define DREQ_SPI_SLAVE_TX               (8)
+#define DREQ_SPI_SLAVE_RX               (9)
+
+#define MEM_FLAG_DISCARDABLE            (1 << 0) /* can be resized to 0 at any time. Use for cached data */
+#define MEM_FLAG_NORMAL                 (0 << 2) /* normal allocating alias. Don't use from ARM */
+#define MEM_FLAG_DIRECT                 (1 << 2) /* 0xC alias uncached */
+#define MEM_FLAG_COHERENT               (2 << 2) /* 0x8 alias. Non-allocating in L2 but coherent */
+#define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) /* Allocating in L2 */
+#define MEM_FLAG_ZERO                   (1 << 4)  /* initialise buffer to all zeros */
+#define MEM_FLAG_NO_INIT                (1 << 5) /* don't initialise (default is initialise to all ones */
+#define MEM_FLAG_HINT_PERMALOCK         (1 << 6) /* Likely to be locked for long periods of time. */
+
+#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000)
+
+#define PAGE_SIZE                       (4096)
+#define PAGE_SHIFT                      (12)
+#define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
+
+#define NUM_SAMPLES                     (64000)
+#define NUM_CBS                         (NUM_SAMPLES * 2)
+
+#define SUBSIZE                         (1)
+#define DATA_SIZE                       (1000)
+
+//----------------------------------
+/* try a modprobe of i2C-BUS*/
+if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
+if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 //-----------------------------------
 //iterators for loops
 int a;
@@ -303,14 +519,13 @@ char *spi0_map;
 //-----------------------------------------
 char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
-snd_output_t *output = NULL;
 
 char *filename;
 const double freq;
 const double ctss_freq;
 unsigned int samplerate;
 
-// samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
+//samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 unsigned int channels;
 char *mod;
 char *fm = "fm";
@@ -322,7 +537,7 @@ unsigned int channelnumbercb;
 unsigned int channelnumberpmr;
 
 //--network sockets for later
-// here custom port via tcp-ip evtl. udp
+// here custom port via tcp/ip or udp
 socklen_t addressLength;
 unsigned int port;
 
@@ -335,7 +550,7 @@ char data_name [1024];
 float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
 float FactAmplitude = 2.0; //maybe here amp-modulator type input?
-// log Modulation
+// logarithmic modulation
 float A = 87.7f; // compression parameter (stauchung) -> why this value?
 
 // fm vars
@@ -347,6 +562,7 @@ int readBytes;
 float datanew, dataold = 0;
 
 SF_INFO sfinfo;
+snd_output_t *output = NULL;
 SNDFILE *infile, *outfile;
 char *infilename, *outfilename;
 float ampf;
@@ -354,7 +570,7 @@ float ampf2;
 float factorizer;
 float sampler;
 unsigned int readcount, nb_samples;
-unsigned int excursion = 6000; //32767 found another value but dont know on wht this is based on
+unsigned int excursion = 6000; //32767 found another value but dont know on what this is based on
 
 //audio control
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
@@ -387,7 +603,6 @@ struct PAGEINFO // should use here bcm intern funcs-> repair
 		int instrPage;
 		int constPage;
 		int instrs [BUFFERINSTRUCTIONS]; // [1024];
-
 };
 
 struct GPCTL
@@ -428,75 +643,9 @@ struct DMAREGS
 		volatile unsigned int DEBUG;
 };
 
-float audiovol ()
-{
-	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
-	{
-     volbuffer [i] *= volumeMultiplier;
-     printf ("\nValues: i: %d , volbuffer: %f , volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
-		  printf ("\nAdresses: i: %p , volbuffer: %p , volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
-     return volbuffer [i], volumeMultiplier;
-	}
-return volbuffer [i], volumeMultiplier;
-}
-
-//--------------LED stuff
-//controlling via py possible but c stuff can be useful too by bcm funcs!
-//turn on LED (with 100 kOhm pullup resistor while transmitting
-// Blinks on RPi Plug pin 11
-void clearscreen () {clsscr ();}
-
-void ledactive ()
-{
-		//check if transmitting
-		while (!play_wav ());
-		{
-		cm2835_gpio_write (PIN17, LOW);
-		printf ("\nLED OFF - No Transmission!\n");
-		}
-}
-
-void led ()
-{
-//simulation of gpio for debug
-//bcm2835_set_debug (1);
-
-  if (!bcm2835_init ())
-	{
-	printf ("\nBCM 2835 init failed! \n");
-	}
-	else if (1)
-	{
-
-    // Set the pin to be an outputannels
-    bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
-  	printf ("\nBCM 2835 init done and PIN 4 activated \n");
-    // LED is active during transmission
-		while (play_wav ()) // (ledactive != 0)
-		{
-	// Turn it on
-		bcm2835_gpio_write (PIN17, HIGH);
-		printf ("\nLED ON - Transmission...! \n");
-	// wait a bit
-		bcm2835_delay (500);
-		}
-
-	}
-	else // if no trans than turn it off
-   {
-		cm2835_gpio_write (PIN17, LOW);
-		printf ("\nLED OFF - No Transmission \n");
-	 }
-
-   bcm2835_close ();
-	 printf ("\nBCM 2835 closing \n");
-   return 0;
-}
-
 /*
 RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
-
 // basic function then specified one after another
 char infos () //Warnings and infos
 {
@@ -506,7 +655,7 @@ char infos () //Warnings and infos
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("HELP: Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]! \n");
     printf ("for testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
-  // colour text test: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode
+    //colour text test: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode
 	  printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
   	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
     return 0;
@@ -514,7 +663,6 @@ char infos () //Warnings and infos
 
 static char timer ()
 {
-
    time (&rawtime);
    info = localtime (&rawtime);
    asctime (info) = newtime
@@ -524,10 +672,10 @@ static char timer ()
 
 char filenamepath ()
 {
-    printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-    scanf ("%s", filename);
+  printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
+  scanf ("%s", filename);
 
-    if (filename == NULL)
+  if (filename == NULL)
 	{
 	    printf ("\n%s File not found! \n", filename);
 	    return -1;
@@ -537,62 +685,23 @@ char filenamepath ()
 	   printf ("\nTrying to play default sound.wav ... \n");
 	   *filename = open ("sound.wav", "r"); // sounds/sound.wav directory should be testet
 	   return filename;
-
 	}
 	return filename;
 }
 
 double freqselect () // gets freq by typing in
 {
-
-	printf ("\nYou selected 1 for Frequency-Mode\n");
+	printf ("\nYou selected 1 for Frequency-MODE \n");
 	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700Mhz chip, pi3 1.2ghz
 	scanf  ("%f", freq);
 	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
 }
-
-unsigned int channelselect ()
-{
-	printf ("\nYou selected 1 for Channel-Mode\n");
-	printf ("Choose your type [1] PMR // [2] CB // [3] Exit : ");
-
-    scanf  ("%d", &channelmode);
-
-    switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
-        {
-         case 1: printf ("\nPMR CHAN-MODE in FM \n");
-					unsigned int channelmodepmr (); // gets freq from pmr list
-					filenamepath ();
-					printf ("\nChecking volume... \n");
-					audiovol ();
-					int modulationfm (int argc, char **argv);
-					break;
-
-		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
-					unsigned int channelmodecb (); // gets freq for chan
-					filenamepath (); //gets file
-					audiovol ();
-					int modulationselect (); //selects modulation
-					break;
-
-         case 3:  printf ("\nExiting... \n");
-					 exit (-1);
-
-			   //default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
-		    }
-
-return channelmode;
-}
-
 //--------------------------------------------------
 // Channel-mode
-//PMR
-
-unsigned int channelmodepmr ()
+unsigned int channelmodepmr () //PMR
 {
 	printf ("\nChoose PMR-Channel 0-17 (18 to exit): ");
-
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
@@ -606,11 +715,10 @@ unsigned int channelmodepmr ()
 	 case 6: freq=446.06875; break; // Events
 	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
 	 case 8: freq=446.09375; break; // Standard
-
-//---------------------------Digital only
+  //-----Digital only
 	// dpmr digital new since 28.09.2016
 	// extra 8 chan
-	// 12.5 kHz steps too
+	// 12.5 kHz steps
 	 case 9:  freq=446.10312; break; // 6.25 kHz steps
 	 case 10: freq=446.10625; break;
 	 case 11: freq=446.11875; break;
@@ -627,48 +735,40 @@ unsigned int channelmodepmr ()
 	return channelnumberpmr, freq;
 }
 
-// CB
-unsigned int channelmodecb ()
+unsigned int channelmodecb () // CB
 {
 	printf ("\nChoose CB-Channel 0-80 (81 to exit): ");
-
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
 		// --> translation of infos in english in future updates!
-      case 0:   freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq); break;
-			case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)
-			case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
-			case 3:   freq=26.9850; break;
-			case 4:   freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
-			case 5:   freq=27.0150; break; //Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
-			case 6:   freq=27.0250; break; //Datenkanal (D)
-			case 7:   freq=27.0350; break; //Datenkanal (D)
-			case 8:   freq=27.0550; break;
-			case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
-			case 10:  freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
-/*
-			# Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
-			# Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
-			# Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet
-*/
+       case 0:   freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq); break;
+			 case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)
+			 case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
+			 case 3:   freq=26.9850; break;
+			 case 4:   freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
+			 case 5:   freq=27.0150; break; //Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
+			 case 6:   freq=27.0250; break; //Datenkanal (D)
+		   case 7:   freq=27.0350; break; //Datenkanal (D)
+			 case 8:   freq=27.0550; break;
+			 case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
+			 case 10:  freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
+/*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
+			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
+			 Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet */
 			 case 11:  freq=27.0850; break;  //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			 case 1111: freq=27.0950; break; //Eurobalise-Energieversorgung
-
 			 case 12:  freq=27.1050; break;
 			 case 13:  freq=27.1150; break;
 			 case 14:  freq=27.1250; break; //oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
 			 case 15:  freq=27.1350; break; //inoffizieller Anrufkanal SSB (USB)
 			 case 1515: freq=27.1450; break;
-
 			 case 16:  freq=27.1550; break; //Funkverkehr mit und zwischen Wasserfahrzeugen
 			 case 17:  freq=27.1650; break; //Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
 			 case 18:  freq=27.1750; break;
 			 case 19:  freq=27.1850; break; //empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt
 			 case 1919: freq=27.1950; break;
-
-			 case 20:  freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten,
-										    //#wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
+			 case 20:  freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 		 	//## 40 chan devices
 			 case 21:  freq=27.2150; break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)
@@ -691,11 +791,10 @@ unsigned int channelmodecb ()
 			 case 38:  freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
 			 case 39:  freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			 case 40:  freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
-									        //ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
+			//ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
 			/* 80 chan devices
 			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt
-			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet:
-            */
+			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: */
 			case 41:  freq=27.5650; break; //Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
 			case 42:  freq=27.5750; break; //inoffizieller DX-Kanal (FM)
 			case 43:  freq=27.5850; break;
@@ -716,6 +815,7 @@ unsigned int channelmodecb ()
 			case 58:  freq=27.7350; break;
 			case 59:  freq=27.7450; break;
 			case 60:  freq=27.7550; break;
+
       case 61:  freq=26.7650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			case 62:  freq=26.7750; break;
 			case 63:  freq=26.7850; break;
@@ -736,21 +836,115 @@ unsigned int channelmodecb ()
 			case 78:  freq=26.9350; break;
 			case 79:  freq=26.9450; break;
 			case 80:  freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
-			case 81: exit (-1);
+			case 81:  exit (-1);
 			//default: freq=26.9650; printf ("\nDefault: CB chan = 1 %f \n", &freq); break;
-
       return freq;
-
 	}
   printf ("\n Using Freq: %f", freq);
 	return channelnumbercb, freq;
 }
-//----------------------------------- Voids
 
+unsigned int channelselect ()
+{
+	printf ("\nYou selected 1 for Channel-Mode\n");
+	printf ("Choose your Band [1] PMR // [2] CB // [3] Menu or [4] Exit : ");
+  scanf  ("%d", &channelmode);
+
+    switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
+        {
+         case 1: printf ("\nPMR CHAN-MODE in FM \n");
+					channelmodepmr (); // gets freq from pmr list
+					filenamepath ();
+					printf ("\nChecking volume... \n");
+					audiovol ();
+					int modulationfm (int argc, char **argv);
+					break;
+
+		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
+				  channelmodecb (); // gets freq for chan
+					filenamepath (); //gets file
+					audiovol ();
+					modulationselect (); //selects modulation
+					break;
+
+         case 3: printf ("\nReturning to Menu... \n");
+          GetUserInput ();
+          break;
+
+         case 4:  printf ("\nExiting... \n");
+					 exit (-1);
+			   //default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
+		    }
+return channelmode;
+}
+
+float audiovol ()
+{
+	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
+	{
+     volbuffer [i] *= volumeMultiplier;
+     printf ("\nValues: i: %d , volbuffer: %f , volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+		 printf ("\nAdresses: i: %p , volbuffer: %p , volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
+     return volbuffer [i], volumeMultiplier;
+	}
+return volbuffer [i], volumeMultiplier;
+}
+
+//--------------- Voids
 void handSig () // exit func
 {
 		exit (0);
 }
+
+void clearscreen () {clsscr ();}
+//--------------LED stuff
+//controlling via py possible but c stuff can be useful too by bcm funcs!
+//turn on LED (with 100 kOhm pullup resistor while transmitting
+void ledactive ()
+{
+		//check if transmitting
+		while (!play_wav ())
+		{
+		cm2835_gpio_write (PIN17, LOW);
+		printf ("\nLED OFF - No Transmission!\n");
+		}
+}
+
+void led ()
+{
+//simulation of gpio for debug
+  //bcm2835_set_debug (1);
+
+  if (!bcm2835_init ())
+	{
+	printf ("\nBCM 2835 init failed! \n");
+	}
+	else if (1)
+	{
+    // Set the pin to be an outputannels
+    bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
+  	printf ("\nBCM 2835 init done and PIN 4 activated \n");
+    // LED is active during transmission
+		while (play_wav ()) // (ledactive != 0)
+		{
+	// Turn it on
+		bcm2835_gpio_write (PIN17, HIGH);
+		printf ("\nLED ON - Transmission...! \n");
+	// wait a bit
+		bcm2835_delay (500);
+		}
+
+	}
+	else // if no trans than turn it off
+  {
+		cm2835_gpio_write (PIN17, LOW);
+		printf ("\nLED OFF - No Transmission \n");
+	}
+   bcm2835_close ();
+	 printf ("\nBCM 2835 closing \n");
+   return 0;
+}
+
 // FM ones
 void modulate (int m)
 {
@@ -777,7 +971,7 @@ void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm head
 void freeRealMemPage (void** vAddr)
 {
 		munlock (vAddr, 4096); // unlock ram
-		free (vAddr); // free the ram
+		free    (vAddr); // free the ram
 }
 
 void carrierhigh () // enables it
@@ -819,26 +1013,21 @@ void setupfm ()
    CLRBIT (GPFSEL0, 12);
 
 	 void carrierhigh ()
-
 }
-
 ///------------------------------------
 //relevant for transmitting stuff
-
 void playWav (char *filename, unsigned int samplerate)
 {
 	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
-NTSC: 44,056 Hz
-    245 × 60 × 3 = 44,100
-    245 active lines/field × 60 fields/second × 3 samples/line = 44,100 samples/second
+    NTSC: 44056 Hz
+    245 × 60 × 3 = 44100
+    245 active lines/field × 60 fields/second × 3 samples/line = 44100 samples/second
     (490 active lines per frame, out of 525 lines total)
-
-PAL:
-    294 × 50 × 3 = 44,100
-    294 active lines/field × 50 fields/second × 3 samples/line = 44,100 samples/second
+    PAL:
+    294 × 50 × 3 = 44100
+    294 active lines/field × 50 fields/second × 3 samples/line = 44100 samples/second
     (588 active lines per frame, out of 625 lines total)
 	*/
-
     // after getting filename insert then open
 	lseek (fp, 0L, SEEK_SET);
 	int sz = lseek (fp, 0L, SEEK_END);
@@ -853,7 +1042,6 @@ PAL:
 
   while (readBytes = read (fp, &data, 1024))
     {
-
         float value = data [i] * 4 * volume; // modulation index (AKA volume) logar. hearing of human
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
         unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400 (why this?)
@@ -937,7 +1125,6 @@ void setupDMA (const double freq)
 	   // ((int*) (constPage.v))[i] = (CARRIER << 24) + centerFreqDivider - 512 + i;
 	}
 
-
 	while (instrCnt < 1024) //BUFFERINSTRUCTIONS
 	{
      //getRealMemPage (&instrPage.v, &instrPage.p);
@@ -957,13 +1144,13 @@ void setupDMA (const double freq)
          instr0->STRIDE = 0;
          instr0->NEXTCONBK = (int) instrPage.p + sizeof (struct CB)*(i+1);
 
-	     // DREQ then PWM then no-wide
+	      // DREQ then PWM then no-wide
          instr0->TI = (1<<6) | (5<<16) |  (1<<26);
          instr0->RES1 = 0;
          instr0->RES2 = 0;
 
         if (i%2)
-	    {
+	      {
          instr0->DEST_AD = CM_GP0DIV;
          instr0->STRIDE = 4;
          instr0->TI = (1<<26) ;
@@ -972,16 +1159,14 @@ void setupDMA (const double freq)
        if (instrCnt!=0) ((struct CB*) (instrs [instrCnt-1].v))->NEXTCONBK = (int) instrs [instrCnt].p;
        instr0++;
        */
-
        instrCnt++;
-
      }
 
    }
 
    //((struct CB*) (instrs [1023].v))->NEXTCONBK = (int) instrs [0].p;
 
-    // set up a clock for the base
+   // set up a clock for the base
    ACCESS (CLKBASE + 40*4) == (PWMCLK_CNTL); // (dec: 1509949478)
    //usleep (1000);
 
@@ -999,7 +1184,7 @@ void setupDMA (const double freq)
    ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8);
    //usleep (1000);
 
-  // DMAC then DMA enable in 0x8 dec:8 / pwmbase+8 = 7E20C008 (dec:2116075528) /
+   // DMAC then DMA enable in 0x8 dec:8 / pwmbase+8 = 7E20C008 (dec:2116075528) /
    ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
   //activate dma
@@ -1034,14 +1219,11 @@ void WriteTone (const double Frequency, uint32_t Timing)
 		fprintf (stderr, "\nUnable to write sample! \n");
 	}
 }
-
 //---------------------//
 // main progs
-
 //FM
 unsigned int modulationfm (int argc, char **argv)
 {
-
     printf ("\nPreparing for FM... \n");
 
     if (argc>0)
@@ -1054,7 +1236,7 @@ unsigned int modulationfm (int argc, char **argv)
     setupDMA (argc>2 ? atof (argv [2]):100.00000); // default freq, maybe do input here?
 
 	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    playWav (argv[1], argc>3 ? atof (argv [3]):22050); // <-- in 22.05 kHz, should be same as AM!!
+    play_wav (argv [1], argc>3 ? atof (argv [3]):22050); // <-- in 22.05 kHz, should be same as AM!!
 
 	  printf ("\Checking & Setting LED for Transmission \n");
 	  led ();
@@ -1078,11 +1260,9 @@ unsigned int modulationam (int argc, char **argv)
               {RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
               {VFO (constant frequency)}
     */
-
 	nb_samples = (readcount/channels);
 	printf ("\n nb_samples: %f \n", nb_samples);
 	printf ("Compression prameter A: %f \n", A); // was defined as global var above
-
 
 	if (argc>=4)
 	{
@@ -1108,11 +1288,12 @@ unsigned int modulationam (int argc, char **argv)
 		return samplerate;
 	}
 	else if (sfinfo.samplerate == 14500)
-			{
+	{
 			printf ("Samplerate is 14500 !");
 			return samplerate;
-			}
-	else {
+	}
+	else
+  {
 	printf ("\nInput samplerate must be at least 22.05 [kHz] AM/ or 14.5 kHz FM (mono)! \n");
 	return 1;
 	}
@@ -1122,15 +1303,12 @@ unsigned int modulationam (int argc, char **argv)
 		printf ("\nInput must be 16 bit (mono)! \n");
 		return 1;
 	}
-
 	// While there are frames in the input file, read them,
 	//process them and write them to the output file
 //----------------------
-
   while (readcount = read (filename, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
-
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
 		  char b = data [k*channels];
@@ -1139,7 +1317,6 @@ unsigned int modulationam (int argc, char **argv)
 			{
 				printf ("File is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
 			}
-
 			else if (channels == 1)
 			{
 				// stereo file, avg left + right --> should be mono at 22.05kHz
@@ -1147,8 +1324,7 @@ unsigned int modulationam (int argc, char **argv)
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				return b;
 			}
-			else if (channels >= 2) printf ("File is NOT mono (1 Channel!) \n"); // >1 in stereo or dual mono with half samplerate
-
+			else if (channels >= 2){ printf ("Error: File has 2 or more Channels!) \n");} // >1 in stereo or dual mono with half samplerate
 
 			//maybe here am option for amplitude factor input!?
 			printf ("Factamplitude: %f \n", FactAmplitude);
@@ -1186,13 +1362,11 @@ unsigned int modulationam (int argc, char **argv)
     fclose (FileFreqTiming);
     fclose (filename);
     printf ("\nFile saved! \n");
-
     return FileFreqTiming, filename;
 }
 
 unsigned int modulationselect ()
 {
-
 	printf ("Choose your Modulation [1] FM // [2] AM // [3] Exit : ");
 	unsigned int freqmode;
 	scanf ("%d", &freqmode);
@@ -1214,7 +1388,6 @@ unsigned int modulationselect ()
 
 return freqmode;
 }
-//------------------//
 // all subch. -> base/default case 0 -> channel 0
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
 // squelch/treshhold to build in maybe -> scan function till signal?
@@ -1242,7 +1415,6 @@ char csvreader()
     printf ("\nCSV-Import of ctss-List finished! \n");
 
     return c, *sfp, *dfp;
-
 }
 
 char callname ()
@@ -1253,7 +1425,7 @@ char callname ()
 
 		switch ()
 		{
-		printf ("\nYou don't have specified a callsign!\n Do you want to customize it? press (1) or use default 'callsign' (2): \n");
+		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
 		case 1: printf ("\nType in your callsign: ");
 				scanf  ("%s", *callsign);
 				printf ("\nYour callsign is: %s \n", *callsign);
@@ -1282,15 +1454,15 @@ int GetUserInput () //my menu-assistent
 
 	switch (modeselect)
     {
-          case 1: unsigned int channelselect ();
-									char filenamepath ();
-									char callname ();
-					break;
+      case 1: unsigned int channelselect ();
+							char filenamepath ();
+							char callname ();
+					    break;
 
-		    case 2: char filenamepath ();
-		            double freqselect ();
-		            unsigned int modulationselect ();
-					      break;
+		  case 2: char filenamepath ();
+		          double freqselect ();
+		          unsigned int modulationselect ();
+					    break;
 
 			case 3: printf ("\nReading CSV for PMR: \n");
 				    	char csvreader ();
@@ -1311,18 +1483,17 @@ int GetUserInput () //my menu-assistent
 
 int main (int argc, char **argv) // arguments for global use must! be in main
 {
-
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
    printf ("File was proccessed on %s at %s \n", __DATE__, __TIME__);
 	 printf ("Filename is %s \n", __FILE__)
    //scanf  ("%s %f %d %s", argv[1], argv[2], argv[3], argv[4]); //direct input if needed
 
-   char *filename = argv[1];
+   char *filename = argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
-   const double freq = strtof (argv[2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-   unsigned int samplerate = atof (argv[3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+   const double freq = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+   unsigned int samplerate = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    //-> otherwise in dma or play_wav func
 
    char *mod = argv [4];
@@ -1335,7 +1506,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &gain);
    printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n");
-
   //---
    headertest ();
    infos (); //information, disclaimer
@@ -1380,10 +1550,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
             else
             {
              printf ("No Modulation specified! fm or am? \n");
-
              return -1;
             }
-
     }
     else
     {
@@ -1396,5 +1564,4 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     //return argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], filename, freq, samplerate, mod, callsign, gain, channels ;
     return 0;
 }
-
 //EOF
