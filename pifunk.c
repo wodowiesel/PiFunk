@@ -914,7 +914,6 @@ void led ()
 {
 //simulation of gpio for debug
   //bcm2835_set_debug (1);
-
   if (!bcm2835_init ())
 	{
 	printf ("\nBCM 2835 init failed! \n");
@@ -933,7 +932,6 @@ void led ()
 	// wait a bit
 		bcm2835_delay (500);
 		}
-
 	}
 	else // if no trans than turn it off
   {
@@ -945,6 +943,10 @@ void led ()
    return 0;
 }
 
+void playlist () // exit func
+{
+		printf ("\nPLaying music from playlist-folder \n"); // in sounds/playlist
+}
 // FM ones
 void modulate (int m)
 {
