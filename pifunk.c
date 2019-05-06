@@ -508,6 +508,7 @@ int a;
 int i;
 int k;
 float x;
+int m;
 
 //pi variables:
 int mem_fd;
