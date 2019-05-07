@@ -26,6 +26,7 @@ import socket
 import datetime
 import time #from time import time
 import threading
+import signal
 import subprocess #from subprocess import run, call, pipe
 import math #from math import *
 import array
@@ -256,17 +257,22 @@ channels ()
 modulation ()
 callsign ()
 
+try:
 #if all args are parsed so to transmission mode
-led_on ()
-led_blinking ()
-led_off ()
+ led_on ()
+ led_blinking ()
+ led_off ()
 
 #here a switchcase later
-play_wav ()
-play_mp3 ()
-play_net ()
-play_mic ()
+ play_wav ()
+ play_mp3 ()
+ play_net ()
+ play_mic ()
 
+except KeyboardInterrupt:
+  GPIO.cleanup()       # clean up GPIO on CTRL+C exit
+
+GPIO.cleanup()           # clean up GPIO on normal exit
 ##------------------------------------------------------------------------------
 ##test-area
 #nosetests
