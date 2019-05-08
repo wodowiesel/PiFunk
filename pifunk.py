@@ -54,7 +54,7 @@ except:
 ## RPi & GPIO lib
 #sudo apt-get install python-rpi.gpio
 #sudo python setup.py install
-
+#hex-code: 0x10A --> dec:26
 ##------------------------------------------------------------------------------
 #loading hardware on startup
 def _init_ ():
@@ -75,16 +75,20 @@ def _init_ ():
   pullup = 0
   DEBUG = 1
   LOGGER = 1
+  gpio_pin = 4
   GPIO.initialize ()
   GPIO.setwarnings (False)
   GPIO.setmode (GPIO.BCM)
   GPIO.setmode (GPIO.BOARD)
   GPIO.setup (4, GPIO.OUT) #or 11 if used
   output = GPIO.output (4, TRUE)
-  GPIO.output (4, TRUE)
-  sensor_pin = 4
-  sensor_data = (sensor_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
-#hex-code: 0x10A --> dec:26
+  sensor_data = (gpio_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
+  pi_pwm = GPIO.PWM (4, freq)
+  pi_pwm.start (0)
+  while True:
+      for Duty in range (0, 60, 1)
+      pi_pwm.ChangeDutyCycle (Duty)
+
 ##------------------------------------------------------------------------------
 
 #definitions
@@ -99,9 +103,10 @@ def soundfile (filename):
       return filename
 
 def frequency (freq):
-  freq = float (input ("\nEnter frequency (MHz) with . as decimal (5 digit accuracy):  "))
+  freq = float (input ("\nEnter frequency (1 kHz-1000 MHz) with . as decimal (5 digit accuracy):  "))
+  for samplerate in range (0.000001, 1000)
   if freq > 0:
-      print ("\nFrequency is: " + freq " (MHz) " + " \n")
+      print ("\nFrequency is: " + freq " MHz \n")
       return freq
   else:
       freq = float (446.00000)
@@ -120,7 +125,7 @@ def sampler (samplerate):
 
 def channels (channels):
   channels = int (input ("\nEnter number of channels (1 mono or 2 stereo): "))
-  if channels > 0:
+  if channels 1 || 2:
       print ("\nChannels: " + channels + " \n")
       return channels
   else:
@@ -156,7 +161,7 @@ def c_arg_parser ():
 
 def play_wav ():
   print ("\nPlaying wav ... \n")
-  if (filename && freq && samplerate && mod != 0):
+  if (filename && freq && samplerate && mod != None):
       call (["sudo ./pifunk ", filename, freq, samplerate, mod, callsign])
   else:
       call (["sudo ./pifunk sound.wav 100.00000 22050 fm callsign"])
