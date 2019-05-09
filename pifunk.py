@@ -18,22 +18,34 @@
 ## Imports
 import io
 import os
+import argparse
 import atexit
 import readline
 import rlcomplete
 import sys
 import glob
+import string
+import types
+import array
 import site
 import re
 import locale
 import datetime
+import distutils
+import timeit
 import time #from time import time
 import StringIO
+import asyncio
+import tracemalloc
 import threading
 import signal
 import builtins
+import collections
 import struct
+import queue
+import multiprocessing
 import subprocess #from subprocess import run, call, pipe
+import statistics
 import math #from math import *
 import array
 import wave
@@ -41,11 +53,12 @@ import random
 import logging
 import weakref
 import gc
+import calendar
 import socket
-from urllib.request import *
-from timeit import *
-from decimal import *
-#import asyncio #yield from *
+import ipaddress
+import mimetypes
+import urllib.request
+import decimal
 
 ##---------------------------------------------------------
 ## some other plugins
