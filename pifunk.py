@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 ##PiFunk Radio transmitter for PMR446/CB on FM & AM also for ltp, 433, cb, pmr
 ##and maybe someday, beacon, gps, internet, relais, aprs, vhf, ts2/3, RDS, morse, echolink
@@ -14,29 +15,41 @@
 #-> sending on square-func means transmission on 3 other freqs so please use a low-pass-filter!
 #-------------------------------------------------------------------------------
 ## py is function-scope not lock-scope!!
-
-#!/usr/bin/python
 ## Imports
-import StringIO
 import io
 import os
+import atexit
+import readline
+import rlcomplete
 import sys
 import glob
-import socket
+import site
+import re
+import locale
 import datetime
 import time #from time import time
+import StringIO
 import threading
 import signal
+import builtins
+import struct
 import subprocess #from subprocess import run, call, pipe
 import math #from math import *
 import array
 import wave
 import random
 import logging
+import weakref
+import gc
+import socket
+from urllib.request import *
+from timeit import *
+from decimal import *
 #import asyncio #yield from *
 
 ##---------------------------------------------------------
 ## some other plugins
+import zipfile
 import json
 import csv
 #import numpy as np
@@ -49,6 +62,7 @@ try:
  import RPI.GPIO as GPIO2
 except:
  from RPi._GPIO import GPIO3
+else:
  from RPi import GPIO4
 
 ## RPi & GPIO lib
@@ -57,8 +71,11 @@ except:
 #hex-code: 0x10A --> dec:26
 ##------------------------------------------------------------------------------
 #loading hardware on startup
-def _init_ ():
+def __init__ (self):
   print ("\nWelcome to PiFunk!\n")
+  self.data = []
+  print (sys.argv)
+
   try:
           os.system ("sudo modprobe w1-gpio") #rpi 1-2
   except: os.system ("sudo rmmod w1-gpio") # rpi3:
@@ -85,6 +102,7 @@ def _init_ ():
   sensor_data = (gpio_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
   pi_pwm = GPIO.PWM (4, freq)
   pi_pwm.start (0)
+
   while True:
       for Duty in range (0, 60, 1)
       pi_pwm.ChangeDutyCycle (Duty)
@@ -92,6 +110,9 @@ def _init_ ():
 ##------------------------------------------------------------------------------
 
 #definitions
+    if __name__ == "__main__":
+    (int (sys.argv [1])
+
 def soundfile (filename):
   filename = char (input ("\nEnter filename (*.wav): "))
   if filename != 0:
@@ -132,7 +153,6 @@ def channels (channels):
       channels = 1
       print ("\nNo channels specified! Using standard: 1 for mono \n")
       return channels
-
 
 def modulation (mod):
   mod = char (input ("\nEnter modulation type (fm/am): ")).lower()
@@ -204,7 +224,7 @@ def led_blink (pin):
 
 def led_blinking (pin):
   print ("\nBlinking 1/sec \n")
-  for i in range (0, 60): led_blink (11)
+  for i in range (0, 61, 1): led_blink (11)
   GPIO.cleanup ()
 
 def csv_reader ():
@@ -250,7 +270,6 @@ datetime.now().strftime("%d-%m-%Y, %H:%M:%S \n")
 #current_time.isoformat ()
 
 #here a menu with switchcase
-c_arg_parser ()
 logger ()
 csv_reader ()
 
@@ -261,6 +280,8 @@ sampler ()
 channels ()
 modulation ()
 callsign ()
+
+c_arg_parser ()
 
 try:
 #if all args are parsed so to transmission mode
