@@ -11,7 +11,7 @@ gdb 7.11.1 debugger
  git clone https://github.com/silicator/PiFunk
 ->instructions:
  You will need alsa library for this:
- sudo apt-get install libsndfile-dev
+ sudo apt-get install libsndfile1-dev
  cd PiFunk // goto path
  lm flag for math lib obligatory, -g for debugger
  gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out
@@ -159,7 +159,7 @@ using namespace std;
 //for usb soundcards for mic and alsa usage
 //#include "libusb/libusb.h"
 #include "libusb/libusb/libusb.h"
-#include "libusb/libusb/libusbi.h"
+//#include "libusb/libusb/libusbi.h"
 #include "libusb/libusb/hotplug.h"
 //#include "libusb/libusb/version.h"
 //#include "libusb/libusb/version_name.h"
