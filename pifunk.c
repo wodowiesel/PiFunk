@@ -88,10 +88,11 @@ make compatible arguments/funcs for py/shell scripts
 #include <tgmath.h>
 #include <complex.h>
 #include <features.h>
+#include <missing.h>
 #include <fenv.h>
 #include <grp.h>
 #include <pwd.h>
-
+#include <poll.h>
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -101,6 +102,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
+//#include <linux/spi>/spidev.he
 
 // ip host socket
 #include <sys/socket.h>
@@ -141,11 +143,11 @@ using namespace std;
 #include "bcm2835/src/bcm2835.h"
 
 //GPIO includes here 0.6.5 used
-#include "RPI.GPIO/source/c_gpio.h"
+//#include "RPI.GPIO/source/c_gpio.h"
 #include "RPI.GPIO/source/event_gpio.h"
-#include "RPI.GPIO/source/py_pwm.h"
+//#include "RPI.GPIO/source/py_pwm.h"
 #include "RPI.GPIO/source/soft_pwm.h"
-#include "RPI.GPIO/source/constants.h"
+//#include "RPI.GPIO/source/constants.h"
 #include "RPI.GPIO/source/common.h"
 #include "RPI.GPIO/source/cpuinfo.h"
 
