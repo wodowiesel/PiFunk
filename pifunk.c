@@ -88,7 +88,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <tgmath.h>
 #include <complex.h>
 #include <features.h>
-#include <missing.h>
+//#include <missing.h>
 #include <fenv.h>
 #include <grp.h>
 #include <pwd.h>
