@@ -160,7 +160,7 @@ using namespace std;
 //#include "libusb/libusb.h"
 #include "libusb/libusb/libusb.h"
 //#include "libusb/libusb/libusbi.h"
-#include "libusb/libusb/hotplug.h"
+//#include "libusb/libusb/hotplug.h"
 //#include "libusb/libusb/version.h"
 //#include "libusb/libusb/version_name.h"
 #include "libusb/libusb/os/linux_usbfs.h"

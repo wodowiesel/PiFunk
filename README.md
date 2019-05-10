@@ -11,7 +11,7 @@ ___
 
 ### Preparations:
 
-get this program via: 
+get this program via:
 
 `git clone https://github.com/silicator/PiFunk`
 
@@ -19,7 +19,7 @@ get this program via:
 
 via command: `sudo modprobe w1-gpio,gpiopin=4`
 
-Using w1-gpio sometimes needs a 4.7 kΩ pullup resistor connected on GPIO pin 
+Using w1-gpio sometimes needs a 4.7 kΩ pullup resistor connected on GPIO pin
 
 (if you have problems deactivate 1-wire config!)
 
@@ -36,13 +36,13 @@ You will need some libraries for this:
 
 `sudo apt upgrade` for system upgrades
 
-`sudo apt-get install libsndfile-dev`
+`sudo apt-get install libsndfile1-dev`
 
 `sudo apt-get install python-dev python3-dev` for py3
 
-[RPi-lib](https://pypi.org/project/RPi.GPIO/) (i use v0.6.5 from Nov 2018)
+[RPi-lib](https://pypi.org/project/RPi.GPIO/) (i use v0.6.5 from Nov 2018, also in repo)
 
-`sudo pip-3.2 install RPi.GPIO` for Py3 (easiest way)
+`sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
 `sudo pip install RPi.GPIO` for Py2
 
@@ -66,7 +66,7 @@ GNU installer `sudo apt-get install gcc`
 
 `-lsndfile` for ALSA snd lib
 
-`-std=c99` (sometimes gnu99) for C-standard 
+`-std=c99` (sometimes gnu99) for C-standard
 
 command:
 
@@ -89,13 +89,13 @@ extra single Arguments:
 
 [`help`] for more infos and arguments
 
-Use '. dot' as decimal-comma separator! 
+Use '. dot' as decimal-comma separator!
 
 default: `sudo pifunk sound.wav 100.000 22050 fm callsign`
 
 Radio works with *.wav-file with 16-bit @ 22050.000 [Hz] mono / 1-700+ MHz range.
 
-CTSS-Tones for PMR can be found here [CTSS](ctsspmr.csv) 
+CTSS-Tones for PMR can be found here [CTSS](ctsspmr.csv)
 
 ___
 
@@ -115,9 +115,9 @@ for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar with cooling-ribs with fan for testing.
 
-- For transmission you should use tested Antennas! 
+- For transmission you should use tested Antennas!
 
-- Tip: You could use just a copper wire for 2m/70cm-band or 
+- Tip: You could use just a copper wire for 2m/70cm-band or
 other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
 ___
 
@@ -131,7 +131,7 @@ ___
 
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Pi operates with square-waves (²/^2)!!- Use Low-/High-Band-Pass-Filters with ~10 uF caps 
+- Pi operates with square-waves (²/^2)!!- Use Low-/High-Band-Pass-Filters with ~10 uF caps
 with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!*
@@ -153,4 +153,4 @@ ___
 
 [License Guideline](LICENSE.md) under Open-Source GPLv3.0
 
-Would appreciate beeing Named in the Source
+Would appreciate beeing named in the source
