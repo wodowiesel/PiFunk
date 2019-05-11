@@ -750,7 +750,7 @@ unsigned int channelmodepmr () //PMR
 	 case 15: return freq=446.16875; break;
 	 case 16: return freq=446.18125; break;
 	 case 17: return freq=446.19375; break;
-	 case 18: channelselect (); break;
+	 case 18: unsigned int channelselect (); break;
 	 //default: return freq=446.00625; printf ("\nDefault chan = 1 %f \n", freq);  break;
 	}
   printf ("\n Using Freq: %f", freq);
@@ -873,12 +873,12 @@ unsigned int modulationselect ()
 	switch (freqmode)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
-				    volaudio ();
+				    //volaudio ();
 		        unsigned int modulationfm ();
 		        break;
 
 		case 2: printf ("\n You selected 2 for AM! \n");
-			    	volaudio ();
+			    	//volaudio ();
 		        unsigned int modulationam (int argc, char **argv);
 		        break;
 
@@ -1472,7 +1472,7 @@ int GetUserInput () //my menu-assistent
 
 	switch (modeselect)
     {
-      case 1: channelselect ();
+      case 1: unsigned int channelselect ();
 							filenamepath ();
 							callname ();
 					    break;
