@@ -173,7 +173,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 //preproccessor definitions
 #ifdef __linux__ // ||__unix__
-  printf ("\nProgram runs under UNIX/LINUX \n");
+  //printf ("\nProgram runs under UNIX/LINUX \n");
 	//#pragma GCC dependency "pifunk.h"
 #elif __arm__
   printf ("\nProgram runs under ARM-Architecture! \n");
@@ -183,7 +183,7 @@ using namespace std;
 #endif
 
 #ifdef __GNUC__ && __STDC_VERSION__ >= 199901L
-   printf ("\nUsing Gnu C with ANSI C99!!\n");
+   //printf ("\nUsing Gnu C with ANSI C99!!\n");
 #elif __GNUC__
    #warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n"
 #else
@@ -232,7 +232,7 @@ volatile unsigned *allof7e;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#if (RASPI) == 1                       // Original Raspberry Pi 1
+#ifdef (RASPI) == 1                       // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
@@ -244,6 +244,9 @@ volatile unsigned *allof7e;
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04)
 #define CURBLOCK                       (0x04) // dec: 4 memflag?
+
+#else
+#define PERIPH_VIRT_BASE               (0x20000000)
 #endif
 
 //---
@@ -552,6 +555,7 @@ unsigned int channelnumberpmr;
 unsigned int channelmode;
 unsigned int freqmode;
 unsigned int modeselect;
+unsigned int callnameselect;
 
 //--network sockets for later
 // here custom port via tcp/ip or udp
@@ -594,8 +598,8 @@ unsigned int excursion = 6000; //32767 found another value but dont know on what
 //-20db = 10x attenuation, significantly more quiet
 float volumeLevelDb = -6.f; //cut amplitude in half
 //float volbuffer [SAMPLES_PER_BUFFER];
-const float VOLUME_REFERENCE = 1.f;
-const float volumeMultiplier = (VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) ) );
+float VOLUME_REFERENCE = 1.f;
+float volumeMultiplier = (VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) ) );
 
 // instructor for access
 unsigned long frameinfo;
@@ -680,6 +684,7 @@ char infos () //Warnings and infos
 
 static char timer ()
 {
+   char newtime;
    time (&rawtime);
    info = localtime (&rawtime);
    asctime (info) = newtime;
@@ -798,7 +803,7 @@ unsigned int channelmodecb () // CB
 			 case 28:  return freq=27.2850; break; //Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
 			 case 29:  return freq=27.2950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland
 			 case 30:  return freq=27.3050; break; //inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
-			 case 31:  return return freq=27.3150; break; //inoffizieller DX-Kanal (FM)
+			 case 31:  return freq=27.3150; break; //inoffizieller DX-Kanal (FM)
 			 case 32:  return freq=27.3250; break;
 			 case 33:  return freq=27.3350; break;
 			 case 34:  return freq=27.3450; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
@@ -834,7 +839,7 @@ unsigned int channelmodecb () // CB
 			case 60:  return freq=27.7550; break;
 
       case 61:  return freq=26.7650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			case 62:  return return freq=26.7750; break;
+			case 62:  return freq=26.7750; break;
 			case 63:  return freq=26.7850; break;
 			case 64:  return freq=26.7950; break;
 			case 65:  return freq=26.8050; break;
@@ -894,14 +899,14 @@ unsigned int channelselect ()
 					filenamepath ();
 					printf ("\nChecking volume... \n");
 					audiovol ();
-					int modulationfm (int argc, char **argv);
+					modulationfm (int argc, char **argv);
 					break;
 
 		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
 				  channelmodecb (); // gets freq for chan
 					filenamepath (); //gets file
 					audiovol ();
-					unsigned int modulationselect (); //selects modulation
+					modulationselect (); //selects modulation
 					break;
 
          case 3: printf ("\nReturning to Menu... \n");
@@ -1248,7 +1253,7 @@ void WriteTone (double freq, uint32_t Timing)
 	}
 	samplerf_t;
 	samplerf_t RfSample;
-	RfSample.Frequency = Frequency;
+	RfSample.Frequency //= Frequency;
 
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("Freq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
@@ -1351,8 +1356,8 @@ unsigned int modulationam (int argc, char **argv)
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
 		  char b = data [k*channels];
-			printf ("\nb: %s \n", b);
-			if (channels == NULL || 0)
+			printf ("\nChannel buffer b= %s \n", *b);
+			if (channels == 0)
 			{
 				printf ("File is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
 			}
@@ -1437,11 +1442,10 @@ char csvreader()
 
 char callname ()
 {
-
+    char *callsign = argv [5];
     if (argv [5] == NULL)
     {
-
-		switch ()
+		switch (callnameselect)
 		{
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
 		case 1: printf ("\nType in your callsign: ");
@@ -1454,14 +1458,13 @@ char callname ()
 				printf ("\nUsing default callsign: %s \n", *callsign);
         printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 				break;
-
-		return callsign, &callsign, *callsign;
     }
+  return callsign, &callsign, *callsign;
 }
 
 int GetUserInput () //my menu-assistent
 {
-    time ();
+    timer ();
     infos ();
     printf ("Press Enter to Continue... \n");
     while (getchar () != "\n");
@@ -1498,7 +1501,7 @@ int GetUserInput () //my menu-assistent
     return modeselect;
 }
 
-int main (int argc, char **argv []) // arguments for global use must! be in main
+int main (int argc, char *argv []) // arguments for global use must! be in main
 {
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
@@ -1515,11 +1518,11 @@ int main (int argc, char **argv []) // arguments for global use must! be in main
 
    char *mod = argv [4];
    char *callsign = argv [5];
-   float volume = argv [6]; // argc>4 ? atoi(argv[6]):4  => (atoi gives the value of a string) in play_wav possible
-   unsigned int gain = atoi (argv [6]);
+   char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
+   unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
 
    //-- for debugging or information :)
-   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %f / Gain(6): %d \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], gain);
+   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %s / Gain(6): %d \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], gain);
    printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &gain);
    printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n");
@@ -1544,10 +1547,10 @@ int main (int argc, char **argv []) // arguments for global use must! be in main
    {
             printf ("Checking File: %s \n", argv [1]);
             printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
-			      printf ("Checking Channels: %s \n", channels)
+			      printf ("Checking Channels: %s \n", channels);
             printf ("Checking Modulation: %s \n", mod);
 		      	printf ("Checking Callsign: %s \n", *callsign);
-		      	printf ("Checking Volume/Gain: %f / %d \n", volume, gain);
+		      	printf ("Checking Volume/Gain: %s / %d \n", *volume, gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
                 if (!strcmp (mod, "fm"))
