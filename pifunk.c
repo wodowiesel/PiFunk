@@ -156,7 +156,7 @@ using namespace std;
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-#include "sndfile.h" // has problems with @typedef sf_count somehow -> set as int
+#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
