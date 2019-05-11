@@ -899,7 +899,7 @@ unsigned int channelselect ()
 					filenamepath ();
 					printf ("\nChecking volume... \n");
 					audiovol ();
-					modulationfm ();
+					unsigned int modulationfm ();
 					break;
 
 		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
