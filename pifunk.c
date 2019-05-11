@@ -17,7 +17,8 @@ gdb 7.11.1 debugger
 
 ->lm flag for math lib (obligatory), -g for debugger, -c for filesource for library, -c compile without linking
 =>compile with admin/root permissions!!
- gcc -g -std=c99 -lm -lsndfile -Iinclude -Llib -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a pifunk //
+ gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a
+ gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
  make
  make install
 

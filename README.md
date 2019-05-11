@@ -60,17 +60,30 @@ compile with:
 
 GNU installer `sudo apt-get install gcc`
 
-`-lm` flag for math lib is obligatory!
+`-g` for debuggerinformations (optional 0-3 optimalization level)
 
-`-g` flag for debugger (optional)
+`-std=c99` (sometimes gnu99) for C99-standard
 
-`-lsndfile` for ALSA snd lib
+`-lm` for math lib is obligatory!
 
-`-std=c99` (sometimes gnu99) for C-standard
+`-Iinclude ` for using include-directory with headerfiles
+
+`-Llib` for using library-directory
+
+`-lsndfile` for ALSA "snd"-lib
+
+`-c` for compiling without linking
+
+`-fPIC` for generating
+
+`-shared` for generating position independent code (PIC) for shared libs
+
+`-o` for output-filename
 
 command:
+`gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.so pifunk.a` generating the libraries
 
-`gcc -g -std=c99 -lm -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out`
+`gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk ` generating the executable binary
 
 `make`
 
