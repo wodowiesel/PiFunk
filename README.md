@@ -81,9 +81,14 @@ GNU installer `sudo apt-get install gcc`
 `-o` for output-filename
 
 command:
-`gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.so pifunk.a` generating the libraries
 
-`gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk ` generating the executable binary
+generating libraries:
+
+`gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.so pifunk.a`
+
+generating executable binary:
+
+`gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
 `make`
 
