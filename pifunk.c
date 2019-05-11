@@ -750,7 +750,7 @@ unsigned int channelmodepmr () //PMR
 	 case 15: return freq=446.16875; break;
 	 case 16: return freq=446.18125; break;
 	 case 17: return freq=446.19375; break;
-	 case 18: unsigned int channelselect (); break;
+	 case 18: exit (0); break;
 	 //default: return freq=446.00625; printf ("\nDefault chan = 1 %f \n", freq);  break;
 	}
   printf ("\n Using Freq: %f", freq);
