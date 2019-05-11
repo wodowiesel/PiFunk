@@ -11,10 +11,13 @@ gdb 7.11.1 debugger
  git clone https://github.com/silicator/PiFunk
 ->instructions:
  You will need alsa library for this:
+
  sudo apt-get install libsndfile1-dev
  cd PiFunk // goto path
- lm flag for math lib obligatory, -g for debugger
- gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a pifunk.out
+
+->lm flag for math lib (obligatory), -g for debugger, -c for filesource for library, -c compile without linking
+=>compile with admin/root permissions!!
+ gcc -g -std=c99 -lm -lsndfile -Iinclude -Llib -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a pifunk //
  make
  make install
 
@@ -1467,12 +1470,12 @@ int GetUserInput () //my menu-assistent
     printf ("Press Enter to Continue... \n");
     while (getchar () != "\n");
 
-	printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
-	scanf ("%d", &modeselect);
+	  printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
+	  scanf ("%d", &modeselect);
 
-	switch (modeselect)
+	  switch (modeselect)
     {
-      case 1: channelselect ();
+      case 1: channelselect (); //undefined reference
 							filenamepath ();
 							callname ();
 					    break;
