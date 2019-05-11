@@ -232,13 +232,13 @@ volatile unsigned *allof7e;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef (RASPI) == 1                       // Original Raspberry Pi 1
+#ifdef  RASPI == 1                       // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 
-#elif (RASPI) >= 2                     // Raspberry Pi 2 & 3
+#elif   RASPI >= 2                     // Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000)
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
@@ -599,7 +599,7 @@ unsigned int excursion = 6000; //32767 found another value but dont know on what
 float volumeLevelDb = -6.f; //cut amplitude in half
 //float volbuffer [SAMPLES_PER_BUFFER];
 float VOLUME_REFERENCE = 1.f;
-float volumeMultiplier = (VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) ) );
+float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 
 // instructor for access
 unsigned long frameinfo;
@@ -1253,7 +1253,7 @@ void WriteTone (double freq, uint32_t Timing)
 	}
 	samplerf_t;
 	samplerf_t RfSample;
-	RfSample.Frequency //= Frequency;
+	RfSample.Frequency; //= Frequency;
 
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("Freq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
@@ -1356,7 +1356,7 @@ unsigned int modulationam (int argc, char **argv)
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
 		  char b = data [k*channels];
-			printf ("\nChannel buffer b= %s \n", *b);
+			printf ("\nChannel buffer b= %s \n", b);
 			if (channels == 0)
 			{
 				printf ("File is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
@@ -1442,8 +1442,7 @@ char csvreader()
 
 char callname ()
 {
-    char *callsign = argv [5];
-    if (argv [5] == NULL)
+    if (*callsign == NULL)
     {
 		switch (callnameselect)
 		{
@@ -1550,7 +1549,7 @@ int main (int argc, char *argv []) // arguments for global use must! be in main
 			      printf ("Checking Channels: %s \n", channels);
             printf ("Checking Modulation: %s \n", mod);
 		      	printf ("Checking Callsign: %s \n", *callsign);
-		      	printf ("Checking Volume/Gain: %s / %d \n", *volume, gain);
+		      	printf ("Checking Volume/Gain: %s / %d \n", volume, gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
                 if (!strcmp (mod, "fm"))
