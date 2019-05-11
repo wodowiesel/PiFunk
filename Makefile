@@ -17,7 +17,7 @@ else
 endif
 ifneq ($(TARGET), other)
 app: pifunk.c
-	$(CC) -o pifunk.out
+	$(CC) $(CFLAGS) -c -o pifunk
 endif
 
 pifunk.o: pifunk.c
@@ -29,7 +29,10 @@ pifunk.so: pifunk.c
 pifunk.a: pifunk.c
 	$(CC) $(CFLAGS) -o pifunk.a
 
+pifunk.out: pifunk.c
+		$(CC) $(CFLAGS) -o pifunk.out
+
 pifunk: pifunk.c
-		$(CC) -o pifunk
+		$(CC) $(CFLAGS) -o pifunk
 
 clean:
