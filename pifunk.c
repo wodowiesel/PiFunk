@@ -530,7 +530,7 @@ char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
 char *filename;
-const double freq;
+double freq;
 const double ctss_freq;
 unsigned int samplerate;
 
@@ -549,7 +549,9 @@ float volume = 1.0f;
 
 unsigned int channelnumbercb;
 unsigned int channelnumberpmr;
-unsigned int channelmade;
+unsigned int channelmode;
+unsigned int freqmode;
+unsigned int modeselect;
 
 //--network sockets for later
 // here custom port via tcp/ip or udp
@@ -743,7 +745,7 @@ unsigned int channelmodepmr () //PMR
 	 case 15: return freq=446.16875; break;
 	 case 16: return freq=446.18125; break;
 	 case 17: return freq=446.19375; break;
-	 case 18: unsigned int channelselect (); break;
+	 case 18: channelselect (); break;
 	 //default: return freq=446.00625; printf ("\nDefault chan = 1 %f \n", freq);  break;
 	}
   printf ("\n Using Freq: %f", freq);
@@ -859,6 +861,26 @@ unsigned int channelmodecb () // CB
 	return channelnumbercb, freq;
 }
 
+unsigned int modulationselect ()
+{
+	printf ("Choose your Modulation [1] FM // [2] AM // [3] Exit : ");
+	scanf ("%d", &freqmode);
+	switch (freqmode)
+	{
+		case 1: printf ("\nYou selected 1 for FM! \n");
+				    volaudio ();
+		        unsigned  int modulationfm (int argc, char **argv);
+		        break;
+
+		case 2: printf ("\n You selected 2 for AM! \n");
+			    	volaudio ();
+		        unsigned int modulationam (int argc, char **argv);
+		        break;
+
+		case 3: printf ("\nExiting... \n"); exit (-1); break;
+		//default: printf ("\n Default = 1 \n"); break;
+}
+
 unsigned int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode\n");
@@ -879,7 +901,7 @@ unsigned int channelselect ()
 				  channelmodecb (); // gets freq for chan
 					filenamepath (); //gets file
 					audiovol ();
-					modulationselect (); //selects modulation
+					unsigned int modulationselect (); //selects modulation
 					break;
 
          case 3: printf ("\nReturning to Menu... \n");
@@ -1030,11 +1052,11 @@ void setupfm ()
    CLRBIT (GPFSEL0, 13);
    CLRBIT (GPFSEL0, 12);
 
-	 carrierhigh () {}
+	 carrierhigh ();
 }
 ///------------------------------------
 //relevant for transmitting stuff
-void playWav (char *filename, unsigned int samplerate)
+void play_wav (char *filename, unsigned int samplerate)
 {
 	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
@@ -1112,7 +1134,7 @@ void playWav (char *filename, unsigned int samplerate)
     }
 
    close (fp);
-   close (filename);
+   close (*filename);
    printf ("\nClosing filenames \n");
 }
 
@@ -1124,7 +1146,7 @@ void unSetupDMA ()
 	exit (-1);
 }
 
-void setupDMA (const double freq)
+void setupDMA (double freq)
 {
 	printf ("\nSetupDMA starting... \n");
 	atexit (unSetupDMA);
@@ -1217,7 +1239,7 @@ void setupDMA (const double freq)
 }
 
 // AM ones
-void WriteTone (const double Frequency, uint32_t Timing)
+void WriteTone (double freq, uint32_t Timing)
 {
 	typedef struct
 	{
@@ -1226,7 +1248,6 @@ void WriteTone (const double Frequency, uint32_t Timing)
 	}
 	samplerf_t;
 	samplerf_t RfSample;
-  freq = Frequency;
 	RfSample.Frequency = Frequency;
 
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
@@ -1265,7 +1286,7 @@ unsigned int modulationfm (int argc, char **argv)
 	{
 		 fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22050 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
 	}
-	return modulationfm;
+	return 0;
 }
 
 //AM --- not yet adapted, needs revision for freq
@@ -1383,27 +1404,6 @@ unsigned int modulationam (int argc, char **argv)
     return FileFreqTiming, filename;
 }
 
-unsigned int modulationselect ()
-{
-	printf ("Choose your Modulation [1] FM // [2] AM // [3] Exit : ");
-	unsigned int freqmode;
-	scanf ("%d", &freqmode);
-	switch (freqmode)
-	{
-		case 1: printf ("\nYou selected 1 for FM! \n");
-				    volaudio ();
-		        unsigned  int modulationfm (int argc, char **argv);
-		        break;
-
-		case 2: printf ("\n You selected 2 for AM! \n");
-			    	volaudio ();
-		        unsigned int modulationam (int argc, char **argv);
-		        break;
-
-		case 3: printf ("\nExiting... \n"); exit (-1); break;
-		//default: printf ("\n Default = 1 \n"); break;
-	}
-
 return freqmode;
 }
 // all subch. -> base/default case 0 -> channel 0
@@ -1456,37 +1456,36 @@ char callname ()
 				break;
 
 		return callsign, &callsign, *callsign;
-
+    }
 }
 
 int GetUserInput () //my menu-assistent
 {
-    unsigned int modeselect;
     time ();
     infos ();
     printf ("Press Enter to Continue... \n");
-    while (getchar () != '\n');
+    while (getchar () != "\n");
 
 	printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
 	scanf ("%d", &modeselect);
 
 	switch (modeselect)
     {
-      case 1: unsigned int channelselect ();
-							char filenamepath ();
-							char callname ();
+      case 1: channelselect ();
+							filenamepath ();
+							callname ();
 					    break;
 
-		  case 2: char filenamepath ();
-		          double freqselect ();
-		          unsigned int modulationselect ();
+		  case 2: filenamepath ();
+		          freqselect ();
+		          modulationselect ();
 					    break;
 
 			case 3: printf ("\nReading CSV for PMR: \n");
-				    	char csvreader ();
+				    	csvreader ();
 					    break;
 			case 4: printf ("\nShell - Commandline: \n");
-			        int main (int argc, char **argv); // go back to cmd if you want
+			        int main (int argc, char **argv []); // go back to cmd if you want
 				    	break;
 
 			case 5: printf ("\nExiting... \n");
@@ -1499,18 +1498,18 @@ int GetUserInput () //my menu-assistent
     return modeselect;
 }
 
-int main (int argc, char **argv) // arguments for global use must! be in main
+int main (int argc, char **argv []) // arguments for global use must! be in main
 {
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
    printf ("File was proccessed on %s at %s \n", __DATE__, __TIME__);
-	 printf ("Filename is %s \n", __FILE__)
+	 printf ("Filename is %s \n", __FILE__);
    //scanf  ("%s %f %d %s", argv[1], argv[2], argv[3], argv[4]); //direct input if needed
 
    char *filename = argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
-   const double freq = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+   double freq = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
    unsigned int samplerate = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    //-> otherwise in dma or play_wav func
 
@@ -1547,7 +1546,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
             printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
 			      printf ("Checking Channels: %s \n", channels)
             printf ("Checking Modulation: %s \n", mod);
-		      	printf ("Checking Callsign: %s \n", *callsign)
+		      	printf ("Checking Callsign: %s \n", *callsign);
 		      	printf ("Checking Volume/Gain: %f / %d \n", volume, gain);
             if (mod != NULL) // may be put it outside as a single func?
             {
@@ -1579,7 +1578,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     //into the fm or an function to run your file
     printf ("End of main \n");
     printf ("Returning args 0 to %d ... \n", argc);
-    //return argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], filename, freq, samplerate, mod, callsign, gain, channels ;
+    //return argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], *filename, freq, samplerate, mod, *callsign, gain, channels ;
     return 0;
 }
-//EOF
