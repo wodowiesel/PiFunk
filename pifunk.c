@@ -171,7 +171,7 @@ using namespace std;
 #include "libusb/libusb/os/threads_posix.h"
 
 //custom header for pifunk (dummy for now)
-#include "pifunk.h"
+#include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
