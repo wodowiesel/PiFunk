@@ -874,7 +874,7 @@ unsigned int modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 				    volaudio ();
-		        modulationfm ();
+		        unsigned int modulationfm ();
 		        break;
 
 		case 2: printf ("\n You selected 2 for AM! \n");
@@ -986,7 +986,7 @@ int led ()
    return 0;
 }
 
-void playlist () // exit func
+void play_list () // exit func
 {
 		printf ("\nPLaying music from playlist-folder \n"); // in sounds/playlist
 }
@@ -1486,7 +1486,7 @@ int GetUserInput () //my menu-assistent
 				    	csvreader ();
 					    break;
 			case 4: printf ("\nShell - Commandline: \n");
-			        int main (int argc, char **argv []); // go back to cmd if you want
+			        int main (int argc, char *argv []); // go back to cmd if you want
 				    	break;
 
 			case 5: printf ("\nExiting... \n");
