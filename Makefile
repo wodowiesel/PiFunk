@@ -19,23 +19,23 @@ endif
 
 ifneq ($(TARGET), other)
 app: pifunk.c
-	$(CC) $(CFLAGS) -c -o pifunk
+	$(CC) $(CFLAGS) -c -o bin/pifunk
 endif
 
 pifunk.o: pifunk.c
-	$(CC) $(CFLAGS) -o pifunk.o
+	$(CC) $(CFLAGS) -o lib/pifunk.o
 
 pifunk.so: pifunk.c
-	$(CC) $(CFLAGS) -o pifunk.so
+	$(CC) $(CFLAGS) -o lib/pifunk.so
 
 pifunk.a: pifunk.c
-	$(CC) $(CFLAGS) -o pifunk.a
+	$(CC) $(CFLAGS) -o lib/pifunk.a
 
 pifunk.out: pifunk.c
-		$(CC) $(CFLAGS) -o pifunk.out
+		$(CC) $(CFLAGS) -o bin/pifunk.out
 
 pifunk: pifunk.c
-		$(CC) $(CFLAGS) -o pifunk
+		$(CC) $(CFLAGS) -o bin/pifunk
 
 install:
 
