@@ -1472,7 +1472,7 @@ int GetUserInput () //my menu-assistent
 
 	switch (modeselect)
     {
-      case 1: unsigned int channelselect ();
+      case 1: channelselect ();
 							filenamepath ();
 							callname ();
 					    break;
