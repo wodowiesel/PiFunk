@@ -599,7 +599,7 @@ unsigned int excursion = 6000; //32767 found another value but dont know on what
 float volumeLevelDb = -6.f; //cut amplitude in half
 //float volbuffer [SAMPLES_PER_BUFFER];
 float VOLUME_REFERENCE = 1.f;
-float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
+//float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 
 // instructor for access
 unsigned long frameinfo;
@@ -687,7 +687,7 @@ static char timer ()
    char newtime;
    time (&rawtime);
    info = localtime (&rawtime);
-   asctime (info) = newtime;
+   newtime = asctime (info);
    printf ("\nCurrent local time and date: %s \n", newtime);
    return newtime;
 }
@@ -874,7 +874,7 @@ unsigned int modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 				    volaudio ();
-		        unsigned  int modulationfm (int argc, char **argv);
+		        modulationfm ();
 		        break;
 
 		case 2: printf ("\n You selected 2 for AM! \n");
@@ -899,7 +899,7 @@ unsigned int channelselect ()
 					filenamepath ();
 					printf ("\nChecking volume... \n");
 					audiovol ();
-					modulationfm (int argc, char **argv);
+					modulationfm ();
 					break;
 
 		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
@@ -1442,18 +1442,17 @@ char csvreader()
 
 char callname ()
 {
-    if (*callsign == NULL)
-    {
+    //if (*callsign == NULL){
 		switch (callnameselect)
-		{
+	  {
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
 		case 1: printf ("\nType in your callsign: ");
 				scanf  ("%s", *callsign);
 				printf ("\nYour callsign is: %s \n", *callsign);
+        return callsign, &callsign, *callsign;
 				break;
 
 		case 2: *callsign = "callsign"; //default callsign
-        *callsign = argv [5];
 				printf ("\nUsing default callsign: %s \n", *callsign);
         printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 				break;
