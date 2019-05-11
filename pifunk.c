@@ -163,7 +163,7 @@ using namespace std;
 //#include "libusb/libusb/hotplug.h"
 //#include "libusb/libusb/version.h"
 //#include "libusb/libusb/version_name.h"
-#include "libusb/libusb/os/linux_usbfs.h"
+//#include "libusb/libusb/os/linux_usbfs.h"
 #include "libusb/libusb/os/poll_posix.h"
 #include "libusb/libusb/os/threads_posix.h"
 
@@ -172,20 +172,20 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
-#ifdef (__unix__ || __linux__)
+#ifdef __unix__ || __linux__
    printf ("Program runs under UNIX/LINUX\n");
 	//#pragma GCC dependency "pifunk.h"
 #else
    #error "Unknnown OS! or not Linux! \n"
 #endif
 
-#ifdef (_GNUC_ &&__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#ifdef _GNUC_ && __STDC_VERSION__ >= 199901L
    printf ("\nUsing Gnu C with ANSI C99!!\n");
 #elif _GNUC_
    #warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n"
 #else
-   #error "Program  was not compiled with Gnu and C99 standard! \n"
-   exit (-1)
+   #error "Program was not compiled with Gnu and C99 standard! \n"
+   exit (0)
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
@@ -245,15 +245,15 @@ volatile unsigned *allof7e;
 //---
 #define LENGTH                         (0x01000000) // dec: 1
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define PWMCLK_CNTL                    (0x5A000016) // PWMCLK_CNTL dec: 1509949462
-#define PWMCLK_DIV                     (0x5A002800) // PWMCLK_DIV dec: 1509959680
+#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
+//#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
 #define ADR                            (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
 #define DMABASE                        (0x7E007000) // dec: 2113957888
 #define CLKBASE                        (0x7E101000) // dec: 2114981888
-#define GPFSEL0                        (0x7E200000) // p.90 dec: 2116026368
-#define PWMBASE                        (0x7E20C000) // PWM controller dec: 2116075520
+//#define GPFSEL0                        (0x7E200000) // p.90 dec: 2116026368
+#define PWMBASE                        (0x7E20C000) // controller dec: 2116075520
 #define FIFO                           (0x18)   // dec: 24
 #define CARRIER                        (0x5A)   // dec: 90
 #define DMAREF                         (0x7F)   // dec: 127 dma base reference
@@ -492,7 +492,6 @@ volatile unsigned *allof7e;
 
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000)
 
-#define PAGE_SIZE                       (4096)
 #define PAGE_SHIFT                      (12)
 #define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
 
@@ -504,8 +503,9 @@ volatile unsigned *allof7e;
 
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
-if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
-if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
+
+//if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
+//if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 //-----------------------------------
 //iterators for loops
 int a;
@@ -531,9 +531,9 @@ const double ctss_freq;
 unsigned int samplerate;
 
 double shift = 0;
-double I = sin (PERIOD*freq + shift);
-double Q = cos (PERIOD*freq + shift);
-double RF_SUM = (I+Q);
+//double I = sin ((PERIOD*freq) + shift);
+//double Q = cos ((PERIOD*freq) + shift);
+//double RF_SUM = (I+Q);
 
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 unsigned int channels;
@@ -572,7 +572,7 @@ int readBytes;
 float datanew, dataold = 0;
 
 SF_INFO sfinfo;
-snd_output_t *output = NULL;
+//snd_output_t *output = NULL;
 SNDFILE *infile, *outfile;
 char *infilename, *outfilename;
 float ampf;
@@ -586,9 +586,9 @@ unsigned int excursion = 6000; //32767 found another value but dont know on what
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
 //-20db = 10x attenuation, significantly more quiet
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volbuffer [SAMPLES_PER_BUFFER];
+//float volbuffer [SAMPLES_PER_BUFFER];
 const float VOLUME_REFERENCE = 1.f;
-const float volumeMultiplier = (VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f);
+const float volumeMultiplier = (VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) ) );
 
 // instructor for access
 unsigned long frameinfo;
@@ -887,7 +887,7 @@ unsigned int channelselect ()
 		    }
 return channelmode;
 }
-
+/*
 float audiovol ()
 {
 	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
@@ -899,7 +899,7 @@ float audiovol ()
 	}
 return volbuffer [i], volumeMultiplier;
 }
-
+*/
 //--------------- Voids
 void handSig () // exit func
 {
