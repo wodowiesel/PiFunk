@@ -1,9 +1,8 @@
 CC = gcc
-STD_CFLAGS = -Wall -std=c99 -c -g
+STD_CFLAGS = -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared
 #-std=gnu99 as alternative
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 UNAME := $(shell uname -m)
-
 # Determine the hardware platform. Below, pi1 stands for the RaspberryPi 1 (the original one),
 # and pi2 stands for both the RaspberryPi 2 and 3.
 ifeq ($(UNAME), armv6l)
@@ -16,18 +15,21 @@ else
 	CFLAGS = $(STD_CFLAGS)
 	TARGET = other
 endif
-
 ifneq ($(TARGET), other)
-
-app: pifunk.o
-	$(CC) -o pifunk pifunk.o -lm -lsndfile
-
+app: pifunk.c
+	$(CC) -o pifunk.out
 endif
 
-pifunk: pifunk2.o 
-	$(CC) -o pifunk pifunk.o -lm -lsndfile
-
 pifunk.o: pifunk.c
-	$(CC) $(CFLAGS) pifunk.c
+	$(CC) $(CFLAGS) -o pifunk.o
+
+pifunk.so: pifunk.c
+	$(CC) $(CFLAGS) -o pifunk.so
+
+pifunk.a: pifunk.c
+	$(CC) $(CFLAGS) -o pifunk.a
+
+pifunk: pifunk.c
+		$(CC) -o pifunk
 
 clean:
