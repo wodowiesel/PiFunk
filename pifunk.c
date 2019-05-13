@@ -39,7 +39,7 @@ no guarantee, warranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps
 at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
 do not shortout or do overstress it with more than 3.3V! it may cause damages
-
+more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
 used python 3.7.x on orig. Raspbian
 don't forget to apt-get upgrade and update
@@ -92,11 +92,11 @@ make compatible arguments/funcs for py/shell scripts
 #include <tgmath.h>
 #include <complex.h>
 #include <features.h>
-//#include <missing.h>
 #include <fenv.h>
 #include <grp.h>
 #include <pwd.h>
 #include <poll.h>
+#include <argp.h>
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -106,7 +106,8 @@ make compatible arguments/funcs for py/shell scripts
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
-//#include <linux/spi>/spidev.he
+#include <linux/spi/spidev.h>
+//#include <missing.h>
 
 // ip host socket
 #include <sys/socket.h>
@@ -198,27 +199,27 @@ using namespace std;
 //------------------------------------------------------------------------------
 // Definitions & Makros
 #define VERSION "0.1.6.9"
-#define VERSION_MAJOR (0)
-#define VERSION_MINOR (1)
-#define VERSION_BUILD (6)
-#define VERSION_PATCHLEVEL (9)
+#define VERSION_MAJOR        (0)
+#define VERSION_MINOR        (1)
+#define VERSION_BUILD        (6)
+#define VERSION_PATCHLEVEL   (9)
 #define VERSION_STATUS "e"
 
 //---- PI specific stuff
-#define IN (0)
-#define OUT (1)
-#define FALSE (0)
-#define TRUE (1)
+#define IN                    (0)
+#define OUT                   (1)
+#define FALSE                 (0)
+#define TRUE                  (1)
 /*
 predefine if needed when not using bcm header
 #define LOW (0)
 #define HIGH (1)
 */
 //-------buffers
-#define PAGE_SIZE (4*1024)
-#define BLOCK_SIZE (4*1024)
-#define BUFFER_LEN (8*1024)
-#define BUFFERINSTRUCTIONS (65536) // [1024];
+#define PAGE_SIZE             (4*1024)
+#define BLOCK_SIZE            (4*1024)
+#define BUFFER_LEN            (8*1024)
+#define BUFFERINSTRUCTIONS    (65536) // [1024];
 //#define sleep [1000]
 //#define usleep [1000]
 
@@ -257,13 +258,13 @@ volatile unsigned *allof7e;
 #define LENGTH                         (0x01000000) // dec: 1
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
-//#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
+//#define PWMCLK_DIV                   (0x5A002800) // dec: 1509959680
 #define ADR                            (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
 #define DMABASE                        (0x7E007000) // dec: 2113957888
 #define CLKBASE                        (0x7E101000) // dec: 2114981888
-//#define GPFSEL0                        (0x7E200000) // p.90 dec: 2116026368
+//#define GPFSEL0                      (0x7E200000) // p.90 dec: 2116026368
 #define PWMBASE                        (0x7E20C000) // controller dec: 2116075520
 #define FIFO                           (0x18)   // dec: 24
 #define CARRIER                        (0x5A)   // dec: 90
@@ -535,15 +536,15 @@ char *spi0_map;
 //-----------------------------------------
 char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
-
+int opt;
 char *filename;
 double freq;
 const double ctss_freq;
 unsigned int samplerate;
 
-double shift = 0;
-//double I = sin ((PERIOD*freq) + shift);
-//double Q = cos ((PERIOD*freq) + shift);
+double shift_ppm = 0;
+//double I = sin ((PERIOD*freq) + shift_ppm);
+//double Q = cos ((PERIOD*freq) + shift_ppm);
 //double RF_SUM = (I+Q);
 
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
@@ -553,6 +554,11 @@ char *fm = "fm";
 char *am = "am";
 char *callsign;
 float volume = 1.0f;
+int power = 7;
+uint16_t pis = (0x1234);
+uint32_t carrier_freq = 87600000;
+float A = 87.6f; // compression parameter (stauchung)
+//-> this might be the carrier too
 
 unsigned int channelnumbercb;
 unsigned int channelnumberpmr;
@@ -576,7 +582,6 @@ float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
 float FactAmplitude = 2.0; //maybe here amp-modulator type input?
 // logarithmic modulation
-float A = 87.7f; // compression parameter (stauchung) -> why this value?
 
 // fm vars
 FILE infiles;
@@ -614,6 +619,7 @@ int instrCnt = 0;
 int instrPage;
 int constPage;
 
+const char *short_opt = "n:f:s:m:c:p:D:g:w:a:h";
 //--------------------------------------------------
 // Structs
 struct tm *info;
@@ -668,11 +674,26 @@ struct DMAREGS
 		volatile unsigned int DEBUG;
 };
 
+//programm flag options
+struct option long_opt [] =
+{
+		{"filename", required_argument, NULL, 'n'},
+		{"freq",   	required_argument, NULL, 'f'},
+    {"samp",   	required_argument, NULL, 's'},
+    {"mod",	    required_argument, NULL, 'm'},
+    {"call",	  required_argument, NULL, 'c'},
+    {"power", 	required_argument, NULL, 'p'},
+    {"gpio",	  required_argument, NULL, 'g'},
+    {"assist",	no_argument, NULL, 'a'},
+    {"help",	  no_argument, NULL, 'h'}
+};
+
 /*
 RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
+
 // basic function then specified one after another
-char infos () //Warnings and infos
+char infos () //warnings and infos
 {
     printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, *description);
    	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
@@ -688,12 +709,12 @@ char infos () //Warnings and infos
 
 static char timer ()
 {
-   char newtime;
+   char *newtime;
    time (&rawtime);
    info = localtime (&rawtime);
    newtime = asctime (info);
-   printf ("\nCurrent local time and date: %s \n", newtime);
-   return newtime;
+   printf ("\nCurrent local time and date: %s \n", *newtime);
+   return *newtime;
 }
 
 char filenamepath ()  // expected int?
@@ -1470,7 +1491,6 @@ int GetUserInput () //my menu-assistent
     infos ();
     printf ("Press Enter to Continue... \n");
     while (getchar () != "\n");
-
 	  printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
 	  scanf ("%d", &modeselect);
 
@@ -1527,7 +1547,7 @@ int main (int argc, char *argv []) // arguments for global use must! be in main
    printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %s / Gain(6): %d \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], gain);
    printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &gain);
    printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
-   printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n");
+   //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
   //---
    headertest ();
    infos (); //information, disclaimer
@@ -1535,12 +1555,12 @@ int main (int argc, char *argv []) // arguments for global use must! be in main
    //---
    //if (argc=0||NULL) printf ("No Arguments ...\n "); return -1;
 
-   if (argc=1 & !strcmp (argv [1], "menu"))
+   if (argc=1 && !strcmp (argv [1], "menu"))
    {
       printf ("\nMenu/Assistent activated! \n");
       GetUserInput (); //  to menu
    }
-   else if (argc=1 & !strcmp (argv [1], "help"))
+   else if (argc=1 && !strcmp (argv [1], "help"))
    {
      char infos ();
      printf ("\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] volume or [menu] or [help]! *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
