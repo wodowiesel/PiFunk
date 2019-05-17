@@ -527,7 +527,7 @@ float x;
 int m;
 
 //pi variables:
-int mem_fd;
+int  mem_fd;
 char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
@@ -693,26 +693,13 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
 
 // basic function then specified one after another
-char infos () //warnings and infos
-{
-    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM \n\a", VERSION, *description);
-   	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency\nUse '. dot' as decimal-comma seperator! \n");
-    printf ("Pi\033[1;4;35mFunk\033[0m colour test \n"); //35 for Magenta, 33 red
-    printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
-    printf ("HELP: Use Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] or [menu] or [help]! \n");
-    printf ("for testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
-    //colour text test: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode
-	 // printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-  	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
-    return 0;
-}
 
 static char timer ()
 {
    char *newtime;
    time (&rawtime);
    info = localtime (&rawtime);
-   newtime = asctime (info);
+   *newtime = asctime (info);
    printf ("\nCurrent local time and date: %s \n", *newtime);
    return *newtime;
 }
@@ -720,17 +707,17 @@ static char timer ()
 char filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", filename);
+  scanf ("%s", *filename);
 
-  if (filename == NULL)
+  if (*filename == NULL)
 	{
-	    printf ("\n%s File not found! \n", filename);
-	    return -1;
+	    printf ("\nFile %s not found! \n", filename);
+	    return 1;
 	}
 	else
 	{
 	   printf ("\nTrying to play default sound.wav ... \n");
-	   *filename = open ("sound.wav", "r"); // sounds/sound.wav directory should be testet
+	   *filename = open ("sound/sound.wav", "r"); // sounds/sound.wav directory should be testet
 	   return *filename;
 	}
 	return *filename;
@@ -738,7 +725,7 @@ char filenamepath ()  // expected int?
 
 double freqselect () // gets freq by typing in
 {
-	printf ("\nYou selected 1 for Frequency-MODE \n");
+	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700Mhz chip, pi3 1.2ghz
 	scanf  ("%f", freq);
 	printf ("\nYou chose: %f MHz \n", freq);
@@ -748,7 +735,7 @@ double freqselect () // gets freq by typing in
 // Channel-mode
 unsigned int channelmodepmr () //PMR
 {
-	printf ("\nChoose PMR-Channel 0-17 (18 to exit): ");
+	printf ("\nChoose PMR-Channel 1-17 (18 to exit): ");
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
@@ -776,9 +763,9 @@ unsigned int channelmodepmr () //PMR
 	 case 16: return freq=446.18125; break;
 	 case 17: return freq=446.19375; break;
 	 case 18: exit (0); break;
-	 //default: return freq=446.00625; printf ("\nDefault chan = 1 %f \n", freq);  break;
+	 default: printf ("\nDefault chan = 1 %f \n", freq);  return freq=446.00625;
 	}
-  printf ("\n Using Freq: %f", freq);
+  printf ("\nUsing Freq: %f", freq);
 	return channelnumberpmr, freq;
 }
 
@@ -789,7 +776,7 @@ unsigned int channelmodecb () // CB
 	switch (channelnumbercb)
 	{
 		// --> translation of infos in english in future updates!
-       case 0:   return freq=27.0450; printf ("\nSpecial freq for digital %f \n", freq); break;
+       case 0:   return freq=27.0450; break; //first digital channel
 			 case 1:   return freq=26.9650; break; //empfohlener Anrufkanal (FM)
 			 case 2:   return freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
 			 case 3:   return freq=26.9850; break;
@@ -884,16 +871,16 @@ unsigned int channelmodecb () // CB
 			case 79:  return freq=26.9450; break;
 			case 80:  return freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:  exit (-1);
-			//default: return freq=26.9650; printf ("\nDefault: CB chan = 1 %f \n", &freq); break;
-      return freq;
+			default:  printf ("\nDefault: CB chan = 1 %f \n", freq); return freq=26.9650;
+
 	}
-  printf ("\n Using Freq: %f", freq);
+  printf ("\n Using Freq: %f ", freq);
 	return channelnumbercb, freq;
 }
 
 unsigned int modulationselect ()
 {
-	printf ("Choose your Modulation [1] FM // [2] AM // [3] Exit : ");
+	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : ");
 	scanf ("%d", &freqmode);
 	switch (freqmode)
 	{
@@ -902,7 +889,7 @@ unsigned int modulationselect ()
 		        unsigned int modulationfm ();
 		        break;
 
-		case 2: printf ("\n You selected 2 for AM! \n");
+		case 2: printf ("\nYou selected 2 for AM! \n");
 			    	//volaudio ();
 		        unsigned int modulationam (int argc, char **argv);
 		        break;
@@ -940,7 +927,8 @@ unsigned int channelselect ()
 
          case 4:  printf ("\nExiting... \n");
 					 exit (-1);
-			   //default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
+
+         default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
 		    }
 return channelmode;
 }
@@ -963,7 +951,13 @@ void handSig () // exit func
 		exit (0);
 }
 
-void clearscreen () {clsscr ();}
+void clearscreen ()
+{
+  fflush ();
+  clsscr ();
+}
+
+
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
@@ -985,6 +979,7 @@ int led ()
   if (!bcm2835_init ())
 	{
 	printf ("\nBCM 2835 init failed! \n");
+  return 1;
 	}
 	else if (1)
 	{
@@ -1011,11 +1006,19 @@ int led ()
    return 0;
 }
 
-void play_list () // exit func
-{
-		printf ("\nPLaying music from playlist-folder \n"); // in sounds/playlist
-}
 // FM ones
+void infos () //warnings and infos
+{
+    printf ("\033[1;4;35m") //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
+    printf ("\nWelcome to the Pi-Funk! v%s-%s for Raspian ARM! \n\a", VERSION, *description);
+    printf ("\033[0m") //collor escape command for resetting
+   	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
+    printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
+    printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
+	 //printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
+   //printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+}
+
 void modulate (int m)
 {
 		ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + m;  //
@@ -1067,7 +1070,6 @@ void setupfm ()
         printf ("\nCan't open /dev/mem! \n"); // via bcm possible
         exit (-1);
   }
-
     allof7e = (unsigned*) mmap (
 								NULL,
 								LENGTH, // length
@@ -1081,12 +1083,17 @@ void setupfm ()
    SETBIT (GPFSEL0, 14);
    CLRBIT (GPFSEL0, 13);
    CLRBIT (GPFSEL0, 12);
-
 	 carrierhigh ();
 }
 ///------------------------------------
 //relevant for transmitting stuff
-void play_wav (char *filename, unsigned int samplerate)
+void play_list () // exit func
+{
+		printf ("\nPlaying music from playlist-folder \n"); // in sounds/playlist
+
+}
+
+void play_wav (char *filename, double freq, unsigned int samplerate)
 {
 	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
@@ -1172,13 +1179,13 @@ void unSetupDMA ()
 {
 	struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS (DMABASE));
 	DMA0->CS == 1<<31; // reset dma controller
-	printf ("\nSetup DMA done \n");
+	printf ("\nUnsetting DMA done \n");
 	exit (-1);
 }
 
 void setupDMA (double freq)
 {
-	printf ("\nSetupDMA starting... \n");
+	printf ("\nSetup of DMA starting... \n");
 	atexit (unSetupDMA);
 	signal (SIGINT, handSig);
 	signal (SIGTERM, handSig);
@@ -1265,7 +1272,7 @@ void setupDMA (double freq)
 
    //DMA0->CONBLK_AD = (unsigned int) (instrPage.p);
    DMA0->CS = (1<<0) | (255 <<16);  // enable bit = 0, clear end flag = 1, prio=19-16
-   printf ("Setup DMA done \n");
+   printf ("\nSetup DMA done! \n");
 }
 
 // AM ones
