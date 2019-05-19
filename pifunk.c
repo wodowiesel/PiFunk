@@ -220,6 +220,7 @@ predefine if needed when not using bcm header
 #define BLOCK_SIZE            (4*1024)
 #define BUFFER_LEN            (8*1024)
 #define BUFFERINSTRUCTIONS    (65536) // [1024];
+
 //#define sleep [1000]
 //#define usleep [1000]
 
@@ -249,7 +250,6 @@ volatile unsigned *allof7e;
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04)
 #define CURBLOCK                       (0x04) // dec: 4 memflag?
-
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
@@ -309,17 +309,18 @@ volatile unsigned *allof7e;
 
 
 //----------from pifmadv -> helps to understand the things the normal fm-script didnt specified
-#define DMA_BASE_OFFSET                 (0x00007000)
-#define PWM_BASE_OFFSET                 (0x0020C000)
-#define PWM_LEN                         (0x28)
-#define CLK_BASE_OFFSET                 (0x00101000)
-#define CLK_LEN                         (0x1300)
-#define GPIO_BASE_OFFSET                (0x00200000)
-#define GPIO_LEN                        (0x100)
-#define PCM_BASE_OFFSET                 (0x00203000)
-#define PCM_LEN                         (0x24)
-#define PAD_BASE_OFFSET                 (0x00100000)
-#define PAD_LEN                         (0x40/4) //0x64
+#define DMA_BASE_OFFSET                 (0x00007000) // dec:
+#define PWM_BASE_OFFSET                 (0x0020C000)// dec:
+#define PWM_LEN                         (0x28) // dec:
+#define CLK_BASE_OFFSET                 (0x00101000) // dec:
+#define CLK_LEN                         (0x1300) // dec:
+#define GPIO_BASE_OFFSET                (0x00200000) // dec:
+#define GPIO_LEN                        (0x100) // dec:
+#define PCM_BASE_OFFSET                 (0x00203000) // dec:
+#define PCM_LEN                         (0x24) // dec:
+#define PAD_BASE_OFFSET                 (0x00100000) // dec:
+#define PAD_LEN                         (0x40/4) //0x64 dec:
+#define PADGPIO                         (0x5A000018) // dec:
 
 #define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET)
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET)
@@ -536,19 +537,19 @@ char *spi0_map;
 //-----------------------------------------
 char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
+const char *short_opt = "n:f:s:m:c::p:g:a::h::";
 int opt;
 char *filename;
 double freq;
 const double ctss_freq;
 unsigned int samplerate;
-
 double shift_ppm = 0;
 //double I = sin ((PERIOD*freq) + shift_ppm);
 //double Q = cos ((PERIOD*freq) + shift_ppm);
 //double RF_SUM = (I+Q);
 
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
-unsigned int channels;
+unsigned int channels = 1;
 char *mod;
 char *fm = "fm";
 char *am = "am";
@@ -619,7 +620,9 @@ int instrCnt = 0;
 int instrPage;
 int constPage;
 
-const char *short_opt = "n:f:s:m:c:p:D:g:w:a:h";
+int reg = gpio / 10;
+int shift = (gpio % 10) * 3;
+
 //--------------------------------------------------
 // Structs
 struct tm *info;
@@ -677,15 +680,15 @@ struct DMAREGS
 //programm flag options
 struct option long_opt [] =
 {
-		{"filename", required_argument, NULL, 'n'},
+		{"filename",required_argument, NULL, 'n'},
 		{"freq",   	required_argument, NULL, 'f'},
     {"samp",   	required_argument, NULL, 's'},
     {"mod",	    required_argument, NULL, 'm'},
     {"call",	  required_argument, NULL, 'c'},
     {"power", 	required_argument, NULL, 'p'},
     {"gpio",	  required_argument, NULL, 'g'},
-    {"assist",	no_argument, NULL, 'a'},
-    {"help",	  no_argument, NULL, 'h'}
+    {"assist",	no_argument,       NULL, 'a'},
+    {"help",	  no_argument,       NULL, 'h'}
 };
 
 /*
@@ -693,7 +696,6 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
 
 // basic function then specified one after another
-
 static char timer ()
 {
    char *newtime;
@@ -957,7 +959,6 @@ void clearscreen ()
   clsscr ();
 }
 
-
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
@@ -1106,7 +1107,6 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
     (588 active lines per frame, out of 625 lines total)
 	*/
     // after getting filename insert then open
-	lseek (fp, 0L, SEEK_SET);
 	int sz = lseek (fp, 0L, SEEK_END);
 
   short* data = (short*) malloc (sz);
@@ -1122,7 +1122,7 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
         float value = data [i] * 4 * volume; // modulation index (AKA volume) logar. hearing of human
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
         unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400 (why this?)
-        // if samplerate > 15.75 then clocksper sample is negetive !! not good
+        // if samplerate > 15.75 then clocks per sample is negetive !! not good
         datanew = ((float) (*data)/excursion); //some constant for modulation unsigned int excursion
 
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
@@ -1132,18 +1132,15 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
         float frac = ((dval - (float) intval)/2 + 0.5);
         unsigned int fracval = (frac*clocksPerSample);
 
-        //problem still with .v & .p endings for struct!!
-        //time++;
         bufPtr++;
-
+        //problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
         //usleep (1000);
 
         //Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
 
-        //bufPtr++;
-
+        bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
@@ -1151,28 +1148,28 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
 
         bufPtr++;
-
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
-        // Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
+        //Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
         //((struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4+4);
 
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
-        // Create DMA command for more delay.
-       //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = fracval;
+
+        //Create DMA command for more delay.
+        //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = fracval;
 
         bufPtr = (bufPtr+1) % (BUFFERINSTRUCTIONS); // [1024] for buffer
 
         dataold = datanew;
         //ss->consume (data, readBytes);// ss-> for stereo
-        printf ("\nReading bytes... \n");
+        printf ("\nReading bytes from fp ... \n");
     }
 
    close (fp);
    close (*filename);
-   printf ("\nClosing filenames \n");
+   printf ("\nClosing file \n");
 }
 
 void unSetupDMA ()
@@ -1297,6 +1294,19 @@ void WriteTone (double freq, uint32_t Timing)
 }
 //---------------------//
 // main progs
+int tx ()
+{
+
+  // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
+  pad_reg[GPIO_PAD_0_27] = PADGPIO + power;
+  pad_reg[GPIO_PAD_28_45] = PADGPIO+ power;
+
+	// GPIO needs to be ALT FUNC 0 to output the clock
+	gpio_reg[reg] = (gpio_reg[reg] & ~(7 << shift))
+
+return 0;
+}
+
 //FM
 unsigned int modulationfm (int argc, char **argv)
 {
@@ -1565,6 +1575,7 @@ int main (int argc, char **argv [], option) // arguments for global use must! be
    {
    switch (options)
    {
+
    case 'a':
    if (argc=1)
    {
@@ -1572,52 +1583,53 @@ int main (int argc, char **argv [], option) // arguments for global use must! be
       GetUserInput (); //  to menu
    }
    break;
+
    case 'h':
    if (argc=1)
    {
      infos ();
-     printf ("\nUse Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod(fm/am)>] !\n Theres also an [-a assistent] or [-h help]! *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+     printf ("\nHELP: Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign YOUR HAM-ID (optinonal)>]> [-p <power (0-7>]!\n There is also an assistent [-a] \n");
    }
    break;
+
    case 'm':
-   if (argc=4)
+   if (argc>=4)
    {
-            /*
-            printf ("Checking File: %s \n", argv [1]);
-            printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
-			      printf ("Checking Channels: %s \n", channels);
-            printf ("Checking Modulation: %s \n", mod);
-		      	printf ("Checking Callsign: %s \n", *callsign);
-		      	printf ("Checking Volume/Gain: %s / %d \n", volume, gain);
-            */
+
      if (mod != NULL)
      {
-                if (!strcmp (mod, "fm"))
-                {
-                printf ("Pushing args to FM Modulator... \n");
+            if (!strcmp (mod, "fm"))
+            {
+                printf ("\nPushing args to FM Modulator... \n");
                 unsigned int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
                 }
                 else if (!strcmp (mod, "am"))
                 {
-                printf ("Pushing args to AM Modulator... \n");
+                printf ("\nPushing args to AM Modulator... \n");
                 unsigned int modulationam (int argc, char **argv);
                 }
             }
             else
             {
-             printf ("No Modulation specified! fm or am? \n");
-             return 1;
+             printf ("\nNo Modulation specified! Using Standard-Modulation FM \n");
+             mod = "fm";
+             return mod;
             }
-            break;
-          }
-          else
-          {
-            default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod(fm/am)>] !\n Theres also an [-a assistent] or [-h help]! *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-            break;
-          }
       }
 
+      /*
+      printf ("Checking File: %s \n", argv [1]);
+      printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
+      printf ("Checking Channels: %s \n", channels);
+      printf ("Checking Modulation: %s \n", mod);
+      printf ("Checking Callsign: %s \n", *callsign);
+      printf ("Checking Volume/Gain: %s / %d \n", volume, gain);
+      */
     }
-    printf ("End of main \n");
-    return 0;
+
+   default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] !\n Theres also an [-a assistent] or [-h help]! *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+   }
+
+printf ("End of main \n");
+return 0;
 }
