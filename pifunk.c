@@ -230,9 +230,9 @@ volatile unsigned *allof7e;
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
 #define PIN17 RPI_GPIO_P1_11 // which is the GPIO pin 17 for led
-#define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
-#define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
-#define SET_GPIO_ALT(g, a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
+#define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
+#define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
+#define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
 #define GPIO_SET *(gpio+7)  // setsbits which are 1 ignores bits which are 0
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
@@ -245,10 +245,10 @@ volatile unsigned *allof7e;
 #define CURBLOCK                       (0x0C) //dec: 12
 
 #elif   RASPI >= 2                     // Raspberry Pi 2 & 3
-#define PERIPH_VIRT_BASE               (0x3F000000)
+#define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
-#define MEM_FLAG                       (0x04)
+#define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag?
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
@@ -264,7 +264,7 @@ volatile unsigned *allof7e;
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
 #define DMABASE                        (0x7E007000) // dec: 2113957888
 #define CLKBASE                        (0x7E101000) // dec: 2114981888
-//#define GPFSEL0                      (0x7E200000) // p.90 dec: 2116026368
+#define GPFSEL3                        (0x7E200000) // p.90 dec: 2116026368
 #define PWMBASE                        (0x7E20C000) // controller dec: 2116075520
 #define FIFO                           (0x18)   // dec: 24
 #define CARRIER                        (0x5A)   // dec: 90
@@ -272,9 +272,9 @@ volatile unsigned *allof7e;
 #define MODULATE                       (0x4D72) // dec: 19826
 #define DMAC                           (0x0707) // dec: 1799
 
-#define ACCESS(PERIPH_VIRT_BASE) (volatile int*)(PERIPH_VIRT_BASE + (volatile int) allof7e-ADR)
-#define SETBIT(PERIPH_VIRT_BASE, bit) ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit) ACCESS(PERIPH_VIRT_BASE) && ~(1<<bit) // &=
+#define ACCESS(PERIPH_VIRT_BASE)       (volatile int*)(PERIPH_VIRT_BASE + (volatile int) allof7e-ADR)
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) && ~(1<<bit) // &=
 
 // possibility to give argv 0-4 an specific address or pointer
 // addresses -> at least on my system-tests
@@ -295,13 +295,13 @@ volatile unsigned *allof7e;
 #define PWMADD2                         (0x8) // dec: 8
 #define NAME_PTR                        (0x2F) // dec: 47
 #define FREQ_PTR                        (0x31) //$ means is in RDS data dec: 49
-#define SAMPLERATE_PTR                  (0x32) //$in RDS data  dec: 50
+#define SAMPLERATE_PTR                  (0x32) //$ in RDS data  dec: 50
 #define MODULATION_PTR                  (0x66) //$ means isin RDS data // dec: 102
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 #define FILE_PTR                        (0x73) // dec: 115
 
 //mathematical stuff
-#define ln(x) (log (x)/log              (2.718281828459045235f)) //log e(euler) = 0.4342944819
+#define ln(x)                           (log(x)/log(2.718281828459045235f)) //log e(euler) = 0.4342944819
 #define PI                              (3.14159265358979323846)
 #define PHASE                           (2*PI) // 6.28318530718
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
@@ -309,18 +309,18 @@ volatile unsigned *allof7e;
 
 
 //----------from pifmadv -> helps to understand the things the normal fm-script didnt specified
-#define DMA_BASE_OFFSET                 (0x00007000) // dec:
-#define PWM_BASE_OFFSET                 (0x0020C000)// dec:
-#define PWM_LEN                         (0x28) // dec:
-#define CLK_BASE_OFFSET                 (0x00101000) // dec:
-#define CLK_LEN                         (0x1300) // dec:
-#define GPIO_BASE_OFFSET                (0x00200000) // dec:
-#define GPIO_LEN                        (0x100) // dec:
-#define PCM_BASE_OFFSET                 (0x00203000) // dec:
-#define PCM_LEN                         (0x24) // dec:
-#define PAD_BASE_OFFSET                 (0x00100000) // dec:
-#define PAD_LEN                         (0x40/4) //0x64 dec:
-#define PADGPIO                         (0x5A000018) // dec:
+#define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
+#define PWM_BASE_OFFSET                 (0x0020C000)// dec: 2146304
+#define PWM_LEN                         (0x28) // dec: 40
+#define CLK_BASE_OFFSET                 (0x00101000) // dec:1052672
+#define CLK_LEN                         (0x1300) // dec: 4864
+#define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
+#define GPIO_LEN                        (0x100) // dec: 256
+#define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
+#define PCM_LEN                         (0x24) // dec: 36
+#define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
+#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  //0x64 = dec: 100
+#define PADGPIO                         (0x5A000018) // dec: 1509949464
 
 #define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET)
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET)
@@ -334,83 +334,83 @@ volatile unsigned *allof7e;
 #define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET)
 
 // GPIO
-#define GPFSEL0                         (0x00/4)
-#define GPFSEL1                         (0x04/4)
-#define GPFSEL2                         (0x08/4)
-#define GPPUD                           (0x94/4)
-#define GPPUDCLK0                       (0x98/4)
-#define GPPUDCLK1                       (0x9C/4)
+#define GPFSEL0                         (0x00/4) // p.90 dec: 0
+#define GPFSEL1                         (0x04/4) // 1
+#define GPFSEL2                         (0x08/4) // 2
+#define GPPUD                           (0x94/4) // 37
+#define GPPUDCLK0                       (0x98/4) // 38
+#define GPPUDCLK1                       (0x9C/4) // 39
 
-#define CORECLK_CNTL                    (0x08/4)
-#define CORECLK_DIV                     (0x0C/4)
-#define GPCLK_CNTL                      (0x70/4)
-#define GPCLK_DIV                       (0x74/4)
-#define EMMCCLK_CNTL                    (0x1C0/4)
-#define EMMCCLK_DIV                     (0x1C4/4)
+#define CORECLK_CNTL                    (0x08/4) //2
+#define CORECLK_DIV                     (0x0C/4) //3
+#define GPCLK_CNTL                      (0x70/4) //28
+#define GPCLK_DIV                       (0x74/4) //29
+#define EMMCCLK_CNTL                    (0x1C0/4) //112
+#define EMMCCLK_DIV                     (0x1C4/4) //113
 
-#define CM_LOCK                         (0x114/4)
+#define CM_LOCK                         (0x114/4) //69
 #define CM_LOCK_FLOCKA                  (1<<8)
 #define CM_LOCK_FLOCKB                  (1<<9)
 #define CM_LOCK_FLOCKC                  (1<<10)
 #define CM_LOCK_FLOCKD                  (1<<11)
 #define CM_LOCK_FLOCKH                  (1<<12)
 
-#define CM_PLLA                         (0x104/4)
-#define CM_PLLC                         (0x108/4)
-#define CM_PLLD                         (0x10C/4)
-#define CM_PLLH                         (0x110/4)
-#define CM_PLLB                         (0x170/4)
+#define CM_PLLA                         (0x104/4) //65
+#define CM_PLLC                         (0x108/4) //66
+#define CM_PLLD                         (0x10C/4) //67
+#define CM_PLLH                         (0x110/4) //68
+#define CM_PLLB                         (0x170/4) //92
 
-#define A2W_PLLA_ANA0                   (0x1010/4)
-#define A2W_PLLC_ANA0                   (0x1030/4)
-#define A2W_PLLD_ANA0                   (0x1050/4)
-#define A2W_PLLH_ANA0                   (0x1070/4)
-#define A2W_PLLB_ANA0                   (0x10F0/4)
+#define A2W_PLLA_ANA0                   (0x1010/4) //1028
+#define A2W_PLLC_ANA0                   (0x1030/4) //1036
+#define A2W_PLLD_ANA0                   (0x1050/4) //1044
+#define A2W_PLLH_ANA0                   (0x1070/4) //1052
+#define A2W_PLLB_ANA0                   (0x10F0/4) //1084
 #define A2W_PLL_KA_SHIFT                (7)
 #define A2W_PLL_KI_SHIFT                (19)
 #define A2W_PLL_KP_SHIFT                (15)
 
-#define PLLA_CTRL                       (0x1100/4)
-#define PLLA_FRAC                       (0x1200/4)
-#define PLLA_DSI0                       (0x1300/4)
-#define PLLA_CORE                       (0x1400/4)
-#define PLLA_PER                        (0x1500/4)
-#define PLLA_CCP2                       (0x1600/4)
+#define PLLA_CTRL                       (0x1100/4) //1088
+#define PLLA_FRAC                       (0x1200/4) //1152
+#define PLLA_DSI0                       (0x1300/4) //1216
+#define PLLA_CORE                       (0x1400/4) //1280
+#define PLLA_PER                        (0x1500/4) //1344
+#define PLLA_CCP2                       (0x1600/4) //1408
 
-#define PLLB_CTRL                       (0x11E0/4)
-#define PLLB_FRAC                       (0x12E0/4)
-#define PLLB_ARM                        (0x13E0/4)
-#define PLLB_SP0                        (0x14E0/4)
-#define PLLB_SP1                        (0x15E0/4)
-#define PLLB_SP2                        (0x16E0/4)
+#define PLLB_CTRL                       (0x11E0/4) //1144
+#define PLLB_FRAC                       (0x12E0/4) //1208
+#define PLLB_ARM                        (0x13E0/4) //1272
+#define PLLB_SP0                        (0x14E0/4) //1336
+#define PLLB_SP1                        (0x15E0/4) //1400
+#define PLLB_SP2                        (0x16E0/4) //1464
 
-#define PLLC_CTRL                       (0x1120/4)
-#define PLLC_FRAC                       (0x1220/4)
-#define PLLC_CORE2                      (0x1320/4)
-#define PLLC_CORE1                      (0x1420/4)
-#define PLLC_PER                        (0x1520/4)
-#define PLLC_CORE0                      (0x1620/4)
+#define PLLC_CTRL                       (0x1120/4) //1196
+#define PLLC_FRAC                       (0x1220/4) //1160
+#define PLLC_CORE2                      (0x1320/4) //1224
+#define PLLC_CORE1                      (0x1420/4) //1288
+#define PLLC_PER                        (0x1520/4) //1352
+#define PLLC_CORE0                      (0x1620/4) //1416
 
-#define PLLD_CTRL                       (0x1140/4)
-#define PLLD_FRAC                       (0x1240/4)
-#define PLLD_DSI0                       (0x1340/4)
-#define PLLD_CORE                       (0x1440/4)
-#define PLLD_PER                        (0x1540/4)
-#define PLLD_DSI1                       (0x1640/4)
+#define PLLD_CTRL                       (0x1140/4) //1104
+#define PLLD_FRAC                       (0x1240/4) //1168
+#define PLLD_DSI0                       (0x1340/4) //1232
+#define PLLD_CORE                       (0x1440/4) //1296
+#define PLLD_PER                        (0x1540/4) //1360
+#define PLLD_DSI1                       (0x1640/4) //1424
 
-#define PLLH_CTRL                       (0x1160/4)
-#define PLLH_FRAC                       (0x1260/4)
-#define PLLH_AUX                        (0x1360/4)
-#define PLLH_RCAL                       (0x1460/4)
-#define PLLH_PIX                        (0x1560/4)
-#define PLLH_STS                        (0x1660/4)
+#define PLLH_CTRL                       (0x1160/4) //1112
+#define PLLH_FRAC                       (0x1260/4) //1176
+#define PLLH_AUX                        (0x1360/4) //1240
+#define PLLH_RCAL                       (0x1460/4) //1304
+#define PLLH_PIX                        (0x1560/4) //1368
+#define PLLH_STS                        (0x1660/4) //1432
 
 // PWM
-#define PWM_CTL                         (0x00/4)
-#define PWM_DMAC                        (0x08/4)
-#define PWM_RNG1                        (0x10/4)
-#define PWM_RNG2                        (0x20/4)
-#define PWM_FIFO                        (0x18/4)
+#define PWM_CTL                         (0x00/4) //0
+#define PWM_DMAC                        (0x08/4) //2
+#define PWM_RNG1                        (0x10/4) //4
+#define PWM_RNG2                        (0x20/4) //8
+#define PWM_FIFO                        (0x18/4) //6
 
 #define PWMCLK_CNTL                     (40)
 #define PWMCLK_DIV                      (41)
@@ -432,28 +432,28 @@ volatile unsigned *allof7e;
 #define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0))
 
 // PCM
-#define PCM_CS_A                        (0x00/4)
-#define PCM_FIFO_A                      (0x04/4)
-#define PCM_MODE_A                      (0x08/4)
-#define PCM_RXC_A                       (0x0C/4)
-#define PCM_TXC_A                       (0x10/4)
-#define PCM_DREQ_A                      (0x14/4)
-#define PCM_INTEN_A                     (0x18/4)
-#define PCM_INT_STC_A                   (0x1C/4)
-#define PCM_GRAY                        (0x20/4)
+#define PCM_CS_A                        (0x00/4) //0
+#define PCM_FIFO_A                      (0x04/4) //1
+#define PCM_MODE_A                      (0x08/4) //2
+#define PCM_RXC_A                       (0x0C/4) //3
+#define PCM_TXC_A                       (0x10/4) //4
+#define PCM_DREQ_A                      (0x14/4) //5
+#define PCM_INTEN_A                     (0x18/4) //6
+#define PCM_INT_STC_A                   (0x1C/4) //7
+#define PCM_GRAY                        (0x20/4) //8
 
 #define PCMCLK_CNTL                     (38)
 #define PCMCLK_DIV                      (39)
 
 // PAD
-#define GPIO_PAD_0_27                   (0x2C/4)
-#define GPIO_PAD_28_45                  (0x30/4)
-#define GPIO_PAD_46_52                  (0x34/4)
+#define GPIO_PAD_0_27                   (0x2C/4)  //11
+#define GPIO_PAD_28_45                  (0x30/4)  //12
+#define GPIO_PAD_46_52                  (0x34/4)  //13
 
 // DMA
 #define DMA_CHANNEL                     (14)
 #define DMA_CHANNEL_MAX                 (14)
-#define DMA_CHANNEL_SIZE                (0x100)
+#define DMA_CHANNEL_SIZE                (0x100) //256
 
 #define BCM2708_DMA_ACTIVE              (1<<0)
 #define BCM2708_DMA_END                 (1<<1)
@@ -471,9 +471,9 @@ volatile unsigned *allof7e;
 #define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16)
 #define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20)
 
-#define DMA_CS                          (0x00/4)
-#define DMA_CONBLK_AD                   (0x04/4)
-#define DMA_DEBUG                       (0x20/4)
+#define DMA_CS                          (0x00/4) //0
+#define DMA_CONBLK_AD                   (0x04/4) //1
+#define DMA_DEBUG                       (0x20/4) //8
 
 #define DMA_CS_RESET		                (1<<31)
 #define DMA_CS_ABORT			              (1<<30)
@@ -482,7 +482,7 @@ volatile unsigned *allof7e;
 #define DMA_CS_INT			                (1<<2)
 #define DMA_CS_END			                (1<<1)
 #define DMA_CS_ACTIVE			              (1<<0)
-#define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16)
+#define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) //0xF=15
 #define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20)
 
 #define DREQ_PCM_TX                     (2)
@@ -503,7 +503,7 @@ volatile unsigned *allof7e;
 #define MEM_FLAG_NO_INIT                (1 << 5) /* don't initialise (default is initialise to all ones */
 #define MEM_FLAG_HINT_PERMALOCK         (1 << 6) /* Likely to be locked for long periods of time. */
 
-#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000)
+#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) //3221225472
 
 #define PAGE_SHIFT                      (12)
 #define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
@@ -525,7 +525,7 @@ int a;
 int i;
 int k;
 float x;
-int m;
+int l;
 
 //pi variables:
 int  mem_fd;
@@ -550,13 +550,13 @@ double shift_ppm = 0;
 
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 unsigned int channels = 1;
-char *mod;
+char *mod = "fm";
 char *fm = "fm";
 char *am = "am";
 char *callsign;
 float volume = 1.0f;
-int power = 7;
-uint16_t pis = (0x1234);
+unsigned int power = 7;
+uint16_t pis = (0x1234); // 4660
 uint32_t carrier_freq = 87600000;
 float A = 87.6f; // compression parameter (stauchung)
 //-> this might be the carrier too
@@ -571,7 +571,7 @@ unsigned int callnameselect;
 //--network sockets for later
 // here custom port via tcp/ip or udp
 socklen_t addressLength;
-unsigned int port;
+unsigned int port = 8080;
 
 // program variables
 time_t rawtime;
@@ -1020,9 +1020,9 @@ void infos () //warnings and infos
    //printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 }
 
-void modulate (int m)
+void modulate (int l)
 {
-		ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + m;  //
+		ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + l;  //
 }
 
 void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm header!
