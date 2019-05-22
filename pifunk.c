@@ -620,8 +620,8 @@ int instrCnt = 0;
 int instrPage;
 int constPage;
 
-int reg = gpio / 10;
-int shift = (gpio % 10) * 3;
+int reg //= gpio / 10;
+int shift //= (gpio % 10) * 3;
 
 //--------------------------------------------------
 // Structs
@@ -955,8 +955,10 @@ void handSig () // exit func
 
 void clearscreen ()
 {
-  fflush ();
+  print("\033[H\033[J");
+  //fflush (stdin);
   clsscr ();
+  //system("clear")
 }
 
 //--------------LED stuff
@@ -1010,9 +1012,9 @@ int led ()
 // FM ones
 void infos () //warnings and infos
 {
-    printf ("\033[1;4;35m") //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
+    printf ("\033[1;4;35m"); //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
     printf ("\nWelcome to the Pi-Funk! v%s-%s for Raspian ARM! \n\a", VERSION, *description);
-    printf ("\033[0m") //collor escape command for resetting
+    printf ("\033[0m"); //collor escape command for resetting
    	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
@@ -1298,11 +1300,11 @@ int tx ()
 {
 
   // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
-  pad_reg[GPIO_PAD_0_27] = PADGPIO + power;
-  pad_reg[GPIO_PAD_28_45] = PADGPIO+ power;
+  //pad_reg[GPIO_PAD_0_27] = PADGPIO + power;
+  //pad_reg[GPIO_PAD_28_45] = PADGPIO+ power;
 
 	// GPIO needs to be ALT FUNC 0 to output the clock
-	gpio_reg[reg] = (gpio_reg[reg] & ~(7 << shift))
+	//gpio_reg[reg] = (gpio_reg[reg] & ~(7 << shift));
 
 return 0;
 }
@@ -1322,7 +1324,7 @@ unsigned int modulationfm (int argc, char **argv)
     setupDMA (argc>2 ? atof (argv [2]):100.00000); // default freq, maybe do input here?
 
 	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    play_wav (argv [1], argc>3 ? atof (argv [3]):22050); // <-- in 22.05 kHz, should be same as AM!!
+    play_wav (argv [1], argc>3 ? atof (argv [3]):22050, *short_opt); // <-- in 22.05 kHz, should be same as AM!!
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
@@ -1515,7 +1517,7 @@ int GetUserInput () //my menu-assistent
     {
       case '1': channelselect (); //undefined reference
 							filenamepath ();
-							callname ();
+							callname (*callsign);
 					    break;
 
 		  case '2': filenamepath ();
@@ -1540,7 +1542,7 @@ int GetUserInput () //my menu-assistent
     return 0;
 }
 
-int main (int argc, char **argv [], option) // arguments for global use must! be in main
+int main (int argc, char **argv [], char *short_opt) // arguments for global use must! be in main
 {
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
