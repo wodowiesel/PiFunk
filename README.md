@@ -99,13 +99,13 @@ ___
 
 run with admin/root permissions:
 
-Arguments: `[filename (.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)] `
+Arguments: `[-n filename (.wav)] [ -f freq (MHz)] [-s samplerate (kHz)] [-m modulation (fm/am)] [-c callsign (optional)] [-p power 0-7)]`
 
 extra single Arguments:
 
-[`menu`] as step-by-step assistent
+[`- a assist`] as step-by-step assistent
 
-[`help`] for more infos and arguments
+[`-h help`] for more infos and arguments
 
 Use '. dot' as decimal-comma separator!
 
