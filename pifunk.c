@@ -1529,7 +1529,7 @@ int GetUserInput () //my menu-assistent
 				    	csvreader ();
 					    break;
 			case '4': printf ("\nShell - Commandline: \n");
-			        int main (int argc, char **argv []); // go back to cmd if you want
+			        int main (int argc, char **argv [], const char *short_opt); // go back to cmd if you want
 				    	break;
 
 			case '5': printf ("\nExiting... \n");
@@ -1542,7 +1542,7 @@ int GetUserInput () //my menu-assistent
     return 0;
 }
 
-int main (int argc, char **argv [], char *short_opt) // arguments for global use must! be in main
+int main (int argc, char **argv [], const char *short_opt) // arguments for global use must! be in main
 {
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
@@ -1582,6 +1582,7 @@ int main (int argc, char **argv [], char *short_opt) // arguments for global use
 
    while (options = getopt (argc, argv, "n:f:s:m:c::p:a::h::") != -1)
    {
+
    switch (options)
    {
    //assistent
@@ -1619,7 +1620,7 @@ int main (int argc, char **argv [], char *short_opt) // arguments for global use
       return samplerate;
       break;
 
-// modulation
+   // modulation
    case 'm':
 
      if (mod != NULL)
@@ -1643,11 +1644,11 @@ int main (int argc, char **argv [], char *short_opt) // arguments for global use
       }
       break;
 
-//callsign
+   //callsign
    case 'c':
    if (callsign != NULL)
    {
-     printf ("\nCallsign is %s \n", callsign);
+     printf ("\nCallsign is %s \n", *callsign);
      return callsign;
     }
     else
@@ -1657,7 +1658,7 @@ int main (int argc, char **argv [], char *short_opt) // arguments for global use
     }
     break;
 
-//power managment
+   //power managment
    case 'p':
    if (power != NULL)
    {
@@ -1671,10 +1672,10 @@ int main (int argc, char **argv [], char *short_opt) // arguments for global use
       return power = 7;
     }
     break;
-
+      //---------
    default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    }
-
+  }
    /*
    printf ("Checking File: %s \n", argv [1]);
    printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
