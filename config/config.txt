@@ -1,13 +1,19 @@
 #/etc/modules
 
 dtoverlay=w1-gpio,gpiopin=4,pullup=0,i2c-rtc,ds3231
-snd-bcm2835
+snd_bcm2835
 i2c-dev
-rtc-ds1307
+#rtc-ds1307
 modprobe i2c_bcm2708
 modprobe i2c_dev
 chmod 666 /dev/i2c-1
 adduser pi i2c
+
+force_turbo=1 #needed if coverclocking or setting spesific values
+arm_freq=700f #or pi1/2, pi3 has 400
+gpu_freq=250 #for pi1/2, pi3 has 400
+core_freq=250 #for pi1/2, pi3 has 400
+sdram_freq=400
 
 #->Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
 #do open path of w1-device 
