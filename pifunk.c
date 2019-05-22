@@ -620,8 +620,8 @@ int instrCnt = 0;
 int instrPage;
 int constPage;
 
-int reg //= gpio / 10;
-int shift //= (gpio % 10) * 3;
+int reg; //= gpio / 10;
+int shift; //= (gpio % 10) * 3;
 
 //--------------------------------------------------
 // Structs
@@ -700,7 +700,7 @@ static char timer ()
 {
    char *newtime;
    time (&rawtime);
-   info = localtime (&rawtime);
+   char info = localtime (&rawtime);
    *newtime = asctime (info);
    printf ("\nCurrent local time and date: %s \n", *newtime);
    return *newtime;
