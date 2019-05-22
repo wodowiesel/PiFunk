@@ -932,7 +932,7 @@ unsigned int channelselect ()
 
          default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
 		    }
-return channelmode;
+return 0;
 }
 /*
 float audiovol ()
@@ -1281,8 +1281,7 @@ void WriteTone (double freq, uint32_t Timing)
 	{
 	  const double Frequency;
 		uint32_t WaitForThisSample;
-	}
-	samplerf_t;
+	} samplerf_t;
 	samplerf_t RfSample;
 	RfSample.Frequency; //= Frequency;
 
@@ -1298,7 +1297,7 @@ void WriteTone (double freq, uint32_t Timing)
 // main progs
 int tx ()
 {
-
+  printf("\nBroadcasting now...! \n");
   // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
   //pad_reg[GPIO_PAD_0_27] = PADGPIO + power;
   //pad_reg[GPIO_PAD_28_45] = PADGPIO+ power;
@@ -1507,7 +1506,7 @@ char callname (char *callsign)
 int GetUserInput () //my menu-assistent
 {
     timer ();
-    infos ();
+    //infos ();
     printf ("Press Enter to Continue... \n");
     while (getchar () != "\n");
 	  printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
@@ -1515,7 +1514,7 @@ int GetUserInput () //my menu-assistent
 
 	  switch (modeselect)
     {
-      case '1': channelselect (); //undefined reference
+      case '1': //channelselect (); //undefined reference
 							filenamepath ();
 							callname (*callsign);
 					    break;
@@ -1549,38 +1548,29 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
 	 printf ("\nProgram name is %s \n", __FILE__);
 
-   char *filename = argv [1];
+   char *filename; //= argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
-   double freq = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-   unsigned int samplerate = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+   double freq; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+   unsigned int samplerate ;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 
-   char *mod = argv [4];
-   char *callsign = argv [5];
+   char *mod;// = argv [4];
+   char *callsign;// = argv [5];
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
    int options;
    //---
    headertest ();
-   infos (); //information, disclaimer
+   //infos (); //information, disclaimer
    timer (); //local time
-
-   //-- for debugging or information :)
-   /*
-   printf ("\nArguments(argc): %d /Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Volume(6): %s / Gain(6): %d \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], gain);
-   printf ("&Adresses-> Arguments: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p / Gain: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &gain);
-   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p/ Volume: %p \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
-   //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
-   //---
-   */
 
    if (argc=0||NULL)
    {
      fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-     return -1;
    }
-
-   while (options = getopt (argc, argv, "n:f:s:m:c::p:a::h::") != -1)
+   else
+   {
+   while (options = getopt (argc, argv, short_opt, NULL) != -1)
    {
 
    switch (options)
@@ -1598,8 +1588,8 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
    case 'h':
    if (argc=1)
    {
-     infos ();
-     printf ("\nHELP: Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+     //infos ();
+     printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
    }
    break;
 
@@ -1676,14 +1666,23 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
    default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    }
   }
-   /*
-   printf ("Checking File: %s \n", argv [1]);
+
+   //-- for debugging or information :)
+
+   printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+   printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
+   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
+   //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
+   //--
+   printf ("Checking File: %s \n", fp);
    printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
-   printf ("Checking Channels: %s \n", channels);
    printf ("Checking Modulation: %s \n", mod);
    printf ("Checking Callsign: %s \n", *callsign);
-   printf ("Checking Volume/Gain: %s / %d \n", volume, gain);
-   */
+
+  // gathering and parsing all given arguments to parse it to player
+  tx ();
+  }
+
 printf ("End of main \n");
 return 0;
 }
