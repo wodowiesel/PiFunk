@@ -904,8 +904,9 @@ unsigned int modulationselect ()
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
 		//default: printf ("\n Default = 1 \n"); break;
+	}
+	return 0;
 }
-
 unsigned int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode\n");
@@ -1573,14 +1574,14 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    //infos (); //information, disclaimer
    //timer (); //local time
 
-   if (argc=0||NULL)
-   {
+  if (argc=0||NULL)
+  {
      fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-   }
-   else
-   {
-   while (options = getopt (argc, argv, shortopts) != -1)
-   {
+  }
+  else
+  {
+  while (options = getopt (argc, argv, shortopts) != -1)
+  {
 
    switch (options)
    {
@@ -1603,7 +1604,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
       return samplerate;
       break;
 
-   // modulation
+      // modulation
    case 'm':
 
      if (mod != NULL)
