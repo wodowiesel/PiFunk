@@ -702,17 +702,17 @@ static char timer ()
    char *newtime;
    time (&rawtime);
    int info = localtime (&rawtime);
-   *newtime = asctime (info);
-   printf ("\nCurrent local time and date: %s \n", *newtime);
+   const struct tm  *tp = asctime (info);
+   printf ("\nCurrent local time and date: %s  & &s \n", *newtime, tp);
    return *newtime;
 }
 
 char filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", *filename);
+  scanf ("%s", fp);
 
-  if (filename == NULL)
+  if (fp == NULL)
 	{
 	    printf ("\nFile %s not found! \n", filename);
 	    return 1;
@@ -720,7 +720,7 @@ char filenamepath ()  // expected int?
 	else
 	{
 	   printf ("\nTrying to play default sound.wav ... \n");
-	   int fp = open ("sound/sound.wav", "r"); // sounds/sound.wav directory should be testet
+	   int fp = open ("sound/sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
 	   return fp;
 	}
 	return 0;
@@ -924,8 +924,8 @@ unsigned int channelselect ()
 					modulationselect (); //selects modulation
 					break;
 
-         case 3: printf ("\nReturning to Menu... \n");
-          GetUserInput ();
+         case 3: printf ("\nReturning to Assistent... \n");
+          //GetUserInput ();
           break;
 
          case 4:  printf ("\nExiting... \n");
@@ -1349,13 +1349,13 @@ unsigned int modulationam (int argc, char **argv)
               {VFO (constant frequency)}
     */
 	nb_samples = (readcount/channels);
-	printf ("\n nb_samples: %f \n", nb_samples);
-	printf ("Compression prameter A: %f \n", A); // was defined as global var above
+	printf ("\nnb_samples: %f \n", nb_samples);
+	printf ("\nCompression prameter A: %f \n", A); // was defined as global var above
 
 	if (argc>=4)
 	{
-		printf ("filefreq timing opener test");
 		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
+    printf ("Opening File...");
 	  return fp;
 
 	}
@@ -1507,8 +1507,8 @@ int GetUserInput () //my menu-assistent
 {
     timer ();
     //infos ();
-    printf ("Press Enter to Continue... \n");
-    while (getchar () != "\n");
+    //printf ("Press Enter to Continue... \n");
+    //while (getchar () =! "\n");
 	  printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
 	  scanf ("%d", &modeselect);
 
@@ -1587,7 +1587,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    case 'f':
 
       printf ("\nFrequency is %f \n", freq);
-      return samplerate;
+      return freq;
       break;
 
    case 's':
