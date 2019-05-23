@@ -237,19 +237,19 @@ volatile unsigned *allof7e;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  RASPI == 1                       // Original Raspberry Pi 1
+#ifdef  (RPI == 1)                       // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#elif   RASPI >= 2                     // Raspberry Pi 2 & 3
+#elif   (RPI >= 2)                     // Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag?
-#else
-#define PERIPH_VIRT_BASE               (0x20000000)
+//#elif RASPBERRY
+//#define PERIPH_VIRT_BASE               (0x20000000)
 #endif
 
 //---
@@ -535,7 +535,7 @@ char *spi0_map;
 //-----------------------------------------
 char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
-const char *shortopts = "n:f:s:m:c::p:g:a::h::";
+
 int opt;
 
 char *filename;
@@ -1545,6 +1545,7 @@ int GetUserInput () //my menu-assistent
 
 int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
+   const char *shortopts = "n:f:s:m:c::p:a::h::"; // g:
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
@@ -1572,7 +1573,6 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    }
    else
    {
-
    while (options = getopt (argc, argv, shortopts) != -1)
    {
 
@@ -1652,7 +1652,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
      //assistent
    case 'a':
-   if (argc=1)
+   if (arg>c=1)
    {
        printf ("\nAssistent activated! \n");
        GetUserInput (); //  to menu -> must be refactored later
@@ -1661,11 +1661,11 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
     // help
    case 'h':
-   if (argc=1)
-   {
+   //if (argc>=1)
+   //{
       //infos ();
-      printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
-    }
+    printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+    //}
    break;
 
    default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
