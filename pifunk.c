@@ -720,7 +720,7 @@ char filenamepath ()  // expected int?
 	}
 	else
 	{
-     printf ("\nFile %s not found! \n", filename;
+     printf ("\nFile %s not found! \n", filename);
 	   printf ("\nTrying to play default sound.wav ... \n");
 	   int fp = open ("sound/sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
 	   return fp;
@@ -1451,7 +1451,7 @@ unsigned int modulationam (int argc, char **argv)
 
     // Close input and output files
     //fclose (FileFreqTiming);
-    fclose (sdf);
+    fclose (sfp);
     printf ("\nFile saved! \n");
     return 0;
 }
