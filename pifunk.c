@@ -244,7 +244,7 @@ volatile unsigned *allof7e;
 #define CURBLOCK                       (0x0C) //dec: 12
 #elif   RASPI //>= 2                       // Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
-#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
+#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag?
@@ -252,6 +252,9 @@ volatile unsigned *allof7e;
 #define PERIPH_VIRT_BASE               (0x20000000)
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK
 #endif
 
 //---
@@ -1544,14 +1547,15 @@ int GetUserInput () //my menu-assistent
     }
     return 0;
 }
-
+//--------- MAIN
 int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
    const char *shortopts = "n:f:s:m:c::p:a::h::"; // g:
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
-   printf ("%s \n", argv [0]);
+   printf ("arguments: %d / name: %s \n", argc, argv [0]);
+   printf ("\nProgram name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
-	 printf ("\nProgram name is %s \n", __FILE__);
+   headertest ();
 
    char *filename; //= argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
@@ -1565,7 +1569,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
    int options;
    //---
-   headertest ();
+
    //infos (); //information, disclaimer
    //timer (); //local time
 
@@ -1670,14 +1674,14 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
     //}
    break;
 
-   default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+   default: printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    } // end of switch
 
-   } // end of while
-  }
-   //-- for debugging or information :)
+  } // end of while
 
-   printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+   //-- for debugging or information :)
+    /*
+   printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
    printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
    printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
@@ -1686,7 +1690,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
    printf ("Checking Modulation: %s \n", mod);
    printf ("Checking Callsign: %s \n", *callsign);
-
+    */
    // gathering and parsing all given arguments to parse it to player
    //tx ();
   } //end of else
