@@ -525,6 +525,7 @@ int i;
 int k;
 float x;
 int l;
+char j;
 
 //pi variables:
 int  mem_fd;
@@ -584,8 +585,10 @@ float FactAmplitude = 2.0; //maybe here amp-modulator type input?
 // logarithmic modulation
 
 // fm vars
+FILE sfp, dfp;
 FILE infiles;
 FILE outfiles;
+FILE FileFreqTiming;
 int fp = STDIN_FILENO;
 int filebit;
 int readBytes;
@@ -612,7 +615,6 @@ float VOLUME_REFERENCE = 1.f;
 
 // instructor for access
 unsigned long frameinfo;
-FILE FileFreqTiming;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
 int bufPtr = 0;
 int instrCnt = 0;
@@ -1113,13 +1115,13 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
   short* data = (short*) malloc (sz);
 
   for (int i = 0; i < 22; i++) // why i less then 22?
-    {
+  {
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
         printf ("\nFor i=0: read fp \n");
-    }
+  }
 
   while (readBytes = read (fp, &data, 1024))
-    {
+  {
         float value = data [i] * 4 * volume; // modulation index (AKA volume) logar. hearing of human
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
         unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400 (why this?)
@@ -1166,10 +1168,10 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
         dataold = datanew;
         //ss->consume (data, readBytes);// ss-> for stereo
         printf ("\nReading bytes from fp ... \n");
-    }
+  }
 
    close (fp);
-   close (*filename);
+   //close (*filename);
    printf ("\nClosing file \n");
 }
 
@@ -1184,7 +1186,7 @@ void unsetupDMA ()
 void setupDMA (double freq)
 {
 	printf ("\nSetup of DMA starting... \n");
-	atexit (unSetupDMA);
+	atexit (unsetupDMA ());
 	signal (SIGINT, handSig);
 	signal (SIGTERM, handSig);
 	signal (SIGHUP, handSig);
@@ -1263,7 +1265,7 @@ void setupDMA (double freq)
    ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
   //activate dma
-   struct DMAREGS* DMA0 = (struct DMAregs*) (ACCESS (DMABASE));
+   struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS (DMABASE));
    DMA0->CS = 1<<31; // reset
    DMA0->CONBLK_AD = 0;
    DMA0->TI = 0;
@@ -1287,7 +1289,7 @@ void WriteTone (double freq, uint32_t Timing)
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("Freq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 
-	if (write (FileFreqTiming, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
+	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
 	}
@@ -1322,7 +1324,7 @@ unsigned int modulationfm (int argc, char **argv)
     setupDMA (argc>2 ? atof (argv [2]):100.00000); // default freq, maybe do input here?
 
 	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    play_wav (argv [1], argc>3 ? atof (argv [3]):22050, shortopts); // <-- in 22.05 kHz, should be same as AM!!
+    //play_wav (argv [1], argc>3 ? atof (argv [3]):22050, shortopts); // <-- in 22.05 kHz, should be same as AM!!
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
@@ -1353,8 +1355,8 @@ unsigned int modulationam (int argc, char **argv)
 	if (argc>=4)
 	{
 		printf ("filefreq timing opener test");
-		FileFreqTiming = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
-	  return FileFreqTiming, outfilename;
+		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
+	  return outfilename;
 
 	}
 	else
@@ -1446,7 +1448,7 @@ unsigned int modulationam (int argc, char **argv)
     printf ("Writing file: %s \n", outfilename);
 
     // Close input and output files
-    fclose (FileFreqTiming);
+    //fclose (FileFreqTiming);
     fclose (fp);
     printf ("\nFile saved! \n");
     return FileFreqTiming, fp;
@@ -1463,24 +1465,22 @@ return freqmode;
 char csvreader()
 {
     printf ("\nChecking for CSV-file... \n");
-    FILE *sfp, *dfp;
-    char c;
 
-    *sfp = fopen ("csvpmr.csv", "r");// readonly!
-    *dfp = fopen ("csvwriter.csv", "w+"); // with + it updates , if exists overwrites
-    while (!feof (*sfp))
+    sfp = fopen ("csvpmr.csv", "r");// readonly!
+    dfp = fopen ("csvwriter.csv", "w+"); // with + it updates , if exists overwrites
+    while (!feof (sfp))
     {
     //here check for semicolon or comma delimiter (default)
-    c = fgetc (*sfp);
-    fputc (c,*dfp);
+    j = fgetc (sfp);
+    fputc (j, dfp);
     }
 
-    fclose (*sfp);
-    fclose (*dfp);
+    fclose (sfp);
+    fclose (dfp);
     printf ("\n%s\n", c);
     printf ("\nCSV-Import of ctss-List finished! \n");
 
-    return c, *sfp, *dfp;
+    return j, dfp;
 }
 
 char callname ()
@@ -1570,6 +1570,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    }
    else
    {
+
    while (options = getopt (argc, argv, shortopts) != -1)
    {
 
@@ -1617,7 +1618,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
       }
       break;
 
-   //callsign
+     //callsign
    case 'c':
    if (callsign != NULL)
    {
@@ -1640,13 +1641,13 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
      //return power;
     }
     else
-      {
+    {
         printf ("\nNo Powerlevel given, using maximum output %d \n", power);
         return power = 7;
-      }
-      break;
+    }
+    break;
 
-    //assistent
+     //assistent
    case 'a':
    if (argc=1)
    {
@@ -1654,6 +1655,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
        GetUserInput (); //  to menu -> must be refactored later
     }
    break;
+
     // help
    case 'h':
    if (argc=1)
@@ -1664,8 +1666,9 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    break;
 
    default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-   }
-  }
+   } // end of switch
+
+  } // end of while
 
    //-- for debugging or information :)
 
@@ -1679,9 +1682,9 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    printf ("Checking Modulation: %s \n", mod);
    printf ("Checking Callsign: %s \n", *callsign);
 
-  // gathering and parsing all given arguments to parse it to player
-  //tx ();
-  }
+   // gathering and parsing all given arguments to parse it to player
+   //tx ();
+  } //end of else
 
 printf ("End of main \n");
 return 0;
