@@ -251,7 +251,6 @@ volatile unsigned *allof7e;
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
-#endif
 
 //---
 #define LENGTH                         (0x01000000) // dec: 1
@@ -701,7 +700,7 @@ static int timer ()
 {
    char *newtime;
    time (&rawtime);
-   int info = localtime (&rawtime);
+   //int info = localtime (&rawtime);
    //const struct tm *tp = asctime (info);
    printf ("\nCurrent local time and date: %s \n", *newtime);
    return 0;
@@ -933,7 +932,7 @@ unsigned int channelselect ()
 					 exit (-1);
 
          default: printf ("\nDefault: Returning to Assistent... \n");
-          GetUserInput ();
+          //GetUserInput ();
           break;
 		    }
 return 0;
