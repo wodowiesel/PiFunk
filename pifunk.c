@@ -522,10 +522,10 @@ volatile unsigned *allof7e;
 //iterators for loops
 int a;
 int i;
-int k;
-float x;
-int l;
 char j;
+int k;
+int l;
+float x;
 
 //pi variables:
 int  mem_fd;
@@ -539,6 +539,7 @@ char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 const char *shortopts = "n:f:s:m:c::p:g:a::h::";
 int opt;
+
 char *filename;
 double freq;
 const double ctss_freq;
@@ -697,28 +698,29 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
 
 // basic function then specified one after another
-static char timer ()
+static int timer ()
 {
    char *newtime;
    time (&rawtime);
    int info = localtime (&rawtime);
-   const struct tm  *tp = asctime (info);
-   printf ("\nCurrent local time and date: %s  & &s \n", *newtime, tp);
-   return *newtime;
+   //const struct tm *tp = asctime (info);
+   printf ("\nCurrent local time and date: %s \n", *newtime);
+   return 0;
 }
 
 char filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", fp);
+  scanf ("%s", filename);
 
-  if (fp == NULL)
+  if (filename != NULL)
 	{
-	    printf ("\nFile %s not found! \n", filename);
-	    return 1;
+     sfp = fopen (filename, "r");
+	   return sfp;
 	}
 	else
 	{
+     printf ("\nFile %s not found! \n", filename;
 	   printf ("\nTrying to play default sound.wav ... \n");
 	   int fp = open ("sound/sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
 	   return fp;
@@ -1441,7 +1443,7 @@ unsigned int modulationam (int argc, char **argv)
 	  }
   	led ();
     }
-    printf ("Reading file: %s \n", filename);
+    //printf ("Reading file: %s \n", filename);
     printf ("Freq: %f \n", freq);
   	printf ("Sample Rate: %u \n", samplerate);
   	printf ("Channels: %d \n", channels);
@@ -1449,9 +1451,9 @@ unsigned int modulationam (int argc, char **argv)
 
     // Close input and output files
     //fclose (FileFreqTiming);
-    fclose (fp);
+    fclose (sdf);
     printf ("\nFile saved! \n");
-    return FileFreqTiming, fp;
+    return 0;
 }
 
 return freqmode;
