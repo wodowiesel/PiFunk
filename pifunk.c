@@ -228,7 +228,7 @@ volatile unsigned *gpio;
 volatile unsigned *allof7e;
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
-#define PIN17 RPI_GPIO_P1_11 // which is the GPIO pin 17 for led
+#define PIN17                         RPI_GPIO_P1_11 // which is the GPIO pin 17 for led
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
@@ -237,19 +237,21 @@ volatile unsigned *allof7e;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  (RPI == 1)                       // Original Raspberry Pi 1
+#ifdef  RPI == 1                        // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#elif   (RPI >= 2)                     // Raspberry Pi 2 & 3
+#elif   RPI >= 2                       // Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag?
-//#elif RASPBERRY
-//#define PERIPH_VIRT_BASE               (0x20000000)
+#elif   RASPBERRY
+#define PERIPH_VIRT_BASE               (0x20000000)
+#else
+#define PERIPH_VIRT_BASE               (0x20000000)
 #endif
 
 //---
@@ -1652,7 +1654,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
      //assistent
    case 'a':
-   if (arg>c=1)
+   if (argc>=1)
    {
        printf ("\nAssistent activated! \n");
        GetUserInput (); //  to menu -> must be refactored later
