@@ -723,7 +723,7 @@ char filenamepath ()  // expected int?
 	   int fp = open ("sound/sound.wav", "r"); // sounds/sound.wav directory should be testet
 	   return fp;
 	}
-	return fp;
+	return 0;
 }
 
 double freqselect () // gets freq by typing in
@@ -1356,7 +1356,7 @@ unsigned int modulationam (int argc, char **argv)
 	{
 		printf ("filefreq timing opener test");
 		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
-	  return outfilename;
+	  return fp;
 
 	}
 	else
@@ -1495,7 +1495,7 @@ char callname ()
         return callsign, &callsign, *callsign;
 				break;
 
-		case 2: *callsign = "callsign"; //default callsign
+		case 2: callsign = "callsign"; //default callsign
 				printf ("\nUsing default callsign: %s \n", *callsign);
         printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 				break;
@@ -1579,8 +1579,9 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
    //filename
    case 'n':
-      return filename;
-      printf ("\nFilename is %s \n", filename);
+
+      printf ("\nFilename is %s \n", fp);
+      return fp;
       break;
 
    case 'f':
