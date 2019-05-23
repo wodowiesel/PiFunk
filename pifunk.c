@@ -242,7 +242,6 @@ volatile unsigned *allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-
 #elif   RASPI >= 2                     // Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
@@ -252,12 +251,13 @@ volatile unsigned *allof7e;
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
+#endif
 
 //---
 #define LENGTH                         (0x01000000) // dec: 1
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 //#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
-//#define PWMCLK_DIV                   (0x5A002800) // dec: 1509959680
+//#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
 #define ADR                            (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
@@ -305,7 +305,6 @@ volatile unsigned *allof7e;
 #define PHASE                           (2*PI) // 6.28318530718
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
 #define PERIOD                          (1/PHASE) // 0.15915494309
-
 
 //----------from pifmadv -> helps to understand the things the normal fm-script didnt specified
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
@@ -716,7 +715,7 @@ char filenamepath ()  // expected int?
   if (filename != NULL)
 	{
      sfp = fopen (filename, "r");
-	   return sfp;
+	   //return sfp;
 	}
 	else
 	{
@@ -933,7 +932,9 @@ unsigned int channelselect ()
          case 4:  printf ("\nExiting... \n");
 					 exit (-1);
 
-         default: printf ("\nDefault: Returning to Menu... \n"); GetUserInput (); break;
+         default: printf ("\nDefault: Returning to Assistent... \n");
+          GetUserInput ();
+          break;
 		    }
 return 0;
 }
@@ -1027,7 +1028,7 @@ void infos () //warnings and infos
 
 void modulate (int l)
 {
-		ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + l;  //
+	//	ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + l;  //
 }
 
 void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm header!
@@ -1057,14 +1058,14 @@ void carrierhigh () // enables it
 {
 /* Added functions to enable and disable carrier */
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) // 0x5A dec: 90
-struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};// set it to ! = LOW
-ACCESS (CM_GP0CTL) == *((int*) &setupword); //setting cm
+//struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};// set it to ! = LOW
+//ACCESS (CM_GP0CTL) == *((int*) &setupword); //setting cm
 }
 
 void carrierlow () // disables it
 {
-struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
-ACCESS (CM_GP0CTL) == *((int*) &setupword);
+//struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
+//ACCESS (CM_GP0CTL) == *((int*) &setupword);
 }
 
 void setupfm ()
@@ -1246,25 +1247,25 @@ void setupDMA (double freq)
    //((struct CB*) (instrs [1023].v))->NEXTCONBK = (int) instrs [0].p;
 
    // set up a clock for the base
-   ACCESS (CLKBASE + 40*4) == (PWMCLK_CNTL); // (dec: 1509949478)
+   //ACCESS (CLKBASE + 40*4) == (PWMCLK_CNTL); // (dec: 1509949478)
    //usleep (1000);
 
-   ACCESS (CLKBASE + 41*4) == (PWMCLK_DIV); //
+   //ACCESS (CLKBASE + 41*4) == (PWMCLK_DIV); //
    //usleep (1000);
 
    // set up pwm
-   ACCESS (PWMBASE + 0x0) == 0;
+   //ACCESS (PWMBASE + 0x0) == 0;
    //usleep (1000);
 
-   ACCESS (PWMBASE + 0x4) == -1; // status: clear errors (0x4 in dec: 4)
+   //ACCESS (PWMBASE + 0x4) == -1; // status: clear errors (0x4 in dec: 4)
    //usleep (1000);
 
    // Use fifo, repeat, serializer, enable ch
-   ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8);
+   //ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8);
    //usleep (1000);
 
    // DMAC then DMA enable in 0x8 dec:8 / pwmbase+8 = 7E20C008 (dec:2116075528) /
-   ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
+   //ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
   //activate dma
    struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS (DMABASE));
