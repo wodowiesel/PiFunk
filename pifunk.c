@@ -537,7 +537,7 @@ char *spi0_map;
 //-----------------------------------------
 char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
-const char *short_opt = "n:f:s:m:c::p:g:a::h::";
+const char *shortopts = "n:f:s:m:c::p:g:a::h::";
 int opt;
 char *filename;
 double freq;
@@ -1323,7 +1323,7 @@ unsigned int modulationfm (int argc, char **argv)
     setupDMA (argc>2 ? atof (argv [2]):100.00000); // default freq, maybe do input here?
 
 	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    play_wav (argv [1], argc>3 ? atof (argv [3]):22050, *short_opt); // <-- in 22.05 kHz, should be same as AM!!
+    play_wav (argv [1], argc>3 ? atof (argv [3]):22050, shortopts); // <-- in 22.05 kHz, should be same as AM!!
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
@@ -1528,7 +1528,7 @@ int GetUserInput () //my menu-assistent
 				    	csvreader ();
 					    break;
 			case '4': printf ("\nShell - Commandline: \n");
-			        int main (int argc, char **argv [], const char *short_opt); // go back to cmd if you want
+			        int main (int argc, char **argv, const char *shortopts); // go back to cmd if you want
 				    	break;
 
 			case '5': printf ("\nExiting... \n");
@@ -1541,7 +1541,7 @@ int GetUserInput () //my menu-assistent
     return 0;
 }
 
-int main (int argc, char **argv [], const char *short_opt) // arguments for global use must! be in main
+int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("%s \n", argv [0]);
@@ -1570,7 +1570,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
    }
    else
    {
-   while (options = getopt (argc, argv, short_opt, NULL) != -1)
+   while (options = getopt (argc, argv, shortopts) != -1)
    {
 
    switch (options)
