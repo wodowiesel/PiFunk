@@ -585,7 +585,7 @@ float FactAmplitude = 2.0; //maybe here amp-modulator type input?
 // logarithmic modulation
 
 // fm vars
-FILE sfp, dfp;
+FILE *sfp, *dfp;
 FILE infiles;
 FILE outfiles;
 FILE FileFreqTiming;
@@ -920,7 +920,7 @@ unsigned int channelselect ()
 		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
 				  channelmodecb (); // gets freq for chan
 					filenamepath (); //gets file
-					audiovol ();
+					//audiovol ();
 					modulationselect (); //selects modulation
 					break;
 
@@ -1186,7 +1186,7 @@ void unsetupDMA ()
 void setupDMA (double freq)
 {
 	printf ("\nSetup of DMA starting... \n");
-	atexit (unsetupDMA ());
+	unsetupDMA ();//atexit (unsetupDMA);
 	signal (SIGINT, handSig);
 	signal (SIGTERM, handSig);
 	signal (SIGHUP, handSig);
@@ -1477,10 +1477,10 @@ char csvreader()
 
     fclose (sfp);
     fclose (dfp);
-    printf ("\n%s\n", c);
+    printf ("\n%s\n", j);
     printf ("\nCSV-Import of ctss-List finished! \n");
 
-    return j, dfp;
+    return j;
 }
 
 char callname ()
@@ -1668,8 +1668,8 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    } // end of switch
 
-  } // end of while
-
+   } // end of while
+  }
    //-- for debugging or information :)
 
    printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
