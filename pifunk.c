@@ -176,7 +176,7 @@ using namespace std;
 #include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
-//preproccessor definitions
+/* //preproccessor definitions
 #ifdef __linux__ // ||__unix__
   //printf ("\nProgram runs under UNIX/LINUX \n");
 	//#pragma GCC dependency "pifunk.h"
@@ -190,12 +190,11 @@ using namespace std;
 #ifdef __GNUC__ && __STDC_VERSION__ >= 199901L
    //printf ("\nUsing Gnu C with ANSI C99!!\n");
 #elif __GNUC__
-   #warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n"
+   //#warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n"
 #else
    //#error
-   printf ("Program was not compiled with Gnu and C99 standard! \n");
-   exit (0)
-#endif
+   printf ("Program was not compiled with GNU and C99 standard! \n");
+#endif */
 //------------------------------------------------------------------------------
 // Definitions & Makros
 #define VERSION "0.1.6.9"
@@ -257,7 +256,7 @@ volatile unsigned *allof7e;
 //---
 #define LENGTH                         (0x01000000) // dec: 1
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
+//#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
 //#define PWMCLK_DIV                   (0x5A002800) // dec: 1509959680
 #define ADR                            (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
@@ -613,7 +612,7 @@ float VOLUME_REFERENCE = 1.f;
 
 // instructor for access
 unsigned long frameinfo;
-int FileFreqTiming;
+FILE FileFreqTiming;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
 int bufPtr = 0;
 int instrCnt = 0;
@@ -700,7 +699,7 @@ static char timer ()
 {
    char *newtime;
    time (&rawtime);
-   char info = localtime (&rawtime);
+   int info = localtime (&rawtime);
    *newtime = asctime (info);
    printf ("\nCurrent local time and date: %s \n", *newtime);
    return *newtime;
@@ -711,7 +710,7 @@ char filenamepath ()  // expected int?
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", *filename);
 
-  if (*filename == NULL)
+  if (filename == NULL)
 	{
 	    printf ("\nFile %s not found! \n", filename);
 	    return 1;
@@ -719,10 +718,10 @@ char filenamepath ()  // expected int?
 	else
 	{
 	   printf ("\nTrying to play default sound.wav ... \n");
-	   *filename = open ("sound/sound.wav", "r"); // sounds/sound.wav directory should be testet
-	   return *filename;
+	   int fp = open ("sound/sound.wav", "r"); // sounds/sound.wav directory should be testet
+	   return fp;
 	}
-	return *filename;
+	return fp;
 }
 
 double freqselect () // gets freq by typing in
@@ -912,7 +911,7 @@ unsigned int channelselect ()
 					channelmodepmr (); // gets freq from pmr list
 					filenamepath ();
 					printf ("\nChecking volume... \n");
-					audiovol ();
+					//audiovol ();
 					unsigned int modulationfm ();
 					break;
 
@@ -955,9 +954,9 @@ void handSig () // exit func
 
 void clearscreen ()
 {
-  print("\033[H\033[J");
+  printf("\033[H\033[J");
   //fflush (stdin);
-  clsscr ();
+  //clsscr ();
   //system("clear")
 }
 
@@ -967,11 +966,11 @@ void clearscreen ()
 int ledactive ()
 {
 		//check if transmitting
-		while (!play_wav ())
-		{
-		cm2835_gpio_write (PIN17, LOW);
+		//while (!play_wav ())
+		//{
+		//cm2835_gpio_write (PIN17, LOW);
 		printf ("\nLED OFF - No Transmission!\n");
-		}
+		//}
     return 0;
 }
 
@@ -989,7 +988,7 @@ int led ()
     // Set the pin to be an outputannels
     bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
-    // LED is active during transmission
+    /*// LED is active during transmission
 		while (play_wav ()) // (ledactive != 0)
 		{
 	// Turn it on
@@ -1003,7 +1002,7 @@ int led ()
   {
 		cm2835_gpio_write (PIN17, LOW);
 		printf ("\nLED OFF - No Transmission \n");
-	}
+	} */
    bcm2835_close ();
 	 printf ("\nBCM 2835 closing \n");
    return 0;
@@ -1174,7 +1173,7 @@ void play_wav (char *filename, double freq, unsigned int samplerate)
    printf ("\nClosing file \n");
 }
 
-void unSetupDMA ()
+void unsetupDMA ()
 {
 	struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS (DMABASE));
 	DMA0->CS == 1<<31; // reset dma controller
@@ -1355,7 +1354,8 @@ unsigned int modulationam (int argc, char **argv)
 	{
 		printf ("filefreq timing opener test");
 		FileFreqTiming = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
-		//return FileFreqTiming, outfilename;
+	  return FileFreqTiming, outfilename;
+
 	}
 	else
 	{
@@ -1363,7 +1363,7 @@ unsigned int modulationam (int argc, char **argv)
 		sprintf (outfilename, "%s", "out.ft");
 	}
 //-------
-    if (!(filename = open (filename, SFM_READ, &sfinfo)))
+    if (!(fp = open (filename, SFM_READ, &sfinfo)))
     {   // Open failed so print an error message.
         printf ("\nNot able to open input file %s \n", filename);
         // Print the error message from libsndfile.
@@ -1393,7 +1393,7 @@ unsigned int modulationam (int argc, char **argv)
 	// While there are frames in the input file, read them,
 	//process them and write them to the output file
 //----------------------
-  while (readcount = read (filename, data, BUFFER_LEN))
+  while (readcount = read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
 	  for (k = 0 ; k < nb_samples ; k++)
@@ -1447,9 +1447,9 @@ unsigned int modulationam (int argc, char **argv)
 
     // Close input and output files
     fclose (FileFreqTiming);
-    fclose (filename);
+    fclose (fp);
     printf ("\nFile saved! \n");
-    return FileFreqTiming, filename;
+    return FileFreqTiming, fp;
 }
 
 return freqmode;
@@ -1463,7 +1463,7 @@ return freqmode;
 char csvreader()
 {
     printf ("\nChecking for CSV-file... \n");
-    char *sfp, *dfp;
+    FILE *sfp, *dfp;
     char c;
 
     *sfp = fopen ("csvpmr.csv", "r");// readonly!
@@ -1483,7 +1483,7 @@ char csvreader()
     return c, *sfp, *dfp;
 }
 
-char callname (char *callsign)
+char callname ()
 {
     //if (*callsign == NULL){
 		switch (callnameselect)
@@ -1562,7 +1562,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    //---
    headertest ();
    //infos (); //information, disclaimer
-   timer (); //local time
+   //timer (); //local time
 
    if (argc=0||NULL)
    {
@@ -1575,23 +1575,6 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
    switch (options)
    {
-   //assistent
-   case 'a':
-   if (argc=1)
-   {
-      printf ("\nAssistent activated! \n");
-      GetUserInput (); //  to menu -> must be refactored later
-   }
-   break;
-
-   // help
-   case 'h':
-   if (argc=1)
-   {
-     //infos ();
-     printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
-   }
-   break;
 
    //filename
    case 'n':
@@ -1630,7 +1613,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
       {
         printf ("\nNo Modulation specified! Using standard modulation fm \n");
         mod = "fm";
-        return mod;
+        //return mod;
       }
       break;
 
@@ -1639,30 +1622,47 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    if (callsign != NULL)
    {
      printf ("\nCallsign is %s \n", *callsign);
-     return callsign;
+     //return callsign;
     }
     else
     {
      callsign = "callsign";
-     return callsign;
+     //return callsign;
     }
     break;
 
    //power managment
    case 'p':
-   if (power != NULL)
+   if (power != 0)
    {
 
      printf ("\nPowerlevel is %d \n", power);
-     return power;
+     //return power;
     }
     else
-    {
-      printf ("\nNo Powerlevel given, using maximum output %d \n", power);
-      return power = 7;
+      {
+        printf ("\nNo Powerlevel given, using maximum output %d \n", power);
+        return power = 7;
+      }
+      break;
+
+    //assistent
+   case 'a':
+   if (argc=1)
+   {
+       printf ("\nAssistent activated! \n");
+       GetUserInput (); //  to menu -> must be refactored later
     }
-    break;
-      //---------
+   break;
+    // help
+   case 'h':
+   if (argc=1)
+   {
+      //infos ();
+      printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+    }
+   break;
+
    default: fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
    }
   }
@@ -1680,7 +1680,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    printf ("Checking Callsign: %s \n", *callsign);
 
   // gathering and parsing all given arguments to parse it to player
-  tx ();
+  //tx ();
   }
 
 printf ("End of main \n");
