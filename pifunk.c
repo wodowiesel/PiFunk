@@ -237,12 +237,12 @@ volatile unsigned *allof7e;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  RPI == 1                        // Original Raspberry Pi 1
+#ifdef  RPI // == 1                        // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#elif   RPI >= 2                       // Raspberry Pi 2 & 3
+#elif   RASPI //>= 2                       // Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
