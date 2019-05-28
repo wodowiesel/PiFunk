@@ -1568,7 +1568,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    char *callsign;// = argv [5];
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
-   int options;
+   int options = 0;
    //---
 
    //infos (); //information, disclaimer
@@ -1580,7 +1580,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
   }
   else
   {
-  while (options = getopt (argc, argv, shortopts) != -1)
+  while ((options = getopt (argc, argv, shortopts)) != -1)
   {
 
    switch (options)
@@ -1590,18 +1590,18 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    case 'n':
 
       printf ("\nFilename is %s \n", fp);
-      return fp;
+      //return fp;
       break;
 
    case 'f':
 
       printf ("\nFrequency is %f \n", freq);
-      return freq;
+      //return freq;
       break;
 
    case 's':
       printf ("\nSamplerate is %f \n", samplerate);
-      return samplerate;
+      //return samplerate;
       break;
 
       // modulation
@@ -1653,7 +1653,8 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
     else
     {
         printf ("\nNo Powerlevel given, using maximum output %d \n", power);
-        return power = 7;
+				power = 7;
+        //return power;
     }
     break;
 
@@ -1675,7 +1676,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
     //}
    break;
 
-   default: printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+   default: printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n"); return 1;
    } // end of switch
 
   } // end of while
