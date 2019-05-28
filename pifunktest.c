@@ -1570,7 +1570,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    char *callsign = "callsign";// = argv [5];
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
-   int options;
+   int options = 0;
    //---
 
    //infos (); //information, disclaimer
@@ -1582,7 +1582,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
   }
   else
   {
-  	while (options = getopt (argc, argv, shortopts) != -1)
+  	while ((options = getopt (argc, argv, shortopts)) != -1)
   	{
 
    		switch (options)
