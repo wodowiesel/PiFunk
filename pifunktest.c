@@ -1575,14 +1575,15 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
    //infos (); //information, disclaimer
    //timer (); //local time
-
+	 /*
   if (argc=0||NULL)
   {
      fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
   }
   else
   {
-  	while ((options = getopt (argc, argv, shortopts)) != -1)
+	*/
+   while ((options = getopt (argc, argv, "n:f:s:m:c::p:a::h::")) != -1) // shortopts
   	{
 
    		switch (options)
@@ -1606,7 +1607,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
       				// modulation
    			case 'm':
-     		if (mod != NULL)
+     			if (mod != NULL)
      			{
                 if (!strcmp (mod, "fm"))
                 {
@@ -1621,8 +1622,8 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
       		}
       		else
       		{
-        		printf ("\nNo Modulation specified! Using standard modulation fm \n");
-        		mod = "fm";
+        			printf ("\nNo Modulation specified! Using standard modulation fm \n");
+        			mod = "fm";
         		//return mod;
       		}
       		break;
@@ -1643,38 +1644,40 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
    				//power managment
    			case 'p':
-   			if (power != 7)
-   			{
+   				if (power != 7)
+   				{
      			printf ("\nPowerlevel is %d \n", power);
      			//return power;
-    		}
-    		else
-    		{
+    			}
+    			else
+    			{
         	printf ("\nNo Powerlevel given, using maximum output %d \n", power);
 					power = 7;
         	//return power;
-    		}
-    		break;
+    			}
+    			break;
 
      				//assistent
    			case 'a':
-   			if (argc=1)
-   			{
+   				if (argc=1)
+   				{
      				printf ("\nAssistent activated! \n");
        			//GetUserInput (); //  to menu -> must be refactored later
-    		}
-   			break;
+    			}
+   				break;
 
     			// help
    			case 'h':
-   			//if (argc>=1)
-   			//{
-      	//infos ();
-    		printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
-    		//}
-   			break;
+   				//if (argc>=1)
+   				//{
+      		//infos ();
+    			printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+    			//}
+   				break;
 
-   			default: printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n"); return 1;
+   			default:
+					printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+					return 1;
    		} // end of switch
 
   	} // end of while
@@ -1693,7 +1696,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
     */
    // gathering and parsing all given arguments to parse it to player
    //tx ();
-  } //end of else
+  //} //end of else
 
 printf ("End of main \n");
 return 0;
