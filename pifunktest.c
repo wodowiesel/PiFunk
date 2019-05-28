@@ -1244,7 +1244,7 @@ void setupDMA (double freq)
 
        if (instrCnt!=0) ((struct CB*) (instrs [instrCnt-1].v))->NEXTCONBK = (int) instrs [instrCnt].p;
        instr0++;
-       */
+
        instrCnt++;
      }
 
@@ -1657,7 +1657,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
     		break;
 
      				//assistent
-   			case "a":
+   			case 'a':
    			if (argc=1)
    			{
      				printf ("\nAssistent activated! \n");
@@ -1666,7 +1666,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    			break;
 
     			// help
-   			case "h":
+   			case 'h':
    			//if (argc>=1)
    			//{
       	//infos ();

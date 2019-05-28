@@ -1580,7 +1580,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
   }
   else
   {
-  while ((options = getopt (argc, argv, shortopts)) != -1)
+  while ((options = getopt (argc, argv, "n:f:s:m:c::p:a::h::")) != -1) // shortopts
   {
 
    switch (options)
