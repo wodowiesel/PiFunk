@@ -1553,7 +1553,7 @@ int GetUserInput () //my menu-assistent
 //--------- MAIN
 int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
-   const char *shortopts = "n:f:s:m:c::p:a::h::"; // g:
+   const char *shortopts = "n:f:s:m:cs:p:a::h:"; // g:
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
@@ -1583,7 +1583,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
   else
   {
 	*/
-   while ((options = getopt (argc, argv, "n:f:s:m:c::p:a::h::")) != -1) // shortopts
+   while ((options = getopt (argc, argv, "n:f:s:m:c:p:a:h:")) != -1) // shortopts must be constants
   	{
 
    		switch (options)
