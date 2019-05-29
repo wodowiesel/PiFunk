@@ -1553,7 +1553,7 @@ int GetUserInput () //my menu-assistent
 //--------- MAIN
 int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
-   const char *shortopts = "n:f:s:m:cs:p:a::h:"; // g:
+   const char *shortopts = "n:f:s:m:cs:p:ah"; // g:
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
@@ -1564,7 +1564,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-   unsigned int samplerate ;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+   unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
@@ -1583,7 +1583,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
   else
   {
 	*/
-   while ((options = getopt (argc, argv, "n:f:s:m:c:p:a:h:")) != -1) // shortopts must be constants
+   while ((options = getopt (argc, argv, "n:f:s:m:cp:ah")) != -1) // shortopts must be constants
   	{
 
    		switch (options)
@@ -1659,7 +1659,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
      				//assistent
    			case 'a':
-   				if (argc=1)
+   				if (argc>=1)
    				{
      				printf ("\nAssistent activated! \n");
        			//GetUserInput (); //  to menu -> must be refactored later
@@ -1668,15 +1668,15 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
     			// help
    			case 'h':
-   				//if (argc>=1)
-   				//{
+   				if (argc>=1)
+   				{
       		//infos ();
     			printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
-    			//}
+    			}
    				break;
 
    			default:
-					printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+					printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
 
