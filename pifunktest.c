@@ -1553,14 +1553,14 @@ int GetUserInput () //my menu-assistent
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main
 {
-   const char *short_opt = "n:f:s:m:cs:p:ah"; // g:
+   //const char *short_opt = "n:f:s:m:cs:p:ah"; // g:
 	 int options = 0;
-   argv [0] = "pifunk"; // for custom  programname, default is the filename itself
+   //argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
-
+/*
    char *filename; //= argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
@@ -1576,7 +1576,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    //infos (); //information, disclaimer
    //timer (); //local time
-	 /*
+
   if (argc=0||NULL)
   {
      fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
@@ -1584,7 +1584,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
   else
   {
 	*/
-   while ((options = getopt (argc, argv, short_opt)) != -1) // shortopts must be constants
+   while ((options = getopt (argc, argv, "ah")) != -1) // shortopts must be constants
   	{
 
    		switch (options)
