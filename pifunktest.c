@@ -1551,9 +1551,9 @@ int GetUserInput () //my menu-assistent
 }
 */
 //--------- MAIN
-int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
+int main (int argc, char **argv) // arguments for global use must! be in main
 {
-   *short_opt = "n:f:s:m:cs:p:ah"; // g:
+   const char *short_opt = "n:f:s:m:cs:p:ah"; // g:
 	 int options = 0;
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
