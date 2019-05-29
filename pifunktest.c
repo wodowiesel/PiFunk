@@ -1555,12 +1555,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 {
    //const char *short_opt = "n:f:s:m:cs:p:ah"; // g:
 	 int options = 0;
+	 /*
    //argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
-/*
+
    char *filename; //= argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
