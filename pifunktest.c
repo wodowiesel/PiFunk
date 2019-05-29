@@ -1554,6 +1554,7 @@ int GetUserInput () //my menu-assistent
 int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
    const char *shortopts = "n:f:s:m:cs:p:ah"; // g:
+	 int options = 0;
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
@@ -1570,7 +1571,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    char *callsign = "callsign";// = argv [5];
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
-   int options = 0;
+
    //---
 
    //infos (); //information, disclaimer
@@ -1583,12 +1584,12 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
   else
   {
 	*/
-   while ((options = getopt (argc, argv, "n:f:s:m:cp:ah")) != -1) // shortopts must be constants
+   while ((options = getopt (argc, argv, short_opts)) != -1) // shortopts must be constants
   	{
 
    		switch (options)
    		{
-
+/*
    				//filename
    			case 'n':
       			printf ("\nFilename is %s \n", fp);
@@ -1644,19 +1645,19 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 
    				//power managment
    			case 'p':
-   				if (power != 7)
+   				if (power == 0)
    				{
      			printf ("\nPowerlevel is %d \n", power);
      			//return power;
     			}
     			else
     			{
-        	printf ("\nNo Powerlevel given, using maximum output %d \n", power);
-					power = 7;
+						power = 7;
+        		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
         	//return power;
     			}
     			break;
-
+*/
      				//assistent
    			case 'a':
    				if (argc>=1)
@@ -1664,6 +1665,7 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
      				printf ("\nAssistent activated! \n");
        			//GetUserInput (); //  to menu -> must be refactored later
     			}
+					else printf ("Error");
    				break;
 
     			// help
@@ -1671,8 +1673,9 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
    				if (argc>=1)
    				{
       		//infos ();
-    			printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+    				printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
     			}
+					else printf ("Error");
    				break;
 
    			default:
