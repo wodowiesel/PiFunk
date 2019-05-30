@@ -1616,7 +1616,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 {
                   printf ("\nPushing args to fm Modulator... \n");
                 	//unsigned int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
-									break
+									break;
                 }
                 else if (!strcmp (mod, "am"))
                 {
@@ -1624,9 +1624,9 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 //unsigned int modulationam (int argc, char **argv);
 								break;
                 }
-								break
+								break;
       		 }
-      		break;
+      		 break;
 
      				//callsign
    			case 'c':
