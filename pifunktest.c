@@ -1622,6 +1622,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 	//unsigned int modulationam (int argc, char **argv);
 									break;
                 }
+								else printf ("\nError in -h \n"); return 1;
 								break;
 
 
@@ -1644,8 +1645,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				if (argc=1)
    				{
      				printf ("\nAssistent activated! \n");
-						break;
        			//GetUserInput (); //  to menu -> must be refactored later
+						break;
     			}
 					else printf ("\nError in -a \n"); return 1;
    				break;
