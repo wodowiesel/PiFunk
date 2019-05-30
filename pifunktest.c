@@ -1558,10 +1558,10 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 argv [0] = "pifunk";
    char *filename = "sound.wav"; //= argv [1];
    double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-   unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+   int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
-	 unsigned int power = 7;
+	 int power = 7;
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
 	 // atoll () is meant for integers & it stops parsing when it finds the first non-digit
@@ -1602,7 +1602,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
       			break;
 
    			case 's':
-						samplerate = stoul(*optarg);
+						samplerate = atoi(optarg);
       			printf ("\nSamplerate is %f \n", samplerate);
       			break;
 
@@ -1647,9 +1647,9 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//power managment
    			case 'p':
-   				if (stoul(optarg) != 7)
+   				if (atoi(optarg) != 7)
    				{
-						power = stoul(optarg);
+						power = atoi(optarg);
      				printf ("\nPowerlevel is %d \n", power);
 						break;
     			}
