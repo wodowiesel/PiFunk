@@ -1561,7 +1561,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
-	 unsigned int power = 6;
+	 unsigned int power = 7;
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
 	 // atoll () is meant for integers & it stops parsing when it finds the first non-digit
@@ -1703,7 +1703,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    		} // end of switch
 			//return filename, freq, samplerate, mod, callsign, power;
 			printf ("\nChecking File: %s \n", filename);
-	    printf ("\nChecking Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
+	    printf ("\nChecking Freq: %f [MHz] \n", freq);
+			printf ("\nChecking Samplerate: %u [Hz] \n", samplerate);
 	    printf ("\nChecking Modulation: %s \n", mod);
 	    printf ("\nChecking Callsign: %s \n", callsign);
 	 	  printf ("\nChecking Output-Power: %d \n", power);
@@ -1720,8 +1721,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    // gathering and parsing all given arguments to parse it to player
    //tx ();
-  //} //end of else
+   //} //end of else
 
-	 printf ("\nEnd of Program! Closing! \n");
+printf ("\nEnd of Program! Closing! \n");
 return 0;
 }
