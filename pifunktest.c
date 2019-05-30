@@ -1702,7 +1702,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    // gathering and parsing all given arguments to parse it to player
    //tx ();
-  } //end of else
+  //} //end of else
 
 printf ("\nEnd of Programm... Closing! \n");
 return 0;
