@@ -1553,23 +1553,23 @@ int GetUserInput () //my menu-assistent
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main
 {
-   //const char *short_opt = "n:f:s:m:cs:p:ah"; // g:
+   const char *short_opt = "n:f:s:m:c:p:ah"; // g:
 	 int options = 0;
-	 /*
-   //argv [0] = "pifunk"; // for custom  programname, default is the filename itself
+
+   argv [0] = "pifunk"; // for custom  programname, default is the filename itself
    printf ("arguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
 
-   char *filename; //= argv [1];
+   FILE *filename = STDIN; //= argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
    unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
+	 int power = 7;
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
 
@@ -1580,17 +1580,17 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
   if (argc=0||NULL)
   {
-     fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+     fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
   }
   else
   {
-	*/
-   while ((options = getopt (argc, argv, "ah")) != -1) // shortopts must be constants
+
+   while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
   	{
 
    		switch (options)
    		{
-/*
+
    				//filename
    			case 'n':
       			printf ("\nFilename is %s \n", fp);
@@ -1658,50 +1658,50 @@ int main (int argc, char **argv) // arguments for global use must! be in main
         	//return power;
     			}
     			break;
-*/
+
      				//assistent
    			case 'a':
-   				if (argc>=1)
+   				if (argc=1)
    				{
      				printf ("\nAssistent activated! \n");
        			//GetUserInput (); //  to menu -> must be refactored later
     			}
-					else printf ("Error");
+					else printf ("\nError in -a \n");
    				break;
 
     			// help
    			case 'h':
-   				if (argc>=1)
+   				if (argc=1)
    				{
       		//infos ();
-    				printf ("\nHELP: Use Parameters to run: [-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+    				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
     			}
-					else printf ("Error");
+					else printf ("\nError in -h \n");
    				break;
 
    			default:
-					printf ("\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <yourcallsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
 
   	} // end of while
 
    //-- for debugging or information :)
-    /*
+
    printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
    printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
    printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //--
-   printf ("Checking File: %s \n", fp);
+   printf ("Checking File: %s \n", filename);
    printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
    printf ("Checking Modulation: %s \n", mod);
    printf ("Checking Callsign: %s \n", *callsign);
-    */
+
    // gathering and parsing all given arguments to parse it to player
    //tx ();
-  //} //end of else
+  } //end of else
 
-printf ("End of main \n");
+printf ("End of Programm... Closing! \n");
 return 0;
 }
