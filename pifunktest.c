@@ -1602,7 +1602,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
       			break;
 
    			case 's':
-						samplerate = atoi(optarg);
+						samplerate = stoul(optarg);
       			printf ("\nSamplerate is %f \n", samplerate);
       			break;
 
@@ -1647,15 +1647,16 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//power managment
    			case 'p':
-   				if (atoi(optarg) != 7)
+   				if (stoul(optarg) != 7)
    				{
-						power = atoi(optarg);
+						power = stoul(optarg);
      				printf ("\nPowerlevel is %d \n", power);
 						break;
     			}
     			else
     			{
 						power = 7;
+						optarg = 7;
         		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
 						break;
 
