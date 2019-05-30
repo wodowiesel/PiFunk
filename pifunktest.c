@@ -1647,7 +1647,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//power managment
    			case 'p':
-   				if (optarg !7)
+   				if (atoi(optarg) != 7)
    				{
 						power = atoi(optarg);
      				printf ("\nPowerlevel is %d \n", power);
