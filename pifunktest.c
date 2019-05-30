@@ -1662,6 +1662,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				if (argc=1)
    				{
      				printf ("\nAssistent activated! \n");
+						break;
        			//GetUserInput (); //  to menu -> must be refactored later
     			}
 					else printf ("\nError in -a \n"); return 1;
@@ -1673,6 +1674,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				{
       			//infos ();
     				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
+						break;
     			}
 					else printf ("\nError in -h \n"); return (1);
    				break;
