@@ -1629,19 +1629,9 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
      				//callsign
    			case 'c':
-   				if (callsign != NULL)
-   				{
 						callsign = optarg;
      				printf ("\nCallsign is %s \n", *callsign);
 						break;
-    			}
-    			else
-    			{
-						callsign = "callsign";
-						printf ("\nUsing standard Callsign is %s \n", *callsign);
-						break;
-    			}
-    			break;
 
    				//power managment
    			case 'p':
@@ -1670,7 +1660,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 						break;
     			}
-					else printf ("\nError in -h \n"); return (1);
+					else printf ("\nError in -h \n"); return 1;
    				break;
 
    			default:
