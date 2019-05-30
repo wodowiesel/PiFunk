@@ -1684,13 +1684,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //-- for debugging or information :)
 
    //printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-	 printf ("\nArguments (argc): %d / Programm (0): %s \n", argc-1, argv [0]);
+	 printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
    //printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
    //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //--
    printf ("\nChecking File: %s \n", filename);
-   printf ("\nFreq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
+   printf ("\nChecking Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
    printf ("\nChecking Modulation: %s \n", mod);
    printf ("\nChecking Callsign: %s \n", callsign);
 	 printf ("\nChecking Output-Power: %d \n", power);
