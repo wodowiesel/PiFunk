@@ -1555,16 +1555,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 {
    const char *short_opt = "n:f:s:m:c:p:ah"; // g:
 	 int options = 0;
-
-   argv [0] = "pifunk"; // for custom  programname, default is the filename itself
-   printf ("\nArguments: %d / name: %s \n", argc, argv [0]);
-   printf ("\nProgram name is %s \n", __FILE__);
-   printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
-   //headertest ();
-
+	 argv [0] = "pifunk";
    char *filename = "sound.wav"; //= argv [1];
-   // atoll () is meant for integers & it stops parsing when it finds the first non-digit
-   // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
    unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    char *mod = "fm";// = argv [4];
@@ -1572,19 +1564,22 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 unsigned int power = 7;
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
-
+	 // atoll () is meant for integers & it stops parsing when it finds the first non-digit
+	 // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    //---
-
+	 // for custom  programname, default is the filename itself
+   printf ("\nArguments: %d / name: %s \n", argc, argv [0]);
+   printf ("\nProgram name is %s \n", __FILE__);
+   printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
+   //headertest ();
    //infos (); //information, disclaimer
    //timer (); //local time
 /*
   if (argc=0||NULL)
   {
-     fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+     fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
   }
-  else
-  {
-*/
+
    while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
   	{
 
@@ -1646,14 +1641,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//power managment
    			case 'p':
-   				if (power == 0)
+   				if (power == 7)
    				{
      			printf ("\nPowerlevel is %d \n", power);
      			//return power;
     			}
     			else
     			{
-						power = 7;
+						power = 1;
         		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
         	//return power;
     			}
@@ -1674,7 +1669,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				if (argc=1)
    				{
       		//infos ();
-    				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] \n");
+    				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
     			}
 					else printf ("\nError in -h \n");
    				break;
@@ -1683,7 +1678,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
-			//return filename, freq, samplerate, mod, callsign, power;
+			return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
    //-- for debugging or information :)
@@ -1702,8 +1697,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    // gathering and parsing all given arguments to parse it to player
    //tx ();
-  //} //end of else
+   //} //end of else
 
-printf ("\nEnd of Programm... Closing! \n");
+	 printf ("\nEnd of Program! Closing! \n");
 return 0;
 }
