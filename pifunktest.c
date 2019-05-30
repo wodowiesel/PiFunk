@@ -1557,7 +1557,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 int options = 0;
 
    argv [0] = "pifunk"; // for custom  programname, default is the filename itself
-   printf ("arguments: %d / name: %s \n", argc, argv [0]);
+   printf ("\nArguments: %d / name: %s \n", argc, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
@@ -1688,7 +1688,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    //-- for debugging or information :)
 
-   printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+   //printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+	 printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
    //printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
    //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
@@ -1697,6 +1698,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    printf ("\nString-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
    printf ("\nChecking Modulation: %s \n", mod);
    printf ("\nChecking Callsign: %s \n", *callsign);
+	 printf ("\nChecking Output-Power: %d \n", power);
 
    // gathering and parsing all given arguments to parse it to player
    //tx ();
