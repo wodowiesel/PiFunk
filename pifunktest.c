@@ -1568,13 +1568,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    //---
 	 // for custom  programname, default is the filename itself
-   printf ("\nArguments: %d / name: %s \n", argc, argv [0]);
+   printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
    printf ("\nProgram name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
    //infos (); //information, disclaimer
    //timer (); //local time
-/*
+
   if (argc=0||NULL)
   {
      fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
@@ -1684,7 +1684,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //-- for debugging or information :)
 
    //printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-	 printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
+	 printf ("\nArguments (argc): %d / Programm (0): %s \n", argc-1, argv [0]);
    //printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
    //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
