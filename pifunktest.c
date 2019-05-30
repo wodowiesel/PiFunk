@@ -1602,7 +1602,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
       			break;
 
    			case 's':
-						samplerate = *optarg;
+						samplerate = atoi(optarg);
       			printf ("\nSamplerate is %f \n", samplerate);
       			break;
 
@@ -1647,9 +1647,9 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//power managment
    			case 'p':
-   				if (optarg != 7)
+   				if (optarg !7)
    				{
-						power = *optarg;
+						power = atoi(optarg);
      				printf ("\nPowerlevel is %d \n", power);
 						break;
     			}
