@@ -1582,7 +1582,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
  	else
   {
 		*/
-   while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
+   while ((options = getopt (argc, argv, "n:f:s:m:c:p:ah")) != -1) // shortopts must be constants
   	{
 
    		switch (options)
@@ -1634,34 +1634,22 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 						callsign = optarg;
      				printf ("\nCallsign is %s \n", *callsign);
 						break;
-
     			}
     			else
     			{
 						callsign = "callsign";
 						printf ("\nUsing standard Callsign is %s \n", *callsign);
 						break;
-
     			}
     			break;
 
    				//power managment
    			case 'p':
-   				if (atoi(optarg) != 7)
-   				{
+
 						power = atoi(optarg);
      				printf ("\nPowerlevel is %d \n", power);
 						break;
-    			}
-    			else
-    			{
-						power = 7;
-						//optarg = 7;
-        		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
-						break;
-
-    			}
-    			break;
+        		//printf ("\nNo Powerlevel given, using maximum output %d \n", power);
 
      				//assistent
    			case 'a':
