@@ -1596,20 +1596,19 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
 
    			case 'f':
-						freq = atof(optarg);
+						freq = atof (optarg);
       			printf ("\nFrequency is %f \n", freq);
       			//return freq;
       			break;
 
    			case 's':
-						samplerate = atoi(optarg);
+						samplerate = atoi (optarg);
       			printf ("\nSamplerate is %f \n", samplerate);
       			break;
 
       				// modulation
    			case 'm':
-     			if (mod != NULL)
-     		  {
+     						mod = optarg;
                 if (!strcmp (mod, "fm"))
                 {
 									mod = optarg;
@@ -1620,23 +1619,22 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 else if (!strcmp (mod, "am"))
                 {
                   printf ("\nPushing args to am Modulator... \n");
-                //unsigned int modulationam (int argc, char **argv);
-								break;
+                	//unsigned int modulationam (int argc, char **argv);
+									break;
                 }
 								break;
-      		 }
-      		 break;
+
 
      				//callsign
    			case 'c':
 						callsign = optarg;
-     				printf ("\nCallsign is %s \n", *callsign);
+     				printf ("\nCallsign is %s \n", callsign);
 						break;
 
    				//power managment
    			case 'p':
 
-						power = atoi(optarg);
+						power = atoi (optarg);
      				printf ("\nPowerlevel is %d \n", power);
 						break;
         		//printf ("\nNo Powerlevel given, using maximum output %d \n", power);
