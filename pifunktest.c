@@ -1635,7 +1635,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     			else
     			{
 						callsign = "callsign";
-						printf ("\nUsing standard Callsign is %s \n", *callsign)
+						printf ("\nUsing standard Callsign is %s \n", *callsign);
      				//return callsign;
     			}
     			break;
