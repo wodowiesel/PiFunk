@@ -1569,7 +1569,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
-	 int power = 7;
+	 unsigned int power = 7;
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
 
@@ -1593,7 +1593,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//filename
    			case 'n':
-      			printf ("\nFilename is %s \n", fp);
+      			printf ("\nFilename is %s \n", filename);
       			//return fp;
       			break;
 
@@ -1683,25 +1683,25 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
-
+			return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
    //-- for debugging or information :)
 
    printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-   printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
-   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
+   //printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
+   //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //--
-   printf ("Checking File: %s \n", filename);
-   printf ("String-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
-   printf ("Checking Modulation: %s \n", mod);
-   printf ("Checking Callsign: %s \n", *callsign);
+   printf ("\nChecking File: %s \n", filename);
+   printf ("\nString-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
+   printf ("\nChecking Modulation: %s \n", mod);
+   printf ("\nChecking Callsign: %s \n", *callsign);
 
    // gathering and parsing all given arguments to parse it to player
    //tx ();
   } //end of else
 
-printf ("End of Programm... Closing! \n");
+printf ("\nEnd of Programm... Closing! \n");
 return 0;
 }
