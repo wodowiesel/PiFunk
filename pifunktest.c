@@ -1590,7 +1590,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//filename
    			case 'n':
-					if (*optarg != NULL)
+					if (optarg != NULL)
 					{
 						filename = *optarg;
 						printf ("\nFilename is %s \n", filename);
@@ -1599,7 +1599,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					}
 					else
 					{
-						*optarg = "sound.wav";
+						optarg = "sound.wav";
 						printf ("\nUsing standard Filename is %s \n", filename);
 						break;
 					//return callsign;
