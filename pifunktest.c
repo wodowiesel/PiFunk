@@ -1596,15 +1596,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
 
    			case 'f':
-						freq = optarg;
+						freq = *optarg;
       			printf ("\nFrequency is %f \n", freq);
       			//return freq;
       			break;
 
    			case 's':
-						samplerate = optarg;
+						samplerate = *optarg;
       			printf ("\nSamplerate is %f \n", samplerate);
-      			
       			break;
 
       				// modulation
