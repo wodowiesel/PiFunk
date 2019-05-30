@@ -2,7 +2,7 @@
 
 ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
-## PiFunk Radio Transmitter in FM/AM for CB and PMR446 etc.
+## PiFunk Radio Transmitter - in FM/AM for HAM-bands
 
 **Early Experimental!**
 
@@ -40,7 +40,7 @@ You will need some libraries for this:
 
 `sudo apt-get install python-dev python3-dev` for py3
 
-[RPi-lib](https://pypi.org/project/RPi.GPIO/) (i use v0.6.5 from Nov 2018, also in repo)
+[RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
 
 `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
@@ -50,17 +50,17 @@ or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
 `wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
 
-then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install
+then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install it
 
 then go to directory:
 
-`cd PiFunk`
+`cd PiFunk` default path /home/pi/PiFunk
 
 compile with:
 
 GNU installer `sudo apt-get install gcc`
 
-`-g` for debuggerinformations (optional 0-3 optimalization level)
+`-g` for debugger informations (optional 0-3 optimalization level)
 
 `-std=c99` (sometimes gnu99) for C99-standard
 
@@ -84,32 +84,31 @@ command:
 
 generating libraries:
 
-`gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.so pifunk.a`
+`gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.so pifunk.a pifunk.lib`
 
 generating executable binary:
 
 `gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
-`make`
+`make` (not working yet properly)
 
-`make install`
 ___
 
 ### Usage:
 
 run with admin/root permissions:
 
-Arguments: `[-n filename (.wav)] [ -f freq (MHz)] [-s samplerate (kHz)] [-m modulation (fm/am)] [-c callsign (optional)] [-p power 0-7)]`
+Arguments: `[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
 
-extra single Arguments:
+extra single Arguments: -> no further argument needed
 
-[`- a assist`] as step-by-step assistent
+[`-a`] for assistent in step-by-step
 
-[`-h help`] for more infos and arguments
+[`-h`] for help with more infos and arguments
 
 Use '. dot' as decimal-comma separator!
 
-default: `sudo pifunk sound.wav 100.000 22050 fm callsign`
+default: `sudo ./pifunk -n sound.wav -f 446.00625 -s 22050 -m fm -c callsign -p 7`
 
 Radio works with *.wav-file with 16-bit @ 22050.000 [Hz] mono / 1-700+ MHz range.
 
@@ -149,7 +148,7 @@ ___
 
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Pi operates with square-waves (²/^2)!!- Use Low-/High-Band-Pass-Filters with ~10 uF caps
+- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with ~10 uF caps
 with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!*
@@ -171,4 +170,4 @@ ___
 
 [License Guideline](LICENSE.md) under Open-Source GPLv3.0
 
-Would appreciate beeing named in the source
+Would appreciate being named in the source
