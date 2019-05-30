@@ -1562,7 +1562,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
 
-   char *filename = stdin; //= argv [1];
+   char *filename = "sound.wav"; //= argv [1];
    // atoll () is meant for integers & it stops parsing when it finds the first non-digit
    // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
