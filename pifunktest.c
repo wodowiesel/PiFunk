@@ -1664,17 +1664,17 @@ int main (int argc, char **argv) // arguments for global use must! be in main
      				printf ("\nAssistent activated! \n");
        			//GetUserInput (); //  to menu -> must be refactored later
     			}
-					else printf ("\nError in -a \n");
+					else printf ("\nError in -a \n"); return 1;
    				break;
 
     			// help
    			case 'h':
-   				if (argc>=1)
+   				if (argc=1)
    				{
       			//infos ();
     				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
     			}
-					else printf ("\nError in -h \n");
+					else printf ("\nError in -h \n"); return (1);
    				break;
 
    			default:
@@ -1682,6 +1682,11 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					return 1;
    		} // end of switch
 			//return filename, freq, samplerate, mod, callsign, power;
+			printf ("\nChecking File: %s \n", filename);
+	    printf ("\nChecking Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
+	    printf ("\nChecking Modulation: %s \n", mod);
+	    printf ("\nChecking Callsign: %s \n", callsign);
+	 	  printf ("\nChecking Output-Power: %d \n", power);
   	} // end of while
 
    //-- for debugging or information :)
@@ -1691,11 +1696,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //--
-   printf ("\nChecking File: %s \n", filename);
-   printf ("\nChecking Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
-   printf ("\nChecking Modulation: %s \n", mod);
-   printf ("\nChecking Callsign: %s \n", callsign);
-	 printf ("\nChecking Output-Power: %d \n", power);
+
 
    // gathering and parsing all given arguments to parse it to player
    //tx ();
