@@ -1620,8 +1620,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
       		}
       		else
       		{
+							mod = "fm";
         			printf ("\nNo Modulation specified! Using standard modulation fm \n");
-        			mod = "fm";
         		//return mod;
       		}
       		break;
@@ -1645,7 +1645,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    			case 'p':
    				if (power != 7)
    				{
-						power = optarg;
+						power == optarg;
      				printf ("\nPowerlevel is %d \n", power);
     			}
     			else
