@@ -1590,9 +1590,21 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//filename
    			case 'n':
-      			printf ("\nFilename is %s \n", filename);
-      			//return fp;
-      			break;
+					if (*optarg != NULL)
+					{
+						filename = *optarg
+						printf ("\nFilename is %s \n", filename);
+						break;
+						//return callsign;
+					}
+					else
+					{
+					*optarg = "sound.wav";
+					printf ("\nUsing standard Filename is %s \n", filename);
+					break;
+					//return callsign;
+					}
+      		break;
 
    			case 'f':
       			printf ("\nFrequency is %f \n", freq);
@@ -1617,12 +1629,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 {
                   printf ("\nPushing args to am Modulator... \n");
                 //unsigned int modulationam (int argc, char **argv);
+								break;
                 }
       		}
       		else
       		{
 							mod = "fm";
         			printf ("\nNo Modulation specified! Using standard modulation fm \n");
+							break;
         		//return mod;
       		}
       		break;
@@ -1632,12 +1646,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				if (callsign != NULL)
    				{
      				printf ("\nCallsign is %s \n", *callsign);
+						break;
      				//return callsign;
     			}
     			else
     			{
 						callsign = "callsign";
 						printf ("\nUsing standard Callsign is %s \n", *callsign);
+						break;
      				//return callsign;
     			}
     			break;
@@ -1648,11 +1664,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				{
 						power = *optarg;
      				printf ("\nPowerlevel is %d \n", power);
+						break;
     			}
     			else
     			{
 						power = 7;
         		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
+						break;
         	//return power;
     			}
     			break;
