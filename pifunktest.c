@@ -1634,21 +1634,22 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     			}
     			else
     			{
-     				callsign = "callsign";
+						callsign = "callsign";
+						printf ("\nUsing standard Callsign is %s \n", *callsign)
      				//return callsign;
     			}
     			break;
 
    				//power managment
    			case 'p':
-   				if (power == 7)
+   				if (power != 7)
    				{
      			printf ("\nPowerlevel is %d \n", power);
-     			//return power;
+
     			}
     			else
     			{
-						power = 1;
+						power = 7;
         		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
         	//return power;
     			}
@@ -1668,7 +1669,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    			case 'h':
    				if (argc=1)
    				{
-      		//infos ();
+      			infos ();
     				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
     			}
 					else printf ("\nError in -h \n");
