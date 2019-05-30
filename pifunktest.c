@@ -1669,7 +1669,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    			case 'h':
    				if (argc=1)
    				{
-      			infos ();
+      			//infos ();
     				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
     			}
 					else printf ("\nError in -h \n");
