@@ -1568,8 +1568,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 // atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
    //---
 	 // for custom  programname, default is the filename itself
-   printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
-   printf ("\nProgram name is %s \n", __FILE__);
+   printf ("\nArguments: %d, title: %s \n", argc-1, argv [0]);
+   printf ("\nBinary file name is %s \n", __FILE__);
    printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
    //headertest ();
    //infos (); //information, disclaimer
@@ -1590,22 +1590,21 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//filename
    			case 'n':
-
 						filename = optarg;
 						printf ("\nFilename is %s \n", filename);
 						break;
 
 
    			case 'f':
-
+						freq = optarg;
       			printf ("\nFrequency is %f \n", freq);
       			//return freq;
       			break;
 
    			case 's':
-
+						samplerate = optarg;
       			printf ("\nSamplerate is %f \n", samplerate);
-      			//return samplerate;
+      			
       			break;
 
       				// modulation
@@ -1614,6 +1613,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
      		  {
                 if (!strcmp (mod, "fm"))
                 {
+									mod = optarg;
                   printf ("\nPushing args to fm Modulator... \n");
                 	//unsigned int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 									break;
@@ -1632,16 +1632,17 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    			case 'c':
    				if (callsign != NULL)
    				{
+						callsign = optarg;
      				printf ("\nCallsign is %s \n", *callsign);
 						break;
-     				//return callsign;
+
     			}
     			else
     			{
 						callsign = "callsign";
 						printf ("\nUsing standard Callsign is %s \n", *callsign);
 						break;
-     				//return callsign;
+
     			}
     			break;
 
@@ -1658,7 +1659,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 						power = 7;
         		printf ("\nNo Powerlevel given, using maximum output %d \n", power);
 						break;
-        	//return power;
+
     			}
     			break;
 
@@ -1688,7 +1689,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
-
+			printf ("\n-----------------\n");
 			printf ("\nChecking File: %s \n", filename);
 			printf ("\nChecking Freq: %f [MHz] \n", freq);
 			printf ("\nChecking Samplerate: %u [Hz] \n", samplerate);
