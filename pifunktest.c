@@ -1622,7 +1622,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 	//unsigned int modulationam (int argc, char **argv);
 									break;
                 }
-								else printf ("\nError in -h \n"); return 1;
+								else printf ("\nError in -m \n"); return 1;
 								break;
 
 
