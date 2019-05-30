@@ -1596,7 +1596,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
 
    			case 'f':
-						freq = strtof(*optarg);
+						freq = atof(optarg);
       			printf ("\nFrequency is %f \n", freq);
       			//return freq;
       			break;
