@@ -1596,7 +1596,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
 
    			case 'f':
-						freq = *optarg;
+						freq = strtof(*optarg);
       			printf ("\nFrequency is %f \n", freq);
       			//return freq;
       			break;
@@ -1647,7 +1647,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    				//power managment
    			case 'p':
-   				if (power != 7)
+   				if (optarg != 7)
    				{
 						power = *optarg;
      				printf ("\nPowerlevel is %d \n", power);
