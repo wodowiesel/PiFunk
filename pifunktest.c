@@ -1577,14 +1577,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    //infos (); //information, disclaimer
    //timer (); //local time
-
+/*
   if (argc=0||NULL)
   {
      fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]!\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
   }
   else
   {
-
+*/
    while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
   	{
 
@@ -1683,7 +1683,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
-			return filename, freq, samplerate, mod, callsign, power;
+			//return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
    //-- for debugging or information :)
@@ -1695,9 +1695,9 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //--
    printf ("\nChecking File: %s \n", filename);
-   printf ("\nString-Conversion to Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
+   printf ("\nFreq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
    printf ("\nChecking Modulation: %s \n", mod);
-   printf ("\nChecking Callsign: %s \n", *callsign);
+   printf ("\nChecking Callsign: %s \n", callsign);
 	 printf ("\nChecking Output-Power: %d \n", power);
 
    // gathering and parsing all given arguments to parse it to player
