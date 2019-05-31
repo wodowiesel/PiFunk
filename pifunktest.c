@@ -58,7 +58,6 @@ make compatible arguments/funcs for py/shell scripts
 
 //std includes
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h> // for c99
 #include <stdarg.h>
@@ -67,6 +66,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <unistd.h>
 
 // functionality includes
+#include <string.h>
 #include <iso646.h> //c95 - back-compatible
 #include <argp.h>
 #include <getopt.h>
@@ -97,15 +97,19 @@ make compatible arguments/funcs for py/shell scripts
 #include <pwd.h>
 #include <poll.h>
 #include <argp.h>
+
+
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
+#include <sys/timex.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
+
 #include <linux/spi/spidev.h>
 //#include <missing.h>
 
@@ -128,9 +132,15 @@ make compatible arguments/funcs for py/shell scripts
 //for c++14/17
 /*
 #include <iostream.h>
+#include <sstream.h>
 #include <threads.h>
 #include <cstdlib.h>
 #include <csignal.h>
+#include <cmath.h>
+#include <cstdint.h>
+#include <iomanip.h>
+#include <algorithm.h>
+#include <vector.h>
 using namespace std;
 */
 
