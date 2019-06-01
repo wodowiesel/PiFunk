@@ -1683,7 +1683,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			printf ("\nChecking Modulation: %s \n", mod);
 			printf ("\nChecking Callsign: %s \n", callsign);
 			printf ("\nChecking Output-Power: %d \n", power);
-			return filename, freq, samplerate, mod, callsign, power;
+			//return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
    //-- for debugging or information :)
