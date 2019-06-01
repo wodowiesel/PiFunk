@@ -1676,6 +1676,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
+			//-- for debugging or information :)
 			printf ("\n-----------------\n");
 			printf ("\nChecking File: %s \n", filename);
 			printf ("\nChecking Freq: %f [MHz] \n", freq);
@@ -1689,15 +1690,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			//return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
-   //-- for debugging or information :)
-	 //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
-   //printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-   //printf ("&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
-   //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
-   //--
+   // gathering and parsing all given arguments to player 
 
-
-   // gathering and parsing all given arguments to parse it to player
    //tx ();
    //} //end of else
 
