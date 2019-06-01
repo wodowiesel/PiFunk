@@ -1613,7 +1613,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
    			case 's':
 						samplerate = atoi (optarg);
-      			printf ("\nSamplerate is %f \n", samplerate);
+      			printf ("\nSamplerate is %d \n", samplerate);
       			break;
 
       				// modulation
@@ -1679,14 +1679,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			printf ("\n-----------------\n");
 			printf ("\nChecking File: %s \n", filename);
 			printf ("\nChecking Freq: %f [MHz] \n", freq);
-			printf ("\nChecking Samplerate: %u [Hz] \n", samplerate);
+			printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 			printf ("\nChecking Modulation: %s \n", mod);
 			printf ("\nChecking Callsign: %s \n", callsign);
 			printf ("\nChecking Output-Power: %d \n", power);
 			printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
 	    printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
-
-			return filename, freq, samplerate, mod, callsign, power;
+			break;
+			//return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
    //-- for debugging or information :)
