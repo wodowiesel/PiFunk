@@ -1567,7 +1567,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 int options = 0;
 	 argv [0] = "pifunk";
    char *filename = "sound.wav"; //= argv [1];
-   double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+   double freq = 446.006250; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
    int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
@@ -1666,14 +1666,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    				if (argc=1)
    				{
       			//infos ();
-    				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
+    				printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 						break;
     			}
 					else printf ("\nError in -h \n"); return 1;
    				break;
 
    			default:
-					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
    		} // end of switch
 			printf ("\n-----------------\n");
@@ -1687,11 +1687,11 @@ int main (int argc, char **argv) // arguments for global use must! be in main
   	} // end of while
 
    //-- for debugging or information :)
-
+	 //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-   //printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
+   printf ("&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
+   printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", *argc, *argv [0], *filename, *freq, *samplerate, *mod, *callsign, *power);
    //printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
-   //printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
    //--
 
 
@@ -1699,6 +1699,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //tx ();
    //} //end of else
 
-printf ("\nEnd of Program! Closing! \n");
-return 0;
+	 printf ("\nEnd of Program! Closing! \n");
+	 return 0;
 }
