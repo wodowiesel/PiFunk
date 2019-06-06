@@ -1514,21 +1514,22 @@ char csvreader ()
 char callname ()
 {
     //if (*callsign == NULL){
+		scanf ("%d", callnameselect)
 		switch (callnameselect)
 	  {
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
-		case 1: printf ("\nType in your callsign: ");
+		case '1': printf ("\nType in your callsign: ");
 						scanf  ("%s", *callsign);
 						printf ("\nYour callsign is: %s \n", *callsign);
         		//return callsign, &callsign, *callsign;
 						break;
 
-		case 2: callsign = "callsign"; //default callsign
+		case '2': callsign = "callsign"; //default callsign
 						printf ("\nUsing default callsign: %s \n", *callsign);
-        		printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
+        		//printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						break;
     }
-	return 0;
+		return 0;
   //return callsign, &callsign, *callsign;
 }
 
@@ -1536,12 +1537,13 @@ int menu ()
 {
 	int menuoption;
 	printf ("Choose a Mode [1] CMD // [2] CSV-Reader // [3] Exit : ");
-
+ 	scanf ("%d", menuoption);
 	switch (menuoption)
 	{
-	case '1': printf ("\nShell - Commandline: \n");
+	case '1': printf ("\nShell - Commandline (Main): \n");
 						int main (int argc, char **argv); // go back to cmd if you want
 						break;
+
 	case '2': printf ("\nReading CSV for PMR: \n");
 						csvreader ();
 						break;
@@ -1549,6 +1551,7 @@ int menu ()
 	case '3': printf ("\nExiting... \n");
 						exit (-1);
 						break;
+						
 	default: printf ("\nError! \n");
 					 break;
 	}
@@ -1584,9 +1587,9 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", &powerlevel);
+	scanf ("%d", powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
-	return powerlevel;
+	return 0;
 }
 
 int GetUserInput () // assistent
