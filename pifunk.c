@@ -575,7 +575,7 @@ char *am = "am";
 char *callsign;
 float volume = 1.0f;
 unsigned int power = 7;
-uint16_t pis = (0x1234); // 4660
+uint16_t pis = (0x1234); // dec: 4660
 uint32_t carrier_freq = 87600000; //
 float A = 87.6f; // compression parameter (stauchung) -> this might be the carrier too
 int powerlevel;
@@ -584,8 +584,8 @@ unsigned int channelnumbercb;
 unsigned int channelnumberpmr;
 unsigned int channelmode;
 unsigned int freqmode;
-unsigned int modeselect;
-unsigned int callnameselect;
+int modeselect;
+int callnameselect;
 
 //--network sockets for later
 // here custom port via tcp/ip or udp
@@ -1333,7 +1333,7 @@ int tx ()
 
 	// GPIO needs to be ALT FUNC 0 to output the clock
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
-	printf("\nBroadcasting now...! \n");
+	printf ("\nBroadcasting now...! \n");
 
 	return 0;
 }
@@ -1539,7 +1539,7 @@ int callname ()
 int menu ()
 {
 
-	printf ("Choose menu: [1] CMD // [2] CSV-Reader // [3] Exit : ");
+	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: ");
  	//scanf ("%d", menuoption);
 	switch (menuoption)
 	{
@@ -1588,14 +1588,14 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", &powerlevel);
+	scanf ("%d", *powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", &powerlevel);
-	return 0;
+	return powerlevel;
 }
 
 int GetUserInput () // assistent
 {
-		filenamepath ();
+		//filenamepath ();
 		powerselect ();
 		callname ();
 		modetype ();
@@ -1734,7 +1734,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 		//--
 		// gathering and parsing all given arguments to parse it to player
-	int tx ();
+	tx ();
 
 	printf ("\nEnd of Program! Closing! \n");
 	return 0;
