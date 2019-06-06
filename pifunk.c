@@ -1588,7 +1588,7 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", *powerlevel);
+	scanf ("%d", powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", &powerlevel);
 	return powerlevel;
 }
