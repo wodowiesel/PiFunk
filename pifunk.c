@@ -545,7 +545,7 @@ int k;
 int l;
 float x;
 
-//pi variables:
+//pi momorymap:
 int  mem_fd;
 char *gpio_mem;
 char *gpio_map;
@@ -572,15 +572,14 @@ unsigned int channels = 1;
 char *mod = "fm";
 char *fm = "fm";
 char *am = "am";
-int powerlevel = 7;
 char *callsign;
 float volume = 1.0f;
 unsigned int power = 7;
 uint16_t pis = (0x1234); // 4660
 uint32_t carrier_freq = 87600000; //
-float A = 87.6f; // compression parameter (stauchung)
-//-> this might be the carrier too
-
+float A = 87.6f; // compression parameter (stauchung) -> this might be the carrier too
+int powerlevel;
+int menuoption;
 unsigned int channelnumbercb;
 unsigned int channelnumberpmr;
 unsigned int channelmode;
@@ -1539,9 +1538,9 @@ int callname ()
 
 int menu ()
 {
-	int menuoption;
+
 	printf ("Choose a Mode [1] CMD // [2] CSV-Reader // [3] Exit : ");
- 	scanf ("%d", &menuoption);
+ 	scanf ("%d", menuoption);
 	switch (menuoption)
 	{
 	case '1': printf ("\nShell - Commandline (Main): \n");
@@ -1589,8 +1588,8 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", &powerlevel);
-	//printf ("\nPowerlevel was set to: %d \n", powerlevel);
+	scanf ("%d", powerlevel);
+	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	return 0;
 }
 
@@ -1725,17 +1724,17 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	 } // end of while
 
  		//}//end of else
-	//-- for debugging or information :)
-	//printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-	//printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
-	//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
-	//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
-	//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
-	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
-	//--
-	// gathering and parsing all given arguments to parse it to player
-	//int tx ();
+		//-- for debugging or information :)
+		//printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+		//printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
+		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
+		//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
+		//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
+		//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
+		//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+		//--
+		// gathering and parsing all given arguments to parse it to player
+	int tx ();
 
 	printf ("\nEnd of Program! Closing! \n");
 	return 0;
