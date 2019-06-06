@@ -1543,15 +1543,15 @@ int menu ()
  	scanf ("%d", menuoption);
 	switch (menuoption)
 	{
-	case '1': printf ("\nShell - Commandline (Main): \n");
+	case 1: printf ("\nShell - Commandline (Main): \n");
 						int main (int argc, char **argv); // go back to cmd if you want
 						break;
 
-	case '2': printf ("\nReading CSV for PMR: \n");
+	case 2: printf ("\nReading CSV for PMR: \n");
 						csvreader ();
 						break;
 
-	case '3': printf ("\nExiting... \n");
+	case 3: printf ("\nExiting... \n");
 						exit (-1);
 						break;
 
@@ -1568,10 +1568,10 @@ int modetype ()
 
 	switch (modeselect)
 	{
-		case '1': channelselect (); //undefined reference
+		case 1: channelselect (); //undefined reference
 							break;
 
-		case '2':
+		case 2:
 							freqselect ();
 							modulationselect ();
 							break;
@@ -1588,7 +1588,7 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", powerlevel);
+	scanf ("%s", powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	return 0;
 }
@@ -1597,8 +1597,8 @@ int GetUserInput () // assistent
 {
 		filenamepath ();
 		powerselect ();
-		//callname ();
-		//modetype ();
+		callname ();
+		modetype ();
 		menu ();
 		printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n');
