@@ -1520,7 +1520,7 @@ int callname ()
 	  {
 
 	   case 1: printf ("\nType in your callsign: ");
-						 scanf  ("%s", *callsign);
+						 scanf  ("%s", &callsign);
 						 printf ("\nYour callsign is: %s \n", *callsign);
         		 //return callsign, &callsign, *callsign;
 						 break;
@@ -1564,14 +1564,15 @@ int menu ()
 int modetype ()
 {
 	printf ("\nChoose Mode: \n");
-	scanf ("%d", modeselect);
+	scanf ("%d", &modeselect);
 
 	switch (modeselect)
 	{
-		case 1: channelselect (); //undefined reference
+		case 1:	 	printf ("\n[1] Channelnmode: \n");
+							channelselect (); //undefined reference
 							break;
 
-		case 2:
+		case 2:		printf ("\n[1] Frequencynmode: \n");
 							freqselect ();
 							modulationselect ();
 							break;
@@ -1588,8 +1589,8 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", powerlevel);
-	printf ("\nPowerlevel was set to: %d \n", &powerlevel);
+	scanf ("%d", &powerlevel);
+	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	return powerlevel;
 }
 
