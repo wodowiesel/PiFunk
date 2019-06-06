@@ -1518,17 +1518,18 @@ char callname ()
 	  {
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
 		case 1: printf ("\nType in your callsign: ");
-					scanf  ("%s", *callsign);
-					printf ("\nYour callsign is: %s \n", *callsign);
-        	//return callsign, &callsign, *callsign;
-					break;
+						scanf  ("%s", *callsign);
+						printf ("\nYour callsign is: %s \n", *callsign);
+        		//return callsign, &callsign, *callsign;
+						break;
 
 		case 2: callsign = "callsign"; //default callsign
 						printf ("\nUsing default callsign: %s \n", *callsign);
         		printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						break;
     }
-  return callsign, &callsign, *callsign;
+	return 0;
+  //return callsign, &callsign, *callsign;
 }
 
 int menu ()
@@ -1731,7 +1732,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 	//--
 	// gathering and parsing all given arguments to parse it to player
-	int tx ();
+	//int tx ();
 
 	printf ("\nEnd of Program! Closing! \n");
 	return 0;
