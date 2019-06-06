@@ -1561,7 +1561,7 @@ int GetUserInput () //my menu-assistent
 }
 */
 //--------- MAIN
-int main (int argc, char **argv []) // arguments for global use must! be in main
+int main (int argc, char **argv) // arguments for global use must! be in main
 {
    const char *short_opt = "n:f:s:m:c:p:ah"; // g:
 	 int options = 0;

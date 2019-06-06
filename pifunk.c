@@ -1028,8 +1028,7 @@ void infos () //warnings and infos
    	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
-	 //printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-   //printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+
 }
 
 void modulate (int l)
@@ -1106,7 +1105,7 @@ void play_list () // exit func
 
 }
 
-void play_wav (char *filename, double freq, unsigned int samplerate)
+void play_wav (char *filename, double freq, int samplerate)
 {
 	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
@@ -1307,10 +1306,11 @@ void WriteTone (double freq, uint32_t Timing)
 // main progs
 int tx ()
 {
+
   printf("\nBroadcasting now...! \n");
   // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
-  //pad_reg[GPIO_PAD_0_27] = PADGPIO + power;
-  //pad_reg[GPIO_PAD_28_45] = PADGPIO+ power;
+  //pad_reg [GPIO_PAD_0_27] = PADGPIO + power;
+  //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
 
 	// GPIO needs to be ALT FUNC 0 to output the clock
 	//gpio_reg[reg] = (gpio_reg[reg] & ~(7 << shift));
@@ -1337,7 +1337,6 @@ unsigned int modulationfm (int argc, char **argv)
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
-	  timer ();
 	  printf ("\nNow transmitting... \n");
     }
 	else
@@ -1370,7 +1369,7 @@ unsigned int modulationam (int argc, char **argv)
 	}
 	else
 	{
-		outfilename = (char *) malloc (128);// allocatong memory for filename
+		outfilename = (char *) malloc (128);// allocating memory for filename
 		sprintf (outfilename, "%s", "out.ft");
 	}
 //-------
@@ -1446,11 +1445,11 @@ unsigned int modulationam (int argc, char **argv)
 			printf ("\nNow writing tone in AM... \n");
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
 
-      return channels, ampf, ampf2, x, factorizer, sampler;
+      //return channels, ampf, ampf2, x, factorizer, sampler;
 	  }
-  	led ();
-    }
-    //printf ("Reading file: %s \n", filename);
+
+  }
+    printf ("Reading file: %s \n", filename);
     printf ("Freq: %f \n", freq);
   	printf ("Sample Rate: %u \n", samplerate);
   	printf ("Channels: %d \n", channels);
@@ -1460,10 +1459,10 @@ unsigned int modulationam (int argc, char **argv)
     //fclose (FileFreqTiming);
     fclose (sfp);
     printf ("\nFile saved! \n");
-    return 0;
-}
+    break;
+	}
 
-return freqmode;
+return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
 }
 // all subch. -> base/default case 0 -> channel 0
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
@@ -1499,15 +1498,15 @@ char callname ()
 	  {
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
 		case 1: printf ("\nType in your callsign: ");
-				scanf  ("%s", *callsign);
-				printf ("\nYour callsign is: %s \n", *callsign);
-        return callsign, &callsign, *callsign;
-				break;
+					scanf  ("%s", *callsign);
+					printf ("\nYour callsign is: %s \n", *callsign);
+        	//return callsign, &callsign, *callsign;
+					break;
 
 		case 2: callsign = "callsign"; //default callsign
-				printf ("\nUsing default callsign: %s \n", *callsign);
-        printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
-				break;
+						printf ("\nUsing default callsign: %s \n", *callsign);
+        		printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
+						break;
     }
   return callsign, &callsign, *callsign;
 }
@@ -1520,7 +1519,7 @@ int menu ()
 	switch (menuoption)
 	{
 	case '1': printf ("\nShell - Commandline: \n");
-						int main (int argc, char **argv []); // go back to cmd if you want
+						int main (int argc, char **argv); // go back to cmd if you want
 						break;
 	case '2': printf ("\nReading CSV for PMR: \n");
 						csvreader ();
@@ -1529,7 +1528,8 @@ int menu ()
 	case '3': printf ("\nExiting... \n");
 						exit (-1);
 						break;
-	default: break;
+	default: printf ("\nError! \n");
+					 break;
 	}
 
 return 0;
@@ -1582,7 +1582,7 @@ int GetUserInput () // assistent
     return 0;
 }
 //--------- MAIN
-int main (int argc, char **argv []) // arguments for global use must! be in main
+int main (int argc, char **argv) // arguments for global use must! be in main
 {
 	const char *short_opt = "n:f:s:m:c:p:ah"; // g:
 	int options = 0;
@@ -1639,13 +1639,13 @@ int main (int argc, char **argv []) // arguments for global use must! be in main
 							{
 								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
-								modulationfm (int argc, char **argv []); // idk if here to jump to the modulator or just parse it?!
+								modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 								break;
 							}
 							else if (!strcmp (mod, "am"))
 							{
 								printf ("\nPushing args to am Modulator... \n");
-								modulationam (int argc, char **argv []);
+								modulationam (int argc, char **argv);
 								break;
 							}
 							else printf ("\nError in -m \n"); return 1;
@@ -1660,7 +1660,6 @@ int main (int argc, char **argv []) // arguments for global use must! be in main
 			case 'p':
 					power = atoi (optarg);
 					printf ("\nPowerlevel is %d \n", power);
-
 					break;
 
 					//assistent
@@ -1708,9 +1707,11 @@ int main (int argc, char **argv []) // arguments for global use must! be in main
 	//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
 	//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
 	//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
+	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
+	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 	//--
 	// gathering and parsing all given arguments to parse it to player
-	//tx ();
+	tx ();
 
 	printf ("\nEnd of Program! Closing! \n");
 	return 0;
