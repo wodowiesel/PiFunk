@@ -65,6 +65,12 @@ make compatible arguments/funcs for py/shell scripts
 #include <stddef.h>
 #include <unistd.h>
 
+//-- c11
+#include <stdalign.h>
+#include <stdnoreturn.h>
+#include <stdatomic.h>
+#include <uchar.h>
+
 // functionality includes
 #include <string.h>
 #include <iso646.h> //c95 - back-compatible
@@ -98,7 +104,6 @@ make compatible arguments/funcs for py/shell scripts
 #include <poll.h>
 #include <argp.h>
 
-
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -108,6 +113,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <sys/mman.h>
 #include <sys/select.h>
 #include <sys/file.h>
+#include <sys/ioctl.h>
 #include <sys/sysmacros.h>
 
 #include <linux/spi/spidev.h>
@@ -115,7 +121,6 @@ make compatible arguments/funcs for py/shell scripts
 
 // ip host socket
 #include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -123,11 +128,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <netdb.h>
 #include <ifaddrs.h>
 
-//-- c11
-#include <stdalign.h>
-#include <stdnoreturn.h>
-#include <stdatomic.h>
-#include <uchar.h>
+
 
 //for c++14/17
 /*

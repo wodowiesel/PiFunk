@@ -58,7 +58,6 @@ make compatible arguments/funcs for py/shell scripts
 
 //std includes
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h> // for c99
 #include <stdarg.h>
@@ -69,6 +68,7 @@ make compatible arguments/funcs for py/shell scripts
 // functionality includes
 #include <iso646.h> //c95 - back-compatible
 #include <argp.h>
+#include <string.h>
 #include <getopt.h>
 #include <time.h>
 #include <sched.h>
@@ -100,12 +100,14 @@ make compatible arguments/funcs for py/shell scripts
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
+#include <sys/timex.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
+
 #include <linux/spi/spidev.h>
 //#include <missing.h>
 
@@ -127,10 +129,23 @@ make compatible arguments/funcs for py/shell scripts
 
 //for c++14/17
 /*
+#include <stdalign.h>
+#include <stdnoreturn.h>
+#include <stdatomic.h>
+#include <uchar.h>
+
+//for c++14/17
+/*
 #include <iostream.h>
+#include <sstream.h>
 #include <threads.h>
 #include <cstdlib.h>
 #include <csignal.h>
+#include <cmath.h>
+#include <cstdint.h>
+#include <iomanip.h>
+#include <algorithm.h>
+#include <vector.h>
 using namespace std;
 */
 
@@ -562,7 +577,7 @@ char *callsign;
 float volume = 1.0f;
 unsigned int power = 7;
 uint16_t pis = (0x1234); // 4660
-uint32_t carrier_freq = 87600000;
+uint32_t carrier_freq = 87600000; //
 float A = 87.6f; // compression parameter (stauchung)
 //-> this might be the carrier too
 
@@ -989,6 +1004,7 @@ int ledactive ()
 int led ()
 {
 //simulation of gpio for debug
+/*
   //bcm2835_set_debug (1);
   if (!bcm2835_init ())
 	{
@@ -998,9 +1014,9 @@ int led ()
 	else if (1)
 	{
     // Set the pin to be an outputannels
-    bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
+    //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
-    /*// LED is active during transmission
+    // LED is active during transmission
 		while (play_wav ()) // (ledactive != 0)
 		{
 	// Turn it on
@@ -1008,6 +1024,7 @@ int led ()
 		printf ("\nLED ON - Transmission...! \n");
 	// wait a bit
 		bcm2835_delay (500);
+
 		}
 	}
 	else // if no trans than turn it off
@@ -1015,7 +1032,8 @@ int led ()
 		cm2835_gpio_write (PIN17, LOW);
 		printf ("\nLED OFF - No Transmission \n");
 	} */
-   bcm2835_close ();
+   //bcm2835_close ();
+	 */
 	 printf ("\nBCM 2835 closing \n");
    return 0;
 }
