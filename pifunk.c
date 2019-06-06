@@ -1335,7 +1335,7 @@ int tx ()
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 	printf("\nBroadcasting now...! \n");
 
-return 0;
+	return 0;
 }
 
 //FM
@@ -1515,7 +1515,7 @@ int callname ()
 {
     //if (*callsign == NULL){
 		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or use (2) default 'callsign': \n");
-		scanf ("%d", callnameselect);
+		//scanf ("%d", callnameselect);
 		switch (callnameselect)
 	  {
 
@@ -1539,23 +1539,23 @@ int callname ()
 int menu ()
 {
 
-	printf ("Choose a Mode [1] CMD // [2] CSV-Reader // [3] Exit : ");
- 	scanf ("%d", menuoption);
+	printf ("Choose menu: [1] CMD // [2] CSV-Reader // [3] Exit : ");
+ 	//scanf ("%d", menuoption);
 	switch (menuoption)
 	{
-	case 1: printf ("\nShell - Commandline (Main): \n");
+		case 1: printf ("\nShell - Commandline (main): \n");
 						int main (int argc, char **argv); // go back to cmd if you want
 						break;
 
-	case 2: printf ("\nReading CSV for PMR: \n");
+		case 2: printf ("\nReading CSV for PMR: \n");
 						csvreader ();
 						break;
 
-	case 3: printf ("\nExiting... \n");
+		case 3: printf ("\nExiting... \n");
 						exit (-1);
 						break;
 
-	//default: printf ("\nError! \n"); break;
+		//default: printf ("\nError! \n"); break;
 	}
 
 	return 0;
@@ -1576,7 +1576,7 @@ int modetype ()
 							modulationselect ();
 							break;
 
-	//	default: printf ("\nError! \n"); break;
+		//	default: printf ("\nError! \n"); break;
 
 	}
 
@@ -1588,8 +1588,8 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%s", powerlevel);
-	printf ("\nPowerlevel was set to: %d \n", powerlevel);
+	scanf ("%d", &powerlevel);
+	printf ("\nPowerlevel was set to: %d \n", &powerlevel);
 	return 0;
 }
 
