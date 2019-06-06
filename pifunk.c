@@ -1349,8 +1349,8 @@ int modulationfm (int argc, char **argv)
     setupfm (); // gets filename & path or done by filmename() func
 
 	  printf ("\nSetting up DMA... \n");
-
-    setupDMA (argc>2 ? atof (argv [2]):100.00000); // default freq, maybe do input here?
+		setupDMA (freq||100.00000);
+    //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
 
 	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
     //play_wav (argv [1], argc>3 ? atof (argv [3]):22050, shortopts); // <-- in 22.05 kHz, should be same as AM!!
@@ -1480,18 +1480,17 @@ int modulationam (int argc, char **argv)
     //fclose (FileFreqTiming);
     fclose (sfp);
     printf ("\nFile saved! \n");
-
+		return 0;
 	}
-return 0;
+
 //return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
-}
 // all subch. -> base/default case 0 -> channel 0
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
 // squelch/treshhold to build in maybe -> scan function till signal?
 
 // read / import csv for pmr
 
-char csvreader()
+char csvreader ()
 {
     printf ("\nChecking for CSV-file... \n");
 
