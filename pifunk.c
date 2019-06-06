@@ -1621,8 +1621,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
-	int infos (); //information, disclaimer
-	timer (); //local time
+	//int infos (); //information, disclaimer
+	//timer (); //local time
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
 	 {
