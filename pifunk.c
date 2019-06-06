@@ -572,7 +572,7 @@ unsigned int channels = 1;
 char *mod = "fm";
 char *fm = "fm";
 char *am = "am";
-int powerlevel;
+int powerlevel = 7;
 char *callsign;
 float volume = 1.0f;
 unsigned int power = 7;
@@ -1510,27 +1510,30 @@ char csvreader ()
     return j;
 }
 
-char callname ()
+int callname ()
 {
     //if (*callsign == NULL){
-		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
+		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or use (2) default 'callsign': \n");
 		scanf ("%d", callnameselect);
 		switch (callnameselect)
 	  {
 
-	  	case '1': printf ("\nType in your callsign: ");
-								scanf  ("%s", *callsign);
-								printf ("\nYour callsign is: %s \n", *callsign);
-        				//return callsign, &callsign, *callsign;
-								break;
+	   case 1: printf ("\nType in your callsign: ");
+						 scanf  ("%s", *callsign);
+						 printf ("\nYour callsign is: %s \n", *callsign);
+        		 //return callsign, &callsign, *callsign;
+						 break;
 
-		 case '2': callsign = "callsign"; //default callsign
-							printf ("\nUsing default callsign: %s \n", *callsign);
-        			//printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
+		 case 2: callsign = "callsign"; //default callsign
+						 printf ("\nUsing default callsign: %s \n", *callsign);
+        		 //printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
+						 break;
+
+		 default: printf ("\nError! \n");
 							break;
     }
-		//return 0;
-  	return callsign, &callsign, *callsign;
+		return 0;
+  	//return callsign, &callsign, *callsign;
 }
 
 int menu ()
@@ -1589,15 +1592,16 @@ int powerselect ()
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
 	scanf ("%d", powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
-	return powerlevel;
+	return 0;
 }
 
 int GetUserInput () // assistent
 {
 		filenamepath ();
 		powerselect ();
-		callname ();
-		modetype ();
+		//callname ();
+		//modetype ();
+		menu ();
 		printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n');
 
@@ -1681,7 +1685,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 				//power managment
 			case 'p':
 					power = atoi (optarg);
-					printf ("\nPowerlevel is %d \n", power);
+					printf ("\nPower is %d \n", power);
 					break;
 
 					//assistent
