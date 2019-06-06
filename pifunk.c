@@ -1031,7 +1031,7 @@ int led ()
   {
 		cm2835_gpio_write (PIN17, LOW);
 		printf ("\nLED OFF - No Transmission \n");
-	} */
+	}
    //bcm2835_close ();
 	 */
 	 printf ("\nBCM 2835 closing \n");
