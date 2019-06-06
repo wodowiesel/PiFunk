@@ -197,11 +197,11 @@ using namespace std;
 #endif */
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION "0.1.6.9"
+#define VERSION "0.1.7.0"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
-#define VERSION_BUILD        (6)
-#define VERSION_PATCHLEVEL   (9)
+#define VERSION_BUILD        (7)
+#define VERSION_PATCHLEVEL   (0)
 #define VERSION_STATUS "e"
 
 //---- PI specific stuff
@@ -215,10 +215,10 @@ predefine if needed when not using bcm header
 #define HIGH (1)
 */
 //-------buffers
-#define PAGE_SIZE             (4*1024)
-#define BLOCK_SIZE            (4*1024)
-#define BUFFER_LEN            (8*1024)
-#define BUFFERINSTRUCTIONS    (65536) // [1024];
+#define PAGE_SIZE             (4*1024) //4096
+#define BLOCK_SIZE            (4*1024) //4096
+#define BUFFER_LEN            (8*1024) //8192
+#define BUFFERINSTRUCTIONS    (65536) //[1024]
 
 //#define sleep [1000]
 //#define usleep [1000]
@@ -324,16 +324,16 @@ volatile unsigned *allof7e;
 #define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  //0x64 = dec: 100
 #define PADGPIO                         (0x5A000018) // dec: 1509949464
 
-#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET)
-#define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET)
-#define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET)
-#define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET)
-#define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET)
-#define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET)
+#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET) //
+#define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
+#define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET) //
+#define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET) //
+#define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
+#define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
 
-#define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET)
-#define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET)
-#define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET)
+#define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
+#define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
+#define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
 
 // GPIO
 #define GPFSEL0                         (0x00/4) // p.90 dec: 0
@@ -351,11 +351,11 @@ volatile unsigned *allof7e;
 #define EMMCCLK_DIV                     (0x1C4/4) //113
 
 #define CM_LOCK                         (0x114/4) //69
-#define CM_LOCK_FLOCKA                  (1<<8)
-#define CM_LOCK_FLOCKB                  (1<<9)
-#define CM_LOCK_FLOCKC                  (1<<10)
-#define CM_LOCK_FLOCKD                  (1<<11)
-#define CM_LOCK_FLOCKH                  (1<<12)
+#define CM_LOCK_FLOCKA                  (1<<8) //
+#define CM_LOCK_FLOCKB                  (1<<9) //
+#define CM_LOCK_FLOCKC                  (1<<10) //
+#define CM_LOCK_FLOCKD                  (1<<11) //
+#define CM_LOCK_FLOCKH                  (1<<12) //
 
 #define CM_PLLA                         (0x104/4) //65
 #define CM_PLLC                         (0x108/4) //66
@@ -417,21 +417,21 @@ volatile unsigned *allof7e;
 #define PWMCLK_CNTL                     (40)
 #define PWMCLK_DIV                      (41)
 
-#define PWMCTL_PWEN1                    (1<<0)
-#define PWMCTL_MODE1                    (1<<1)
-#define PWMCTL_RPTL1                    (1<<2)
-#define PWMCTL_POLA1                    (1<<4)
-#define PWMCTL_USEF1                    (1<<5)
-#define PWMCTL_CLRF                     (1<<6)
-#define PWMCTL_MSEN1                    (1<<7)
-#define PWMCTL_PWEN2                    (1<<8)
-#define PWMCTL_MODE2                    (1<<9)
-#define PWMCTL_RPTL2                    (1<<10)
-#define PWMCTL_USEF2                    (1<<13)
-#define PWMCTL_MSEN2                    (1<<15)
+#define PWMCTL_PWEN1                    (1<<0) //
+#define PWMCTL_MODE1                    (1<<1) //
+#define PWMCTL_RPTL1                    (1<<2) //
+#define PWMCTL_POLA1                    (1<<4) //
+#define PWMCTL_USEF1                    (1<<5) //
+#define PWMCTL_CLRF                     (1<<6) //
+#define PWMCTL_MSEN1                    (1<<7) //
+#define PWMCTL_PWEN2                    (1<<8) //
+#define PWMCTL_MODE2                    (1<<9) //
+#define PWMCTL_RPTL2                    (1<<10) //
+#define PWMCTL_USEF2                    (1<<13) //
+#define PWMCTL_MSEN2                    (1<<15) //
 
-#define PWMDMAC_ENAB                    (1<<31)
-#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0))
+#define PWMDMAC_ENAB                    (1<<31)  //
+#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) //
 
 // PCM
 #define PCM_CS_A                        (0x00/4) //0
@@ -457,33 +457,33 @@ volatile unsigned *allof7e;
 #define DMA_CHANNEL_MAX                 (14)
 #define DMA_CHANNEL_SIZE                (0x100) //256
 
-#define BCM2708_DMA_ACTIVE              (1<<0)
-#define BCM2708_DMA_END                 (1<<1)
-#define BCM2708_DMA_INT                 (1<<2)
-#define BCM2708_DMA_WAIT_RESP           (1<<3)
-#define BCM2708_DMA_D_DREQ              (1<<6)
-#define BCM2708_DMA_DST_IGNOR           (1<<7)
-#define BCM2708_DMA_SRC_INC             (1<<8)
-#define BCM2708_DMA_SRC_IGNOR           (1<<11)
-#define BCM2708_DMA_NO_WIDE_BURSTS      (1<<26)
-#define BCM2708_DMA_DISDEBUG            (1<<28)
-#define BCM2708_DMA_ABORT               (1<<30)
-#define BCM2708_DMA_RESET               (1<<31)
+#define BCM2708_DMA_ACTIVE              (1<<0) //
+#define BCM2708_DMA_END                 (1<<1) //
+#define BCM2708_DMA_INT                 (1<<2) //
+#define BCM2708_DMA_WAIT_RESP           (1<<3) //
+#define BCM2708_DMA_D_DREQ              (1<<6) //
+#define BCM2708_DMA_DST_IGNOR           (1<<7) //
+#define BCM2708_DMA_SRC_INC             (1<<8) //
+#define BCM2708_DMA_SRC_IGNOR           (1<<11) //
+#define BCM2708_DMA_NO_WIDE_BURSTS      (1<<26) //
+#define BCM2708_DMA_DISDEBUG            (1<<28) //
+#define BCM2708_DMA_ABORT               (1<<30) //
+#define BCM2708_DMA_RESET               (1<<31) //
 #define BCM2708_DMA_PER_MAP(x)          ((x)<<16)
-#define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16)
-#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20)
+#define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16) //
+#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20) //
 
 #define DMA_CS                          (0x00/4) //0
 #define DMA_CONBLK_AD                   (0x04/4) //1
 #define DMA_DEBUG                       (0x20/4) //8
 
-#define DMA_CS_RESET		                (1<<31)
-#define DMA_CS_ABORT			              (1<<30)
-#define DMA_CS_DISDEBUG		              (1<<29)
-#define DMA_CS_WAIT_FOR_WRITES          (1<<28)
-#define DMA_CS_INT			                (1<<2)
-#define DMA_CS_END			                (1<<1)
-#define DMA_CS_ACTIVE			              (1<<0)
+#define DMA_CS_RESET		                (1<<31) //
+#define DMA_CS_ABORT			              (1<<30) //
+#define DMA_CS_DISDEBUG		              (1<<29) //
+#define DMA_CS_WAIT_FOR_WRITES          (1<<28) //
+#define DMA_CS_INT			                (1<<2) //
+#define DMA_CS_ACTIVE			              (1<<0) //
+#define DMA_CS_END			                (1<<1) //
 #define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) //0xF=15
 #define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20)
 
@@ -510,8 +510,8 @@ volatile unsigned *allof7e;
 #define PAGE_SHIFT                      (12)
 #define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
 
-#define NUM_SAMPLES                     (64000)
-#define NUM_CBS                         (NUM_SAMPLES * 2)
+#define NUM_SAMPLES                     (64000) //
+#define NUM_CBS                         (NUM_SAMPLES * 2) //
 
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
@@ -698,6 +698,7 @@ struct option long_opt [] =
 
 /*
 RTC (DS3231/1307 driver as bcm) stuff here if needed
+
 */
 
 // basic function then specified one after another
@@ -903,7 +904,7 @@ unsigned int modulationselect ()
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
-		//default: printf ("\n Default = 1 \n"); break;
+		default: printf ("\n Default = 1 \n"); break;
 	}
 	return 0;
 }
@@ -1511,57 +1512,87 @@ char callname ()
   return callsign, &callsign, *callsign;
 }
 
-int GetUserInput () //my menu-assistent
+int menu ()
 {
-    timer ();
-    //infos ();
-    //printf ("Press Enter to Continue... \n");
-    //while (getchar () =! "\n");
-	  printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
-	  scanf ("%d", &modeselect);
+	int menuoption;
+	printf ("Choose a Mode [1] CMD // [2] CSV-Reader // [3] Exit : ");
 
-	  switch (modeselect)
-    {
-      case '1': //channelselect (); //undefined reference
-							filenamepath ();
-							callname (*callsign);
-					    break;
+	switch (menuoption)
+	{
+	case '1': printf ("\nShell - Commandline: \n");
+						int main (int argc, char **argv []); // go back to cmd if you want
+						break;
+	case '2': printf ("\nReading CSV for PMR: \n");
+						csvreader ();
+						break;
 
-		  case '2': filenamepath ();
-		          freqselect ();
-		          modulationselect ();
-					    break;
+	case '3': printf ("\nExiting... \n");
+						exit (-1);
+						break;
+	default: break;
+	}
 
-			case '3': printf ("\nReading CSV for PMR: \n");
-				    	csvreader ();
-					    break;
-			case '4': printf ("\nShell - Commandline: \n");
-			        int main (int argc, char **argv, const char *shortopts); // go back to cmd if you want
-				    	break;
+return 0;
+}
 
-			case '5': printf ("\nExiting... \n");
-				    	exit (-1);
-					    break;
+int modetype ()
+{
+	printf ("\nChoose Mode : \n");
+	scanf ("%d", &modeselect);
 
-			default: printf ("\nDefault = 1 \n"); break;
+	switch (modeselect)
+	{
+		case '1': channelselect (); //undefined reference
+							break;
 
-    }
+		case '2':
+							freqselect ();
+							modulationselect ();
+							break;
+
+		default: printf ("\nError! \n");
+						 break;
+
+	}
+
+	return 0;
+
+}
+
+int powerselect ()
+{
+	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
+	scanf ("%d", &powerlevel);
+
+	return 0;
+}
+
+int GetUserInput () // assistent
+{
+    printf ("\nChoose Your File: \n");
+		filenamepath ();
+		printf ("\nChoose Powerlevel: \n");
+		powerselect ()
+		printf ("\nChoose between custom or standard ham-callsign / nickname: \n");
+		callname ();
+		modetype ();
+		printf ("\nPress Enter to Continue for Transmission... \n");
+		while (getchar () =! "\n");
+
     return 0;
 }
 //--------- MAIN
-int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
+int main (int argc, char **argv []) // arguments for global use must! be in main
 {
 	const char *short_opt = "n:f:s:m:c:p:ah"; // g:
 	int options = 0;
 	argv [0] = "pifunk";
 	char *filename = "sound.wav"; //= argv [1];
-	double freq = 446.00625; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-	unsigned int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	double freq = 446.006250; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm";// = argv [4];
 	char *callsign = "callsign";// = argv [5];
-	unsigned int power = 7;
-	//char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
-	//unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
+	int power = 7;
 	// atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	// atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	//---
@@ -1569,136 +1600,118 @@ int main (int argc, char **argv, const char *short_opt) // arguments for global 
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
-	//headertest ();
-	//infos (); //information, disclaimer
-	//timer (); //local time
-
- if (argc=0||NULL)
- {
-		fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
- }
+	infos (); //information, disclaimer
+	timer (); //local time
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
 	 {
-
-		 switch (options)
+		 /*
+		 if (argc=0||NULL)
 		 {
+				fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+		 }
+		 else
+		 {
+		*/
+		switch (options)
+		{
 
-				 //filename
-			 case 'n':
-					 printf ("\nFilename is %s \n", filename);
-					 //return fp;
-					 break;
+				//filename
+			case 'n':
+					filename = optarg;
+					printf ("\nFilename is %s \n", filename);
+					break;
 
-			 case 'f':
-					 printf ("\nFrequency is %f \n", freq);
-					 //return freq;
-					 break;
+			case 'f':
+					freq = atof (optarg);
+					printf ("\nFrequency is %f \n", freq);
+					//return freq;
+					break;
 
-			 case 's':
-					 printf ("\nSamplerate is %f \n", samplerate);
-					 //return samplerate;
-					 break;
+			case 's':
+					samplerate = atoi (optarg);
+					printf ("\nSamplerate is %d \n", samplerate);
+					break;
+						// modulation
+			case 'm':
+							mod = optarg;
+							if (!strcmp (mod, "fm"))
+							{
+								mod = optarg;
+								printf ("\nPushing args to fm Modulator... \n");
+								modulationfm (int argc, char **argv []); // idk if here to jump to the modulator or just parse it?!
+								break;
+							}
+							else if (!strcmp (mod, "am"))
+							{
+								printf ("\nPushing args to am Modulator... \n");
+								modulationam (int argc, char **argv []);
+								break;
+							}
+							else printf ("\nError in -m \n"); return 1;
 
-						 // modulation
-			 case 'm':
-				 if (mod != NULL)
-				 {
-							 if (!strcmp (mod, "fm"))
-							 {
-								 printf ("\nPushing args to fm Modulator... \n");
-								 //unsigned int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
-							 }
-							 else if (!strcmp (mod, "am"))
-							 {
-								 printf ("\nPushing args to am Modulator... \n");
-							 //unsigned int modulationam (int argc, char **argv);
-							 }
-				 }
-				 else
-				 {
-					 	 mod = "fm";
-						 printf ("\nNo Modulation specified! Using standard modulation fm \n");
+					//callsign
+			case 'c':
+					callsign = optarg;
+					printf ("\nCallsign is %s \n", callsign);
+					break;
 
-					 //return mod;
-				 }
-				 break;
+				//power managment
+			case 'p':
+					power = atoi (optarg);
+					printf ("\nPowerlevel is %d \n", power);
 
-					 //callsign
-			 case 'c':
-				 if (callsign != NULL)
-				 {
-					 printf ("\nCallsign is %s \n", *callsign);
-					 //return callsign;
-				 }
-				 else
-				 {
-					 callsign = "callsign";
-					 printf ("\nUsing standard Callsign is %s \n", *callsign);
-					 //return callsign;
-				 }
-				 break;
+					break;
 
-				 //power managment
-			 case 'p':
-				 if (power != 7)
-				 {
-				 printf ("\nPowerlevel is %d \n", power);
+					//assistent
+			case 'a':
+				if (argc=1)
+				{
+					printf ("\nAssistent activated! \n");
+					GetUserInput (); //  to menu -> must be refactored later
+					break;
+				}
+				else printf ("\nError in -a \n"); return 1;
 
-				 }
-				 else
-				 {
-					 power = 7;
-					 printf ("\nNo Powerlevel given, using maximum output %d \n", power);
-				 //return power;
-				 }
-				 break;
+				// help
+			case 'h':
+				if (argc=1)
+				{
+					infos ();
+					printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
+					break;
+				}
+				else printf ("\nError in -h \n"); return 1;
 
-					 //assistent
-			 case 'a':
-				 if (argc=1)
-				 {
-					 printf ("\nAssistent activated! \n");
-					 GetUserInput (); //  to menu -> must be refactored later
-				 }
-				 else printf ("\nError in -a \n");
-				 break;
-
-				 // help
-			 case 'h':
-				 if (argc=1)
-				 {
-				 //infos ();
-					 printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
-				 }
-				 else printf ("\nError in -h \n");
-				 break;
-
-			 default:
-				 printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-				 return 1;
+			default:
+				printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				return 1;
 		 } // end of switch
-		 return filename, freq, samplerate, mod, callsign, power;
+
+		 printf ("\n-----------------\n");
+		 printf ("\nChecking File: %s \n", filename);
+		 printf ("\nChecking Freq: %f [MHz] \n", freq);
+		 printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
+		 printf ("\nChecking Modulation: %s \n", mod);
+		 printf ("\nChecking Callsign: %s \n", callsign);
+		 printf ("\nChecking Output-Power: %d \n", power);
+		 printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
+		 printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
+		 break;
+		 //return filename, freq, samplerate, mod, callsign, power;
 	 } // end of while
 
+ 		//}//end of else
 	//-- for debugging or information :)
-
 	//printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-	printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
+	//printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
 	//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
 	//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
 	//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
 	//--
-	printf ("\nChecking File: %s \n", filename);
-	printf ("\nChecking Freq: %f [MHz] @ Samplerate: %u [Hz] \n", freq, samplerate);
-	printf ("\nChecking Modulation: %s \n", mod);
-	printf ("\nChecking Callsign: %s \n", callsign);
-	printf ("\nChecking Output-Power: %d \n", power);
-
 	// gathering and parsing all given arguments to parse it to player
 	//tx ();
-	//} //end of else
 
 	printf ("\nEnd of Program! Closing! \n");
-return 0;
+	return 0;
 }

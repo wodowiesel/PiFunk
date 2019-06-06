@@ -1561,7 +1561,7 @@ int GetUserInput () //my menu-assistent
 }
 */
 //--------- MAIN
-int main (int argc, char **argv) // arguments for global use must! be in main
+int main (int argc, char **argv []) // arguments for global use must! be in main
 {
    const char *short_opt = "n:f:s:m:c:p:ah"; // g:
 	 int options = 0;
@@ -1571,7 +1571,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
    char *mod = "fm";// = argv [4];
    char *callsign = "callsign";// = argv [5];
-	 int power = 7;
+	 int power = 5;
    //char volume = argv [6]; // argc>4 ? atoi(argv[6]):4
    //unsigned int gain = atoi (argv [6]); // => (atoi gives the value of a string) in play_wav possible
 	 // atoll () is meant for integers & it stops parsing when it finds the first non-digit
@@ -1585,16 +1585,18 @@ int main (int argc, char **argv) // arguments for global use must! be in main
    //infos (); //information, disclaimer
    //timer (); //local time
    /*
-  if (argc=0||NULL)
-  {
-     fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-  }
- 	else
-  {
+
 		*/
    while ((options = getopt (argc, argv, "n:f:s:m:c:p:ah")) != -1) // shortopts must be constants
   	{
-
+			/*
+			if (argc=0||NULL)
+		  {
+		     fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+		  }
+		 	else
+		  {
+			*/
    		switch (options)
    		{
 
@@ -1634,8 +1636,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
                 }
 								else printf ("\nError in -m \n"); return 1;
 
-
-
      				//callsign
    			case 'c':
 						callsign = optarg;
@@ -1659,7 +1659,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 						break;
     			}
 					else printf ("\nError in -a \n"); return 1;
-
 
     			// help
    			case 'h':
@@ -1690,7 +1689,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			//return filename, freq, samplerate, mod, callsign, power;
   	} // end of while
 
-   // gathering and parsing all given arguments to player 
+   // gathering and parsing all given arguments to player
 
    //tx ();
    //} //end of else
