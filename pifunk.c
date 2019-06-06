@@ -1531,8 +1531,7 @@ int callname ()
         		 //printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						 break;
 
-		 default: printf ("\nError! \n");
-							break;
+		// default: printf ("\nError! \n"); break;
     }
 		return 0;
   	//return callsign, &callsign, *callsign;
@@ -1557,11 +1556,10 @@ int menu ()
 						exit (-1);
 						break;
 
-	default: printf ("\nError! \n");
-					 break;
+	//default: printf ("\nError! \n"); break;
 	}
 
-return 0;
+	return 0;
 }
 
 int modetype ()
@@ -1579,8 +1577,7 @@ int modetype ()
 							modulationselect ();
 							break;
 
-		default: printf ("\nError! \n");
-						 break;
+	//	default: printf ("\nError! \n"); break;
 
 	}
 

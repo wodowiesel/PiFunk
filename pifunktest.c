@@ -1671,7 +1671,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
     			}
 					else printf ("\nError in -h \n"); return 1;
 
-
    			default:
 					printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 					return 1;
