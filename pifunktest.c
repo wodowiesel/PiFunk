@@ -1526,8 +1526,8 @@ int GetUserInput () //my menu-assistent
 {
     timer ();
     //infos ();
-    //printf ("Press Enter to Continue... \n");
-    //while (getchar () =! "\n");
+    printf ("Press Enter to Continue... \n");
+    while (getchar () != "\n");
 	  printf ("Choose a Mode [1] Channel-Mode // [2] Frequency-Mode // [3] CSV-Reader // [4] CMD // [5] Exit : ");
 	  scanf ("%d", &modeselect);
 

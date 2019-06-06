@@ -557,6 +557,7 @@ unsigned int channels = 1;
 char *mod = "fm";
 char *fm = "fm";
 char *am = "am";
+int powerlevel;
 char *callsign;
 float volume = 1.0f;
 unsigned int power = 7;
@@ -900,7 +901,7 @@ unsigned int modulationselect ()
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 			    	//volaudio ();
-		        unsigned int modulationam (int argc, char **argv);
+		        int modulationam (int argc, char **argv);
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
@@ -921,7 +922,7 @@ unsigned int channelselect ()
 					filenamepath ();
 					printf ("\nChecking volume... \n");
 					//audiovol ();
-					unsigned int modulationfm ();
+					int modulationfm ();
 					break;
 
 		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
@@ -1347,7 +1348,7 @@ unsigned int modulationfm (int argc, char **argv)
 }
 
 //AM --- not yet adapted, needs revision for freq
-unsigned int modulationam (int argc, char **argv)
+int modulationam (int argc, char **argv)
 {
 	    /*
               {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
@@ -1459,10 +1460,10 @@ unsigned int modulationam (int argc, char **argv)
     //fclose (FileFreqTiming);
     fclose (sfp);
     printf ("\nFile saved! \n");
-    break;
-	}
 
-return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
+	}
+return 0;
+//return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
 }
 // all subch. -> base/default case 0 -> channel 0
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
@@ -1561,10 +1562,11 @@ int modetype ()
 
 int powerselect ()
 {
+
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
 	scanf ("%d", &powerlevel);
-
-	return 0;
+	printf ("\nPowerlevel was set to: %d \n", powerlevel);
+	return powerlevel;
 }
 
 int GetUserInput () // assistent
@@ -1572,12 +1574,12 @@ int GetUserInput () // assistent
     printf ("\nChoose Your File: \n");
 		filenamepath ();
 		printf ("\nChoose Powerlevel: \n");
-		powerselect ()
+		powerselect ();
 		printf ("\nChoose between custom or standard ham-callsign / nickname: \n");
 		callname ();
 		modetype ();
 		printf ("\nPress Enter to Continue for Transmission... \n");
-		while (getchar () =! "\n");
+		while (getchar () != "\n");
 
     return 0;
 }
@@ -1639,13 +1641,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 							{
 								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
-								modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
+								int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 								break;
 							}
 							else if (!strcmp (mod, "am"))
 							{
 								printf ("\nPushing args to am Modulator... \n");
-								modulationam (int argc, char **argv);
+								int modulationam (int argc, char **argv);
 								break;
 							}
 							else printf ("\nError in -m \n"); return 1;
