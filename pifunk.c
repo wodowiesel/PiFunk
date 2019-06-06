@@ -1021,15 +1021,15 @@ int led ()
 }
 
 // FM ones
-void infos () //warnings and infos
+int infos () //warnings and infos
 {
     printf ("\033[1;4;35m"); //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
     printf ("\nWelcome to the Pi-Funk! v%s-%s for Raspian ARM! \n\a", VERSION, *description);
     printf ("\033[0m"); //collor escape command for resetting
    	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
-    printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign\n");
-
+    printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign \n");
+ 		return 0;
 }
 
 void modulate (int l)
@@ -1604,7 +1604,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
-	void infos (); //information, disclaimer
+	int infos (); //information, disclaimer
 	timer (); //local time
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
@@ -1680,7 +1680,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			case 'h':
 				if (argc=1)
 				{
-					infos ();
 					printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 					break;
 				}
