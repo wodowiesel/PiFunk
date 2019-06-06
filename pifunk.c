@@ -1514,23 +1514,23 @@ char callname ()
 {
     //if (*callsign == NULL){
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
-		scanf ("%d", &callnameselect);
+		scanf ("%d", callnameselect);
 		switch (callnameselect)
 	  {
 
 	  	case '1': printf ("\nType in your callsign: ");
-						scanf  ("%s", *callsign);
-						printf ("\nYour callsign is: %s \n", *callsign);
-        		//return callsign, &callsign, *callsign;
-						break;
+								scanf  ("%s", *callsign);
+								printf ("\nYour callsign is: %s \n", *callsign);
+        				//return callsign, &callsign, *callsign;
+								break;
 
 		 case '2': callsign = "callsign"; //default callsign
-						printf ("\nUsing default callsign: %s \n", *callsign);
-        		//printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
-						break;
+							printf ("\nUsing default callsign: %s \n", *callsign);
+        			//printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
+							break;
     }
 		//return 0;
-  return callsign, &callsign, *callsign;
+  	return callsign, &callsign, *callsign;
 }
 
 int menu ()
@@ -1561,8 +1561,8 @@ return 0;
 
 int modetype ()
 {
-	printf ("\nChoose Mode : \n");
-	scanf ("%d", &modeselect);
+	printf ("\nChoose Mode: \n");
+	scanf ("%d", modeselect);
 
 	switch (modeselect)
 	{
@@ -1587,22 +1587,19 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", &powerlevel);
+	scanf ("%d", powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	return powerlevel;
 }
 
 int GetUserInput () // assistent
 {
-    printf ("\nChoose Your File: \n");
 		filenamepath ();
-		printf ("\nChoose Powerlevel: \n");
 		powerselect ();
-		printf ("\nChoose between custom or standard ham-callsign / nickname: \n");
 		callname ();
 		modetype ();
 		printf ("\nPress Enter to Continue for Transmission... \n");
-		while (getchar () != '\n');
+		//while (getchar () != '\n');
 
     return 0;
 }
