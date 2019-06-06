@@ -733,17 +733,19 @@ char filenamepath ()  // expected int?
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", filename);
 
-  if (filename != "sound.wav")
-	{
+  //if (filename != "sound.wav")
+	//{
      sfp = fopen (filename, "r");
 	   //return sfp;
-	}
+	//}
+	/*
 	else
 	{
 	   printf ("\nTrying to play default sound.wav ... \n");
 	   int fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
 	   //return fp;
 	}
+	*/
 	return 0;
 }
 
@@ -1540,7 +1542,7 @@ int menu ()
 {
 	int menuoption;
 	printf ("Choose a Mode [1] CMD // [2] CSV-Reader // [3] Exit : ");
- 	scanf ("%d", menuoption);
+ 	scanf ("%d", &menuoption);
 	switch (menuoption)
 	{
 	case '1': printf ("\nShell - Commandline (Main): \n");
@@ -1590,8 +1592,8 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", powerlevel);
-	printf ("\nPowerlevel was set to: %d \n", powerlevel);
+	scanf ("%d", p&owerlevel);
+	//printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	return 0;
 }
 
