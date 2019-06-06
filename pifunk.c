@@ -926,36 +926,23 @@ unsigned int modulationselect ()
 }
 unsigned int channelselect ()
 {
-	printf ("\nYou selected 1 for Channel-Mode\n");
-	printf ("Choose your Band [1] PMR // [2] CB // [3] Menu or [4] Exit : ");
+	printf ("\nYou selected 1 for Channel-Mode \n");
+	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
   scanf  ("%d", &channelmode);
 
     switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
         {
-         case 1: printf ("\nPMR CHAN-MODE in FM \n");
-					channelmodepmr (); // gets freq from pmr list
-					filenamepath ();
-					printf ("\nChecking volume... \n");
-					//audiovol ();
-					int modulationfm ();
-					break;
+         	case 1: printf ("\nPMR CHAN-MODE in FM \n");
+									channelmodepmr (); // gets freq from pmr list
 
-		     case 2: printf ("\nCB CHAN-MODE SELECT \n");
-				  channelmodecb (); // gets freq for chan
-					filenamepath (); //gets file
-					//audiovol ();
-					modulationselect (); //selects modulation
-					break;
+									break;
 
-         case 3: printf ("\nReturning to Assistent... \n");
-          //GetUserInput ();
-          break;
+		   		case 2: printf ("\nCB CHAN-MODE SELECT \n");
+									channelmodecb ();
+									break;
 
-         case 4:  printf ("\nExiting... \n");
-					 exit (-1);
+        	default: printf ("\nDefault: Returning... \n"); break;
 
-         default: printf ("\nDefault: Returning to Assistent... \n");
-          //GetUserInput ();
           break;
 		    }
 return 0;
@@ -1515,11 +1502,11 @@ int callname ()
 {
     //if (*callsign == NULL){
 		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or use (2) default 'callsign': \n");
-		//scanf ("%d", callnameselect);
+		scanf ("%d", &callnameselect);
 		switch (callnameselect)
 	  {
 
-	   case 1: printf ("\nType in your callsign: ");
+	   case 1: printf ("\nType in your callsign: \n");
 						 scanf  ("%s", &callsign);
 						 printf ("\nYour callsign is: %s \n", *callsign);
         		 //return callsign, &callsign, *callsign;
@@ -1539,8 +1526,8 @@ int callname ()
 int menu ()
 {
 
-	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: ");
- 	//scanf ("%d", menuoption);
+	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: \n");
+ 	scanf ("%d", &menuoption);
 	switch (menuoption)
 	{
 		case 1: printf ("\nShell - Commandline (main): \n");
@@ -1563,7 +1550,7 @@ int menu ()
 
 int modetype ()
 {
-	printf ("\nChoose Mode: \n");
+	printf ("\nChoose Mode: [1] Channelnmode // [2] Frequencynmode \n");
 	scanf ("%d", &modeselect);
 
 	switch (modeselect)
@@ -1572,7 +1559,7 @@ int modetype ()
 							channelselect (); //undefined reference
 							break;
 
-		case 2:		printf ("\n[1] Frequencynmode: \n");
+		case 2:		printf ("\n[2] Frequencynmode: \n");
 							freqselect ();
 							modulationselect ();
 							break;
