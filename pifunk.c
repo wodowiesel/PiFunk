@@ -1514,7 +1514,7 @@ char csvreader ()
 char callname ()
 {
     //if (*callsign == NULL){
-		scanf ("%d", callnameselect)
+		scanf ("%d", callnameselect);
 		switch (callnameselect)
 	  {
 		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
@@ -1551,7 +1551,7 @@ int menu ()
 	case '3': printf ("\nExiting... \n");
 						exit (-1);
 						break;
-						
+
 	default: printf ("\nError! \n");
 					 break;
 	}
