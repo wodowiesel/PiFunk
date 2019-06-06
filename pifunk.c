@@ -733,17 +733,16 @@ char filenamepath ()  // expected int?
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", filename);
 
-  if (filename != NULL)
+  if (filename != "sound.wav")
 	{
      sfp = fopen (filename, "r");
 	   //return sfp;
 	}
 	else
 	{
-     printf ("\nFile %s not found! \n", filename);
 	   printf ("\nTrying to play default sound.wav ... \n");
-	   int fp = open ("sound/sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
-	   return fp;
+	   int fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
+	   //return fp;
 	}
 	return 0;
 }
@@ -981,7 +980,7 @@ void handSig () // exit func
 
 void clearscreen ()
 {
-  printf("\033[H\033[J");
+  printf ("\033[H\033[J");
   //fflush (stdin);
   //clsscr ();
   //system("clear")
@@ -1514,23 +1513,24 @@ char csvreader ()
 char callname ()
 {
     //if (*callsign == NULL){
-		scanf ("%d", callnameselect);
+		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
+		scanf ("%d", &callnameselect);
 		switch (callnameselect)
 	  {
-		printf ("\nYou don't have specified a callsign yet!\n Do you want to customize it? press (1) or use (2) default 'callsign': \n");
-		case '1': printf ("\nType in your callsign: ");
+
+	  	case '1': printf ("\nType in your callsign: ");
 						scanf  ("%s", *callsign);
 						printf ("\nYour callsign is: %s \n", *callsign);
         		//return callsign, &callsign, *callsign;
 						break;
 
-		case '2': callsign = "callsign"; //default callsign
+		 case '2': callsign = "callsign"; //default callsign
 						printf ("\nUsing default callsign: %s \n", *callsign);
         		//printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						break;
     }
-		return 0;
-  //return callsign, &callsign, *callsign;
+		//return 0;
+  return callsign, &callsign, *callsign;
 }
 
 int menu ()
@@ -1587,9 +1587,9 @@ int powerselect ()
 {
 
 	printf ("\nType in Powerlevel (0-7 from 2-14 mA): \n");
-	scanf ("%d", powerlevel);
+	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
-	return 0;
+	return powerlevel;
 }
 
 int GetUserInput () // assistent
