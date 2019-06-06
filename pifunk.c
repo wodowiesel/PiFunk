@@ -896,7 +896,7 @@ unsigned int modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 				    //volaudio ();
-		        unsigned int modulationfm ();
+		        int modulationfm ();
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
@@ -1308,23 +1308,24 @@ void WriteTone (double freq, uint32_t Timing)
 int tx ()
 {
 
-  printf("\nBroadcasting now...! \n");
+
   // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
   //pad_reg [GPIO_PAD_0_27] = PADGPIO + power;
   //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
 
 	// GPIO needs to be ALT FUNC 0 to output the clock
-	//gpio_reg[reg] = (gpio_reg[reg] & ~(7 << shift));
+	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
+	printf("\nBroadcasting now...! \n");
 
 return 0;
 }
 
 //FM
-unsigned int modulationfm (int argc, char **argv)
+int modulationfm (int argc, char **argv)
 {
-    printf ("\nPreparing for FM... \n");
+  printf ("\nPreparing for FM... \n");
 
-    if (argc>0)
+  if (argc>0)
  	{
 	  printf ("\nChecking Path... \n");
     setupfm (); // gets filename & path or done by filmename() func
@@ -1339,10 +1340,11 @@ unsigned int modulationfm (int argc, char **argv)
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
 	  printf ("\nNow transmitting... \n");
-    }
+  }
 	else
 	{
-		 fprintf (stderr, "\nUse Parameters to run: [filename] [freq] [samplerate] [mod (fm/am)] \nWhere wav-file is 16-bit @ 22050 Hz Mono.\nSet wavfile to '-' to use stdin.\nFrequency is between 1-700.0000 [MHz] (default 100.0000)\nYou can play an empty file to transmit silence. \n");
+		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
+		return 1;
 	}
 	return 0;
 }
@@ -1579,7 +1581,7 @@ int GetUserInput () // assistent
 		callname ();
 		modetype ();
 		printf ("\nPress Enter to Continue for Transmission... \n");
-		while (getchar () != "\n");
+		while (getchar () != '\n');
 
     return 0;
 }
@@ -1602,7 +1604,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
-	infos (); //information, disclaimer
+	void infos (); //information, disclaimer
 	timer (); //local time
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
@@ -1713,7 +1715,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 	//--
 	// gathering and parsing all given arguments to parse it to player
-	tx ();
+	int tx ();
 
 	printf ("\nEnd of Program! Closing! \n");
 	return 0;
