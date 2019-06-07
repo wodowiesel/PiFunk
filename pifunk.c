@@ -1683,7 +1683,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 				if (argc=1)
 				{
 					printf ("\nAssistent activated! \n");
-					assistentt (); //  to menu -> must be refactored later
+					assistent (); //  to menu -> must be refactored later
 					break;
 				}
 				else printf ("\nError in -a \n"); return 1;
