@@ -745,7 +745,7 @@ int filenamepath ()  // expected int?
 	   //return fp;
 	}
 	*/
-	printf ("\nTrying to play %s ... \n", filename);
+	printf ("\nTrying to play %s ... \n", *filename);
 	return 0; //, sfp;
 }
 
