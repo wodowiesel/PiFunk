@@ -155,9 +155,9 @@ ___
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with ~10 uF caps
 with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
 
-* Help / Testers and Feedback always appreciated!*
+* Help / Testers and Feedback always appreciated!
 
-* Thank you and have fun!*
+* Thank you and have fun!
 ___
 
 ### Links:
