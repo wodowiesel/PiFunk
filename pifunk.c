@@ -903,6 +903,21 @@ int channelmodecb () // CB
 	return  0;
 }
 
+int modselect ()
+{
+	scanf ("%s", &mod);
+	if (mod == "fm")
+	{
+		int modulationfm (int argc, char **argv);
+	}
+	else
+	{
+		int modulationam (int argc, char **argv);
+	}
+
+ 	return 0;
+}
+
 int modulationselect ()
 {
 	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : \n");
@@ -910,12 +925,13 @@ int modulationselect ()
 	switch (freqmode)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
-		        int modulationfm ();
+						mod = "fm";
+
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
-			    	//volaudio ();
-		        int modulationam (int argc, char **argv);
+						mod = "am";
+
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
@@ -960,6 +976,7 @@ return volbuffer [i], volumeMultiplier;
 //--------------- Voids
 void handSig () // exit func
 {
+		printf ("\nExiting... \n");
 		exit (0);
 }
 
@@ -1036,6 +1053,7 @@ int infos () //warnings and infos
 
 void modulate (int l)
 {
+	printf ("\nModulate... \n");
 	//	ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + l;  //
 }
 
@@ -1058,12 +1076,14 @@ void getRealMemPage (void** vAddr, void** pAddr) // should work through bcm head
 
 void freeRealMemPage (void** vAddr)
 {
+		printf ("\nFreeing mempage... \n");
 		munlock (vAddr, 4096); // unlock ram
 		free    (vAddr); // free the ram
 }
 
 void carrierhigh () // enables it
 {
+	printf ("\nSetting carrier high ... \n");
 /* Added functions to enable and disable carrier */
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) // 0x5A dec: 90
 //struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};// set it to ! = LOW
@@ -1072,6 +1092,7 @@ void carrierhigh () // enables it
 
 void carrierlow () // disables it
 {
+printf ("\nSetting carrier low ... \n");
 //struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
 //ACCESS (CM_GP0CTL) == *((int*) &setupword);
 }
@@ -1121,6 +1142,7 @@ void play_wav (char *filename, double freq, int samplerate)
     (588 active lines per frame, out of 625 lines total)
 	*/
     // after getting filename insert then open
+	playlist ();
 	int sz = lseek (fp, 0L, SEEK_END);
 
   short* data = (short*) malloc (sz);
@@ -1597,8 +1619,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	int infos (); //information, disclaimer
-	//timer (); //local time
+	infos (); //information, disclaimer
+	timer (); //local time
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
 	 {
