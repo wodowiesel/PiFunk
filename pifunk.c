@@ -1501,7 +1501,7 @@ int callname ()
         		 //return callsign, &callsign, *callsign;
 						 break;
 
-		 case 2: char *callsign = "callsign"; //default callsign
+		 case 2: *callsign = "callsign"; //default callsign
 						 printf ("\nUsing default callsign: %s \n", *callsign);
         		 //printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						 break;
