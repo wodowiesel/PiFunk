@@ -1564,19 +1564,6 @@ int powerselect ()
 	return powerlevel;
 }
 
-int GetUserInput () // assistent
-{
-		menu ();
-		filenamepath ();
-		powerselect ();
-		callname ();
-		modetype ();
-		//printf ("\nPress Enter to Continue for Transmission... \n");
-		//while (getchar () != '\n');
-
-    return 0;
-}
-
 int menu ()
 {
 
@@ -1601,6 +1588,20 @@ int menu ()
 
 	return 0;
 }
+
+int GetUserInput () // assistent
+{
+		menu ();
+		filenamepath ();
+		powerselect ();
+		callname ();
+		modetype ();
+		//printf ("\nPress Enter to Continue for Transmission... \n");
+		//while (getchar () != '\n');
+
+    return 0;
+}
+
 
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main
