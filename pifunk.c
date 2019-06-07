@@ -1332,8 +1332,9 @@ void WriteTone (double freq, uint32_t Timing)
 // main progs
 int tx ()
 {
-
-
+	// put here the play_wave
+	//play_wav ();
+	// pads need to be defined
   // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
   //pad_reg [GPIO_PAD_0_27] = PADGPIO + power;
   //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
@@ -1370,7 +1371,7 @@ int modulationfm (int argc, char **argv)
 //AM --- not yet adapted, needs revision for freq
 int modulationam (int argc, char **argv)
 {
-
+	printf ("\nam modulator starting \n");
 	    /*
               {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
               {IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -1466,11 +1467,6 @@ int modulationam (int argc, char **argv)
 	  }
 
   }
-    printf ("\nReading file: %s \n", filename);
-    printf ("\nFreq: %f \n", freq);
-  	printf ("\nSample Rate: %u \n", samplerate);
-  	printf ("\nChannels: %d \n", channels);
-    printf ("\nWriting file: %s \n", outfilename);
 
     // Close input and output files
     //fclose (FileFreqTiming);
@@ -1547,7 +1543,7 @@ int modetype ()
 							freqselect ();
 							break;
 
-		//	default: printf ("\nError! \n"); break;
+		default: printf ("\nError! \n"); break;
 
 	}
 
@@ -1581,7 +1577,6 @@ int menu ()
 
 		case 3: printf ("\nExiting... \n");
 						exit (0);
-						break;
 
 		default: printf ("\nError! \n"); break;
 	}
@@ -1589,19 +1584,18 @@ int menu ()
 	return 0;
 }
 
-int GetUserInput () // assistent
+int assistent () // assistent
 {
-		menu ();
 		filenamepath ();
 		powerselect ();
 		callname ();
 		modetype ();
+		// sampchecker
 		//printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n');
 
     return 0;
 }
-
 
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main
@@ -1689,7 +1683,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 				if (argc=1)
 				{
 					printf ("\nAssistent activated! \n");
-					GetUserInput (); //  to menu -> must be refactored later
+					assistentt (); //  to menu -> must be refactored later
 					break;
 				}
 				else printf ("\nError in -a \n"); return 1;
@@ -1734,7 +1728,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		//--
 		// gathering and parsing all given arguments to parse it to player
 	tx ();
-
+	menu ();
 	printf ("\nEnd of Program! Closing! \n");
 	return 0;
 }
