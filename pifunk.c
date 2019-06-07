@@ -717,20 +717,20 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
 
 // basic function then specified one after another
-static int timer ()
+int timer ()
 {
    char *newtime;
    time (&rawtime);
    //int info = localtime (&rawtime);
    //const struct tm *tp = asctime (info);
-   printf ("\nCurrent local time and date: %s \n", *newtime);
+   printf ("\nCurrent local time and date: %s \n", rawtime);
    return 0;
 }
 
 char filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", filename);
+  scanf ("%s", &filename);
 
   //if (filename != "sound.wav")
 	//{
@@ -970,7 +970,7 @@ float audiovol ()
 		 printf ("\nAdresses: i: %p , volbuffer: %p , volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
      return volbuffer [i], volumeMultiplier;
 	}
-return volbuffer [i], volumeMultiplier;
+	return volbuffer [i], volumeMultiplier;
 }
 */
 //--------------- Voids
@@ -1042,9 +1042,8 @@ int led ()
 // FM ones
 int infos () //warnings and infos
 {
-    printf (""); //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
-    printf ("\033[1;4;35m Welcome to the Pi-Funk! v %s - %s for Raspian ARM! \033[0m", VERSION, description);
-    printf (""); //collor escape command for resetting
+    //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
+    printf ("\033[1;4;35m Welcome to the Pi-Funk! v %s - %s for Raspian ARM! \033[0m", VERSION, description); //collor escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign \n");
