@@ -1497,12 +1497,12 @@ int callname ()
 
 	   case 1: printf ("\nType in your callsign: \n");
 						 scanf  ("%s", &callsign);
-						 printf ("\nYour callsign is: %s \n", *callsign);
+						 printf ("\nYour callsign is: %s \n", callsign);
         		 //return callsign, &callsign, *callsign;
 						 break;
 
 		 case 2: callsign = "callsign"; //default callsign
-						 printf ("\nUsing default callsign: %s \n", *callsign);
+						 printf ("\nUsing default callsign: %s \n", callsign);
         		 //printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						 break;
 
@@ -1523,7 +1523,7 @@ int menu ()
 						int main (int argc, char **argv); // go back to cmd if you want
 						break;
 
-		case 2: printf ("\nReading CSV for PMR: \n");
+		case 2: printf ("\nReading CSV for PMR... \n");
 						csvreader ();
 						break;
 
@@ -1539,16 +1539,16 @@ int menu ()
 
 int modetype ()
 {
-	printf ("\nChoose Mode: [1] Channelnmode // [2] Frequencynmode \n");
+	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
 	scanf ("%d", &modeselect);
 
 	switch (modeselect)
 	{
-		case 1:	 	printf ("\n[1] Channelnmode: \n");
+		case 1:	 	printf ("\n[1] Channelmode: \n");
 							channelselect (); //undefined reference
 							break;
 
-		case 2:		printf ("\n[2] Frequencynmode: \n");
+		case 2:		printf ("\n[2] Frequencymode: \n");
 							freqselect ();
 							break;
 
