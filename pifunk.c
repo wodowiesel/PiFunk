@@ -720,10 +720,10 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 int timer ()
 {
 	 time_t *rawtime;
-   char *newtime = time (rawtime); //_THROW
+   //char *newtime = time (rawtime); //_THROW
    //int info = localtime (&rawtime);
    //const struct tm *tp = asctime (info);
-   printf ("\nCurrent local time and date: %s \n", newtime);
+   printf ("\nCurrent local time and date: %s \n", rawtime);
    return 0;
 }
 
