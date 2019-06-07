@@ -19,7 +19,7 @@ get this program via:
 
 via command: `sudo modprobe w1-gpio,gpiopin=4`
 
-Using w1-gpio sometimes needs a 4.7 kΩ pullup resistor connected on GPIO pin
+Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO pin
 
 (if you have problems deactivate 1-wire config!)
 
@@ -30,11 +30,13 @@ ___
 
 ### Build:
 
-You will need some libraries for this:
+First update & upgrade system:
 
 `sudo apt update` for system updates
 
 `sudo apt upgrade` for system upgrades
+
+You will need some libraries for this:
 
 `sudo apt-get install libsndfile1-dev`
 
@@ -54,7 +56,7 @@ then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install it
 
 then go to directory:
 
-`cd PiFunk` default path /home/pi/PiFunk
+`cd PiFunk` with default path: `/home/pi/PiFunk`
 
 compile with:
 
@@ -102,15 +104,15 @@ Arguments: `[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-
 
 extra single Arguments: -> no further argument needed
 
-[`-a`] for assistent in step-by-step
+`[-a]` for assistent in step-by-step
 
-[`-h`] for help with more infos and arguments
+`[-h]` for help with more infos and arguments
 
 Use '. dot' as decimal-comma separator!
 
-default: `sudo ./pifunk -n sound.wav -f 446.00625 -s 22050 -m fm -c callsign -p 7`
+default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
 
-Radio works with *.wav-file with 16-bit @ 22050.000 [Hz] mono / 1-700+ MHz range.
+Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700+ MHz range.
 
 CTSS-Tones for PMR can be found here [CTSS](ctsspmr.csv)
 
@@ -120,17 +122,19 @@ ___
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- PWM on GPIO 4/Pin 7 @ 4 mA (50 mA max. on ALL pins or 16 per bank!!!)
+- PWM on GPIO 4/Pin 7 @ 2-4 mA (50 mA max. on ALL pins or 16 per bank!!!)
 
 (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 
 for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
-- Antenna should be grounded if possible (PIN 9 right one next to GPIO4)![Pinout](docs/pinout-gpio-pib+.jpg)
+- Antenna should be grounded (PIN 9 right one next to GPIO4 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-- You can try to smooth it out with a 1:X-balloon if using long HF antenna
+- You can try to smooth it out with a 1:X (3-9)-balloon if using long HF antenna
 
-- Dummy-load: 1-100 W @ 50 Ohm "cement" or similar with cooling-ribs with fan for testing.
+- Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (alu) with cooler for testing
+
+- For handling overheating use cooling-ribs with fan (5V DC/0.2A 20x20mm) 
 
 - For transmission you should use tested Antennas!
 
@@ -170,4 +174,4 @@ ___
 
 [License Guideline](LICENSE.md) under Open-Source GPLv3.0
 
-Would appreciate being named in the source
+Would appreciate being named in the source.
