@@ -727,7 +727,7 @@ int timer ()
    return 0;
 }
 
-char filenamepath ()  // expected int?
+int filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
@@ -746,7 +746,7 @@ char filenamepath ()  // expected int?
 	}
 	*/
 	printf ("\nTrying to play %s ... \n", filename);
-	return *filename; //, sfp;
+	return 0 //, sfp;
 }
 
 double freqselect () // gets freq by typing in
@@ -1532,31 +1532,6 @@ int callname ()
   	//return callsign, &callsign, *callsign;
 }
 
-int menu ()
-{
-
-	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: \n");
- 	scanf ("%d", &menuoption);
-	switch (menuoption)
-	{
-		case 1: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv); // go back to cmd if you want
-						break;
-
-		case 2: printf ("\nReading CSV for PMR... \n");
-						csvreader ();
-						break;
-
-		case 3: printf ("\nExiting... \n");
-						exit (0);
-						break;
-
-		default: printf ("\nError! \n"); break;
-	}
-
-	return 0;
-}
-
 int modetype ()
 {
 	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
@@ -1601,6 +1576,32 @@ int GetUserInput () // assistent
 
     return 0;
 }
+
+int menu ()
+{
+
+	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: \n");
+ 	scanf ("%d", &menuoption);
+	switch (menuoption)
+	{
+		case 1: printf ("\nShell - Commandline (main): \n");
+						int main (int argc, char **argv); // go back to cmd if you want
+						break;
+
+		case 2: printf ("\nReading CSV for PMR... \n");
+						csvreader ();
+						break;
+
+		case 3: printf ("\nExiting... \n");
+						exit (0);
+						break;
+
+		default: printf ("\nError! \n"); break;
+	}
+
+	return 0;
+}
+
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main
 {
