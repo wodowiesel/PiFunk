@@ -720,7 +720,8 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 int timer ()
 {
    char *newtime;
-   time (rawtime);
+	 time_t *rawtime;
+   time (*rawtime);
    //int info = localtime (&rawtime);
    //const struct tm *tp = asctime (info);
    printf ("\nCurrent local time and date: %s \n", rawtime);
@@ -740,12 +741,13 @@ char filenamepath ()  // expected int?
 	/*
 	else
 	{
-	   printf ("\nTrying to play default sound.wav ... \n");
+
 	   int fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
 	   //return fp;
 	}
 	*/
-	return filename; //, sfp;
+	printf ("\nTrying to play %s ... \n", filename);
+	return *filename; //, sfp;
 }
 
 double freqselect () // gets freq by typing in
