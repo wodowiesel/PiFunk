@@ -1043,10 +1043,10 @@ int led ()
 int infos () //warnings and infos
 {
     printf ("\033[1;4;35m"); //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
-    printf ("\nWelcome to the Pi-Funk! v%s-%s for Raspian ARM! \n", VERSION, *description);
+    printf ("Welcome to the Pi-Funk! v%s-%s for Raspian ARM!", VERSION, *description);
     printf ("\033[0m"); //collor escape command for resetting
-   	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
-    printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
+   	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
+    printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign \n");
  		return 0;
 }
@@ -1131,6 +1131,7 @@ void play_list () // exit func
 
 void play_wav (char *filename, double freq, int samplerate)
 {
+	printf ("\nAllocating file to mem for wave ... \n");
 	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
     245 × 60 × 3 = 44100
