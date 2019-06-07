@@ -767,31 +767,31 @@ int channelmodepmr () //PMR
 	 //---- Analog & digital
 	 //case 0: return freq=446.00625; printf ("\nDUMMY all-chan: Chan 0-> default Chan 1 %f ", freq); break;	// Scan all Chan till active , now chan1
 	 case 1: freq=446.00625; break;	// Standard
-	 case 2: return freq=446.01875; break; // Geocaching
-	 case 3: return freq=446.03125; break; // Standard
-	 case 4: return freq=446.04375; break; // at 3-chan-PMR-devices its ch. 2
-	 case 5: return freq=446.05625; break; // Contest
-	 case 6: return freq=446.06875; break; // Events
-	 case 7: return freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
-	 case 8: return freq=446.09375; break; // Standard
+	 case 2: freq=446.01875; break; // Geocaching
+	 case 3: freq=446.03125; break; // Standard
+	 case 4: freq=446.04375; break; // at 3-chan-PMR-devices its ch. 2
+	 case 5: freq=446.05625; break; // Contest
+	 case 6: freq=446.06875; break; // Events
+	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
+	 case 8: freq=446.09375; break; // Standard
   //-----Digital only
 	// dpmr digital new since 28.09.2016
 	// extra 8 chan
 	// 12.5 kHz steps
-	 case 9:  return freq=446.10312; break; // 6.25 kHz steps
-	 case 10: return freq=446.10625; break;
-	 case 11: return freq=446.11875; break;
-	 case 12: return freq=446.13125; break;
-	 case 13: return freq=446.14375; break;
-	 case 14: return freq=446.15625; break;
-	 case 15: return freq=446.16875; break;
-	 case 16: return freq=446.18125; break;
-	 case 17: return freq=446.19375; break;
+	 case 9:  freq=446.10312; break; // 6.25 kHz steps
+	 case 10: freq=446.10625; break;
+	 case 11: freq=446.11875; break;
+	 case 12: freq=446.13125; break;
+	 case 13: freq=446.14375; break;
+	 case 14: freq=446.15625; break;
+	 case 15: freq=446.16875; break;
+	 case 16: freq=446.18125; break;
+	 case 17: freq=446.19375; break;
 	 case 18: exit (0);
 	 default: printf ("\nDefault chan = 1 %f \n", freq); freq=446.00625; break;
 	}
   printf ("\nUsing Freq: %f \n", freq);
-	return channelnumberpmr, freq;
+	return 0;
 }
 
 int channelmodecb () // CB
@@ -801,8 +801,8 @@ int channelmodecb () // CB
 	switch (channelnumbercb)
 	{
 		// --> translation of infos in english in future updates!
-       case 0:    freq=27.0450; break; //first digital channel
-			 case 1:   return freq=26.9650; break; //empfohlener Anrufkanal (FM)
+       case 0:   freq=27.0450; break; //first digital channel
+			 case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)
 			 case 2:   return freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
 			 case 3:   return freq=26.9850; break;
 			 case 4:   return freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
@@ -900,7 +900,7 @@ int channelmodecb () // CB
 
 	}
   printf ("\nUsing Freq: %f \n", freq);
-	return channelnumbercb, freq;
+	return  0;
 }
 
 int modulationselect ()
@@ -1599,7 +1599,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	//int infos (); //information, disclaimer
+	int infos (); //information, disclaimer
 	//timer (); //local time
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
