@@ -1142,7 +1142,7 @@ void play_wav (char *filename, double freq, int samplerate)
     (588 active lines per frame, out of 625 lines total)
 	*/
     // after getting filename insert then open
-	playlist ();
+	play_list ();
 	int sz = lseek (fp, 0L, SEEK_END);
 
   short* data = (short*) malloc (sz);
