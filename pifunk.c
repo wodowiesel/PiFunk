@@ -580,10 +580,10 @@ uint32_t carrier_freq = 87600000; //
 float A = 87.6f; // compression parameter (stauchung) -> this might be the carrier too
 int powerlevel;
 int menuoption;
-unsigned int channelnumbercb;
-unsigned int channelnumberpmr;
-unsigned int channelmode;
-unsigned int freqmode;
+int channelnumbercb;
+int channelnumberpmr;
+int channelmode;
+int freqmode;
 int modeselect;
 int callnameselect;
 
@@ -752,7 +752,7 @@ double freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700Mhz chip, pi3 1.2ghz
-	scanf  ("%f", freq);
+	scanf  ("%f", &freq);
 	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
 }
@@ -766,7 +766,7 @@ unsigned int channelmodepmr () //PMR
 	{
 	 //---- Analog & digital
 	 //case 0: return freq=446.00625; printf ("\nDUMMY all-chan: Chan 0-> default Chan 1 %f ", freq); break;	// Scan all Chan till active , now chan1
-	 case 1: return freq=446.00625; break;	// Standard
+	 case 1: freq=446.00625; break;	// Standard
 	 case 2: return freq=446.01875; break; // Geocaching
 	 case 3: return freq=446.03125; break; // Standard
 	 case 4: return freq=446.04375; break; // at 3-chan-PMR-devices its ch. 2
@@ -787,7 +787,7 @@ unsigned int channelmodepmr () //PMR
 	 case 15: return freq=446.16875; break;
 	 case 16: return freq=446.18125; break;
 	 case 17: return freq=446.19375; break;
-	 case 18: exit (0); break;
+	 case 18: exit (0);
 	 default: printf ("\nDefault chan = 1 %f \n", freq);  return freq=446.00625;
 	}
   printf ("\nUsing Freq: %f", freq);
@@ -801,7 +801,7 @@ unsigned int channelmodecb () // CB
 	switch (channelnumbercb)
 	{
 		// --> translation of infos in english in future updates!
-       case 0:   return freq=27.0450; break; //first digital channel
+       case 0:    freq=27.0450; break; //first digital channel
 			 case 1:   return freq=26.9650; break; //empfohlener Anrufkanal (FM)
 			 case 2:   return freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
 			 case 3:   return freq=26.9850; break;
@@ -899,7 +899,7 @@ unsigned int channelmodecb () // CB
 			default:  printf ("\nDefault: CB chan = 1 %f \n", freq); return freq=26.9650;
 
 	}
-  printf ("\n Using Freq: %f ", freq);
+  printf ("\nUsing Freq: %f ", freq);
 	return channelnumbercb, freq;
 }
 
@@ -910,7 +910,6 @@ unsigned int modulationselect ()
 	switch (freqmode)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
-				    //volaudio ();
 		        int modulationfm ();
 		        break;
 
@@ -924,6 +923,7 @@ unsigned int modulationselect ()
 	}
 	return 0;
 }
+
 unsigned int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
@@ -983,7 +983,7 @@ int ledactive ()
 		//while (!play_wav ())
 		//{
 		//cm2835_gpio_write (PIN17, LOW);
-		printf ("\nLED OFF - No Transmission!\n");
+		printf ("\nLED OFF - No Transmission! \n");
 		//}
     return 0;
 }
@@ -1029,7 +1029,7 @@ int led ()
 int infos () //warnings and infos
 {
     printf ("\033[1;4;35m"); //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
-    printf ("\nWelcome to the Pi-Funk! v%s-%s for Raspian ARM! \n\a", VERSION, *description);
+    printf ("\nWelcome to the Pi-Funk! v%s-%s for Raspian ARM! \n", VERSION, *description);
     printf ("\033[0m"); //collor escape command for resetting
    	printf ("Radio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("Pi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
@@ -1301,7 +1301,7 @@ void WriteTone (double freq, uint32_t Timing)
 	RfSample.Frequency; //= Frequency;
 
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
-	printf ("Freq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	printf ("\nFreq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
@@ -1328,11 +1328,8 @@ int tx ()
 //FM
 int modulationfm (int argc, char **argv)
 {
-  printf ("\nPreparing for FM... \n");
+  	printf ("\nPreparing for FM... \n");
 
-  if (argc>0)
- 	{
-	  printf ("\nChecking Path... \n");
     setupfm (); // gets filename & path or done by filmename() func
 
 	  printf ("\nSetting up DMA... \n");
@@ -1344,19 +1341,16 @@ int modulationfm (int argc, char **argv)
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
+
 	  printf ("\nNow transmitting... \n");
-  }
-	else
-	{
-		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
-		return 1;
-	}
+
 	return 0;
 }
 
 //AM --- not yet adapted, needs revision for freq
 int modulationam (int argc, char **argv)
 {
+
 	    /*
               {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
               {IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -1368,18 +1362,13 @@ int modulationam (int argc, char **argv)
 	printf ("\nnb_samples: %f \n", nb_samples);
 	printf ("\nCompression prameter A: %f \n", A); // was defined as global var above
 
-	if (argc>=4)
-	{
 		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
     printf ("Opening File...");
 	  return fp;
 
-	}
-	else
-	{
 		outfilename = (char *) malloc (128);// allocating memory for filename
 		sprintf (outfilename, "%s", "out.ft");
-	}
+
 //-------
     if (!(fp = open (filename, SFM_READ, &sfinfo)))
     {   // Open failed so print an error message.
@@ -1394,12 +1383,12 @@ int modulationam (int argc, char **argv)
 	}
 	else if (sfinfo.samplerate == 14500)
 	{
-			printf ("Samplerate is 14500 !");
+			printf ("\nSamplerate is 14500 ! \n");
 			return samplerate;
 	}
 	else
   {
-	printf ("\nInput samplerate must be at least 22.05 [kHz] AM/ or 14.5 kHz FM (mono)! \n");
+	printf ("\nInput samplerate must be at least 22.050 [kHz] AM or 14.50 kHz FM (mono)! \n");
 	return 1;
 	}
 //--------------------
@@ -1420,7 +1409,7 @@ int modulationam (int argc, char **argv)
 			printf ("\nChannel buffer b= %s \n", b);
 			if (channels == 0)
 			{
-				printf ("File is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
+				printf ("\nFile is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
 			}
 			else if (channels == 1)
 			{
@@ -1429,39 +1418,39 @@ int modulationam (int argc, char **argv)
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				return b;
 			}
-			else if (channels >= 2){ printf ("Error: File has 2 or more Channels!) \n");} // >1 in stereo or dual mono with half samplerate
+			else if (channels >= 2){ printf ("\nError: File has 2 or more Channels! \n");} // >1 in stereo or dual mono with half samplerate
 
 			//maybe here am option for amplitude factor input!?
-			printf ("Factamplitude: %f \n", FactAmplitude);
+			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
 			ampf = (x/32767.0f);
 			printf ("ampf1: %f \n", ampf);
 
       ampf2 = (fabs (ampf) < 1.0f/A) ? A * fabs (ampf)/(1.0f+ln (A)) : (1.0f+ln (A*fabs (ampf)))/(1.0f+ln (A)); //compand
-			printf ("compand ampf2: %f \n", ampf2);
+			printf ("\ncompand ampf2: %f \n", ampf2);
 
 			x = (int) (round (ampf2*32767.0f));
-			printf ("new x: %f \n", x);
+			printf ("\nnew x: %f \n", x);
 
 		  factorizer = (x*32767.0f*FactAmplitude);
-			printf ("factorizer: %f \n", factorizer);
+			printf ("\nfactorizer: %f \n", factorizer);
 
 			sampler = (1E9/samplerate); //44.00
-			printf ("sampler: %f \n", sampler);
+			printf ("\nsampler: %f \n", sampler);
 
-			timer ();
 			printf ("\nNow writing tone in AM... \n");
+
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
 
       //return channels, ampf, ampf2, x, factorizer, sampler;
 	  }
 
   }
-    printf ("Reading file: %s \n", filename);
-    printf ("Freq: %f \n", freq);
-  	printf ("Sample Rate: %u \n", samplerate);
-  	printf ("Channels: %d \n", channels);
-    printf ("Writing file: %s \n", outfilename);
+    printf ("\nReading file: %s \n", filename);
+    printf ("\nFreq: %f \n", freq);
+  	printf ("\nSample Rate: %u \n", samplerate);
+  	printf ("\nChannels: %d \n", channels);
+    printf ("\nWriting file: %s \n", outfilename);
 
     // Close input and output files
     //fclose (FileFreqTiming);
