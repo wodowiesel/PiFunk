@@ -751,16 +751,16 @@ char filenamepath ()  // expected int?
 double freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
-	printf ("Type in Frequency (0.1-1200.00000 MHz): "); // 1b+ for 700Mhz chip, pi3 1.2ghz
+	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1b+ for 700Mhz chip, pi3 1.2ghz
 	scanf  ("%f", &freq);
 	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
 }
 //--------------------------------------------------
 // Channel-mode
-unsigned int channelmodepmr () //PMR
+int channelmodepmr () //PMR
 {
-	printf ("\nChoose PMR-Channel 1-17 (18 to exit): ");
+	printf ("\nChoose PMR-Channel 1-17 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
@@ -790,13 +790,13 @@ unsigned int channelmodepmr () //PMR
 	 case 18: exit (0);
 	 default: printf ("\nDefault chan = 1 %f \n", freq);  return freq=446.00625;
 	}
-  printf ("\nUsing Freq: %f", freq);
+  printf ("\nUsing Freq: %f \n", freq);
 	return channelnumberpmr, freq;
 }
 
-unsigned int channelmodecb () // CB
+int channelmodecb () // CB
 {
-	printf ("\nChoose CB-Channel 0-80 (81 to exit): ");
+	printf ("\nChoose CB-Channel 0-80 (81 to exit): \n");
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
@@ -895,17 +895,17 @@ unsigned int channelmodecb () // CB
 			case 78:  return freq=26.9350; break;
 			case 79:  return freq=26.9450; break;
 			case 80:  return freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
-			case 81:  exit (-1);
+			case 81:  exit (0);
 			default:  printf ("\nDefault: CB chan = 1 %f \n", freq); return freq=26.9650;
 
 	}
-  printf ("\nUsing Freq: %f ", freq);
+  printf ("\nUsing Freq: %f \n", freq);
 	return channelnumbercb, freq;
 }
 
-unsigned int modulationselect ()
+int modulationselect ()
 {
-	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : ");
+	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : \n");
 	scanf ("%d", &freqmode);
 	switch (freqmode)
 	{
@@ -924,7 +924,7 @@ unsigned int modulationselect ()
 	return 0;
 }
 
-unsigned int channelselect ()
+int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
@@ -1081,14 +1081,14 @@ void carrierlow () // disables it
 
 void setupfm ()
 {
-    printf ("\nSetting up FM... \n");
+  printf ("\nSetting up FM... \n");
     // open /dev/mem
-    if ((mem_fd = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
+  if ((mem_fd = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
 	{
-        printf ("\nCan't open /dev/mem! \n"); // via bcm possible
+        printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
         exit (-1);
   }
-    allof7e = (unsigned*) mmap (
+  allof7e = (unsigned*) mmap (
 								NULL,
 								LENGTH, // length
 								PROT_READ|PROT_WRITE,
@@ -1096,7 +1096,7 @@ void setupfm ()
 								mem_fd,
 								PERIPH_VIRT_BASE); // base
 
-   if ((int) allof7e == -1) exit (-1);
+  if ((int) allof7e == -1) exit (-1);
 
    SETBIT (GPFSEL0, 14);
    CLRBIT (GPFSEL0, 13);
@@ -1336,7 +1336,7 @@ int modulationfm (int argc, char **argv)
 		setupDMA (freq||100.00000);
     //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
 
-	  printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
+	  //printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
     //play_wav (argv [1], argc>3 ? atof (argv [3]):22050, shortopts); // <-- in 22.05 kHz, should be same as AM!!
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
@@ -1363,7 +1363,7 @@ int modulationam (int argc, char **argv)
 	printf ("\nCompression prameter A: %f \n", A); // was defined as global var above
 
 		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
-    printf ("Opening File...");
+    printf ("\nOpening File...\n");
 	  return fp;
 
 		outfilename = (char *) malloc (128);// allocating memory for filename
@@ -1490,7 +1490,7 @@ char csvreader ()
 int callname ()
 {
     //if (*callsign == NULL){
-		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or use (2) default 'callsign': \n");
+		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or (2) default 'callsign': \n");
 		scanf ("%d", &callnameselect);
 		switch (callnameselect)
 	  {
@@ -1501,12 +1501,12 @@ int callname ()
         		 //return callsign, &callsign, *callsign;
 						 break;
 
-		 case 2: callsign = "callsign"; //default callsign
+		 case 2: char *callsign = "callsign"; //default callsign
 						 printf ("\nUsing default callsign: %s \n", *callsign);
         		 //printf ("Adress %p , Pointer %p \n", &callsign, *callsign);
 						 break;
 
-		// default: printf ("\nError! \n"); break;
+		 default: printf ("\nError! \n"); break;
     }
 		return 0;
   	//return callsign, &callsign, *callsign;
@@ -1528,10 +1528,10 @@ int menu ()
 						break;
 
 		case 3: printf ("\nExiting... \n");
-						exit (-1);
+						exit (0);
 						break;
 
-		//default: printf ("\nError! \n"); break;
+		default: printf ("\nError! \n"); break;
 	}
 
 	return 0;
@@ -1550,7 +1550,6 @@ int modetype ()
 
 		case 2:		printf ("\n[2] Frequencynmode: \n");
 							freqselect ();
-							modulationselect ();
 							break;
 
 		//	default: printf ("\nError! \n"); break;
@@ -1576,7 +1575,7 @@ int GetUserInput () // assistent
 		powerselect ();
 		callname ();
 		modetype ();
-		menu ();
+		//menu ();
 		printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n');
 
