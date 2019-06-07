@@ -753,7 +753,7 @@ double freqselect () // gets freq by typing in
 	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1b+ for 700Mhz chip, pi3 1.2ghz
 	scanf  ("%f", &freq);
-	printf ("\nYou chose: %f MHz \n", freq);
+	printf ("\nYou chose: %lf MHz \n", freq);
   return freq;
 }
 //--------------------------------------------------
@@ -788,9 +788,9 @@ int channelmodepmr () //PMR
 	 case 16: freq=446.18125; break;
 	 case 17: freq=446.19375; break;
 	 case 18: exit (0);
-	 default: printf ("\nDefault chan = 1 %f \n", freq); freq=446.00625; break;
+	 default: printf ("\nDefault chan = 1 %lf \n", freq); freq=446.00625; break;
 	}
-  printf ("\nUsing Freq: %f \n", freq);
+  printf ("\nUsing Freq: %lf \n", freq);
 	return 0;
 }
 
@@ -896,10 +896,10 @@ int channelmodecb () // CB
 			case 79:  return freq=26.9450; break;
 			case 80:  return freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:  exit (0);
-			default:  printf ("\nDefault: CB chan = 1 %f \n", freq); freq=26.9650; break;
+			default:  printf ("\nDefault: CB chan = 1 %lf \n", freq); freq=26.9650; break;
 
 	}
-  printf ("\nUsing Freq: %f \n", freq);
+  printf ("\nUsing Freq: %lf \n", freq);
 	return  0;
 }
 
