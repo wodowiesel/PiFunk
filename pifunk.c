@@ -930,7 +930,7 @@ int channelselect ()
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
   scanf  ("%d", &channelmode);
 
-    switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
+  switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
         {
          	case 1: printf ("\nPMR CHAN-MODE in FM \n");
 									channelmodepmr (); // gets freq from pmr list
@@ -941,10 +941,8 @@ int channelselect ()
 									break;
 
         	default: printf ("\nDefault: Returning... \n"); break;
-
-          break;
 		    }
-return 0;
+	return 0;
 }
 /*
 float audiovol ()
@@ -970,7 +968,7 @@ void clearscreen ()
   printf ("\033[H\033[J");
   //fflush (stdin);
   //clsscr ();
-  //system("clear")
+  //system ("clear")
 }
 
 //--------------LED stuff
