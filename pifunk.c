@@ -1491,18 +1491,18 @@ char csvreader ()
     printf ("\nChecking for CSV-file... \n");
 
     sfp = fopen ("ctsspmr.csv", "r");// readonly!
-    dfp = fopen ("csvwriter.csv", "w+"); // with + it updates , if exists overwrites
+    dfp = fopen ("ctsswriter.csv", "w+"); // with + it updates , if exists overwrites
     while (!feof (sfp))
     {
     //here check for semicolon or comma delimiter (default)
     j = fgetc (sfp);
     fputc (j, dfp);
     }
-
+		printf ("\n%s\n", j);
     fclose (sfp);
     fclose (dfp);
-    printf ("\n%s\n", j);
-    printf ("\nCSV-Import of ctss-List finished! \n");
+
+    printf ("\nCSV-Import of ctss-list finished! \n");
 
     return 0;
 }
