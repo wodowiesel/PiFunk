@@ -1490,7 +1490,7 @@ char csvreader ()
 {
     printf ("\nChecking for CSV-file... \n");
 
-    sfp = fopen ("csvpmr.csv", "r");// readonly!
+    sfp = fopen ("ctsspmr.csv", "r");// readonly!
     dfp = fopen ("csvwriter.csv", "w+"); // with + it updates , if exists overwrites
     while (!feof (sfp))
     {
@@ -1504,7 +1504,7 @@ char csvreader ()
     printf ("\n%s\n", j);
     printf ("\nCSV-Import of ctss-List finished! \n");
 
-    return j;
+    return 0;
 }
 
 int callname ()
