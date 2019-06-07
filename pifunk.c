@@ -1196,7 +1196,7 @@ void unsetupDMA ()
 	exit (-1);
 }
 
-void setupDMA (double freq)
+void setupDMA ()
 {
 	printf ("\nSetup of DMA starting... \n");
 	//atexit (unsetupDMA);
