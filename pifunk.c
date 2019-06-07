@@ -1486,10 +1486,10 @@ int modulationam (int argc, char **argv)
 
 // read / import csv for pmr
 
-char csvreader ()
+int csvreader ()
 {
     printf ("\nChecking for CSV-file... \n");
-
+    /*
     sfp = fopen ("ctsspmr.csv", "r");// readonly!
     dfp = fopen ("ctsswriter.csv", "w+"); // with + it updates , if exists overwrites
     while (!feof (sfp))
@@ -1501,7 +1501,7 @@ char csvreader ()
 		printf ("\n%s\n", j);
     fclose (sfp);
     fclose (dfp);
-
+		*/
     printf ("\nCSV-Import of ctss-list finished! \n");
 
     return 0;
