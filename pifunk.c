@@ -721,7 +721,7 @@ int timer ()
 {
    char *newtime;
 	 time_t *rawtime;
-   time (*rawtime);
+   time (rawtime); //_THROW
    //int info = localtime (&rawtime);
    //const struct tm *tp = asctime (info);
    printf ("\nCurrent local time and date: %s \n", rawtime);
