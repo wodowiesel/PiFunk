@@ -746,7 +746,7 @@ int filenamepath ()  // expected int?
 	}
 	*/
 	printf ("\nTrying to play %s ... \n", filename);
-	return 0 //, sfp;
+	return 0; //, sfp;
 }
 
 double freqselect () // gets freq by typing in
