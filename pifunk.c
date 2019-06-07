@@ -720,7 +720,7 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 int timer ()
 {
    char *newtime;
-   time (&rawtime);
+   time (rawtime);
    //int info = localtime (&rawtime);
    //const struct tm *tp = asctime (info);
    printf ("\nCurrent local time and date: %s \n", rawtime);
@@ -734,7 +734,7 @@ char filenamepath ()  // expected int?
 
   //if (filename != "sound.wav")
 	//{
-     sfp = fopen (filename, "r");
+    // sfp = fopen (filename, "r");
 	   //return sfp;
 	//}
 	/*
@@ -745,7 +745,7 @@ char filenamepath ()  // expected int?
 	   //return fp;
 	}
 	*/
-	return 0;
+	return filename; //, sfp;
 }
 
 double freqselect () // gets freq by typing in
@@ -1590,12 +1590,12 @@ int powerselect ()
 
 int GetUserInput () // assistent
 {
-		//filenamepath ();
+		menu ();
+		filenamepath ();
 		powerselect ();
 		callname ();
 		modetype ();
-		//menu ();
-		printf ("\nPress Enter to Continue for Transmission... \n");
+		//printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n');
 
     return 0;
