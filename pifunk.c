@@ -730,7 +730,7 @@ int timer ()
 int filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", &filename);
+  //scanf ("%s", &filename);
 
   //if (filename != "sound.wav")
 	//{
