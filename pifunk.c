@@ -788,7 +788,7 @@ int channelmodepmr () //PMR
 	 case 16: return freq=446.18125; break;
 	 case 17: return freq=446.19375; break;
 	 case 18: exit (0);
-	 default: printf ("\nDefault chan = 1 %f \n", freq);  return freq=446.00625;
+	 default: printf ("\nDefault chan = 1 %f \n", freq); freq=446.00625; break;
 	}
   printf ("\nUsing Freq: %f \n", freq);
 	return channelnumberpmr, freq;
@@ -896,7 +896,7 @@ int channelmodecb () // CB
 			case 79:  return freq=26.9450; break;
 			case 80:  return freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:  exit (0);
-			default:  printf ("\nDefault: CB chan = 1 %f \n", freq); return freq=26.9650;
+			default:  printf ("\nDefault: CB chan = 1 %f \n", freq); freq=26.9650; break;
 
 	}
   printf ("\nUsing Freq: %f \n", freq);
@@ -934,7 +934,6 @@ int channelselect ()
         {
          	case 1: printf ("\nPMR CHAN-MODE in FM \n");
 									channelmodepmr (); // gets freq from pmr list
-
 									break;
 
 		   		case 2: printf ("\nCB CHAN-MODE SELECT \n");
@@ -1200,7 +1199,7 @@ void unsetupDMA ()
 void setupDMA (double freq)
 {
 	printf ("\nSetup of DMA starting... \n");
-	unsetupDMA ();//atexit (unsetupDMA);
+	//atexit (unsetupDMA);
 	signal (SIGINT, handSig);
 	signal (SIGTERM, handSig);
 	signal (SIGHUP, handSig);
@@ -1333,7 +1332,7 @@ int modulationfm (int argc, char **argv)
     setupfm (); // gets filename & path or done by filmename() func
 
 	  printf ("\nSetting up DMA... \n");
-		setupDMA (freq||100.00000);
+		setupDMA ();
     //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
 
 	  //printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
@@ -1424,7 +1423,7 @@ int modulationam (int argc, char **argv)
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
 			ampf = (x/32767.0f);
-			printf ("ampf1: %f \n", ampf);
+			printf ("\nampf1: %f \n", ampf);
 
       ampf2 = (fabs (ampf) < 1.0f/A) ? A * fabs (ampf)/(1.0f+ln (A)) : (1.0f+ln (A*fabs (ampf)))/(1.0f+ln (A)); //compand
 			printf ("\ncompand ampf2: %f \n", ampf2);
@@ -1599,7 +1598,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	// for custom  programname, default is the filename itself
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
-	printf ("\nProgram was proccessed on %s at %s \n", __DATE__, __TIME__);
+	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	//int infos (); //information, disclaimer
 	//timer (); //local time
 
@@ -1686,21 +1685,22 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 				return 1;
 		 } // end of switch
 
-		 printf ("\n-----------------\n");
-		 printf ("\nChecking File: %s \n", filename);
-		 printf ("\nChecking Freq: %f [MHz] \n", freq);
-		 printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
-		 printf ("\nChecking Modulation: %s \n", mod);
-		 printf ("\nChecking Callsign: %s \n", callsign);
-		 printf ("\nChecking Output-Power: %d \n", power);
-		 printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
-		 printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
 		 break;
 		 //return filename, freq, samplerate, mod, callsign, power;
 	 } // end of while
 
  		//}//end of else
 		//-- for debugging or information :)
+		printf ("\n-----------------\n");
+		printf ("\nChecking File: %s \n", filename);
+		printf ("\nChecking Freq: %f [MHz] \n", freq);
+		printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
+		printf ("\nChecking Modulation: %s \n", mod);
+		printf ("\nChecking Callsign: %s \n", callsign);
+		printf ("\nChecking Output-Power: %d \n", power);
+		printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
+		printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
+
 		//printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
 		//printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
 		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
