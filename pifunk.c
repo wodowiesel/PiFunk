@@ -133,6 +133,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <stdnoreturn.h>
 #include <stdatomic.h>
 #include <uchar.h>
+*/
 
 //for c++14/17
 /*
@@ -277,7 +278,7 @@ volatile unsigned *allof7e;
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 //#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
 //#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
-#define ADR                            (0x7E000000) // dec: 2113929216 phys base
+#define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
 #define DMABASE                        (0x7E007000) // dec: 2113957888
@@ -289,10 +290,6 @@ volatile unsigned *allof7e;
 #define DMAREF                         (0x7F)   // dec: 127 dma base reference
 #define MODULATE                       (0x4D72) // dec: 19826
 #define DMAC                           (0x0707) // dec: 1799
-
-#define ACCESS(PERIPH_VIRT_BASE)       (volatile int*)(PERIPH_VIRT_BASE + (volatile int) allof7e-ADR)
-#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) && ~(1<<bit) // &=
 
 // possibility to give argv 0-4 an specific address or pointer
 // addresses -> at least on my system-tests
@@ -531,6 +528,10 @@ volatile unsigned *allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
+#define ACCESS(PERIPH_VIRT_BASE)       volatile int* (PERIPH_VIRT_BASE + volatile unsigned* allof7e - SUB_BASE)
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) &= ~(1<<bit) // &=
+
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
 
@@ -720,10 +721,12 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 int timer ()
 {
 	 time_t *rawtime;
-   //char *newtime = time (rawtime); //_THROW
-   //int info = localtime (&rawtime);
-   //const struct tm *tp = asctime (info);
-   printf ("\nCurrent local time and date: %s \n", rawtime);
+	 struct tm *info;
+
+	 time (&rawtime)
+   info = localtime (&rawtime);
+	 strftime (buffer, 80, "%x - %I:%M%p", info);
+   printf ("\nCurrent Formatted date & time : %s \n", buffer);
    return 0;
 }
 
@@ -745,7 +748,7 @@ int filenamepath ()  // expected int?
 	   //return fp;
 	}
 	*/
-	printf ("\nTrying to play %s ... \n", *filename);
+	printf ("\nTrying to play %s ... \n", filename);
 	return 0; //, sfp;
 }
 
@@ -753,7 +756,7 @@ double freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1b+ for 700Mhz chip, pi3 1.2ghz
-	scanf  ("%f", &freq);
+	scanf  ("%lf", &freq);
 	printf ("\nYou chose: %lf MHz \n", freq);
   return freq;
 }
@@ -906,8 +909,8 @@ int channelmodecb () // CB
 
 int modselect ()
 {
-	scanf ("%s", &mod);
-	if (mod == "fm")
+	scanf ("%c", &mod);
+	if (*mod == "fm")
 	{
 		int modulationfm (int argc, char **argv);
 	}
@@ -964,6 +967,7 @@ int channelselect ()
 /*
 float audiovol ()
 {
+	float datavalue = data [i] * 4 * volume; // modulation index (AKA volume) logarithmic hearing of human
 	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
 	{
      volbuffer [i] *= volumeMultiplier;
@@ -1156,7 +1160,7 @@ void play_wav (char *filename, double freq, int samplerate)
 
   while (readBytes = read (fp, &data, 1024))
   {
-        float value = data [i] * 4 * volume; // modulation index (AKA volume) logar. hearing of human
+
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
         unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400 (why this?)
         // if samplerate > 15.75 then clocks per sample is negetive !! not good
@@ -1177,14 +1181,14 @@ void play_wav (char *filename, double freq, int samplerate)
         //Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
 
-        bufPtr++;
+        //bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
         //Create DMA command to delay using serializer module for suitable time
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
 
-        bufPtr++;
+        //bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
@@ -1318,7 +1322,7 @@ void WriteTone (double freq, uint32_t Timing)
 		uint32_t WaitForThisSample;
 	} samplerf_t;
 	samplerf_t RfSample;
-	RfSample.Frequency; //= Frequency;
+	RfSample.Frequency = Frequency;
 
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("\nFreq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
