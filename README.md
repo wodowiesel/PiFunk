@@ -95,9 +95,9 @@ manuallygenerating executable binary:
 `gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
  optional:
-`make` with pre-configured flags for compilation
+`sudo make` with pre-configured flags for compilation
 
-`clean` for removing .o files
+`sudoo clean` for removing .o files if neccessary
 
 ___
 
