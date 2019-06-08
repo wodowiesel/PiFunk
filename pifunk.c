@@ -1525,7 +1525,7 @@ int callname ()
 	  {
 
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign[]);
+						 scanf  ("%s", &callsign[0]);
 						 printf ("\nYour callsign is: %s \n", callsign);
         		 //return callsign, &callsign, *callsign;
 						 break;
