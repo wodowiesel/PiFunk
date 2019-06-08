@@ -1436,7 +1436,7 @@ int modulationam (int argc, char **argv)
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
 		  char b = data [k*channels];
-			printf ("\nChannel buffer b = %c \n", b);
+			//printf ("\nChannel buffer b = %c \n", b);
 			if (channels == 0)
 			{
 				printf ("\nFile is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
