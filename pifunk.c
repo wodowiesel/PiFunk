@@ -316,7 +316,7 @@ volatile unsigned *allof7e;
 #define FILE_PTR                        (0x73) // dec: 115
 
 //mathematical stuff
-#define ln(x)                           (log(x)/log(2.718281828459045235f)) //log e(euler) = 0.4342944819
+#define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
 #define PI                              (3.14159265358979323846)
 #define PHASE                           (2*PI) // 6.28318530718
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
@@ -528,7 +528,7 @@ volatile unsigned *allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-#define ACCESS(PERIPH_VIRT_BASE)       volatile int* (PERIPH_VIRT_BASE + volatile unsigned* allof7e - SUB_BASE)
+#define ACCESS(PERIPH_VIRT_BASE)       volatile int* (PERIPH_VIRT_BASE) + (volatile unsigned* allof7e - SUB_BASE)
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) &= ~(1<<bit) // &=
 
@@ -951,7 +951,7 @@ int channelselect ()
   scanf  ("%d", &channelmode);
 
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
-        {
+  {
          	case 1: printf ("\nPMR CHAN-MODE in FM \n");
 									channelmodepmr (); // gets freq from pmr list
 									break;
@@ -961,7 +961,7 @@ int channelselect ()
 									break;
 
         	default: printf ("\nDefault: Returning... \n"); break;
-		    }
+	}
 	return 0;
 }
 /*
@@ -1047,11 +1047,12 @@ int led ()
 // FM ones
 int infos () //warnings and infos
 {
+		printf ("\n%s\n", device);
     //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
     printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //collor escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
-    printf ("\nFor testing (default setting) run: sudo sound.wav 100.0000 22050 fm callsign \n");
+    printf ("\nFor testing (default settings) run: sudo sound.wav 100.0000 22050 fm callsign \n");
  		return 0;
 }
 
@@ -1233,6 +1234,7 @@ void setupDMA ()
 	// allocate a few pages of ram
   //getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int) ((500.0/freq) * (float) (1<<12) + 0.5);
+	printf ("\ncenterFreqDivider %d \n", centerFreqDivider);
 	// make data page contents - it s essientially 1024 different commands for the
 	// DMA controller to send to the clock module at the correct time
 	for (int i=0; i<1024; i++)
@@ -1316,13 +1318,15 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
+	const double Frequencies
 	typedef struct
 	{
 	  const double Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
 	samplerf_t RfSample;
-	RfSample.Frequency = Frequency;
+
+	RfSample.Frequency = Frequencies;
 
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("\nFreq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
@@ -1362,7 +1366,7 @@ int modulationfm (int argc, char **argv)
     //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
 
 	  //printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    play_wav (filname, freq, samplerate); // atof (argv [3]):22050)
+    play_wav (filename, freq, samplerate); // atof (argv [3]):22050)
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
@@ -1424,13 +1428,13 @@ int modulationam (int argc, char **argv)
 	// While there are frames in the input file, read them,
 	//process them and write them to the output file
 //----------------------
-  while (readcount = read (fp, data, BUFFER_LEN))
+  while (readcount == read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
-		  char b = data [k*channels];
-			printf ("\nChannel buffer b= %s \n", b);
+		  char *b = data [k*channels];
+			printf ("\nChannel buffer b = %d \n", b);
 			if (channels == 0)
 			{
 				printf ("\nFile is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
@@ -1598,10 +1602,9 @@ int assistent () // assistent
 		powerselect ();
 		callname ();
 		modetype ();
-		// sampchecker
+		//sampchecker ();
 		//printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n');
-
     return 0;
 }
 
@@ -1624,6 +1627,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
+	printf ("\nshort_opt: %s \n", short_opt);
 	infos (); //information, disclaimer
 	timer (); //local time
 
@@ -1692,7 +1696,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
 					//assistent
 			case 'a':
-				if (argc=1)
+				if (argc==1)
 				{
 					printf ("\nAssistent activated! \n");
 					assistent (); //  to menu -> must be refactored later
@@ -1706,7 +1710,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 
 				// help
 			case 'h':
-				if (argc=1)
+				if (argc==1)
 				{
 					printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 					break;
@@ -1737,7 +1741,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		printf ("\nChecking Output-Power: %d \n", power);
 		printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
 		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
-		printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+		//printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
 		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
 		//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
 		//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
