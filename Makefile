@@ -1,8 +1,7 @@
 #pifunk makefile
-CC = gcc
-STD_CFLAGS = -g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm-fPIC pifunk.c
+CC = gcc # use gnu compiler
+STD_CFLAGS = -g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm-fPIC pifunk.c #-std=gnu99 as alternative
 
-#-std=gnu99 as alternative
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 # Determine the hardware platform. Below, pi1 stands for the RaspberryPi 1 (the original one),
 # and pi2 stands for both the RaspberryPi 2 and 3.
@@ -24,31 +23,37 @@ endif
 
 ifneq ($(TARGET), other)
 
-app: pifunk.c
+app: 	pifunk.c
 	$(CC) $(CFLAGS) -c -o bin/pifunk
 endif
 
 make:
-pifunk.o: pifunk.c
+	pifunk.i: pifunk.c
+	$(CC) $(CFLAGS) -o include/pifunk.i
+	
+	pifunk.o: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.o
 
-pifunk.so: pifunk.c
-	$(CC) $(CFLAGS) -o lib/pifunk.so
+	pifunk.out: pifunk.c
+	$(CC) $(CFLAGS) -o bin/pifunk.out
 
-pifunk.a: pifunk.c
-	$(CC) $(CFLAGS) -o lib/pifunk.a
-	
-pifunk.s: pifunk.c
+	pifunk.s: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.s
 	
-pifunk.i: pifunk.c
-	$(CC) $(CFLAGS) -o include/pifunk.i
+	pifunk.so: pifunk.c
+	$(CC) $(CFLAGS) -o lib/pifunk.so
+	
+	pifunk.lib: pifunk.c
+	$(CC) $(CFLAGS) -o lib/pifunk.lib
 
-pifunk.out: pifunk.c
-		$(CC) $(CFLAGS) -o bin/pifunk.out
-
-pifunk: pifunk.c
-		$(CC) $(CFLAGS) -o bin/pifunk
+	pifunk.a: pifunk.c
+	$(CC) $(CFLAGS) -o lib/pifunk.a
+	
+	pifunk.: pifunk.c
+	$(CC) $(CFLAGS) -o lib/pifunk.s
+	
+	pifunk: pifunk.c
+	$(CC) $(CFLAGS) -o bin/pifunk
 
 install:
 
