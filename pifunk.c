@@ -1319,15 +1319,15 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
-	double Frequency;
+	double Frequencies;
 	typedef struct
 	{
-
+		double Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
 	samplerf_t RfSample;
 
-	RfSample.Frequency = Frequency;
+	RfSample.Frequency = Frequencies;
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("\nFreq: %lf, Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 
