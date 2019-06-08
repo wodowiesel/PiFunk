@@ -1319,7 +1319,7 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
-	double Frequencies;
+	double Frequencies = freq;
 	typedef struct
 	{
 		double Frequency;
