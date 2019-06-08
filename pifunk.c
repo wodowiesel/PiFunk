@@ -561,17 +561,19 @@ static char *device = "default"; // playback device
 
 int opt;
 
-char *filename;
+char *filename = "sound.wav";
 double freq;
 const double ctss_freq;
 unsigned int samplerate;
+unsigned int channels = 1;
 double shift_ppm = 0;
 //double I = sin ((PERIOD*freq) + shift_ppm);
 //double Q = cos ((PERIOD*freq) + shift_ppm);
 //double RF_SUM = (I+Q);
 
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
-unsigned int channels = 1;
+
+char *mod;
 char *modu;
 char *fm = "fm";
 char *am = "am";
