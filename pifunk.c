@@ -723,8 +723,6 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 int timer ()
 {
 	 time_t *rawtime;
-	 struct tm *info;
-
 	 time (rawtime);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
@@ -1175,7 +1173,7 @@ void play_wav (char *filename, double freq, int samplerate)
         int intval = (int) (round (dval)); // integer component
         float frac = ((dval - (float) intval)/2 + 0.5);
         int fracval = (frac*clocksPerSample);
-				print ("\nfracval: %d \n", frracval);
+				print ("\nfracval: %d \n", fracval);
         bufPtr++;
         //problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
@@ -1320,12 +1318,13 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
-	samplerf_t RfSample;
+
 	typedef struct
 	{
 	  double Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
+	samplerf_t RfSample;
 
 	RfSample.Frequency = Frequency;
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
