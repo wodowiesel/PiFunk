@@ -244,6 +244,8 @@ volatile unsigned *gpio;
 volatile unsigned *allof7e;
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
+#define ALLOF7E												*allof7e
+#define PIN_GND                       9 // which is the GPIO pin 17 for led
 #define PIN17                         RPI_GPIO_P1_11 // which is the GPIO pin 17 for led
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
@@ -281,7 +283,7 @@ volatile unsigned *allof7e;
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
-#define DMABASE                        (0x7E007000) // dec: 2113957888
+#define DMABASE                        0x7E007000 // dec: 2113957888
 #define CLKBASE                        (0x7E101000) // dec: 2114981888
 #define GPFSEL3                        (0x7E200000) // p.90 dec: 2116026368
 #define PWMBASE                        (0x7E20C000) // controller dec: 2116075520
@@ -348,7 +350,7 @@ volatile unsigned *allof7e;
 #define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
 
 // GPIO
-#define GPFSEL0                         (0x00/4) // p.90 dec: 0
+#define GPFSEL0                         0x00/4 // p.90 dec: 0
 #define GPFSEL1                         (0x04/4) // 1
 #define GPFSEL2                         (0x08/4) // 2
 #define GPPUD                           (0x94/4) // 37
@@ -528,7 +530,7 @@ volatile unsigned *allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-#define ACCESS(PERIPH_VIRT_BASE)       volatile int* (PERIPH_VIRT_BASE) + (volatile unsigned* allof7e - SUB_BASE)
+#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + allof7e - SUB_BASE) //volatile int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) &= ~(1<<bit) // &=
 
@@ -723,7 +725,7 @@ int timer ()
 	 time_t *rawtime;
 	 struct tm *info;
 
-	 time (&rawtime)
+	 time (rawtime);
    info = localtime (&rawtime);
 	 strftime (buffer, 80, "%x - %I:%M%p", info);
    printf ("\nCurrent Formatted date & time : %s \n", buffer);
@@ -1318,7 +1320,7 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
-	const double Frequencies
+	const double Frequencies;
 	typedef struct
 	{
 	  const double Frequency;
@@ -1433,8 +1435,8 @@ int modulationam (int argc, char **argv)
 	 // where to input the freq like in fm?
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
-		  char *b = data [k*channels];
-			printf ("\nChannel buffer b = %d \n", b);
+		  char b = data [k*channels];
+			printf ("\nChannel buffer b = %c \n", b);
 			if (channels == 0)
 			{
 				printf ("\nFile is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
