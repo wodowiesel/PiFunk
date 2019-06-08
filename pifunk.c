@@ -213,11 +213,11 @@ using namespace std;
 #endif */
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION "0.1.7.0"
+#define VERSION "0.1.7.1"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (0)
+#define VERSION_PATCHLEVEL   (1)
 #define VERSION_STATUS "e"
 
 //---- PI specific stuff
@@ -251,9 +251,9 @@ volatile unsigned *allof7e;
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
-#define GPIO_SET *(gpio+7)  // setsbits which are 1 ignores bits which are 0
-#define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
-#define GPIO_GET *(gpio+13) // sets bits which are 1 ignores bits which are 0
+#define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
+#define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
+#define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
 #ifdef  RPI // == 1                        // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
@@ -572,7 +572,7 @@ double shift_ppm = 0;
 
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 unsigned int channels = 1;
-char *mod = "fm";
+char *modu;
 char *fm = "fm";
 char *am = "am";
 char *callsign;
@@ -908,8 +908,8 @@ int channelmodecb () // CB
 
 int modselect ()
 {
-	printf ("\nType in Modulation type: am/fm \n");
-	scanf ("%s", &mod);
+	printf ("\nOpening Modulator \n");
+
 	if (*mod == *fm)
 	{
 		int modulationfm (int argc, char **argv);
@@ -930,12 +930,12 @@ int modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 						mod = "fm";
-
+						modeselect ();
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 						mod = "am";
-
+						modeselect ();
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
