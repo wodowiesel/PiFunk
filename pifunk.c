@@ -531,8 +531,8 @@ volatile unsigned *allof7e;
 #define DATA_SIZE                       (1000)
 
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7E - SUB_BASE) //volatile int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) | 1<<bit // |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) = ~(1<<bit) // &=
 
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
@@ -1628,7 +1628,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	printf ("\nshort_opt: %s \n", short_opt);
 	infos (); //information, disclaimer
-	//timer (time_t *rawtime); 
+	//timer (time_t *rawtime);
 
 	while ((options = getopt (argc, argv, "n:f:s:m:c:pah")) != -1) // shortopts must be constants
 	 {
