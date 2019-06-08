@@ -64,9 +64,11 @@ GNU installer `sudo apt-get install gcc`
 
 `-g` for debugger informations (optional 0-3 optimalization level)
 
+`-Wall` for debug warning informations
+
 `-std=c99` (sometimes gnu99) for C99-standard
 
-`-lm` for math lib is obligatory!
+`-lm` for math-lib is obligatory!
 
 `-Iinclude ` for using include-directory with headerfiles
 
@@ -76,23 +78,26 @@ GNU installer `sudo apt-get install gcc`
 
 `-c` for compiling without linking
 
-`-fPIC` for generating
+`-fPIC` for generating position independent code (PIC) 
 
-`-shared` for generating position independent code (PIC) for shared libs
+`-shared` for generating shared libraries
 
 `-o` for output-filename
 
-command:
+commands:
 
-generating libraries:
+manually generating libraries:
 
-`gcc -g -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o pifunk.o pifunk.so pifunk.a pifunk.lib`
+`gcc -g -Wall -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o lib/pifunk.o lib/pifunk.s lib/pifunk.so lib/pifunk.a lib/pifunk.lib include/pifunk.i`
 
-generating executable binary:
+manuallygenerating executable binary:
 
-`gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
-`make` (not working yet properly)
+ optional:
+`make` with pre-configured flags for compilation
+
+`clean` for removing .o files
 
 ___
 
