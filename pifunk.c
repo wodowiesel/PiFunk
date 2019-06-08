@@ -530,8 +530,8 @@ volatile unsigned *allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + (ALLOF7E - SUB_BASE)) //volatile int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE || 1<<bit)// |=
+#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7E - SUB_BASE)) //volatile int* volatile unsigned*
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE, 1<<bit)// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 //----------------------------------
