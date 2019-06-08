@@ -64,6 +64,8 @@ GNU installer `sudo apt-get install gcc`
 
 `-g` for debugger informations (optional 0-3 optimalization level)
 
+`-Wall` for debug warning informations
+
 `-std=c99` (sometimes gnu99) for C99-standard
 
 `-lm` for math lib is obligatory!
@@ -76,9 +78,9 @@ GNU installer `sudo apt-get install gcc`
 
 `-c` for compiling without linking
 
-`-fPIC` for generating
+`-fPIC` for generating position independent code (PIC) 
 
-`-shared` for generating position independent code (PIC) for shared libs
+`-shared` for generating shared libraries
 
 `-o` for output-filename
 
