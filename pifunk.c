@@ -531,8 +531,8 @@ volatile unsigned *allof7e;
 #define DATA_SIZE                       (1000)
 
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7E - SUB_BASE) //volatile int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) | 1<<bit // |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) = ~(1<<bit) // &=
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
@@ -1217,7 +1217,7 @@ void play_wav (char *filename, double freq, int samplerate)
 void unsetupDMA ()
 {
 	struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS (DMABASE));
-	DMA0->CS == 1<<31; // reset dma controller
+	DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	exit (-1);
 }
