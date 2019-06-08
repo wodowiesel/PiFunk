@@ -1,7 +1,7 @@
 #pifunk makefile
 # should be run with sudo or root rights
 CC = gcc # use gnu compiler
-STD_CFLAGS = -g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm -fPIC pifunk.c #-std=gnu99 as alternative
+STD_CFLAGS =-g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm -fPIC pifunk.c #-std=gnu99 as alternative
 
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 # Determine the hardware platform. Below, pi1 stands for the RaspberryPi 1 (the original one),
@@ -25,14 +25,16 @@ endif
 ifneq ($(TARGET), other)
 
 app: 	pifunk.c
-			$(CC) $(CFLAGS) -c -o bin/pifunk
+			$(CC)$(CFLAGS) -c -o bin/pifunk
 endif
 
+pifunk: pifunk.c
+				$(CC)$(CFLAGS) -o bin/pifunk
 #pifunk.i: pifunk.c
 #	$(CC) $(CFLAGS) -o include/pifunk.i
 
 pifunk.o: pifunk.c
-					$(CC) $(CFLAGS) -o lib/pifunk.o
+					$(CC)$(CFLAGS) -o lib/pifunk.o
 
 pifunk.out: pifunk.c
 						$(CC) $(CFLAGS) -o bin/pifunk.out
@@ -48,9 +50,6 @@ pifunk.lib: pifunk.c
 
 pifunk.a: pifunk.c
 					$(CC) $(CFLAGS) -o lib/pifunk.a
-
-pifunk: pifunk.c
-				$(CC) $(CFLAGS) -o bin/pifunk
 
 install:
 
