@@ -530,9 +530,9 @@ volatile unsigned *allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + allof7e - SUB_BASE) //volatile int* volatile unsigned*
+#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7E - SUB_BASE) //volatile int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) &= ~(1<<bit) // &=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
@@ -726,8 +726,8 @@ int timer ()
 	 struct tm *info;
 
 	 time (rawtime);
-   info = localtime (&rawtime);
-	 strftime (buffer, 80, "%x - %I:%M%p", info);
+   //info = localtime (&rawtime);
+	 //strftime (buffer, 80, "%x - %I:%M%p", info);
    printf ("\nCurrent Formatted date & time : %s \n", buffer);
    return 0;
 }
@@ -911,8 +911,8 @@ int channelmodecb () // CB
 
 int modselect ()
 {
-	scanf ("%c", &mod);
-	if (*mod == "fm")
+	scanf ("%s", &mod);
+	if (*mod == fm)
 	{
 		int modulationfm (int argc, char **argv);
 	}
@@ -1161,7 +1161,7 @@ void play_wav (char *filename, double freq, int samplerate)
         printf ("\nFor i=0: read fp \n");
   }
 
-  while (readBytes = read (fp, &data, 1024))
+  while (readBytes == read (fp, &data, 1024))
   {
 
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
@@ -1174,8 +1174,8 @@ void play_wav (char *filename, double freq, int samplerate)
 
         int intval = (int) (round (dval)); // integer component
         float frac = ((dval - (float) intval)/2 + 0.5);
-        unsigned int fracval = (frac*clocksPerSample);
-
+        int fracval = (frac*clocksPerSample);
+				print ("\nfracval: %d \n", frracval);
         bufPtr++;
         //problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
@@ -1320,18 +1320,16 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
-	const double Frequencies;
+	samplerf_t RfSample;
 	typedef struct
 	{
-	  const double Frequency;
+	  double Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
-	samplerf_t RfSample;
 
-	RfSample.Frequency = Frequencies;
-
+	RfSample.Frequency = Frequency;
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
-	printf ("\nFreq: %f , Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	printf ("\nFreq: %f, Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
