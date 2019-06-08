@@ -244,7 +244,7 @@ volatile unsigned *gpio;
 volatile unsigned *allof7e;
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
-#define ALLOF7E												*allof7e
+#define ALLOF7ED											(*allof7e - SUB_BASE)
 #define PIN_GND                       9 // which is the GPIO pin 17 for led
 #define PIN17                         RPI_GPIO_P1_11 // which is the GPIO pin 17 for led
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
@@ -530,7 +530,7 @@ volatile unsigned *allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7E - SUB_BASE) //volatile int* volatile unsigned*
+#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7D) //volatile int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) //|| 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
