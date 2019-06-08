@@ -1520,7 +1520,7 @@ int callname ()
 {
     //if (*callsign == NULL){
 		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or (2) default 'callsign': \n");
-		scanf ("%d", &callnameselect);
+		scanf ("%d", &callnameselect[]);
 		switch (callnameselect)
 	  {
 
