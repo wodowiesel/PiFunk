@@ -622,8 +622,8 @@ float ampf;
 float ampf2;
 float factorizer;
 float sampler;
-unsigned int readcount, nb_samples;
-unsigned int excursion = 6000; //32767 found another value but dont know on what this is based on
+int readcount, nb_samples;
+int excursion = 6000; //32767 found another value but dont know on what this is based on
 
 //audio control
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
@@ -1362,7 +1362,7 @@ int modulationfm (int argc, char **argv)
     //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
 
 	  //printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    //play_wav (argv [1], argc>3 ? atof (argv [3]):22050, shortopts); // <-- in 22.05 kHz, should be same as AM!!
+    play_wav (filname, freq, samplerate); // atof (argv [3]):22050)
 
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  led ();
@@ -1383,9 +1383,6 @@ int modulationam (int argc, char **argv)
               {RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
               {VFO (constant frequency)}
     */
-	nb_samples = (readcount/channels);
-	printf ("\nnb_samples: %f \n", nb_samples);
-	printf ("\nCompression prameter A: %f \n", A); // was defined as global var above
 
 		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
     printf ("\nOpening File...\n");
@@ -1402,6 +1399,8 @@ int modulationam (int argc, char **argv)
         return 1;
     }
 //-----------------
+	nb_samples = (readcount/channels);
+
 	if (sfinfo.samplerate == 22050) //44 or 48 khz needs testing
 	{
 		return samplerate;
@@ -1443,8 +1442,13 @@ int modulationam (int argc, char **argv)
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				return b;
 			}
-			else if (channels >= 2){ printf ("\nError: File has 2 or more Channels! \n");} // >1 in stereo or dual mono with half samplerate
+			else if (channels >= 2)
+			{
+				printf ("\nError: File has 2 or more Channels! \n");
+			} // >1 in stereo or dual mono with half samplerate
 
+			printf ("\nnb_samples: %d \n", nb_samples);
+			printf ("\nCompression prameter A: %f \n", A); // was defined as global var above
 			//maybe here am option for amplitude factor input!?
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
@@ -1668,7 +1672,11 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 								int modulationam (int argc, char **argv);
 								break;
 							}
-							else printf ("\nError in -m \n"); return 1;
+							else
+							{
+								printf ("\nError in -m \n");
+								return 1;
+							}
 
 					//callsign
 			case 'c':
@@ -1690,7 +1698,11 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					assistent (); //  to menu -> must be refactored later
 					break;
 				}
-				else printf ("\nError in -a \n"); return 1;
+				else
+				{
+					printf ("\nError in -a \n");
+					return 1;
+				}
 
 				// help
 			case 'h':
@@ -1699,7 +1711,11 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 					printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 					break;
 				}
-				else printf ("\nError in -h \n"); return 1;
+				else
+				{
+					printf ("\nError in -h \n");
+					return 1;
+				}
 
 			default:
 				printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
@@ -1714,16 +1730,14 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		//-- for debugging or information :)
 		printf ("\n-----------------\n");
 		printf ("\nChecking File: %s \n", filename);
-		printf ("\nChecking Freq: %f [MHz] \n", freq);
+		printf ("\nChecking Freq: %lf [MHz] \n", freq);
 		printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 		printf ("\nChecking Modulation: %s \n", mod);
 		printf ("\nChecking Callsign: %s \n", callsign);
 		printf ("\nChecking Output-Power: %d \n", power);
 		printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
-		printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
-
-		//printf ("\nArguments(argc): %d / Programm(0): %s / File(1): %s \nFreq(2): %s / Samplerate(3): %s / Modulation(4): %s / Callsign(5): %s / Power(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-		//printf ("\nArguments (argc): %d / Programm (0): %s \n", argc, argv [0]);
+		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
+		printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
 		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
 		//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
 		//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
@@ -1733,6 +1747,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		// gathering and parsing all given arguments to parse it to player
 	tx ();
 	menu ();
-	printf ("\nEnd of Program! Closing! \n");
+	printf ("\nEnd of Program! Closing... \n");
 	return 0;
 }
