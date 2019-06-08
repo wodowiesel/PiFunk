@@ -909,8 +909,9 @@ int channelmodecb () // CB
 
 int modselect ()
 {
+	printf ("\nType in Modulation type: am/fm \n");
 	scanf ("%s", &mod);
-	if (*mod == fm)
+	if (*mod == *fm)
 	{
 		int modulationfm (int argc, char **argv);
 	}
@@ -1173,7 +1174,7 @@ void play_wav (char *filename, double freq, int samplerate)
         int intval = (int) (round (dval)); // integer component
         float frac = ((dval - (float) intval)/2 + 0.5);
         int fracval = (frac*clocksPerSample);
-				print ("\nfracval: %d \n", fracval);
+				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
         //problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
@@ -1318,17 +1319,17 @@ void setupDMA ()
 // AM ones
 void WriteTone (double freq, uint32_t Timing)
 {
-
+	double Frequency;
 	typedef struct
 	{
-	  double Frequency;
+
 		uint32_t WaitForThisSample;
 	} samplerf_t;
 	samplerf_t RfSample;
 
 	RfSample.Frequency = Frequency;
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
-	printf ("\nFreq: %f, Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	printf ("\nFreq: %lf, Timing: %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
