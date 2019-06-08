@@ -930,12 +930,12 @@ int modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 						mod = "fm";
-						modeselect ();
+						modselect ();
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 						mod = "am";
-						modeselect ();
+						modselect ();
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
