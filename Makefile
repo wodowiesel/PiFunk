@@ -29,7 +29,7 @@ app: 	pifunk.c
 endif
 
 pifunk: pifunk.c
-				$(CC)$(CFLAGS) -o bin/pifunk
+				$(CC)$(CFLAGS)-o bin/pifunk
 #pifunk.i: pifunk.c
 #	$(CC) $(CFLAGS) -o include/pifunk.i
 

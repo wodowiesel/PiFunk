@@ -705,12 +705,12 @@ struct option long_opt [] =
 {
 		{"filename",required_argument, NULL, 'n'},
 		{"freq",   	required_argument, NULL, 'f'},
-    {"samp",   	required_argument, NULL, 's'},
+    {"samplerate",   	required_argument, NULL, 's'},
     {"mod",	    required_argument, NULL, 'm'},
-    {"call",	  required_argument, NULL, 'c'},
+    {"callsign",	  required_argument, NULL, 'c'},
     {"power", 	required_argument, NULL, 'p'},
-    {"gpio",	  required_argument, NULL, 'g'},
-    {"assist",	no_argument,       NULL, 'a'},
+    //{"gpio",	  required_argument, NULL, 'g'},
+    {"assistent",	no_argument,       NULL, 'a'},
     {"help",	  no_argument,       NULL, 'h'}
 };
 
@@ -720,9 +720,8 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
 
 // basic function then specified one after another
-int timer ()
+int timer (time_t *rawtime)
 {
-	 time_t *rawtime;
 	 time (rawtime);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
