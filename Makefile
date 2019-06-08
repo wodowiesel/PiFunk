@@ -27,34 +27,33 @@ app: 	pifunk.c
 	$(CC) $(CFLAGS) -c -o bin/pifunk
 endif
 
-make:
-	pifunk.i: pifunk.c
+pifunk.i: pifunk.c
 	$(CC) $(CFLAGS) -o include/pifunk.i
 	
-	pifunk.o: pifunk.c
-	$(CC) $(CFLAGS) -o lib/pifunk.o
+pifunk.o: pifunk.c
+	$(CC) $(CFLAGS) -c -o lib/pifunk.o
 
-	pifunk.out: pifunk.c
+pifunk.out: pifunk.c
 	$(CC) $(CFLAGS) -o bin/pifunk.out
 
-	pifunk.s: pifunk.c
+pifunk.s: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.s
 	
-	pifunk.so: pifunk.c
+pifunk.so: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.so
 	
-	pifunk.lib: pifunk.c
+pifunk.lib: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.lib
 
-	pifunk.a: pifunk.c
+pifunk.a: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.a
 	
-	pifunk.: pifunk.c
+pifunk.: pifunk.c
 	$(CC) $(CFLAGS) -o lib/pifunk.s
 	
-	pifunk: pifunk.c
+pifunk: pifunk.c
 	$(CC) $(CFLAGS) -o bin/pifunk
 
 install:
 
-clean: rm -f *.o
+clean: # rm -f *.o
