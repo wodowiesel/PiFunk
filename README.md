@@ -157,8 +157,8 @@ ___
 
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with C=10-100 pF dry (not electroytic) capacitors (C)
-with solenoid chokes (B=10-50 uH) or resistors (R=10kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
+- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electroytic) capacitors (C=10-100 pF)
+with solenoid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!
 
