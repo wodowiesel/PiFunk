@@ -1218,7 +1218,7 @@ void play_wav (char *filename, double freq, int samplerate)
 
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 =  ACCESS (DMABASE);
+	struct DMAREGS* DMA0 = ACCESS(DMABASE);
 	DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	exit (-1);
