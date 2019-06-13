@@ -135,7 +135,7 @@ for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
 - Antenna should be grounded (PIN 9 right one next to GPIO4 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-- You can try to smooth it out with a 1:X (3-9)-balloon if using long HF antenna
+- You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (alu) with cooler for testing
 
@@ -157,8 +157,8 @@ ___
 
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with ~10 uF caps
-with solenoids or resistors/diodes to prevent transmitting (TX) simultaneously on permitted frequencies!
+- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electroytic) capacitors (C=10-100 pF)
+with solenoid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!
 
