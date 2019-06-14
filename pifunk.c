@@ -1448,9 +1448,9 @@ int modulationfm (int argc, char **argv)
 }
 
 //AM --- not yet adapted, needs revision for freq
-int modulationam (int argc, char **argv)
+int modulationam (int argc, char **argv) // better name function: sample/bitchecker
 {
-	printf ("\nam modulator starting \n");
+	printf ("\nam modulator & sample/bitchecker starting \n");
 	    /*
               {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
               {IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -1464,66 +1464,75 @@ int modulationam (int argc, char **argv)
 	  return fp;
 
 		outfilename = (char *) malloc (128);// allocating memory for filename
-		sprintf (outfilename, "%s", "out.ft");
+		sprintf (outfilename, "\n%s\n", "out.ft");
 
-//-------
+		//-------
     if (!(fp = open (filename, SFM_READ, &sfinfo)))
     {   // Open failed so print an error message.
         printf ("\nNot able to open input file %s \n", filename);
         // Print the error message from libsndfile.
         return 1;
     }
-//-----------------
-	nb_samples = (readcount/channels);
+		//-----------------
 
 	if (sfinfo.samplerate == 22050) //44 or 48 khz needs testing
 	{
-		return samplerate;
+		printf ("\nSamplerate is 22050! (%d)\n", sfinfo.samplerate);
+		return sfinfo.samplerate;
 	}
 	else if (sfinfo.samplerate == 14500)
 	{
-			printf ("\nSamplerate is 14500 ! \n");
-			return samplerate;
+			printf ("\nSamplerate is 14500! (%d)\n", sfinfo.samplerate);
+			return sfinfo.samplerate;
 	}
 	else
   {
-	printf ("\nInput samplerate must be at least 22.050 [kHz] AM or 14.50 kHz FM (mono)! \n");
+	printf ("\nInput samplerate must be at least 22.050 [kHz] for FM or 14.500 [kHz] for AM! \n");
 	return 1;
 	}
-//--------------------
+
+	//--------------------
 	if (filebit != 16)
 	{
-		printf ("\nInput must be 16 bit (mono)! \n");
+		printf ("\nInput must be 16 bit! \n");
 		return 1;
 	}
 	// While there are frames in the input file, read them,
 	//process them and write them to the output file
-//----------------------
+	//----------------------
+	nb_samples = (readcount/channels);
   while (readcount == read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
 	  for (k = 0 ; k < nb_samples ; k++)
 	  {
 		  char b = data [k*channels];
-			//printf ("\nChannel buffer b = %c \n", b);
+			printf ("\nChannel buffer b = %c \n", b);
 			if (channels == 0)
 			{
-				printf ("\nFile is NOT mono -> 0 Channels: Error!) \n"); // >1 in stereo or dual mono with half samplerate
+				printf ("\nSample Error! NO (0) channels \n"); // >1 in stereo or dual mono with half samplerate
 			}
 			else if (channels == 1)
 			{
+				printf ("\n File has %d channel (MONO)! \n Reading...", channels);
 				// stereo file, avg left + right --> should be mono at 22.05kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
-				return b;
+				printf ("\nb = %c", b);
 			}
-			else if (channels >= 2)
+			else if (channels == 2)
 			{
-				printf ("\nError: File has 2 or more Channels! \n");
-			} // >1 in stereo or dual mono with half samplerate
+				printf ("\nFile has 2 Channels (STEREO)! \n");// >1 in stereo or dual mono with half samplerate
+			}
+			else
+			{
+					printf ("\nError: File has  more than 2 channels Channels!\n", channels);
+			}
 
+ 			// was defined as global var above
 			printf ("\nnb_samples: %d \n", nb_samples);
-			printf ("\nCompression prameter A: %f \n", A); // was defined as global var above
+
+			printf ("\nCompression prameter A: %f \n", A);
 			//maybe here am option for amplitude factor input!?
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
@@ -1547,16 +1556,16 @@ int modulationam (int argc, char **argv)
 			WriteTone (factorizer, sampler); // somehow input freq here ?!?
 
       //return channels, ampf, ampf2, x, factorizer, sampler;
-	  }
+	  } // for loop
 
-  }
+  } // while loop
 
     // Close input and output files
     //fclose (FileFreqTiming);
     fclose (sfp);
     printf ("\nFile saved! \n");
 		return 0;
-	}
+}
 
 //return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
 // all subch. -> base/default case 0 -> channel 0
@@ -1568,6 +1577,7 @@ int modulationam (int argc, char **argv)
 int csvreader ()
 {
     printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System)... \n");
+		printf ("\nOrder of the list: Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL \n");
     /*
     sfp = fopen ("ctsspmr.csv", "r");// readonly!
     dfp = fopen ("ctsswriter.csv", "w+"); // with + it updates , if exists overwrites
