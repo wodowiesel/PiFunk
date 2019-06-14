@@ -563,6 +563,7 @@ int opt;
 char *filename = "sound.wav";
 double freq;
 double subfreq = 67.0;
+uint32_t Timing;
 char *mod;
 char *modu;
 char *fm = "fm";
@@ -642,7 +643,7 @@ int bufPtr = 0;
 int instrCnt = 0;
 int instrPage;
 int constPage;
-int reg; //= gpio / 10;
+int reg [0]; //= gpio / 10;
 int shift; //= (gpio % 10) * 3;
 
 //--------------------------------------------------
@@ -699,7 +700,7 @@ struct DMAREGS
 		volatile unsigned int DEBUG;
 };
 
-//programm flag options
+//program flag options
 struct option long_opt [] =
 {
 		{"filename",required_argument, NULL, 'n'},
@@ -712,13 +713,13 @@ struct option long_opt [] =
     {"assistent",	no_argument,       NULL, 'a'},
     {"help",	  no_argument,       NULL, 'h'}
 };
-
+//----------
 /*
 RTC (DS3231/1307 driver as bcm) stuff here if needed
 
 */
 
-// basic function then specified one after another
+// --------basic function then specified one after another
 int timer (time_t *rawtime)
 {
 	 time (rawtime);
@@ -767,7 +768,6 @@ int channelmodepmr () //PMR
 	switch (channelnumberpmr)
 	{
 	 //---- Analog & digital
-	 case 0: freq=446.00625; printf ("\nDUMMY all-chan: Chan 0-> default Chan 1 %lf \n", freq); break;	// Scan all Chan till active , now chan1
 	 case 1: freq=446.00625; break;	// Standard
 	 case 2: freq=446.01875; break; // Geocaching
 	 case 3: freq=446.03125; break; // Standard
@@ -856,7 +856,7 @@ int subchannelmodepmr () //Pilot-tone
 
 	 case 39: exit (0);
 	 default:
-	 					subfreq=446.00625;
+	 					subfreq=67.000;
 						printf ("\nDefault subchannel = 1 on subfreq: %lf \n", subfreq);
 						break;
 	}
@@ -872,7 +872,7 @@ int channelmodecb () // CB
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
-		// --> translation of infos in english in future updates!
+			// --> translation of infos in english in future updates!
        case 0:   freq=27.0450; break; //first digital channel
 			 case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)
 			 case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
@@ -884,7 +884,7 @@ int channelmodecb () // CB
 			 case 8:   freq=27.0550; break;
 			 case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
 			 case 10:  freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
-/*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
+			 /*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
 			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
 			 Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet */
 			 case 11:  return freq=27.0850; break;  //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
@@ -901,7 +901,7 @@ int channelmodecb () // CB
 			 case 1919: return freq=27.1950; break;
 			 case 20:  return freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
-		 	//## 40 chan devices
+		 	 // 40 chan devices
 			 case 21:  return freq=27.2150; break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)
 			 case 22:  return freq=27.2250; break; //oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
 			 case 23:  return freq=27.2550; break; //Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
@@ -922,8 +922,8 @@ int channelmodecb () // CB
 			 case 38:  return freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
 			 case 39:  return freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			 case 40:  return freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
-			//ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
-			/* 80 chan devices
+		  	//ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
+			 /* 80 chan devices
 			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt
 			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: */
 			case 41:  return freq=27.5650; break; //Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
@@ -1059,8 +1059,8 @@ void handSig () // exit func
 
 void clearscreen ()
 {
-  printf ("\033[H\033[J");
-  //fflush (stdin);
+  printf ("\n\033[H\033[J\n");
+  //fflush (stdin); // alterntives
   //clsscr ();
   //system ("clear")
 }
@@ -1074,7 +1074,7 @@ int ledactive ()
 		//while (!play_wav ())
 		//{
 		//cm2835_gpio_write (PIN17, LOW);
-		printf ("\nLED OFF - No Transmission! \n");
+			printf ("\nLED OFF - No Transmission! \n");
 		//}
     return 0;
 }
@@ -1119,7 +1119,7 @@ int led ()
 // FM ones
 int infos () //warnings and infos
 {
-		printf ("\n%s\n", device);
+		printf ("\ndevicename: %s\n", device);
     //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
     printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //collor escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
@@ -1169,7 +1169,7 @@ void carrierhigh () // enables it
 
 void carrierlow () // disables it
 {
-printf ("\nSetting carrier low ... \n");
+	printf ("\nSetting carrier low ... \n");
 //struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
 //ACCESS (CM_GP0CTL) == *((int*) &setupword);
 }
@@ -1183,6 +1183,7 @@ void setupfm ()
         printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
         exit (-1);
   }
+
   allof7e = (unsigned*) mmap (
 								NULL,
 								LENGTH, // length
@@ -1191,7 +1192,7 @@ void setupfm ()
 								mem_fd,
 								PERIPH_VIRT_BASE); // base
 
-  if ((int) allof7e == -1) exit (-1);
+  if ((int) allof7e == -1) { exit (-1); }
 
    //SETBIT (GPFSEL0, 14);
    //CLRBIT (GPFSEL0, 13);
@@ -1202,13 +1203,13 @@ void setupfm ()
 //relevant for transmitting stuff
 void play_list () // exit func
 {
-		printf ("\nPlaying music from playlist-folder \n"); // in sounds/playlist
+		printf ("\nPlaying dummy music from playlist-folder \n"); // in sounds/playlist
 
 }
 
 void play_wav (char *filename, double freq, int samplerate)
 {
-	printf ("\nAllocating file to mem for wave ... \n");
+
 	/* wiki https://en.wikipedia.org/wiki/WAV https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
     245 × 60 × 3 = 44100
@@ -1220,6 +1221,7 @@ void play_wav (char *filename, double freq, int samplerate)
     (588 active lines per frame, out of 625 lines total)
 	*/
     // after getting filename insert then open
+	printf ("\nAllocating file to mem for wave ... \n");
 	play_list ();
 	int sz = lseek (fp, 0L, SEEK_END);
 
@@ -1228,12 +1230,12 @@ void play_wav (char *filename, double freq, int samplerate)
   for (int i = 0; i < 22; i++) // why i less then 22?
   {
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
-        printf ("\nFor i=0: read fp \n");
+        printf ("\nReading fp \n");
   }
 
   while (readBytes == read (fp, &data, 1024))
   {
-
+				//normally in 15 Hz bandwidth
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
         unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400 (why this?)
         // if samplerate > 15.75 then clocks per sample is negetive !! not good
@@ -1377,7 +1379,7 @@ void setupDMA ()
    //ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
   //activate dma
-   struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS (DMABASE));
+   struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS (DMABASE));
    DMA0->CS = 1<<31; // reset
    DMA0->CONBLK_AD = 0;
    DMA0->TI = 0;
@@ -1387,7 +1389,47 @@ void setupDMA ()
    printf ("\nSetup DMA done! \n");
 }
 
-// AM ones
+//---------------------//
+// main progs
+int tx ()
+{
+
+	// pads need to be defined
+  // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
+  //pad_reg [GPIO_PAD_0_27] = PADGPIO + power;
+  //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
+
+	// GPIO needs to be ALT FUNC 0 to output the clock
+	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
+
+	// put here the play_wave or wtriting tone maybe?
+	//play_wav ();
+	printf ("\nBroadcasting now...! \n");
+
+	return 0;
+}
+
+//FM
+int modulationfm (int argc, char **argv)
+{
+  	printf ("\nPreparing for FM... \n");
+
+    setupfm (); // gets filename & path or done by filmename() func
+
+	  printf ("\nSetting up DMA... \n");
+		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
+
+    play_wav (filename, freq, samplerate); // atof (argv [3]):22050)
+
+	  printf ("\nChecking & Setting LED for Transmission \n");
+	  led ();
+
+	  printf ("\nNow transmitting... \n");
+
+	return 0;
+}
+
+//AM --- not yet adapted, needs revision for freq
 void WriteTone (double freq, uint32_t Timing)
 {
 	double Frequencies = freq;
@@ -1407,47 +1449,6 @@ void WriteTone (double freq, uint32_t Timing)
 		fprintf (stderr, "\nUnable to write sample! \n");
 	}
 }
-//---------------------//
-// main progs
-int tx ()
-{
-	// put here the play_wave
-	//play_wav ();
-	// pads need to be defined
-  // Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
-  //pad_reg [GPIO_PAD_0_27] = PADGPIO + power;
-  //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
-
-	// GPIO needs to be ALT FUNC 0 to output the clock
-	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
-	printf ("\nBroadcasting now...! \n");
-
-	return 0;
-}
-
-//FM
-int modulationfm (int argc, char **argv)
-{
-  	printf ("\nPreparing for FM... \n");
-
-    setupfm (); // gets filename & path or done by filmename() func
-
-	  printf ("\nSetting up DMA... \n");
-		setupDMA ();
-    //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-
-	  //printf ("\nTesting Samplerate... \n"); //normally in 15 Hz bandwidth
-    play_wav (filename, freq, samplerate); // atof (argv [3]):22050)
-
-	  printf ("\nChecking & Setting LED for Transmission \n");
-	  led ();
-
-	  printf ("\nNow transmitting... \n");
-
-	return 0;
-}
-
-//AM --- not yet adapted, needs revision for freq
 int modulationam (int argc, char **argv) // better name function: sample/bitchecker
 {
 	printf ("\nam modulator & sample/bitchecker starting \n");
@@ -1553,7 +1554,8 @@ int modulationam (int argc, char **argv) // better name function: sample/bitchec
 
 			printf ("\nNow writing tone in AM... \n");
 
-			WriteTone (factorizer, sampler); // somehow input freq here ?!?
+			WriteTone (freq, Timing); // somehow input freq here ?!?
+
 
       //return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
