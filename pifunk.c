@@ -548,7 +548,7 @@ int k;
 int l;
 float x;
 
-//pi momorymap:
+//pi memorymap:
 int  mem_fd;
 char *gpio_mem;
 char *gpio_map;
@@ -558,84 +558,82 @@ char *spi0_map;
 //-----------------------------------------
 char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
-
+//arguments
 int opt;
-
 char *filename = "sound.wav";
 double freq;
-const double ctss_freq;
-unsigned int samplerate;
-unsigned int channels = 1;
-double shift_ppm = 0;
-//double I = sin ((PERIOD*freq) + shift_ppm);
-//double Q = cos ((PERIOD*freq) + shift_ppm);
-//double RF_SUM = (I+Q);
-
-//samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
-
+double subfreq = 67.0;
 char *mod;
 char *modu;
 char *fm = "fm";
 char *am = "am";
-char *callsign;
+char *callsign = "callsign";
 float volume = 1.0f;
-unsigned int power = 7;
-uint16_t pis = (0x1234); // dec: 4660
-uint32_t carrier_freq = 87600000; //
-float A = 87.6f; // compression parameter (stauchung) -> this might be the carrier too
+int power = 7;
+int samplerate = 22050;
+int channels = 1;
+double shift_ppm = 0;
+
+//menu variables
 int powerlevel;
 int menuoption;
 int channelnumbercb;
 int channelnumberpmr;
+int subchannelnumberpmr;
 int channelmode;
 int freqmode;
 int modeselect;
 int callnameselect;
+double ctss_freq;
+time_t rawtime;
+
+// IQ & carrier
+uint16_t pis = (0x1234); // dec: 4660
+uint32_t carrier_freq = 87600000; // why this value?
+//double I = sin ((PERIOD*freq) + shift_ppm);
+//double Q = cos ((PERIOD*freq) + shift_ppm);
+//double RF_SUM = (I+Q);
 
 //--network sockets for later
 // here custom port via tcp/ip or udp
 socklen_t addressLength;
-unsigned int port = 8080;
+int port = 8080;
 
-// program variables
-time_t rawtime;
-char buffer [80];
-char data_name [1024];
-
-// we generate complex I-Q samples
-float data [2*BUFFER_LEN];
-float data_filtered [2*BUFFER_LEN];
-float FactAmplitude = 2.0; //maybe here amp-modulator type input?
-// logarithmic modulation
-
-// fm vars
+//  files
 FILE *sfp, *dfp;
+FILE FileFreqTiming;
 FILE infiles;
 FILE outfiles;
-FILE FileFreqTiming;
+SNDFILE *infile;
+SNDFILE *outfile;
 int fp = STDIN_FILENO;
 int filebit;
 int readBytes;
 float datanew, dataold = 0;
+char data_name [1024];
+char buffer [80];
+float data [2*BUFFER_LEN];
+float data_filtered [2float ampf;*BUFFER_LEN];
 
+//audio & sample control
+// logarithmic modulation
+//samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
+//volume in dB 0db = unity gain, no attenuation, full amplitude signal
+//-20db = 10x attenuation, significantly more quiet
+//float volbuffer [SAMPLES_PER_BUFFER];
+float volumeLevelDb = -6.f; //cut amplitude in half
+//float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
-//snd_output_t *output = NULL;
-SNDFILE *infile, *outfile;
-char *infilename, *outfilename;
+snd_output_t *output = NULL;
+int nb_samples;
+int excursion = 6000; // 32767 found another value but dont know on what this is based on
+float VOLUME_REFERENCE = 1.f;
+float A = 87.6f; // compression parameter -> this might be the carrier too
+float FactAmplitude = 2.0; //maybe here amp-modulator type input?
 float ampf;
 float ampf2;
 float factorizer;
 float sampler;
-int readcount, nb_samples;
-int excursion = 6000; //32767 found another value but dont know on what this is based on
-
-//audio control
-//volume in dB 0db = unity gain, no attenuation, full amplitude signal
-//-20db = 10x attenuation, significantly more quiet
-float volumeLevelDb = -6.f; //cut amplitude in half
-//float volbuffer [SAMPLES_PER_BUFFER];
-float VOLUME_REFERENCE = 1.f;
-//float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 
 // instructor for access
 unsigned long frameinfo;
@@ -644,7 +642,6 @@ int bufPtr = 0;
 int instrCnt = 0;
 int instrPage;
 int constPage;
-
 int reg; //= gpio / 10;
 int shift; //= (gpio % 10) * 3;
 
@@ -727,14 +724,14 @@ int timer (time_t *rawtime)
 	 time (rawtime);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
-   printf ("\nCurrent Formatted date & time : %s \n", buffer);
+   printf ("\nCurrent formated date & time : %s \n", buffer);
    return 0;
 }
 
 int filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  //scanf ("%s", &filename);
+  scanf ("%s", &filename);
 
   //if (filename != "sound.wav")
 	//{
@@ -770,7 +767,7 @@ int channelmodepmr () //PMR
 	switch (channelnumberpmr)
 	{
 	 //---- Analog & digital
-	 //case 0: return freq=446.00625; printf ("\nDUMMY all-chan: Chan 0-> default Chan 1 %f ", freq); break;	// Scan all Chan till active , now chan1
+	 case 0: freq=446.00625; printf ("\nDUMMY all-chan: Chan 0-> default Chan 1 %lf \n", freq); break;	// Scan all Chan till active , now chan1
 	 case 1: freq=446.00625; break;	// Standard
 	 case 2: freq=446.01875; break; // Geocaching
 	 case 3: freq=446.03125; break; // Standard
@@ -780,10 +777,11 @@ int channelmodepmr () //PMR
 	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
 	 case 8: freq=446.09375; break; // Standard
   //-----Digital only
-	// dpmr digital new since 28.09.2016
+	// dmr (tier 1) digital new since 28.09.2016
 	// extra 8 chan
 	// 12.5 kHz steps
 	 case 9:  freq=446.10312; break; // 6.25 kHz steps
+	/* for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM */
 	 case 10: freq=446.10625; break;
 	 case 11: freq=446.11875; break;
 	 case 12: freq=446.13125; break;
@@ -792,12 +790,81 @@ int channelmodepmr () //PMR
 	 case 15: freq=446.16875; break;
 	 case 16: freq=446.18125; break;
 	 case 17: freq=446.19375; break;
+
+	 //normaly up to 32 chan in dpmr
+
+
 	 case 18: exit (0);
-	 default: printf ("\nDefault chan = 1 %lf \n", freq); freq=446.00625; break;
+	 default:
+	 					freq=446.00625;
+	 					printf ("\nDefault channelnumber = 1 on freq = %lf \n", freq);
+						break;
 	}
-  printf ("\nUsing Freq: %lf \n", freq);
+  printf ("\nChannelnumber = %d on freq = %lf \n", channelnumberpmr, freq);
 	return 0;
 }
+
+int subchannelmodepmr () //Pilot-tone
+{
+	printf ("\nChoose Sub-Channel 0-38 (39 to exit): \n");
+	scanf ("%d", &subchannelnumberpmr);
+	switch (subchannelnumberpmr)
+	{
+		// FYI 19 (38)-kHz-Pilottone on UKW
+	 //---- Analog & digital
+	 case 0: subfreq=67.000; printf ("\n Channels (all) = 0 default CTSS-Chan 1 %lf \n", subfreq); break;	// Scan all Chan till active , now chan1
+	 case 1: subfreq=71.900; break;	//4.9 Hz step
+	 case 2: subfreqq=74.400; break;
+	 case 3: subfreq=77.000; break;
+	 case 4: subfreq=77.000; break; // at 3-chan-PMR-devices its ch. 2
+	 case 5: subfreq=79.700; break; // Contest
+	 case 6: subfreq=82.500; break; // Events
+	 case 7: subfreq=85.400; break; // at 3-channel-PMR-devices it's ch. 3
+	 case 8: subfreq=88.500; break; // Standard
+	 case 9: subfreq=91.500; break;
+	 case 10: subfreq=94.800; break;
+	 case 11: subfreq=97.400; break;
+	 case 12: subfreq=100.000; break;
+	 case 13: subfreq=103.500; break;
+	 case 14: subfreq=107.200; break;
+	 case 15: subfreq=110.900; break;
+	 case 16: subfreq=114.800; break;
+	 case 17: subfreq=118.800; break;
+	 case 18: subfreq=123.000; break;
+	 case 19: subfreq=127.300; break;
+
+	 case 20: subfreq=131.800; break;
+	 case 21: subfreq=136.500; break;
+	 case 22: subfreq=141.300; break;
+	 case 23: subfreq=146.200; break;
+	 case 24: subfreq=151.400; break;
+	 case 25: subfreq=156.700; break;
+	 case 26: subfreq=162.200; break;
+	 case 27: subfreq=167.900; break;
+	 case 28: subfreq=173.800; break;
+	 case 29: subfreq=179.900; break;
+	 case 30: subfreq=186.200; break;
+
+	 case 31: subfreq=192.800; break;
+	 case 32: subfreq=203.500; break;
+	 case 33: subfreq=210.700; break;
+	 case 34: subfreq=218.100; break;
+	 case 35: subfreq=225.700; break;
+	 case 36: subfreq=233.600; break;
+	 case 37: subfreq=241.800; break;
+	 case 38: subfreq=250.300; break;
+
+	 case 39: exit (0);
+	 default:
+	 					subfreq=446.00625;
+						printf ("\nDefault subchannel = 1 on subfreq: %lf \n", subfreq);
+						break;
+	}
+  printf ("\nSubchannelnumber = %d on subfreq = %lf \n", subchannelnumberpmr, subfreq);
+
+	return 0;
+}
+
 
 int channelmodecb () // CB
 {
@@ -808,15 +875,15 @@ int channelmodecb () // CB
 		// --> translation of infos in english in future updates!
        case 0:   freq=27.0450; break; //first digital channel
 			 case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)
-			 case 2:   return freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
-			 case 3:   return freq=26.9850; break;
-			 case 4:   return freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
-			 case 5:   return freq=27.0150; break; //Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
-			 case 6:   return freq=27.0250; break; //Datenkanal (D)
-		   case 7:   return freq=27.0350; break; //Datenkanal (D)
-			 case 8:   return freq=27.0550; break;
-			 case 9:   return freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
-			 case 10:  return freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
+			 case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
+			 case 3:   freq=26.9850; break;
+			 case 4:   freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
+			 case 5:   freq=27.0150; break; //Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
+			 case 6:   freq=27.0250; break; //Datenkanal (D)
+		   case 7:   freq=27.0350; break; //Datenkanal (D)
+			 case 8:   freq=27.0550; break;
+			 case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
+			 case 10:  freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
 /*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
 			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
 			 Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet */
@@ -901,10 +968,13 @@ int channelmodecb () // CB
 			case 79:  return freq=26.9450; break;
 			case 80:  return freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:  exit (0);
-			default:  printf ("\nDefault: CB chan = 1 %lf \n", freq); freq=26.9650; break;
+			default:
+							freq=26.9650;
+							printf ("\nDefault CB chan = 1 %lf \n", freq);
+							break;
 
 	}
-  printf ("\nUsing Freq: %lf \n", freq);
+  printf ("\nUsing channel = %d on freq =  %lf \n",channelnumbercb, freq);
 	return  0;
 }
 
@@ -1497,7 +1567,7 @@ int modulationam (int argc, char **argv)
 
 int csvreader ()
 {
-    printf ("\nChecking for CSV-file... \n");
+    printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System)... \n");
     /*
     sfp = fopen ("ctsspmr.csv", "r");// readonly!
     dfp = fopen ("ctsswriter.csv", "w+"); // with + it updates , if exists overwrites
