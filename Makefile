@@ -1,7 +1,7 @@
 # pifunk makefile
 # should be run with sudo or root rights
-CC = gcc # use gnu compiler
-STD_CFLAGS =-g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm -fPIC pifunk.c #-std=gnu99 as alternative
+CC=gcc# use gnu compiler
+STD_CFLAGS=-g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm -fPIC pifunk.c #-std=gnu99 as alternative
 
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 # Determine the hardware platform. Below, pi1 stands for the RaspberryPi 1 (the original one),
@@ -29,7 +29,7 @@ app: pifunk.c
 endif
 
 pifunk.i: pifunk.c
-					$(CC) $(CFLAGS) -o include/pifunk.i
+					$(CC)$(CFLAGS)-o include/pifunk.i
 
 pifunk.o: pifunk.c
 					$(CC)$(CFLAGS)-o lib/pifunk.o
