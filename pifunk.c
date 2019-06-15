@@ -529,6 +529,7 @@ volatile unsigned 										*allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
+#define VOLUME_REFERENCE 1;
 //#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
 //#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) //|| 1<<bit// |=
 //#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
@@ -626,8 +627,8 @@ float data_filtered [2*BUFFER_LEN];
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-#define VOLUME_REFERENCE 1;
-float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
+
+//float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
 
 int nb_samples;
@@ -1296,8 +1297,8 @@ void play_wav (char *filename, double freq, int samplerate)
 
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
-	DMA0->CS = 1<<31; // reset dma controller
+	//struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
+	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	exit (-1);
 }
