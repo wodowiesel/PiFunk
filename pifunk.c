@@ -1385,14 +1385,14 @@ void setupDMA ()
    // DMAC then DMA enable in 0x8 dec:8 / pwmbase+8 = 7E20C008 (dec:2116075528) /
    //ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
-  //activate dma
-   struct DMAREGS* DMA0 = (struct DMAREGS*)(ACCESS (DMABASE));
-   DMA0->CS = 1<<31; // reset
-   DMA0->CONBLK_AD = 0;
-   DMA0->TI = 0;
+   //activate dma
+   //struct DMAREGS* DMA0 = (struct DMAREGS*)(ACCESS (DMABASE));
+   //DMA0->CS = 1<<31; // reset
+   //DMA0->CONBLK_AD = 0;
+   //DMA0->TI = 0;
 
    //DMA0->CONBLK_AD = (int) (instrPage.p);
-   DMA0->CS = (1<<0) | (255 <<16);  // enable bit = 0, clear end flag = 1, prio=19-16
+   //DMA0->CS = (1<<0) | (255 <<16);  // enable bit = 0, clear end flag = 1, prio=19-16
    printf ("\nSetup DMA done! \n");
 }
 
