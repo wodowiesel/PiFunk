@@ -607,8 +607,11 @@ FILE infiles;
 FILE outfiles;
 SNDFILE *infile;
 SNDFILE *outfile;
+FILE *outfilename;
+//snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit;
+int readcount;
 int readBytes;
 float datanew, dataold = 0;
 char data_name [1024];
@@ -623,10 +626,10 @@ float data_filtered [2*BUFFER_LEN];
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float VOLUME_REFERENCE = 1.f;
-float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
+float volume_reference = 1.f;
+float volumeMultiplier = volume_reference * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
-snd_output_t *output = NULL;
+
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
 float A = 87.6f; // compression parameter -> this might be the carrier too
@@ -989,7 +992,7 @@ int channelmodecb (double freq) // CB
 	return  0;
 }
 
-int modselect (char *mod)
+int modselect ()
 {
 	printf ("\nOpening Modulator \n");
 
@@ -1013,7 +1016,7 @@ int modulationselect (char *mod)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 						mod = "fm";
-						modselect (char *mod);
+						modselect ();
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
@@ -1293,7 +1296,7 @@ void play_wav (char *filename, double freq, int samplerate)
 
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 = ACCESS(DMABASE);
+	//struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
 	DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	exit (-1);
@@ -1434,7 +1437,7 @@ int modulationfm (int argc, char **argv)
 }
 
 //AM --- not yet adapted, needs revision for freq
-void WriteTone (double freq, uint32_t Timing)
+void WriteTone (freq, uint32_t Timing)
 {
 	double Frequencies = freq;
 	typedef struct
@@ -1540,7 +1543,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			}
 			else
 			{
-					printf ("\nError: File has  more than 2 channels Channels!\n", channels);
+					printf ("\nError: File has %d Channels!  (> 2 channels)  \n", channels);
 			}
 
  			// was defined as global var above
@@ -1620,7 +1623,7 @@ int callname ()
 	  {
 
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign []);
+						 scanf  ("%s", &callsign [0]);
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
@@ -1636,7 +1639,7 @@ int callname ()
   	//return callsign, &callsign, *callsign;
 }
 
-int modetype ()
+int modetype (double freq)
 {
 	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
 	scanf ("%d", &modeselect);
@@ -1648,7 +1651,7 @@ int modetype ()
 							break;
 
 		case 2:		printf ("\n[2] Frequencymode: \n");
-							freqselect (double freq);
+							freqselect (freq);
 							break;
 
 		default: printf ("\nError! \n");
@@ -1697,7 +1700,7 @@ int assistent () // assistent
 		powerselect ();
 		callname ();
 		modetype ();
-		samplecheck (char *filename, int samplerate);
+		samplecheck (*filename, samplerate);
 		/*printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n'); */
     return 0;
@@ -1754,7 +1757,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			case 's':
 					samplerate = atoi (optarg);
 					printf ("\nSamplerate is %d \n", samplerate);
-					samplecheck (char *filename, int samplerate);
+					samplecheck (*filename, samplerate);
 					break;
 						// modulation
 			case 'm':
