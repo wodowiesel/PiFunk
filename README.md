@@ -88,7 +88,7 @@ commands:
 
 manually generating libraries:
 
-`gcc -g -Wall -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o lib/pifunk.o lib/pifunk.s lib/pifunk.so lib/pifunk.a lib/pifunk.lib include/pifunk.i`
+`gcc -g -Wall -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o include/pifunk.i  lib/pifunk.s lib/pifunk.o lib/pifunk.so lib/pifunk.a lib/pifunk.lib`
 
 manuallygenerating executable binary:
 
@@ -119,7 +119,7 @@ default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p
 
 Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700+ MHz range.
 
-CTSS-Tones for PMR can be found here [CTSS](ctsspmr.csv)
+CTSS-Tones (38 included) for PMR can be found here [CTSS](ctsspmr.csv)
 
 ___
 
