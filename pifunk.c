@@ -626,8 +626,8 @@ float data_filtered [2*BUFFER_LEN];
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-const int volume_reference = 1;
-float volumeMultiplier = volume_reference * pow (10, (volumeLevelDb/20.f) );
+#define VOLUME_REFERENCE 1;
+float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
 
 int nb_samples;
@@ -746,7 +746,7 @@ int timer (time_t *rawtime)
 int filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", &filename);
+  //scanf ("%s", &filename);
 
   //if (filename != "sound.wav")
 	//{
@@ -1296,7 +1296,7 @@ void play_wav (char *filename, double freq, int samplerate)
 
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS(DMABASE));
+	struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
 	DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	exit (-1);
