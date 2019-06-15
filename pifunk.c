@@ -626,7 +626,7 @@ float data_filtered [2*BUFFER_LEN];
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volume_reference = 1.0;
+int volume_reference = 1.0;
 float volumeMultiplier = volume_reference * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
 
@@ -1033,7 +1033,7 @@ int modulationselect (char *mod)
 	return 0;
 }
 
-int channelselect ()
+int channelselect (double freq)
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
@@ -1046,7 +1046,7 @@ int channelselect ()
 									break;
 
 		   		case 2: printf ("\nCB CHAN-MODE SELECT \n");
-									channelmodecb (double freq);
+									channelmodecb (freq);
 									break;
 
         	default: printf ("\nDefault: Returning... \n");
@@ -1296,7 +1296,7 @@ void play_wav (char *filename, double freq, int samplerate)
 
 void unsetupDMA ()
 {
-	//struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
+	struct DMAREGS* DMA0 = (struct DMAREGS*) (ACCESS(DMABASE));
 	DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	exit (-1);
@@ -1437,7 +1437,7 @@ int modulationfm (int argc, char **argv)
 }
 
 //AM --- not yet adapted, needs revision for freq
-void WriteTone (freq, Timing)
+void WriteTone ()
 {
 	double Frequencies = freq;
 	typedef struct
@@ -1570,7 +1570,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 
 			printf ("\nNow writing tone in AM... \n");
 
-			WriteTone (freq, Timing); // somehow input freq here ?!?
+			WriteTone (); // somehow input freq here ?!?
 
 
       //return channels, ampf, ampf2, x, factorizer, sampler;
