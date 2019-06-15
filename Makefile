@@ -1,5 +1,6 @@
 # pifunk makefile
 # should be run with sudo or root rights
+USER=sudo 
 CC=gcc # use gnu compiler
 STD_CFLAGS= -g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm -fPIC pifunk.c #-std=gnu99 as alternative
 
@@ -25,13 +26,14 @@ endif
 ifneq ($(TARGET), other)
 
 app: pifunk.c
-					$(CC)$(CFLAGS)-c -o bin/pifunk
+					$(USER)$(CC)$(CFLAGS)-c -o bin/pifunk
 endif
 
 pifunk: pifunk.c
-					$(CC)$(CFLAGS)-o bin/pifunk
-#pifunk.i: pifunk.c
-#					$(CC)$(CFLAGS)-o include/pifunk.i
+					$(USER)$(CC)$(CFLAGS)-o bin/pifunk
+					
+pifunk.i: pifunk.c
+					$(CC)$(CFLAGS)-o include/pifunk.i
 
 pifunk.o: pifunk.c
 					$(CC)$(CFLAGS)-o lib/pifunk.o
