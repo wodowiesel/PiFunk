@@ -6,6 +6,7 @@
 
 **Early Experimental!**
 
+### Acknowledgements: 
 based on PiFM/AM-Scripts
 ___
 
@@ -50,7 +51,7 @@ You will need some libraries for this:
 
 or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
-`wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
+`sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
 
 then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install it
 
@@ -74,13 +75,13 @@ GNU installer `sudo apt-get install gcc`
 
 `-Llib` for using library-directory
 
+`-shared` for generating shared libraries
+
 `-lsndfile` for ALSA "snd"-lib
 
 `-c` for compiling without linking
 
 `-fPIC` for generating position independent code (PIC) 
-
-`-shared` for generating shared libraries
 
 `-o` for output-filename
 
@@ -88,11 +89,11 @@ commands:
 
 manually generating libraries:
 
-`gcc -g -Wall -std=c99 -lm -Iinclude -Llib -c -fPIC pifunk.c -shared -o include/pifunk.i  lib/pifunk.s lib/pifunk.o lib/pifunk.so lib/pifunk.a lib/pifunk.lib`
+`sudo gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -c -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.so lib/pifunk.a lib/pifunk.lib`
 
 manuallygenerating executable binary:
 
-`gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
  optional:
 `sudo make` with pre-configured flags for compilation
