@@ -626,7 +626,7 @@ float data_filtered [2*BUFFER_LEN];
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-int volume_reference = 1.0;
+const int volume_reference = 1;
 float volumeMultiplier = volume_reference * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
 
@@ -1647,7 +1647,7 @@ int modetype (double freq)
 	switch (modeselect)
 	{
 		case 1:	 	printf ("\n[1] Channelmode: \n");
-							channelselect (); //undefined reference
+							channelselect (freq); //undefined reference
 							break;
 
 		case 2:		printf ("\n[2] Frequencymode: \n");
