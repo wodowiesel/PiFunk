@@ -607,7 +607,7 @@ FILE infiles;
 FILE outfiles;
 SNDFILE *infile;
 SNDFILE *outfile;
-FILE *outfilename;
+char *outfilename;
 //snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit;
@@ -626,7 +626,7 @@ float data_filtered [2*BUFFER_LEN];
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volume_reference = 1.f;
+float volume_reference = 1.0;
 float volumeMultiplier = volume_reference * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
 
@@ -1021,7 +1021,7 @@ int modulationselect (char *mod)
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 						mod = "am";
-						modselect (char *mod);
+						modselect ();
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
@@ -1437,7 +1437,7 @@ int modulationfm (int argc, char **argv)
 }
 
 //AM --- not yet adapted, needs revision for freq
-void WriteTone (freq, uint32_t Timing)
+void WriteTone (freq, Timing)
 {
 	double Frequencies = freq;
 	typedef struct
@@ -1570,7 +1570,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 
 			printf ("\nNow writing tone in AM... \n");
 
-			WriteTone (double freq, uint32_t Timing); // somehow input freq here ?!?
+			WriteTone (freq, Timing); // somehow input freq here ?!?
 
 
       //return channels, ampf, ampf2, x, factorizer, sampler;
@@ -1699,8 +1699,8 @@ int assistent () // assistent
 		filenamepath ();
 		powerselect ();
 		callname ();
-		modetype ();
-		samplecheck (*filename, samplerate);
+		modetype (freq);
+		samplecheck (filename, samplerate);
 		/*printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n'); */
     return 0;
@@ -1757,7 +1757,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			case 's':
 					samplerate = atoi (optarg);
 					printf ("\nSamplerate is %d \n", samplerate);
-					samplecheck (*filename, samplerate);
+					samplecheck (filename, samplerate);
 					break;
 						// modulation
 			case 'm':
