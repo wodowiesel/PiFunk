@@ -5,12 +5,10 @@
 ** it under the terms of the GNU Lesser General Public License as published by
 ** the Free Software Foundation; either version 2.1 of the License, or
 ** (at your option) any later version.
-**
 ** This program is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU Lesser General Public License for more details.
-**
 ** You should have received a copy of the GNU Lesser General Public License
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -18,7 +16,6 @@
 
 /*
 ** sndfile.h -- system-wide definitions
-**
 ** API documentation is in the doc/ directory of the source code tarball
 ** and at http://www.mega-nerd.com/libsndfile/api.html.
 */
@@ -134,10 +131,10 @@ enum
 */
 
 enum
-{	SFC_GET_LIB_VERSION				= 0x1000,
+{
+	SFC_GET_LIB_VERSION				= 0x1000,
 	SFC_GET_LOG_INFO				= 0x1001,
 	SFC_GET_CURRENT_SF_INFO			= 0x1002,
-
 
 	SFC_GET_NORM_DOUBLE				= 0x1010,
 	SFC_GET_NORM_FLOAT				= 0x1011,
@@ -232,7 +229,6 @@ enum
 	SFC_SET_ADD_DITHER_ON_READ		= 0x1071
 } ;
 
-
 /*
 ** String types that can be set and read from files. Not all file types
 ** support this and even the file types which support one, may not support
@@ -240,7 +236,8 @@ enum
 */
 
 enum
-{	SF_STR_TITLE					= 0x01,
+{
+	SF_STR_TITLE					= 0x01,
 	SF_STR_COPYRIGHT				= 0x02,
 	SF_STR_SOFTWARE					= 0x03,
 	SF_STR_ARTIST					= 0x04,
@@ -253,8 +250,7 @@ enum
 } ;
 
 /*
-** Use the following as the start and end index when doing metadata
-** transcoding.
+ Use the following as the start and end index when doing metadata transcoding.
 */
 
 #define	SF_STR_FIRST	SF_STR_TITLE
@@ -281,19 +277,20 @@ enum
 */
 
 enum
-{	SF_ERR_NO_ERROR				= 0,
+{
+	SF_ERR_NO_ERROR	= 0,
 	SF_ERR_UNRECOGNISED_FORMAT	= 1,
-	SF_ERR_SYSTEM				= 2,
+	SF_ERR_SYSTEM	= 2,
 	SF_ERR_MALFORMED_FILE		= 3,
 	SF_ERR_UNSUPPORTED_ENCODING	= 4
 } ;
-
 
 /* Channel map values (used with SFC_SET/GET_CHANNEL_MAP).
 */
 
 enum
-{	SF_CHANNEL_MAP_INVALID = 0,
+{
+	SF_CHANNEL_MAP_INVALID = 0,
 	SF_CHANNEL_MAP_MONO = 1,
 	SF_CHANNEL_MAP_LEFT,					/* Apple calls this 'Left' */
 	SF_CHANNEL_MAP_RIGHT,					/* Apple calls this 'Right' */
@@ -316,15 +313,12 @@ enum
 	SF_CHANNEL_MAP_TOP_REAR_LEFT,			/* Apple and MS call this 'Top Back Left' */
 	SF_CHANNEL_MAP_TOP_REAR_RIGHT,			/* Apple and MS call this 'Top Back Right' */
 	SF_CHANNEL_MAP_TOP_REAR_CENTER,			/* Apple and MS call this 'Top Back Center' */
-
 	SF_CHANNEL_MAP_AMBISONIC_B_W,
 	SF_CHANNEL_MAP_AMBISONIC_B_X,
 	SF_CHANNEL_MAP_AMBISONIC_B_Y,
 	SF_CHANNEL_MAP_AMBISONIC_B_Z,
-
 	SF_CHANNEL_MAP_MAX
 } ;
-
 
 /* A SNDFILE* pointer can be passed around much like stdio.h's FILE* pointer. */
 
@@ -341,19 +335,18 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 typedef __int64		sf_count_t ;
 #define SF_COUNT_MAX		0x7fffffffffffffffi64
 #else
-//typedef @TYPEOF_SF_COUNT_T@	sf_count_t ;
+typedef @TYPEOF_SF_COUNT_T@	sf_count_t ;
 typedef int	sf_count_t ;
 #define SF_COUNT_MAX		@SF_COUNT_MAX@
 #endif
 
-
 /* A pointer to a SF_INFO structure is passed to sf_open () and filled in.
 ** On write, the SF_INFO structure is filled in by the user and passed into
-** sf_open ().
-*/
+** sf_open ().*/
 
 struct SF_INFO
-{	sf_count_t	frames ;		/* Used to be called samples.  Changed to avoid confusion. */
+{
+	sf_count_t	frames ;		/* Used to be called samples.  Changed to avoid confusion. */
 	int			samplerate ;
 	int			channels ;
 	int			format ;
@@ -375,7 +368,8 @@ typedef	struct SF_INFO SF_INFO ;
 */
 
 typedef struct
-{	int			format ;
+{
+	int			format ;
 	const char	*name ;
 	const char	*extension ;
 } SF_FORMAT_INFO ;
@@ -387,16 +381,17 @@ typedef struct
 */
 
 enum
-{	SFD_DEFAULT_LEVEL	= 0,
+{
+	SFD_DEFAULT_LEVEL	= 0,
 	SFD_CUSTOM_LEVEL	= 0x40000000,
-
 	SFD_NO_DITHER		= 500,
 	SFD_WHITE			= 501,
 	SFD_TRIANGULAR_PDF	= 502
 } ;
 
 typedef struct
-{	int			type ;
+{
+	int			type ;
 	double		level ;
 	const char	*name ;
 } SF_DITHER_INFO ;
@@ -406,16 +401,18 @@ typedef struct
 */
 
 typedef struct
-{	sf_count_t	offset ;
+{
+	sf_count_t	offset ;
 	sf_count_t	length ;
 } SF_EMBED_FILE_INFO ;
 
 /*
-**	Struct used to retrieve cue marker information from a file
+	Struct used to retrieve cue marker information from a file
 */
 
 typedef struct
-{	int32_t 	indx ;
+{
+	int32_t 	indx ;
 	uint32_t 	position ;
 	int32_t 	fcc_chunk ;
 	int32_t 	chunk_start ;
@@ -426,20 +423,19 @@ typedef struct
 
 #define	SF_CUES_VAR(count) \
 	struct \
-	{	uint32_t cue_count ; \
+	{
+		uint32_t cue_count ; \
 		SF_CUE_POINT cue_points [count] ; \
 	}
 
 typedef SF_CUES_VAR (100) SF_CUES ;
 
 /*
-**	Structs used to retrieve music sample information from a file.
+	Structs used to retrieve music sample information from a file.
 */
 
 enum
-{	/*
-	**	The loop mode field in SF_INSTRUMENT will be one of the following.
-	*/
+{	/***	The loop mode field in SF_INSTRUMENT will be one of the following.*/
 	SF_LOOP_NONE = 800,
 	SF_LOOP_FORWARD,
 	SF_LOOP_BACKWARD,
@@ -447,21 +443,21 @@ enum
 } ;
 
 typedef struct
-{	int gain ;
+{
+	int gain ;
 	char basenote, detune ;
 	char velocity_lo, velocity_hi ;
 	char key_lo, key_hi ;
 	int loop_count ;
 
 	struct
-	{	int mode ;
+	{
+		int mode ;
 		uint32_t start ;
 		uint32_t end ;
 		uint32_t count ;
 	} loops [16] ; /* make variable in a sensible way */
 } SF_INSTRUMENT ;
-
-
 
 /* Struct used to retrieve loop information from a file.*/
 typedef struct
@@ -469,26 +465,23 @@ typedef struct
 	short	time_sig_num ;	/* any positive integer    > 0  */
 	short	time_sig_den ;	/* any positive power of 2 > 0  */
 	int		loop_mode ;		/* see SF_LOOP enum             */
-
 	int		num_beats ;		/* this is NOT the amount of quarter notes !!!*/
 							/* a full bar of 4/4 is 4 beats */
 							/* a full bar of 7/8 is 7 beats */
-
 	float	bpm ;			/* suggestion, as it can be calculated using other fields:*/
 							/* file's length, file's sampleRate and our time_sig_den*/
 							/* -> bpms are always the amount of _quarter notes_ per minute */
-
 	int	root_key ;			/* MIDI note, or -1 for None */
 	int future [6] ;
 } SF_LOOP_INFO ;
-
 
 /*	Struct used to retrieve broadcast (EBU) information from a file.
 **	Strongly (!) based on EBU "bext" chunk format used in Broadcast WAVE.
 */
 #define	SF_BROADCAST_INFO_VAR(coding_hist_size) \
 			struct \
-			{	char		description [256] ; \
+			{
+				char		description [256] ; \
 				char		originator [32] ; \
 				char		originator_reference [32] ; \
 				char		origination_date [10] ; \
@@ -506,7 +499,8 @@ typedef struct
 typedef SF_BROADCAST_INFO_VAR (256) SF_BROADCAST_INFO ;
 
 struct SF_CART_TIMER
-{	char	usage [4] ;
+{
+	char	usage [4] ;
 	int32_t	value ;
 } ;
 
@@ -514,7 +508,8 @@ typedef struct SF_CART_TIMER SF_CART_TIMER ;
 
 #define	SF_CART_INFO_VAR(p_tag_text_size) \
 			struct \
-			{	char		version [4] ; \
+			{
+				char		version [4] ; \
 				char		title [64] ; \
 				char		artist [64] ; \
 				char		cut_id [64] ; \
@@ -548,7 +543,8 @@ typedef sf_count_t		(*sf_vio_write)		(const void *ptr, sf_count_t count, void *u
 typedef sf_count_t		(*sf_vio_tell)		(void *user_data) ;
 
 struct SF_VIRTUAL_IO
-{	sf_vio_get_filelen	get_filelen ;
+{
+	sf_vio_get_filelen	get_filelen ;
 	sf_vio_seek			seek ;
 	sf_vio_read			read ;
 	sf_vio_write		write ;
@@ -557,15 +553,12 @@ struct SF_VIRTUAL_IO
 
 typedef	struct SF_VIRTUAL_IO SF_VIRTUAL_IO ;
 
-
 /* Open the specified file for read, write or both. On error, this will
 ** return a NULL pointer. To find the error number, pass a NULL SNDFILE
 ** to sf_strerror ().
-** All calls to sf_open() should be matched with a call to sf_close().
-*/
+** All calls to sf_open() should be matched with a call to sf_close().*/
 
 SNDFILE* 	sf_open		(const char *path, int mode, SF_INFO *sfinfo) ;
-
 
 /* Use the existing file descriptor to create a SNDFILE object. If close_desc
 ** is TRUE, the file descriptor will be closed when sf_close() is called. If
@@ -575,55 +568,42 @@ SNDFILE* 	sf_open		(const char *path, int mode, SF_INFO *sfinfo) ;
 ** larger container files to be read and/or written.
 ** On error, this will return a NULL pointer. To find the error number, pass a
 ** NULL SNDFILE to sf_strerror ().
-** All calls to sf_open_fd() should be matched with a call to sf_close().
-
-*/
+** All calls to sf_open_fd() should be matched with a call to sf_close().*/
 
 SNDFILE* 	sf_open_fd	(int fd, int mode, SF_INFO *sfinfo, int close_desc) ;
 
 SNDFILE* 	sf_open_virtual	(SF_VIRTUAL_IO *sfvirtual, int mode, SF_INFO *sfinfo, void *user_data) ;
 
-
 /* sf_error () returns a error number which can be translated to a text
-** string using sf_error_number().
-*/
+** string using sf_error_number().*/
 
-int		sf_error		(SNDFILE *sndfile) ;
-
+int	sf_error		(SNDFILE *sndfile) ;
 
 /* sf_strerror () returns to the caller a pointer to the current error message for
-** the given SNDFILE.
-*/
+** the given SNDFILE.*/
 
 const char* sf_strerror (SNDFILE *sndfile) ;
 
 
 /* sf_error_number () allows the retrieval of the error string for each internal
-** error number.
-**
-*/
+** error number.*/
 
 const char*	sf_error_number	(int errnum) ;
 
-
 /* The following two error functions are deprecated but they will remain in the
 ** library for the foreseeable future. The function sf_strerror() should be used
-** in their place.
-*/
+** in their place.*/
 
-int		sf_perror		(SNDFILE *sndfile) ;
-int		sf_error_str	(SNDFILE *sndfile, char* str, size_t len) ;
-
+int	sf_perror		(SNDFILE *sndfile) ;
+int	sf_error_str	(SNDFILE *sndfile, char* str, size_t len) ;
 
 /* Return TRUE if fields of the SF_INFO struct are a valid combination of values. */
 
-int		sf_command	(SNDFILE *sndfile, int command, void *data, int datasize) ;
-
+int	sf_command	(SNDFILE *sndfile, int command, void *data, int datasize) ;
 
 /* Return TRUE if fields of the SF_INFO struct are a valid combination of values. */
 
-int		sf_format_check	(const SF_INFO *info) ;
-
+int	sf_format_check	(const SF_INFO *info) ;
 
 /* Seek within the waveform data chunk of the SNDFILE. sf_seek () uses
 ** the same values for whence (SEEK_SET, SEEK_CUR and SEEK_END) as
@@ -634,30 +614,27 @@ int		sf_format_check	(const SF_INFO *info) ;
 ** samples from the start of the file.
 ** Please see the libsndfile documentation for moving the read pointer
 ** separately from the write pointer on files open in mode SFM_RDWR.
-** On error all of these functions return -1.
-*/
+** On error all of these functions return -1.*/
 
 enum
-{	SF_SEEK_SET = SEEK_SET,
+{
+	SF_SEEK_SET = SEEK_SET,
 	SF_SEEK_CUR = SEEK_CUR,
 	SF_SEEK_END = SEEK_END
 } ;
 
-sf_count_t	sf_seek 		(SNDFILE *sndfile, sf_count_t frames, int whence) ;
-
+sf_count_t	sf_seek (SNDFILE *sndfile, sf_count_t frames, int whence) ;
 
 /* Functions for retrieving and setting string data within sound files.
 ** Not all file types support this features; AIFF and WAV do. For both
 ** functions, the str_type parameter must be one of the SF_STR_* values
 ** defined above.
 ** On error, sf_set_string() returns non-zero while sf_get_string()
-** returns NULL.
-*/
+** returns NULL.*/
 
 int sf_set_string (SNDFILE *sndfile, int str_type, const char* str) ;
 
 const char* sf_get_string (SNDFILE *sndfile, int str_type) ;
-
 
 /* Return the library version string. */
 
@@ -676,12 +653,10 @@ const char * sf_version_string (void) ;
 */
 int sf_current_byterate (SNDFILE *sndfile) ;
 
-/* Functions for reading/writing the waveform data of a sound file.
-*/
+/* Functions for reading/writing the waveform data of a sound file.*/
 
 sf_count_t	sf_read_raw		(SNDFILE *sndfile, void *ptr, sf_count_t bytes) ;
 sf_count_t	sf_write_raw 	(SNDFILE *sndfile, const void *ptr, sf_count_t bytes) ;
-
 
 /* Functions for reading and writing the data chunk in terms of frames.
 ** The number of items actually read/written = frames * number of channels.
@@ -690,8 +665,7 @@ sf_count_t	sf_write_raw 	(SNDFILE *sndfile, const void *ptr, sf_count_t bytes) ;
 **     sf_xxxx_int		passes data in the native int format
 **     sf_xxxx_float	passes data in the native float format
 **     sf_xxxx_double	passes data in the native double format
-** All of these read/write function return number of frames read/written.
-*/
+** All of these read/write function return number of frames read/written.*/
 
 sf_count_t	sf_readf_short	(SNDFILE *sndfile, short *ptr, sf_count_t frames) ;
 sf_count_t	sf_writef_short	(SNDFILE *sndfile, const short *ptr, sf_count_t frames) ;
@@ -705,16 +679,14 @@ sf_count_t	sf_writef_float	(SNDFILE *sndfile, const float *ptr, sf_count_t frame
 sf_count_t	sf_readf_double		(SNDFILE *sndfile, double *ptr, sf_count_t frames) ;
 sf_count_t	sf_writef_double	(SNDFILE *sndfile, const double *ptr, sf_count_t frames) ;
 
-
 /* Functions for reading and writing the data chunk in terms of items.
 ** Otherwise similar to above.
-** All of these read/write function return number of items read/written.
-*/
+** All of these read/write function return number of items read/written.*/
 
 sf_count_t	sf_read_short	(SNDFILE *sndfile, short *ptr, sf_count_t items) ;
 sf_count_t	sf_write_short	(SNDFILE *sndfile, const short *ptr, sf_count_t items) ;
 
-sf_count_t	sf_read_int		(SNDFILE *sndfile, int *ptr, sf_count_t items) ;
+sf_count_t	sf_read_int	(SNDFILE *sndfile, int *ptr, sf_count_t items) ;
 sf_count_t	sf_write_int 	(SNDFILE *sndfile, const int *ptr, sf_count_t items) ;
 
 sf_count_t	sf_read_float	(SNDFILE *sndfile, float *ptr, sf_count_t items) ;
@@ -723,14 +695,12 @@ sf_count_t	sf_write_float	(SNDFILE *sndfile, const float *ptr, sf_count_t items)
 sf_count_t	sf_read_double	(SNDFILE *sndfile, double *ptr, sf_count_t items) ;
 sf_count_t	sf_write_double	(SNDFILE *sndfile, const double *ptr, sf_count_t items) ;
 
-
 /* Close the SNDFILE and clean up all memory allocations associated with this
 ** file.
 ** Returns 0 on success, or an error number.
 */
 
-int		sf_close		(SNDFILE *sndfile) ;
-
+int	sf_close	(SNDFILE *sndfile) ;
 
 /* If the file is opened SFM_WRITE or SFM_RDWR, call fsync() on the file
 ** to force the writing of data to disk. If the file is opened SFM_READ
@@ -739,14 +709,10 @@ int		sf_close		(SNDFILE *sndfile) ;
 
 void	sf_write_sync	(SNDFILE *sndfile) ;
 
-
-
 /* The function sf_wchar_open() is Windows Only!
 ** Open a file passing in a Windows Unicode filename. Otherwise, this is
 ** the same as sf_open().
-**
 ** In order for this to work, you need to do the following:
-**
 **		#include <windows.h>
 **		#define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 **		#including <sndfile.h>
@@ -755,10 +721,6 @@ void	sf_write_sync	(SNDFILE *sndfile) ;
 #if (defined (ENABLE_SNDFILE_WINDOWS_PROTOTYPES) && ENABLE_SNDFILE_WINDOWS_PROTOTYPES)
 SNDFILE* sf_wchar_open (LPCWSTR wpath, int mode, SF_INFO *sfinfo) ;
 #endif
-
-
-
-
 /* Getting and setting of chunks from within a sound file.
 **
 ** These functions allow the getting and setting of chunks within a sound file
@@ -771,7 +733,8 @@ SNDFILE* sf_wchar_open (LPCWSTR wpath, int mode, SF_INFO *sfinfo) ;
 */
 
 struct SF_CHUNK_INFO
-{	char		id [64] ;	/* The chunk identifier. */
+{
+	char		id [64] ;	/* The chunk identifier. */
 	unsigned	id_size ;	/* The size of the chunk identifier. */
 	unsigned	datalen ;	/* The size of that data. */
 	void		*data ;		/* Pointer to the data. */
@@ -782,8 +745,7 @@ typedef struct SF_CHUNK_INFO SF_CHUNK_INFO ;
 /* Set the specified chunk info (must be done before any audio data is written
 ** to the file). This will fail for format specific reserved chunks.
 ** The chunk_info->data pointer must be valid until the file is closed.
-** Returns SF_ERR_NO_ERROR on success or non-zero on failure.
-*/
+** Returns SF_ERR_NO_ERROR on success or non-zero on failure.*/
 int sf_set_chunk (SNDFILE * sndfile, const SF_CHUNK_INFO * chunk_info) ;
 
 /*
@@ -807,8 +769,7 @@ typedef	struct SF_CHUNK_ITERATOR SF_CHUNK_ITERATOR ;
 ** The memory for the iterator belongs to the SNDFILE* handle and is freed when
 ** sf_close() is called.
 */
-SF_CHUNK_ITERATOR *
-sf_get_chunk_iterator (SNDFILE * sndfile, const SF_CHUNK_INFO * chunk_info) ;
+SF_CHUNK_ITERATOR *sf_get_chunk_iterator (SNDFILE * sndfile, const SF_CHUNK_INFO * chunk_info) ;
 
 /* Iterate through chunks by incrementing the iterator.
 ** Increments the iterator and returns a handle to the new one.
@@ -819,11 +780,8 @@ sf_get_chunk_iterator (SNDFILE * sndfile, const SF_CHUNK_INFO * chunk_info) ;
 ** If iterator points to the last chunk, this will free all resources
 **      associated with iterator and return NULL.
 ** The returned iterator will stay valid until sf_get_chunk_iterator_next
-**      is called again, the sndfile is closed or a new chunk us added.
-*/
-SF_CHUNK_ITERATOR *
-sf_next_chunk_iterator (SF_CHUNK_ITERATOR * iterator) ;
-
+**      is called again, the sndfile is closed or a new chunk us added.*/
+SF_CHUNK_ITERATOR *sf_next_chunk_iterator (SF_CHUNK_ITERATOR * iterator) ;
 
 /* Get the size of the specified chunk.
 ** If the specified chunk exists, the size will be returned in the
@@ -834,10 +792,8 @@ sf_next_chunk_iterator (SF_CHUNK_ITERATOR * iterator) ;
 ** If the chunk doesn't exist chunk_info->datalen will be zero, and the
 **      id and id_size fields will be undefined.
 ** The function will return SF_ERR_NO_ERROR on success or non-zero on
-** failure.
-*/
-int
-sf_get_chunk_size (const SF_CHUNK_ITERATOR * it, SF_CHUNK_INFO * chunk_info) ;
+** failure.*/
+int sf_get_chunk_size (const SF_CHUNK_ITERATOR * it, SF_CHUNK_INFO * chunk_info) ;
 
 /* Get the specified chunk data.
 ** If the specified chunk exists, up to chunk_info->datalen bytes of
@@ -848,11 +804,8 @@ sf_get_chunk_size (const SF_CHUNK_ITERATOR * it, SF_CHUNK_INFO * chunk_info) ;
 ** If the chunk doesn't exist chunk_info->datalen will be zero, and the
 **      id and id_size fields will be undefined.
 ** The function will return SF_ERR_NO_ERROR on success or non-zero on
-** failure.
-*/
-int
-sf_get_chunk_data (const SF_CHUNK_ITERATOR * it, SF_CHUNK_INFO * chunk_info) ;
-
+** failure.*/
+int sf_get_chunk_data (const SF_CHUNK_ITERATOR * it, SF_CHUNK_INFO * chunk_info) ;
 
 #ifdef __cplusplus
 }		/* extern "C" */
