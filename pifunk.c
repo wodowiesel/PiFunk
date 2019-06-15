@@ -823,7 +823,7 @@ int subchannelmodepmr () //Pilot-tone
 	 //---- Analog & digital
 	 case 0: subfreq=67.000; printf ("\nChannels (all) = 0 default CTSS-Chan 1 %lf \n", subfreq); break;	// Scan all Chan till active , now chan1
 	 case 1: subfreq=67.900; break;	//4.9 Hz step
-	 case 2: subfreqq=71.900; break;
+	 case 2: subfreq=71.900; break;
 	 case 3: subfreq=74.400; break;
 	 case 4: subfreq=77.000; break; // at 3-chan-PMR-devices its ch. 2
 	 case 5: subfreq=79.700; break; // Contest
@@ -1013,12 +1013,12 @@ int modulationselect (char *mod)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 						mod = "fm";
-						modselect ();
+						modselect (char *mod);
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 						mod = "am";
-						modselect ();
+						modselect (char *mod);
 		        break;
 
 		case 3: printf ("\nExiting... \n"); exit (-1); break;
@@ -1043,7 +1043,7 @@ int channelselect ()
 									break;
 
 		   		case 2: printf ("\nCB CHAN-MODE SELECT \n");
-									channelmodecb ();
+									channelmodecb (double freq);
 									break;
 
         	default: printf ("\nDefault: Returning... \n");
@@ -1382,7 +1382,7 @@ void setupDMA ()
    //ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
   //activate dma
-   struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS (DMABASE));
+   struct DMAREGS* DMA0 = (struct DMAREGS*)(ACCESS (DMABASE));
    DMA0->CS = 1<<31; // reset
    DMA0->CONBLK_AD = 0;
    DMA0->TI = 0;
@@ -1452,7 +1452,7 @@ void WriteTone (double freq, uint32_t Timing)
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
 	}
-	printf ("\nWriting tone \n")
+	printf ("\nWriting tone \n");
 }
 
 int modulationam (int argc, char **argv) // better name function: sample/bitchecker
@@ -1471,10 +1471,11 @@ int modulationam (int argc, char **argv) // better name function: sample/bitchec
 		outfilename = (char *) malloc (128);// allocating memory for filename
 		sprintf (outfilename, "\n%s\n", "out.ft");
 		led ();
-	  return fp, outfilename;
+		close (fp);
+	  return 0;
 }
 
-int samplecheck (int samplerate, char **argv) // better name function: sample/bitchecker
+int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
 {
 	printf ("\nSample/bitchecker starting \n");
 		//-------
@@ -1619,7 +1620,7 @@ int callname ()
 	  {
 
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign);
+						 scanf  ("%s", &callsign []);
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
@@ -1647,7 +1648,7 @@ int modetype ()
 							break;
 
 		case 2:		printf ("\n[2] Frequencymode: \n");
-							freqselect ();
+							freqselect (double freq);
 							break;
 
 		default: printf ("\nError! \n");
@@ -1696,7 +1697,7 @@ int assistent () // assistent
 		powerselect ();
 		callname ();
 		modetype ();
-		samplecheck ();
+		samplecheck (char *filename, int samplerate);
 		/*printf ("\nPress Enter to Continue for Transmission... \n");
 		//while (getchar () != '\n'); */
     return 0;
@@ -1753,7 +1754,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 			case 's':
 					samplerate = atoi (optarg);
 					printf ("\nSamplerate is %d \n", samplerate);
-					samplecheck (samplerate);
+					samplecheck (char *filename, int samplerate);
 					break;
 						// modulation
 			case 'm':
