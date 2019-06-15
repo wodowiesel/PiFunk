@@ -1,6 +1,6 @@
 # pifunk makefile
 # should be run with sudo or root rights
-CC=gcc# use gnu compiler
+CC=gcc # use gnu compiler
 STD_CFLAGS= -g -Wall -std=c99 -Iinclude -Llib -lsndfile -shared -lm -fPIC pifunk.c #-std=gnu99 as alternative
 
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
@@ -28,6 +28,8 @@ app: pifunk.c
 					$(CC)$(CFLAGS)-c -o bin/pifunk
 endif
 
+pifunk: pifunk.c
+					$(CC)$(CFLAGS)-o bin/pifunk
 #pifunk.i: pifunk.c
 #					$(CC)$(CFLAGS)-o include/pifunk.i
 
@@ -49,8 +51,6 @@ pifunk.a: pifunk.c
 pifunk.out: pifunk.c
 					$(CC)$(CFLAGS)-o bin/pifunk.out
 					
-pifunk: pifunk.c
-					$(CC)$(CFLAGS)-o bin/pifunk
 install:
 
 clean: rm -f *.o
