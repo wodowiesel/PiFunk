@@ -13,13 +13,14 @@ gdb 7.11.1 debugger
  You will need alsa library for this:
 
 sudo apt-get install libsndfile1-dev
- d PiFunk // goto path
+ cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g for debugger, -c for filesource for library, -c compile without linking
 =>compile with admin/root permissions!!
  gcc -g -std=c99 -lm -Iinclude -Llib -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a
  gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
  make (compile flag in male included)
+//std=99 is the same as -std=iso9899:1999
 
 //compile & run with admin/root permissions!!
  sudo pifunk sound.wav 100.000 22050 fm callsign
@@ -229,6 +230,10 @@ predefine if needed when not using bcm header
 #define LOW (0)
 #define HIGH (1)
 */
+
+#define _GNU_SOURCE
+#define _POSIX_C_SOURCE
+#define _USE_MATH_DEFINES
 //-------buffers
 #define PAGE_SIZE             (4*1024) //4096
 #define BLOCK_SIZE            (4*1024) //4096
@@ -724,7 +729,7 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 */
 
 // --------basic function then specified one after another
-int infos () //warnings and infos
+void infos () //warnings and infos
 {
 		printf ("\ndevicename: %s\n", device);
     //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
@@ -732,7 +737,7 @@ int infos () //warnings and infos
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo sound.wav 100.0000 22050 fm callsign \n");
- 		return 0;
+ 		return;
 }
 
 int timer (time_t *rawtime)
@@ -744,7 +749,7 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-int filenamepath ()  // expected int?
+char filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   //scanf ("%s", &filename);
@@ -763,10 +768,10 @@ int filenamepath ()  // expected int?
 	}
 	*/
 	printf ("\nTrying to play %s ... \n", filename);
-	return 0; //, sfp;
+	return filename; //, sfp;
 }
 
-double freqselect (double freq) // gets freq by typing in
+double freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1b+ for 700Mhz chip, pi3 1.2ghz
@@ -776,7 +781,7 @@ double freqselect (double freq) // gets freq by typing in
 }
 //--------------------------------------------------
 // Channel-mode
-int channelmodepmr () //PMR
+double channelmodepmr () //PMR
 {
 	printf ("\nChoose PMR-Channel 1-17 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -814,10 +819,10 @@ int channelmodepmr () //PMR
 						break;
 	}
   printf ("\nChannelnumber = %d on freq = %lf \n", channelnumberpmr, freq);
-	return 0;
+	return freq;
 }
 
-int subchannelmodepmr () //Pilot-tone
+double subchannelmodepmr () //Pilot-tone
 {
 	printf ("\nChoose Sub-Channel 0-38 (39 to exit): \n");
 	scanf ("%d", &subchannelnumberpmr);
@@ -876,11 +881,11 @@ int subchannelmodepmr () //Pilot-tone
 						break;
 	}
   printf ("\nSubchannelnumber = %d on subfreq = %lf \n", subchannelnumberpmr, subfreq);
-	return 0;
+	return freq;
 }
 
 
-int channelmodecb (double freq) // CB
+double channelmodecb () // CB
 {
 	printf ("\nChoose CB-Channel 0-80 (81 to exit): \n");
 	scanf ("%d", &channelnumbercb);
@@ -901,87 +906,87 @@ int channelmodecb (double freq) // CB
 			 /*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
 			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
 			 Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet */
-			 case 11:  return freq=27.0850; break;  //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 1111: return freq=27.0950; break; //Eurobalise-Energieversorgung
-			 case 12:  return freq=27.1050; break;
-			 case 13:  return freq=27.1150; break;
-			 case 14:  return freq=27.1250; break; //oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
-			 case 15:  return freq=27.1350; break; //inoffizieller Anrufkanal SSB (USB)
-			 case 1515: return freq=27.1450; break;
-			 case 16:  return freq=27.1550; break; //Funkverkehr mit und zwischen Wasserfahrzeugen
-			 case 17:  return freq=27.1650; break; //Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
-			 case 18:  return freq=27.1750; break;
-			 case 19:  return freq=27.1850; break; //empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt
-			 case 1919: return freq=27.1950; break;
-			 case 20:  return freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
+			 case 11:   freq=27.0850; break;  //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 1111: freq=27.0950; break; //Eurobalise-Energieversorgung
+			 case 12:   freq=27.1050; break;
+			 case 13:   freq=27.1150; break;
+			 case 14:   freq=27.1250; break; //oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
+			 case 15:   freq=27.1350; break; //inoffizieller Anrufkanal SSB (USB)
+			 case 1515: freq=27.1450; break;
+			 case 16:   freq=27.1550; break; //Funkverkehr mit und zwischen Wasserfahrzeugen
+			 case 17:   freq=27.1650; break; //Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
+			 case 18:   freq=27.1750; break;
+			 case 19:   freq=27.1850; break; //empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt
+			 case 1919: freq=27.1950; break;
+			 case 20:   freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 		 	 // 40 chan devices
-			 case 21:  return freq=27.2150; break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)
-			 case 22:  return freq=27.2250; break; //oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
-			 case 23:  return freq=27.2550; break; //Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
-			 case 24:  return freq=27.2350; break; //Datenkanal (D)
-			 case 25:  return freq=27.2450; break; //Datenkanal (D), USB ROS Intern
-			 case 26:  return freq=27.2650; break;
-			 case 27:  return freq=27.2750; break;
-			 case 28:  return freq=27.2850; break; //Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
-			 case 29:  return freq=27.2950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland
-			 case 30:  return freq=27.3050; break; //inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
-			 case 31:  return freq=27.3150; break; //inoffizieller DX-Kanal (FM)
-			 case 32:  return freq=27.3250; break;
-			 case 33:  return freq=27.3350; break;
-			 case 34:  return freq=27.3450; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 35:  return freq=27.3550; break; //oeffentlicher Kanal
-			 case 36:  return freq=27.3650; break; //Datenkanal USB ROS international
-			 case 37:  return freq=27.3750; break; //Gateway-Kanal oesterreich, FM
-			 case 38:  return freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
-			 case 39:  return freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 40:  return freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
+			 case 21:   freq=27.2150; break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)
+			 case 22:   freq=27.2250; break; //oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
+			 case 23:   freq=27.2550; break; //Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
+			 case 24:   freq=27.2350; break; //Datenkanal (D)
+			 case 25:   freq=27.2450; break; //Datenkanal (D), USB ROS Intern
+			 case 26:   freq=27.2650; break;
+			 case 27:   freq=27.2750; break;
+			 case 28:   freq=27.2850; break; //Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
+			 case 29:   freq=27.2950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland
+			 case 30:   freq=27.3050; break; //inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
+			 case 31:   freq=27.3150; break; //inoffizieller DX-Kanal (FM)
+			 case 32:   freq=27.3250; break;
+			 case 33:   freq=27.3350; break;
+			 case 34:   freq=27.3450; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 35:   freq=27.3550; break; //oeffentlicher Kanal
+			 case 36:   freq=27.3650; break; //Datenkanal USB ROS international
+			 case 37:   freq=27.3750; break; //Gateway-Kanal oesterreich, FM
+			 case 38:   freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
+			 case 39:   freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 40:   freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
 		  	//ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
 			 /* 80 chan devices
 			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt
 			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: */
-			case 41:  return freq=27.5650; break; //Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
-			case 42:  return freq=27.5750; break; //inoffizieller DX-Kanal (FM)
-			case 43:  return freq=27.5850; break;
-			case 44:  return freq=27.5950; break;
-			case 45:  return freq=27.6050; break;
-			case 46:  return freq=27.6150; break;
-			case 47:  return freq=27.6250; break;
-			case 48:  return freq=27.6350; break;
-			case 49:  return freq=27.6450; break;
-			case 50:  return freq=27.6550; break;
-			case 51:  return freq=27.6650; break;
-			case 52:  return freq=27.6750; break; //Datenkanal (D)(FM)
-			case 53:  return freq=27.6850; break; //Datenkanal (D)(FM)
-			case 54:  return freq=27.6950; break;
-			case 55:  return freq=27.7050; break;
-			case 56:  return freq=27.7150; break;
-			case 57:  return freq=27.7250; break;
-			case 58:  return freq=27.7350; break;
-			case 59:  return freq=27.7450; break;
-			case 60:  return freq=27.7550; break;
+			case 41:   freq=27.5650; break; //Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
+			case 42:   freq=27.5750; break; //inoffizieller DX-Kanal (FM)
+			case 43:   freq=27.5850; break;
+			case 44:   freq=27.5950; break;
+			case 45:   freq=27.6050; break;
+			case 46:   freq=27.6150; break;
+			case 47:   freq=27.6250; break;
+			case 48:   freq=27.6350; break;
+			case 49:   freq=27.6450; break;
+			case 50:   freq=27.6550; break;
+			case 51:   freq=27.6650; break;
+			case 52:   freq=27.6750; break; //Datenkanal (D)(FM)
+			case 53:   freq=27.6850; break; //Datenkanal (D)(FM)
+			case 54:   freq=27.6950; break;
+			case 55:   freq=27.7050; break;
+			case 56:   freq=27.7150; break;
+			case 57:   freq=27.7250; break;
+			case 58:   freq=27.7350; break;
+			case 59:   freq=27.7450; break;
+			case 60:   freq=27.7550; break;
 
-      case 61:  return freq=26.7650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			case 62:  return freq=26.7750; break;
-			case 63:  return freq=26.7850; break;
-			case 64:  return freq=26.7950; break;
-			case 65:  return freq=26.8050; break;
-			case 66:  return freq=26.8150; break;
-			case 67:  return freq=26.8250; break;
-			case 68:  return freq=26.8350; break;
-			case 69:  return freq=26.8450; break;
-			case 70:  return freq=26.8550; break;
-			case 71:  return freq=26.8650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			case 72:  return freq=26.8750; break;
-			case 73:  return freq=26.8850; break;
-			case 74:  return freq=26.8950; break;
-			case 75:  return freq=26.9050; break;
-			case 76:  return freq=26.9150; break; //Datenkanal (D)(FM)
-			case 77:  return freq=26.9250; break; //Datenkanal (D)(FM)
-			case 78:  return freq=26.9350; break;
-			case 79:  return freq=26.9450; break;
-			case 80:  return freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
-			case 81:  exit (0);
+      case 61:   freq=26.7650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			case 62:   freq=26.7750; break;
+			case 63:   freq=26.7850; break;
+			case 64:   freq=26.7950; break;
+			case 65:   freq=26.8050; break;
+			case 66:   freq=26.8150; break;
+			case 67:   freq=26.8250; break;
+			case 68:   freq=26.8350; break;
+			case 69:   freq=26.8450; break;
+			case 70:   freq=26.8550; break;
+			case 71:   freq=26.8650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			case 72:   freq=26.8750; break;
+			case 73:   freq=26.8850; break;
+			case 74:   freq=26.8950; break;
+			case 75:   freq=26.9050; break;
+			case 76:   freq=26.9150; break; //Datenkanal (D)(FM)
+			case 77:   freq=26.9250; break; //Datenkanal (D)(FM)
+			case 78:   freq=26.9350; break;
+			case 79:   freq=26.9450; break;
+			case 80:   freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
+			case 81:   exit (0);
 
 			default:
 							freq=26.9650;
@@ -990,10 +995,10 @@ int channelmodecb (double freq) // CB
 
 	}
   printf ("\nUsing channel = %d on freq =  %lf \n", channelnumbercb, freq);
-	return  0;
+	return  freq;
 }
 
-int modselect ()
+void modselect (char *mod)
 {
 	printf ("\nOpening Modulator \n");
 
@@ -1006,10 +1011,10 @@ int modselect ()
 		int modulationam (int argc, char **argv);
 	}
 
- 	return 0;
+ 	return;
 }
 
-int modulationselect (char *mod)
+char modulationselect ()
 {
 	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : \n");
 	scanf ("%d", &freqmode);
@@ -1025,16 +1030,18 @@ int modulationselect (char *mod)
 						modselect ();
 		        break;
 
-		case 3: printf ("\nExiting... \n"); exit (-1); break;
+		case 3: printf ("\nExiting... \n");
+						exit (-1);
+
 		default:
 		 					mod = "fm";
 							printf ("\n Default = 1 \n");
 							break;
 	}
-	return 0;
+	return mod;
 }
 
-int channelselect (double freq)
+void channelselect () // make a void
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
@@ -1043,7 +1050,7 @@ int channelselect (double freq)
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
   {
          	case 1: printf ("\nPMR CHAN-MODE in FM \n");
-									channelmodepmr (); // gets freq from pmr list
+									channelmodepmr (freq); // gets freq from pmr list
 									break;
 
 		   		case 2: printf ("\nCB CHAN-MODE SELECT \n");
@@ -1053,7 +1060,7 @@ int channelselect (double freq)
         	default: printf ("\nDefault: Returning... \n");
 									 break;
 	}
-	return 0;
+	return;
 }
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
@@ -1211,7 +1218,6 @@ void setupfm ()
 void play_list () // exit func
 {
 		printf ("\nPlaying dummy music from playlist-folder \n"); // in sounds/playlist
-
 }
 
 void play_wav (char *filename, double freq, int samplerate)
