@@ -78,6 +78,7 @@ except:
 else:
  from RPi import GPIO4
 
+import gps
 import pynmea2 # for gps devices e.g. Neo-7M
 #sudo python setup.py install
 #hex-code: 0x10A --> dec:26
