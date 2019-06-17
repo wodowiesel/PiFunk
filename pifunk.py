@@ -18,49 +18,47 @@
 ## Imports
 import io
 import os
-import argparse
-import atexit
-import readline
-import rlcomplete
 import sys
+import gc
 import glob
 import string
+import StringIO
+import struct
 import types
+import decimal
 import array
+import argparse
+import readline
+import rlcomplete
+import atexit
+import calendar
+import time #from time import time
+import timeit
+import datetime
 import site
 import re
+import math #from math import *
+import statistics
 import locale
-import datetime
 import distutils
-import timeit
-import time #from time import time
-import StringIO
+import serial
+import signal
 import asyncio
 import tracemalloc
 import threading
-import signal
 import builtins
 import collections
-import struct
 import queue
-import multiprocessing
 import subprocess #from subprocess import run, call, pipe
-import statistics
-import math #from math import *
-import array
+import multiprocessing
 import wave
 import random
 import logging
 import weakref
-import gc
-import calendar
 import socket
 import ipaddress
 import mimetypes
 import urllib.request
-import decimal
-
-##---------------------------------------------------------
 ## some other plugins
 import zipfile
 import json
@@ -70,20 +68,22 @@ import csv
 #import scipy.io.wavfile as wavfile
 #import matplotlib.pyplot as plt
 
+## RPi & GPIO lib obligatory for controlling gpios
+#sudo apt-get install python-rpi.gpio
 try:
- import RPi.GPIO as GPIO1
- import RPI.GPIO as GPIO2
+ import RPi.GPIO as GPIO4
+ import RPI.GPIO as GPIO4
 except:
- from RPi._GPIO import GPIO3
+ from RPi._GPIO import GPIO4
 else:
  from RPi import GPIO4
 
-## RPi & GPIO lib
-#sudo apt-get install python-rpi.gpio
+import pynmea2 # for gps devices e.g. Neo-7M
 #sudo python setup.py install
 #hex-code: 0x10A --> dec:26
 ##------------------------------------------------------------------------------
 #loading hardware on startup
+
 def __init__ (self):
   print ("\nWelcome to PiFunk!\n")
   self.data = []
@@ -91,7 +91,8 @@ def __init__ (self):
 
   try:
           os.system ("sudo modprobe w1-gpio") #rpi 1-2
-  except: os.system ("sudo rmmod w1-gpio") # rpi3:
+  except:
+          os.system ("sudo rmmod w1-gpio") # rpi3
 
   base_dir = "/sys/bus/w1/devices/"
   device_folder = glob.glob (base_dir + "28*") [0]
@@ -119,12 +120,7 @@ def __init__ (self):
   while True:
       for Duty in range (0, 60, 1)
       pi_pwm.ChangeDutyCycle (Duty)
-
 ##------------------------------------------------------------------------------
-
-#definitions
-    if __name__ == "__main__":
-    (int (sys.argv [1])
 
 def soundfile (filename):
   filename = char (input ("\nEnter filename (*.wav): "))
@@ -190,7 +186,7 @@ def callname (callsign):
 
 def c_arg_parser ():
   print ("\nParsing args to C ... \n")
-  return filename, freq, samplerate, mod, callsign, channels
+  return filename, freq, samplerate, mod, callsign, power
 
 def play_wav ():
   print ("\nPlaying wav ... \n")
@@ -255,6 +251,10 @@ def logger ():
   call (["sudo python ", "./pifunk-log.py"], stdout = f)
   print ("\nLogging ... \n")
 
+
+if __name__ == "__main__":
+  print ("\nStarting Program!\n")
+  (int (sys.argv [1])
 ##------------------------------------------------------------------------------
 ## run another py-script from shell-terminal (holds main script)
 ## selecting a individual band:
@@ -275,7 +275,7 @@ def logger ():
 
 ##------------------------------------------------------------------------------
 # main program
-_init_ ()
+__init__ ()
 datetime.now().strftime("%d-%m-%Y, %H:%M:%S \n")
 #print (datetime.datetime.now ())
 #current_time = datetime.datetime.now ()
