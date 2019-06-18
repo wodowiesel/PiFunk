@@ -43,31 +43,31 @@ extern "C" {
 
 enum
 {	/* Major formats. */
-	SF_FORMAT_WAV			= 0x010000,		/* Microsoft WAV format (little endian default). */
-	SF_FORMAT_AIFF			= 0x020000,		/* Apple/SGI AIFF format (big endian). */
-	SF_FORMAT_AU			= 0x030000,		/* Sun/NeXT AU format (big endian). */
-	SF_FORMAT_RAW			= 0x040000,		/* RAW PCM data. */
-	SF_FORMAT_PAF			= 0x050000,		/* Ensoniq PARIS file format. */
-	SF_FORMAT_SVX			= 0x060000,		/* Amiga IFF / SVX8 / SV16 format. */
-	SF_FORMAT_NIST			= 0x070000,		/* Sphere NIST format. */
-	SF_FORMAT_VOC			= 0x080000,		/* VOC files. */
-	SF_FORMAT_IRCAM			= 0x0A0000,		/* Berkeley/IRCAM/CARL */
-	SF_FORMAT_W64			= 0x0B0000,		/* Sonic Foundry's 64 bit RIFF/WAV */
-	SF_FORMAT_MAT4			= 0x0C0000,		/* Matlab (tm) V4.2 / GNU Octave 2.0 */
-	SF_FORMAT_MAT5			= 0x0D0000,		/* Matlab (tm) V5.0 / GNU Octave 2.1 */
-	SF_FORMAT_PVF			= 0x0E0000,		/* Portable Voice Format */
-	SF_FORMAT_XI			= 0x0F0000,		/* Fasttracker 2 Extended Instrument */
-	SF_FORMAT_HTK			= 0x100000,		/* HMM Tool Kit format */
-	SF_FORMAT_SDS			= 0x110000,		/* Midi Sample Dump Standard */
-	SF_FORMAT_AVR			= 0x120000,		/* Audio Visual Research */
-	SF_FORMAT_WAVEX			= 0x130000,		/* MS WAVE with WAVEFORMATEX */
-	SF_FORMAT_SD2			= 0x160000,		/* Sound Designer 2 */
-	SF_FORMAT_FLAC			= 0x170000,		/* FLAC lossless file format */
-	SF_FORMAT_CAF			= 0x180000,		/* Core Audio File format */
-	SF_FORMAT_WVE			= 0x190000,		/* Psion WVE format */
-	SF_FORMAT_OGG			= 0x200000,		/* Xiph OGG container */
-	SF_FORMAT_MPC2K			= 0x210000,		/* Akai MPC 2000 sampler */
-	SF_FORMAT_RF64			= 0x220000,		/* RF64 WAV file */
+	SF_FORMAT_WAV			= 	0x010000,		/* Microsoft WAV format (little endian default). */
+	SF_FORMAT_AIFF		= 	0x020000,		/* Apple/SGI AIFF format (big endian). */
+	SF_FORMAT_AU			= 	0x030000,		/* Sun/NeXT AU format (big endian). */
+	SF_FORMAT_RAW			= 	0x040000,		/* RAW PCM data. */
+	SF_FORMAT_PAF			= 	0x050000,		/* Ensoniq PARIS file format. */
+	SF_FORMAT_SVX			= 	0x060000,		/* Amiga IFF / SVX8 / SV16 format. */
+	SF_FORMAT_NIST		= 	0x070000,		/* Sphere NIST format. */
+	SF_FORMAT_VOC			= 	0x080000,		/* VOC files. */
+	SF_FORMAT_IRCAM		= 	0x0A0000,		/* Berkeley/IRCAM/CARL */
+	SF_FORMAT_W64			= 	0x0B0000,		/* Sonic Foundry's 64 bit RIFF/WAV */
+	SF_FORMAT_MAT4		= 	0x0C0000,		/* Matlab (tm) V4.2 / GNU Octave 2.0 */
+	SF_FORMAT_MAT5		= 	0x0D0000,		/* Matlab (tm) V5.0 / GNU Octave 2.1 */
+	SF_FORMAT_PVF			= 	0x0E0000,		/* Portable Voice Format */
+	SF_FORMAT_XI			= 	0x0F0000,		/* Fasttracker 2 Extended Instrument */
+	SF_FORMAT_HTK			= 	0x100000,		/* HMM Tool Kit format */
+	SF_FORMAT_SDS			= 	0x110000,		/* Midi Sample Dump Standard */
+	SF_FORMAT_AVR			= 	0x120000,		/* Audio Visual Research */
+	SF_FORMAT_WAVEX		= 	0x130000,		/* MS WAVE with WAVEFORMATEX */
+	SF_FORMAT_SD2			= 	0x160000,		/* Sound Designer 2 */
+	SF_FORMAT_FLAC		= 	0x170000,		/* FLAC lossless file format */
+	SF_FORMAT_CAF			= 	0x180000,		/* Core Audio File format */
+	SF_FORMAT_WVE			= 	0x190000,		/* Psion WVE format */
+	SF_FORMAT_OGG			= 	0x200000,		/* Xiph OGG container */
+	SF_FORMAT_MPC2K		=		0x210000,		/* Akai MPC 2000 sampler */
+	SF_FORMAT_RF64		= 	0x220000,		/* RF64 WAV file */
 
 	/* Subtypes from here on. */
 
@@ -83,11 +83,11 @@ enum
 
 	SF_FORMAT_ULAW			= 0x0010,		/* U-Law encoded. */
 	SF_FORMAT_ALAW			= 0x0011,		/* A-Law encoded. */
-	SF_FORMAT_IMA_ADPCM		= 0x0012,		/* IMA ADPCM. */
-	SF_FORMAT_MS_ADPCM		= 0x0013,		/* Microsoft ADPCM. */
+	SF_FORMAT_IMA_ADPCM	= 0x0012,		/* IMA ADPCM. */
+	SF_FORMAT_MS_ADPCM	= 0x0013,		/* Microsoft ADPCM. */
 
 	SF_FORMAT_GSM610		= 0x0020,		/* GSM 6.10 encoding. */
-	SF_FORMAT_VOX_ADPCM		= 0x0021,		/* OKI / Dialogix ADPCM */
+	SF_FORMAT_VOX_ADPCM	= 0x0021,		/* OKI / Dialogix ADPCM */
 
 	SF_FORMAT_NMS_ADPCM_16	= 0x0022,		/* 16kbs NMS G721-variant encoding. */
 	SF_FORMAT_NMS_ADPCM_24	= 0x0023,		/* 24kbs NMS G721-variant encoding. */
@@ -114,13 +114,13 @@ enum
 
 	/* Endian-ness options. */
 
-	SF_ENDIAN_FILE			= 0x00000000,	/* Default file endian-ness. */
-	SF_ENDIAN_LITTLE		= 0x10000000,	/* Force little endian-ness. */
+	SF_ENDIAN_FILE		= 0x00000000,	/* Default file endian-ness. */
+	SF_ENDIAN_LITTLE	= 0x10000000,	/* Force little endian-ness. */
 	SF_ENDIAN_BIG			= 0x20000000,	/* Force big endian-ness. */
 	SF_ENDIAN_CPU			= 0x30000000,	/* Force CPU endian-ness. */
 
 	SF_FORMAT_SUBMASK		= 0x0000FFFF,
-	SF_FORMAT_TYPEMASK		= 0x0FFF0000,
+	SF_FORMAT_TYPEMASK	= 0x0FFF0000,
 	SF_FORMAT_ENDMASK		= 0x30000000
 } ;
 
@@ -132,92 +132,92 @@ enum
 
 enum
 {
-	SFC_GET_LIB_VERSION				= 0x1000,
-	SFC_GET_LOG_INFO				= 0x1001,
+	SFC_GET_LIB_VERSION					= 0x1000,
+	SFC_GET_LOG_INFO						= 0x1001,
 	SFC_GET_CURRENT_SF_INFO			= 0x1002,
 
-	SFC_GET_NORM_DOUBLE				= 0x1010,
-	SFC_GET_NORM_FLOAT				= 0x1011,
-	SFC_SET_NORM_DOUBLE				= 0x1012,
-	SFC_SET_NORM_FLOAT				= 0x1013,
+	SFC_GET_NORM_DOUBLE						= 0x1010,
+	SFC_GET_NORM_FLOAT						= 0x1011,
+	SFC_SET_NORM_DOUBLE						= 0x1012,
+	SFC_SET_NORM_FLOAT						= 0x1013,
 	SFC_SET_SCALE_FLOAT_INT_READ	= 0x1014,
 	SFC_SET_SCALE_INT_FLOAT_WRITE	= 0x1015,
 
 	SFC_GET_SIMPLE_FORMAT_COUNT		= 0x1020,
-	SFC_GET_SIMPLE_FORMAT			= 0x1021,
+	SFC_GET_SIMPLE_FORMAT					= 0x1021,
 
-	SFC_GET_FORMAT_INFO				= 0x1028,
+	SFC_GET_FORMAT_INFO						= 0x1028,
 
 	SFC_GET_FORMAT_MAJOR_COUNT		= 0x1030,
-	SFC_GET_FORMAT_MAJOR			= 0x1031,
+	SFC_GET_FORMAT_MAJOR					= 0x1031,
 	SFC_GET_FORMAT_SUBTYPE_COUNT	= 0x1032,
-	SFC_GET_FORMAT_SUBTYPE			= 0x1033,
+	SFC_GET_FORMAT_SUBTYPE				= 0x1033,
 
-	SFC_CALC_SIGNAL_MAX				= 0x1040,
-	SFC_CALC_NORM_SIGNAL_MAX		= 0x1041,
-	SFC_CALC_MAX_ALL_CHANNELS		= 0x1042,
+	SFC_CALC_SIGNAL_MAX							= 0x1040,
+	SFC_CALC_NORM_SIGNAL_MAX				= 0x1041,
+	SFC_CALC_MAX_ALL_CHANNELS				= 0x1042,
 	SFC_CALC_NORM_MAX_ALL_CHANNELS	= 0x1043,
-	SFC_GET_SIGNAL_MAX				= 0x1044,
-	SFC_GET_MAX_ALL_CHANNELS		= 0x1045,
+	SFC_GET_SIGNAL_MAX							= 0x1044,
+	SFC_GET_MAX_ALL_CHANNELS				= 0x1045,
 
-	SFC_SET_ADD_PEAK_CHUNK			= 0x1050,
-	SFC_SET_ADD_HEADER_PAD_CHUNK	= 0x1051,
+	SFC_SET_ADD_PEAK_CHUNK					= 0x1050,
+	SFC_SET_ADD_HEADER_PAD_CHUNK		= 0x1051,
 
-	SFC_UPDATE_HEADER_NOW			= 0x1060,
-	SFC_SET_UPDATE_HEADER_AUTO		= 0x1061,
+	SFC_UPDATE_HEADER_NOW						= 0x1060,
+	SFC_SET_UPDATE_HEADER_AUTO			= 0x1061,
 
-	SFC_FILE_TRUNCATE				= 0x1080,
+	SFC_FILE_TRUNCATE								= 0x1080,
 
-	SFC_SET_RAW_START_OFFSET		= 0x1090,
+	SFC_SET_RAW_START_OFFSET				= 0x1090,
 
-	SFC_SET_DITHER_ON_WRITE			= 0x10A0,
-	SFC_SET_DITHER_ON_READ			= 0x10A1,
+	SFC_SET_DITHER_ON_WRITE					= 0x10A0,
+	SFC_SET_DITHER_ON_READ					= 0x10A1,
 
-	SFC_GET_DITHER_INFO_COUNT		= 0x10A2,
-	SFC_GET_DITHER_INFO				= 0x10A3,
+	SFC_GET_DITHER_INFO_COUNT				= 0x10A2,
+	SFC_GET_DITHER_INFO							= 0x10A3,
 
-	SFC_GET_EMBED_FILE_INFO			= 0x10B0,
+	SFC_GET_EMBED_FILE_INFO					= 0x10B0,
 
-	SFC_SET_CLIPPING				= 0x10C0,
-	SFC_GET_CLIPPING				= 0x10C1,
+	SFC_SET_CLIPPING								= 0x10C0,
+	SFC_GET_CLIPPING								= 0x10C1,
 
-	SFC_GET_CUE_COUNT				= 0x10CD,
-	SFC_GET_CUE						= 0x10CE,
-	SFC_SET_CUE						= 0x10CF,
+	SFC_GET_CUE_COUNT								= 0x10CD,
+	SFC_GET_CUE											= 0x10CE,
+	SFC_SET_CUE											= 0x10CF,
 
-	SFC_GET_INSTRUMENT				= 0x10D0,
-	SFC_SET_INSTRUMENT				= 0x10D1,
+	SFC_GET_INSTRUMENT							= 0x10D0,
+	SFC_SET_INSTRUMENT							= 0x10D1,
 
-	SFC_GET_LOOP_INFO				= 0x10E0,
+	SFC_GET_LOOP_INFO								= 0x10E0,
 
-	SFC_GET_BROADCAST_INFO			= 0x10F0,
-	SFC_SET_BROADCAST_INFO			= 0x10F1,
+	SFC_GET_BROADCAST_INFO					= 0x10F0,
+	SFC_SET_BROADCAST_INFO					= 0x10F1,
 
-	SFC_GET_CHANNEL_MAP_INFO		= 0x1100,
-	SFC_SET_CHANNEL_MAP_INFO		= 0x1101,
+	SFC_GET_CHANNEL_MAP_INFO				= 0x1100,
+	SFC_SET_CHANNEL_MAP_INFO				= 0x1101,
 
-	SFC_RAW_DATA_NEEDS_ENDSWAP		= 0x1110,
+	SFC_RAW_DATA_NEEDS_ENDSWAP			= 0x1110,
 
 	/* Support for Wavex Ambisonics Format */
-	SFC_WAVEX_SET_AMBISONIC			= 0x1200,
-	SFC_WAVEX_GET_AMBISONIC			= 0x1201,
+	SFC_WAVEX_SET_AMBISONIC					= 0x1200,
+	SFC_WAVEX_GET_AMBISONIC					= 0x1201,
 
 	/*
 	** RF64 files can be set so that on-close, writable files that have less
 	** than 4GB of data in them are converted to RIFF/WAV, as per EBU
 	** recommendations.
 	*/
-	SFC_RF64_AUTO_DOWNGRADE			= 0x1210,
+	SFC_RF64_AUTO_DOWNGRADE					= 0x1210,
 
-	SFC_SET_VBR_ENCODING_QUALITY	= 0x1300,
-	SFC_SET_COMPRESSION_LEVEL		= 0x1301,
+	SFC_SET_VBR_ENCODING_QUALITY		= 0x1300,
+	SFC_SET_COMPRESSION_LEVEL				= 0x1301,
 
 	/* Cart Chunk support */
-	SFC_SET_CART_INFO				= 0x1400,
-	SFC_GET_CART_INFO				= 0x1401,
+	SFC_SET_CART_INFO								= 0x1400,
+	SFC_GET_CART_INFO								= 0x1401,
 
 	/* Following commands for testing only. */
-	SFC_TEST_IEEE_FLOAT_REPLACE		= 0x6001,
+	SFC_TEST_IEEE_FLOAT_REPLACE			= 0x6001,
 
 	/*
 	** SFC_SET_ADD_* values are deprecated and will disappear at some
@@ -225,8 +225,8 @@ enum
 	** including version 1.0.8 to avoid breakage of existing software.
 	** They currently do nothing and will continue to do nothing.
 	*/
-	SFC_SET_ADD_DITHER_ON_WRITE		= 0x1070,
-	SFC_SET_ADD_DITHER_ON_READ		= 0x1071
+	SFC_SET_ADD_DITHER_ON_WRITE				= 0x1070,
+	SFC_SET_ADD_DITHER_ON_READ				= 0x1071
 } ;
 
 /*
@@ -237,16 +237,16 @@ enum
 
 enum
 {
-	SF_STR_TITLE					= 0x01,
+	SF_STR_TITLE						= 0x01,
 	SF_STR_COPYRIGHT				= 0x02,
 	SF_STR_SOFTWARE					= 0x03,
-	SF_STR_ARTIST					= 0x04,
+	SF_STR_ARTIST						= 0x04,
 	SF_STR_COMMENT					= 0x05,
-	SF_STR_DATE						= 0x06,
-	SF_STR_ALBUM					= 0x07,
+	SF_STR_DATE							= 0x06,
+	SF_STR_ALBUM						= 0x07,
 	SF_STR_LICENSE					= 0x08,
-	SF_STR_TRACKNUMBER				= 0x09,
-	SF_STR_GENRE					= 0x10
+	SF_STR_TRACKNUMBER			= 0x09,
+	SF_STR_GENRE						= 0x10
 } ;
 
 /*
@@ -266,7 +266,7 @@ enum
 	SFM_WRITE	= 0x20,
 	SFM_RDWR	= 0x30,
 
-	SF_AMBISONIC_NONE		= 0x40,
+	SF_AMBISONIC_NONE			= 0x40,
 	SF_AMBISONIC_B_FORMAT	= 0x41
 } ;
 
@@ -332,12 +332,12 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 */
 
 #if (defined (_MSCVER) || defined (_MSC_VER) && (_MSC_VER < 1310))
-typedef __int64		sf_count_t ;
+typedef __int64					sf_count_t ;
 #define SF_COUNT_MAX		0x7fffffffffffffffi64
 #else
-typedef @TYPEOF_SF_COUNT_T@	sf_count_t ;
-typedef int	sf_count_t ;
-#define SF_COUNT_MAX		@SF_COUNT_MAX@
+typedef TYPEOF_SF_COUNT_T	sf_count_t ;
+typedef int								sf_count_t ;
+#define SF_COUNT_MAX			@SF_COUNT_MAX@
 #endif
 
 /* A pointer to a SF_INFO structure is passed to sf_open () and filled in.
@@ -348,10 +348,10 @@ struct SF_INFO
 {
 	sf_count_t	frames ;		/* Used to be called samples.  Changed to avoid confusion. */
 	int			samplerate ;
-	int			channels ;
-	int			format ;
-	int			sections ;
-	int			seekable ;
+	int				channels ;
+	int					format ;
+	int				sections ;
+	int				seekable ;
 } ;
 
 typedef	struct SF_INFO SF_INFO ;
@@ -478,8 +478,8 @@ typedef struct
 /*	Struct used to retrieve broadcast (EBU) information from a file.
 **	Strongly (!) based on EBU "bext" chunk format used in Broadcast WAVE.
 */
-#define	SF_BROADCAST_INFO_VAR(coding_hist_size) \
-			struct \
+#define	SF_BROADCAST_INFO_VAR(coding_hist_size) 
+			struct
 			{
 				char		description [256] ; \
 				char		originator [32] ; \
