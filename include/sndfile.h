@@ -335,7 +335,7 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 typedef __int64					sf_count_t ;
 #define SF_COUNT_MAX		0x7fffffffffffffffi64
 #else
-typedef TYPEOF_SF_COUNT_T	sf_count_t ;
+typedef @TYPEOF_SF_COUNT_T	sf_count_t ;
 typedef int								sf_count_t ;
 #define SF_COUNT_MAX			@SF_COUNT_MAX@
 #endif
@@ -478,7 +478,7 @@ typedef struct
 /*	Struct used to retrieve broadcast (EBU) information from a file.
 **	Strongly (!) based on EBU "bext" chunk format used in Broadcast WAVE.
 */
-#define	SF_BROADCAST_INFO_VAR(coding_hist_size)
+#define	SF_BROADCAST_INFO_VAR (coding_hist_size)
 			struct
 			{
 				char		description [256] ;
@@ -506,8 +506,8 @@ struct SF_CART_TIMER
 
 typedef struct SF_CART_TIMER SF_CART_TIMER ;
 
-#define	SF_CART_INFO_VAR(p_tag_text_size)
-			struct 
+#define	SF_CART_INFO_VAR (p_tag_text_size)
+			struct
 			{
 				char		version [4] ;
 				char		title [64] ;

@@ -757,7 +757,7 @@ int filenamepath (char filename)  // expected int?
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
 
-  if (**filename != "sound.wav")
+  if (filename != "sound.wav")
 	{
      fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC);
 	   return fp;
