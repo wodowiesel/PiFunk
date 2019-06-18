@@ -755,23 +755,21 @@ int timer (time_t *rawtime)
 char filenamepath ()  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  //scanf ("%s", &filename);
+  scanf ("%s", &filename);
 
-  //if (filename != "sound.wav")
-	//{
-    // sfp = fopen (filename, "r");
-	   //return sfp;
-	//}
-	/*
+  if (filename != "sound.wav")
+	{
+     int fp = open (filename, "r");
+	   return fp;
+	}
 	else
 	{
-
 	   int fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
-	   //return fp;
+	   return fp;
 	}
-	*/
+
 	printf ("\nTrying to play %s ... \n", filename);
-	return filename; //, sfp;
+	return filename; //,fp;
 }
 
 double freqselect () // gets freq by typing in
@@ -1003,17 +1001,19 @@ double channelmodecb () // CB
 
 void modselect (char *mod)
 {
-	printf ("\nOpening Modulator \n");
-
-	if (*mod == *fm)
+	printf ("\nOpening Modulator... \n");
+	if (*mod == "fm")
 	{
-		int modulationfm (int argc, char **argv);
+		void modulationfm (int argc, char **argv);
+	}
+	else if (*mod == "am")
+	{
+		void modulationam (int argc, char **argv);
 	}
 	else
 	{
-		int modulationam (int argc, char **argv);
+		printf ("\nError! \n");
 	}
-
  	return;
 }
 
@@ -1024,20 +1024,19 @@ char modulationselect ()
 	switch (freqmode)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
-						mod = "fm";
-						modselect ();
+						*mod = "fm";
+						void modselect (char *mod);
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
-						mod = "am";
-						modselect ();
+						*mod = "am";
+						void modselect (char *mod);
 		        break;
 
 		case 3: printf ("\nExiting... \n");
 						exit (-1);
 
-		default:
-		 					mod = "fm";
+		default:	*mod = "fm";
 							printf ("\n Default = 1 \n");
 							break;
 	}
@@ -1155,7 +1154,7 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 {
 		void *a = valloc (4096);
 
-		((int *a) [0] = 1; // use page to force allocation
+		((int) *a) [0] = 1; // use page to force allocation
 
 		mlock (a, 4096); // lock into ram
 
@@ -1777,13 +1776,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 							{
 								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
-								int modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
+							  void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 								break;
 							}
 							else if (!strcmp (mod, "am"))
 							{
 								printf ("\nPushing args to am Modulator... \n");
-								int modulationam (int argc, char **argv);
+								void modulationam (int argc, char **argv);
 								break;
 							}
 							else
