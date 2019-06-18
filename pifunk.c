@@ -752,20 +752,20 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-char filenamepath ()  // expected int?
+char filenamepath (char *filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
 
-  if (filename != "sound.wav")
+  if (*filename != "sound.wav")
 	{
-     int fp = open (filename, "r");
-	   return fp;
+     fp = open (*filename, O_RDONLY);
+	   return *fp;
 	}
 	else
 	{
-	   int fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be testet
-	   return fp;
+	   fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be tested
+	   return *fp;
 	}
 
 	printf ("\nTrying to play %s ... \n", filename);
@@ -1024,23 +1024,23 @@ char modulationselect ()
 	switch (freqmode)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
-						*mod = "fm";
+						mod = "fm";
 						void modselect (char *mod);
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
-						*mod = "am";
+						mod = "am";
 						void modselect (char *mod);
 		        break;
 
 		case 3: printf ("\nExiting... \n");
 						exit (-1);
 
-		default:	*mod = "fm";
+		default:	mod = "fm";
 							printf ("\n Default = 1 \n");
 							break;
 	}
-	return mod;
+	return *mod;
 }
 
 void channelselect () // make a void
@@ -1067,22 +1067,22 @@ void channelselect () // make a void
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
-int ledactive ()
+int ledinactive ()
 {
 		//check if transmitting
-		//while (!play_wav ())
+		while (!play_wav (char *filename, double freq, int samplerate))
 		//{
-				//cm2835_gpio_write (PIN17, LOW);
+				cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
 		//}
     return 0;
 }
 
-int led ()
+int ledactive ()
 {
 //simulation of gpio for debug
 /*
-  //bcm2835_set_debug (1);
+  bcm2835_set_debug (1);
   if (!bcm2835_init ())
 	{
 		printf ("\nBCM 2835 init failed! \n");
@@ -1094,17 +1094,16 @@ int led ()
     //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav ()) // (ledactive != 0)
+		while (play_wav (char *filename, double freq, int samplerate)) // (ledactive != 0)
 		{
-	// Turn it on
+			// Turn it on
 			bcm2835_gpio_write (PIN17, HIGH);
 			printf ("\nLED ON - Transmission...! \n");
 			// wait a bit
 			bcm2835_delay (500);
-
 		}
 	}
-	else // if no trans than turn it off
+	else // if no transmission than turn it off
   {
 		cm2835_gpio_write (PIN17, LOW);
 		printf ("\nLED OFF - No Transmission \n");
@@ -1122,8 +1121,8 @@ float audiovol ()
 	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
 	{
      volbuffer [i] *= volumeMultiplier;
-     printf ("\nValues: i: %d , volbuffer: %f , volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
-		 printf ("\nAdresses: i: %p , volbuffer: %p , volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
+     printf ("\nValues: i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+		 printf ("\nAdresses: i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
      return volbuffer [i], volumeMultiplier;
 	}
 	return volbuffer [i], volumeMultiplier;
@@ -1422,8 +1421,8 @@ int tx ()
 	// GPIO needs to be ALT FUNC 0 to output the clock
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
-	// put here the play_wave or wtriting tone maybe?
-	//play_wav ();
+	// put here the play_wav or writing tone maybe?
+	//play_wav (char *filename, double freq, int samplerate);
 	printf ("\nBroadcasting now...! \n");
 	led ();
 
@@ -1707,7 +1706,7 @@ void menu ()
 
 void assistent () // assistent
 {
-		filenamepath ();
+		filenamepath (char filename);
 		powerselect ();
 		callname ();
 		modetype (freq);
@@ -1755,20 +1754,20 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		{
 
 			case 'n':
-					filename = optarg;
-					printf ("\nFilename is %s \n", filename);
-					break;
+							filename = optarg;
+							printf ("\nFilename is %s \n", filename);
+							break;
 
 			case 'f':
-					freq = atof (optarg);
-					printf ("\nFrequency is %f \n", freq);
-					break;
+							freq = atof (optarg);
+							printf ("\nFrequency is %f \n", freq);
+							break;
 
 			case 's':
-					samplerate = atoi (optarg);
-					printf ("\nSamplerate is %d \n", samplerate);
-					samplecheck (filename, samplerate);
-					break;
+							samplerate = atoi (optarg);
+							printf ("\nSamplerate is %d \n", samplerate);
+							samplecheck (filename, samplerate);
+							break;
 
 			case 'm':
 							mod = optarg;
@@ -1792,50 +1791,48 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 							}
 
 			case 'c':
-					callsign = optarg;
-					printf ("\nCallsign is %s \n", callsign);
-					break;
+							callsign = optarg;
+							printf ("\nCallsign is %s \n", callsign);
+							break;
 
 				//power managment
 			case 'p':
-					power = atoi (optarg);
-					printf ("\nPower is %d \n", power);
-					break;
+							power = atoi (optarg);
+							printf ("\nPower is %d \n", power);
+							break;
 
 			case 'a':
-				if (argc==1)
-				{
-					printf ("\nAssistent activated! \n");
-					assistent (); //  to menu -> must be refactored later
-					break;
-				}
-				else
-				{
-					printf ("\nError in -a \n");
-					return 1;
-				}
+							if (argc==1)
+							{
+								printf ("\nAssistent activated! \n");
+								assistent (); //  to menu -> must be refactored later
+								break;
+							}
+							else
+							{
+								printf ("\nError in -a \n");
+								return 1;
+							}
 
 			case 'h':
-				if (argc==1)
-				{
-					printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
-					break;
-				}
-				else
-				{
-					printf ("\nError in -h \n");
-					return 1;
-				}
+							if (argc==1)
+							{
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
+								break;
+							}
+							else
+							{
+								printf ("\nError in -h \n");
+								return 1;
+							}
 
 			default:
-				printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-				return 1;
+								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								return 1;
 		 } // end of switch
-
 		 break;
 		 //return filename, freq, samplerate, mod, callsign, power;
 	} // end of while
-
  		//}//end of else
 		//-- for debugging or information :)
 	printf ("\n-----------------\n");
@@ -1845,7 +1842,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nChecking Modulation: %s \n", mod);
 	printf ("\nChecking Callsign: %s \n", callsign);
 	printf ("\nChecking Output-Power: %d \n", power);
-	printf ("\n&Adresses-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
+	printf ("\n&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
 		/*
 		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
 		//printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
