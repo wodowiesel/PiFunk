@@ -752,19 +752,19 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-int filenamepath (char *filename)  // expected int?
+int filenamepath (char **filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
 
-  if (*filename != "sound.wav")
+  if (**filename != "sound.wav")
 	{
-     fp = open (*filename, O_RDONLY);
-	   return *fp;
+     fp = open (**filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC);
+	   return fp;
 	}
 	else
 	{
-	   fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be tested
+	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC); // sounds/sound.wav directory should be tested
 	   return fp;
 	}
 
@@ -1012,7 +1012,7 @@ void modselect (char *mod)
 	}
 	else
 	{
-		printf ("\nError! \n");
+		printf ("\nError selecting modulation! \n");
 	}
  	return;
 }
@@ -1066,12 +1066,12 @@ void channelselect () // make a void
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
-int ledinactive ()
+int ledinactive (char filename, double freq, int samplerate)
 {
 		//check if transmitting
-		while (!play_wav (char *filename, double freq, int samplerate))
+		while (!play_wav (char filename, double freq, int samplerate))
 		{
-				cm2835_gpio_write (PIN17, LOW);
+				//cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
 		}
     return 0;
@@ -1158,7 +1158,7 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 
 		*vAddr = a; // we know the virtual address now
 
-		int fp = open ("/proc/self/pagemap", "w");
+		int fp = open ("/proc/self/pagemap", O_RDONLY); //"w"
 		lseek (fp, ((int) a)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
 
@@ -1255,20 +1255,20 @@ void play_wav (char *filename, double freq, int samplerate)
   {
 				//normally in 15 Hz bandwidth
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
-				printf ("\nfmconstant: %f \n", fmconstant)
-        unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
-				printf ("\nclocksPerSample: %lf \n", clocksPerSample)
+				printf ("\nfmconstant: %f \n", fmconstant);
+        int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
+				printf ("\nclocksPerSample: %d \n", clocksPerSample);
         // if samplerate > 15.75 then clocks per sample is negetive !! not good
         datanew = ((float) (*data)/excursion); //some constant for unsigned int excursion
-				printf ("\nfracval: %f \n", datanew)
+				printf ("\ndatanew: %f \n", datanew);
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
-				printf ("\nsample: %f \n", sample)
+				printf ("\nsample: %f \n", sample);
         float dval = sample*15.0; // actual transmitted sample, 15 is standard bandwidth (about 75 kHz) better 14.5
-				printf ("\ndval: %f \n", dval)
+				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
-				printf ("\nintval: %d \n", fracval)
+				printf ("\nintval: %d \n", intval);
         float frac = ((dval - (float) intval)/2 + 0.5);
-				printf ("\nfrac: %f \n", intval)
+				printf ("\nfrac: %f \n", frac);
         int fracval = (frac*clocksPerSample);
 				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
@@ -1438,7 +1438,7 @@ void modulationfm (int argc, char **argv)
     setupfm (); // gets filename & path or done by filmename() func
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-    void play_wav (char filename, freq, samplerate); // atof (argv [3]):22050)
+    void play_wav (char filename, double freq, int samplerate); // atof (argv [3]):22050)
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  ledactive ();
 	  printf ("\nNow transmitting on fm ... \n");
@@ -1541,7 +1541,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 				// stereo file, avg left + right --> should be mono at 22.05kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
-				printf ("\nb = %s", b);
+				printf ("\nb = %c", b);
 			}
 			else if (channels == 2)
 			{
