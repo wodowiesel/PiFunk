@@ -752,14 +752,14 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-int filenamepath (char **filename)  // expected int?
+int filenamepath (char filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
 
   if (**filename != "sound.wav")
 	{
-     fp = open (**filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC);
+     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC);
 	   return fp;
 	}
 	else
@@ -841,7 +841,6 @@ double subchannelmodepmr () //Pilot-tone
 	 case 7: subfreq=85.400; break; // at 3-channel-PMR-devices it's ch. 3
 	 case 8: subfreq=88.500; break; // Standard
 	 case 9: subfreq=91.500; break;
-
 	 case 10: subfreq=94.800; break;
 	 case 11: subfreq=97.400; break;
 	 case 12: subfreq=100.000; break;
@@ -853,7 +852,6 @@ double subchannelmodepmr () //Pilot-tone
 	 case 18: subfreq=123.000; break;
 	 case 19: subfreq=127.300; break;
 	 case 20: subfreq=131.800; break;
-
 	 case 21: subfreq=136.500; break;
 	 case 22: subfreq=141.300; break;
 	 case 23: subfreq=146.200; break;
@@ -864,7 +862,6 @@ double subchannelmodepmr () //Pilot-tone
 	 case 28: subfreq=173.800; break;
 	 case 29: subfreq=179.900; break;
 	 case 30: subfreq=186.200; break;
-
 	 case 31: subfreq=192.800; break;
 	 case 32: subfreq=203.500; break;
 	 case 33: subfreq=210.700; break;
@@ -873,9 +870,7 @@ double subchannelmodepmr () //Pilot-tone
 	 case 36: subfreq=233.600; break;
 	 case 37: subfreq=241.800; break;
 	 case 38: subfreq=250.300; break;
-
 	 case 39: exit (0);
-
 	 default:
 	 					subfreq=67.000;
 						printf ("\nDefault subchannel = 1 on subfreq = %lf \n", subfreq);
@@ -884,7 +879,6 @@ double subchannelmodepmr () //Pilot-tone
   printf ("\nSubchannelnumber = %d on subfreq = %lf \n", subchannelnumberpmr, subfreq);
 	return freq;
 }
-
 
 double channelmodecb () // CB
 {
@@ -1093,7 +1087,7 @@ int ledactive ()
     //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav (char *filename, double freq, int samplerate))
+		while (play_wav (char filename, double freq, int samplerate))
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN17, HIGH);
@@ -1224,7 +1218,7 @@ void play_list () // exit func
 
 }
 
-void play_wav (char *filename, double freq, int samplerate)
+void play_wav (char filename, double freq, int samplerate)
 {
 
 	/*wiki https://en.wikipedia.org/wiki/WAV
