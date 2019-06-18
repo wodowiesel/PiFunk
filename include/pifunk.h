@@ -8,9 +8,9 @@ header for pifunk.c (dummy for now)
 
 void titel ()
 {
-printf ("\nPifunk\n");
+printf ("\nWelcome to PiFunk!\n");
 
-return 0;
+return;
 }
 
 #endif

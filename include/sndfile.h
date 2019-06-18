@@ -421,11 +421,11 @@ typedef struct
 	char name [256] ;
 } SF_CUE_POINT ;
 
-#define	SF_CUES_VAR(count) \
-	struct \
+#define	SF_CUES_VAR (count)
+	struct
 	{
-		uint32_t cue_count ; \
-		SF_CUE_POINT cue_points [count] ; \
+		uint32_t cue_count ;
+		SF_CUE_POINT cue_points [count] ;
 	}
 
 typedef SF_CUES_VAR (100) SF_CUES ;
@@ -478,21 +478,21 @@ typedef struct
 /*	Struct used to retrieve broadcast (EBU) information from a file.
 **	Strongly (!) based on EBU "bext" chunk format used in Broadcast WAVE.
 */
-#define	SF_BROADCAST_INFO_VAR(coding_hist_size) 
+#define	SF_BROADCAST_INFO_VAR(coding_hist_size)
 			struct
 			{
-				char		description [256] ; \
-				char		originator [32] ; \
-				char		originator_reference [32] ; \
-				char		origination_date [10] ; \
-				char		origination_time [8] ; \
-				uint32_t	time_reference_low ; \
-				uint32_t	time_reference_high ; \
-				short		version ; \
-				char		umid [64] ; \
-				char		reserved [190] ; \
-				uint32_t	coding_history_size ; \
-				char		coding_history [coding_hist_size] ; \
+				char		description [256] ;
+				char		originator [32] ;
+				char		originator_reference [32] ;
+				char		origination_date [10] ;
+				char		origination_time [8] ;
+				uint32_t	time_reference_low ;
+				uint32_t	time_reference_high ;
+				short		version ;
+				char		umid [64] ;
+				char		reserved [190] ;
+				uint32_t	coding_history_size ;
+				char		coding_history [coding_hist_size] ;
 			}
 
 /* SF_BROADCAST_INFO is the above struct with coding_history field of 256 bytes. */
@@ -506,30 +506,30 @@ struct SF_CART_TIMER
 
 typedef struct SF_CART_TIMER SF_CART_TIMER ;
 
-#define	SF_CART_INFO_VAR(p_tag_text_size) \
-			struct \
+#define	SF_CART_INFO_VAR(p_tag_text_size)
+			struct 
 			{
-				char		version [4] ; \
-				char		title [64] ; \
-				char		artist [64] ; \
-				char		cut_id [64] ; \
-				char		client_id [64] ; \
-				char		category [64] ; \
-				char		classification [64] ; \
-				char		out_cue [64] ; \
-				char		start_date [10] ; \
-				char		start_time [8] ; \
-				char		end_date [10] ; \
-				char		end_time [8] ; \
-				char		producer_app_id [64] ; \
-				char		producer_app_version [64] ; \
-				char		user_def [64] ; \
-				int32_t		level_reference ; \
-				SF_CART_TIMER	post_timers [8] ; \
-				char		reserved [276] ; \
-				char		url [1024] ; \
-				uint32_t	tag_text_size ; \
-				char		tag_text [p_tag_text_size] ; \
+				char		version [4] ;
+				char		title [64] ;
+				char		artist [64] ;
+				char		cut_id [64] ;
+				char		client_id [64] ;
+				char		category [64] ;
+				char		classification [64] ;
+				char		out_cue [64] ;
+				char		start_date [10] ;
+				char		start_time [8] ;
+				char		end_date [10] ;
+				char		end_time [8] ;
+				char		producer_app_id [64] ;
+				char		producer_app_version [64] ;
+				char		user_def [64] ;
+				int32_t		level_reference ;
+				SF_CART_TIMER	post_timers [8] ;
+				char		reserved [276] ;
+				char		url [1024] ;
+				uint32_t	tag_text_size ;
+				char		tag_text [p_tag_text_size] ;
 			}
 
 typedef SF_CART_INFO_VAR (256) SF_CART_INFO ;
