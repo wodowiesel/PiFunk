@@ -752,7 +752,7 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-char filenamepath (char *filename)  // expected int?
+int filenamepath (char *filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
@@ -765,7 +765,7 @@ char filenamepath (char *filename)  // expected int?
 	else
 	{
 	   fp = open ("sound.wav", O_RDONLY); // sounds/sound.wav directory should be tested
-	   return *fp;
+	   return fp;
 	}
 
 	printf ("\nTrying to play %s ... \n", filename);
@@ -990,9 +990,9 @@ double channelmodecb () // CB
 			case 81:   exit (0);
 
 			default:
-							freq=26.9650;
-							printf ("\nDefault CB chan = 1 %lf \n", freq);
-							break;
+									freq=26.9650;
+									printf ("\nDefault CB chan = 1 %lf \n", freq);
+									break;
 
 	}
   printf ("\nUsing channel = %d on freq =  %lf \n", channelnumbercb, freq);
@@ -1002,11 +1002,11 @@ double channelmodecb () // CB
 void modselect (char *mod)
 {
 	printf ("\nOpening Modulator... \n");
-	if (*mod == "fm")
+	if (mod == "fm")
 	{
 		void modulationfm (int argc, char **argv);
 	}
-	else if (*mod == "am")
+	else if (mod == "am")
 	{
 		void modulationam (int argc, char **argv);
 	}
@@ -1037,8 +1037,8 @@ char modulationselect ()
 						exit (-1);
 
 		default:	mod = "fm";
-							printf ("\n Default = 1 \n");
-							break;
+						printf ("\n Default = 1 \n");
+						break;
 	}
 	return *mod;
 }
@@ -1048,7 +1048,6 @@ void channelselect () // make a void
 	printf ("\nYou selected 1 for Channel-Mode \n");
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
   scanf  ("%d", &channelmode);
-
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
   {
          	case 1: printf ("\nPMR CHAN-MODE \n");
@@ -1071,10 +1070,10 @@ int ledinactive ()
 {
 		//check if transmitting
 		while (!play_wav (char *filename, double freq, int samplerate))
-		//{
+		{
 				cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
-		//}
+		}
     return 0;
 }
 
@@ -1094,7 +1093,7 @@ int ledactive ()
     //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav (char *filename, double freq, int samplerate)) // (ledactive != 0)
+		while (play_wav (char *filename, double freq, int samplerate))
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN17, HIGH);
@@ -1103,7 +1102,7 @@ int ledactive ()
 			bcm2835_delay (500);
 		}
 	}
-	else // if no transmission than turn it off
+	else // if no transmission than turn it off // (ledactive != 0)
   {
 		cm2835_gpio_write (PIN17, LOW);
 		printf ("\nLED OFF - No Transmission \n");
@@ -1145,7 +1144,7 @@ void clearscreen ()
 
 void modulate (int l)
 {
-	printf ("\nModulate... \n");
+	printf ("\nModulate carrier... \n");
 	//	ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + l;  //
 }
 
@@ -1153,7 +1152,7 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 {
 		void *a = valloc (4096);
 
-		((int) *a) [0] = 1; // use page to force allocation
+		((int*) a) [0] = 1; // use page to force allocation
 
 		mlock (a, 4096); // lock into ram
 
@@ -1256,15 +1255,20 @@ void play_wav (char *filename, double freq, int samplerate)
   {
 				//normally in 15 Hz bandwidth
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
-        unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400 (why this?)
+				printf ("\nfmconstant: %f \n", fmconstant)
+        unsigned int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
+				printf ("\nclocksPerSample: %lf \n", clocksPerSample)
         // if samplerate > 15.75 then clocks per sample is negetive !! not good
         datanew = ((float) (*data)/excursion); //some constant for unsigned int excursion
-
+				printf ("\nfracval: %f \n", datanew)
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
+				printf ("\nsample: %f \n", sample)
         float dval = sample*15.0; // actual transmitted sample, 15 is standard bandwidth (about 75 kHz) better 14.5
-
+				printf ("\ndval: %f \n", dval)
         int intval = (int) (round (dval)); // integer component
+				printf ("\nintval: %d \n", fracval)
         float frac = ((dval - (float) intval)/2 + 0.5);
+				printf ("\nfrac: %f \n", intval)
         int fracval = (frac*clocksPerSample);
 				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
@@ -1318,10 +1322,10 @@ void unsetupDMA ()
 void setupDMA ()
 {
 	printf ("\nSetup of DMA starting... \n");
-	//atexit (unsetupDMA);
-	signal (SIGINT, handSig);
+	atexit (unsetupDMA);
+	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
-	signal (SIGHUP, handSig);
+	signal (SIGHUP,  handSig);
 	signal (SIGQUIT, handSig);
 
 	// allocate a few pages of ram
@@ -1418,39 +1422,31 @@ int tx ()
   //pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
   //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
 
-	// GPIO needs to be ALT FUNC 0 to output the clock
+	//GPIO needs to be ALT FUNC 0 to output the clock
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
-	// put here the play_wav or writing tone maybe?
+	//put here the play_wav or writing tone maybe?
 	//play_wav (char *filename, double freq, int samplerate);
+	ledactive ();
 	printf ("\nBroadcasting now...! \n");
-	led ();
-
 	return 0;
 }
-
 //FM
 void modulationfm (int argc, char **argv)
 {
   	printf ("\nPreparing for FM... \n");
-
     setupfm (); // gets filename & path or done by filmename() func
-
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-
-    play_wav (filename, freq, samplerate); // atof (argv [3]):22050)
-
+    void play_wav (char filename, freq, samplerate); // atof (argv [3]):22050)
 	  printf ("\nChecking & Setting LED for Transmission \n");
-	  led ();
-
-	  printf ("\nNow transmitting... \n");
-
+	  ledactive ();
+	  printf ("\nNow transmitting on fm ... \n");
 	return;
 }
 
 //AM --- not yet adapted, needs revision for freq
-void WriteTone ()
+void WriteTone (double freq)
 {
 	double Frequencies = freq;
 	typedef struct
@@ -1458,13 +1454,10 @@ void WriteTone ()
 		double Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
-
 	samplerf_t RfSample;
-
 	RfSample.Frequency = Frequencies;
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
 	printf ("\nFreq = %lf, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
-
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
@@ -1483,11 +1476,11 @@ void modulationam (int argc, char **argv) // better name function: sample/bitche
               {VFO (constant frequency)}
     */
 
-		fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
+		int fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
     printf ("\nOpening File...\n");
 		outfilename = (char *) malloc (128);// allocating memory for filename
 		sprintf (outfilename, "\n%s\n", "out.ft");
-		led ();
+		ledactive ();
 		close (fp);
 	  return;
 }
@@ -1520,7 +1513,6 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 	printf ("\nInput samplerate must be at least 22.050 [kHz] for FM or 14.500 [kHz] for AM! \n");
 	return 1;
 	}
-
 	//--------------------
 	if (filebit != 16)
 	{
@@ -1549,7 +1541,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 				// stereo file, avg left + right --> should be mono at 22.05kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
-				printf ("\nb = %c", b);
+				printf ("\nb = %s", b);
 			}
 			else if (channels == 2)
 			{
@@ -1559,10 +1551,8 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			{
 					printf ("\nError: File has %d Channels!  (> 2 channels)  \n", channels);
 			}
-
  			// was defined as global var above
 			printf ("\nnb_samples: %d \n", nb_samples);
-
 			printf ("\nCompression prameter A: %f \n", A);
 			//maybe here am option for amplitude factor input!?
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
@@ -1581,22 +1571,18 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 
 			sampler = (1E9/samplerate); //44.000
 			printf ("\nsampler: %f \n", sampler);
-
 			printf ("\nNow writing tone in AM... \n");
-
-			WriteTone (); // somehow input freq here ?!?
-
-
+			void WriteTone (double freq); // somehow input freq here ?!?
       //return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
-		printf ("\nwhile readcount... \n");
+		printf ("\nwhile readcount ... \n");
   } // while loop
 
     // Close input and output files
     //fclose (FileFreqTiming);
-    fclose (sfp);
-    printf ("\nFile saved! \n");
-		return samplerate;
+  fclose (sfp);
+  printf ("\nFile saved! \n");
+	return samplerate;
 }
 
 //return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
@@ -1625,7 +1611,7 @@ char csvreader ()
 		*/
     printf ("\nCSV-import of CTSS-list finished! \n");
 
-    return 0;
+    return j;
 }
 
 char callname ()
