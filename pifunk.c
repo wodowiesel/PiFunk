@@ -1734,14 +1734,15 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	// atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	//---
 	// for custom  programname, default is the filename itself
-	printf ("\nArguments: %d / name: %s \n", argc-1, argv [0]);
+	titel ();
+	printf ("\nArguments: %d / internal name: %s \n", argc-1, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	printf ("\nshort_opt: %s \n", short_opt);
 	infos (); //information, disclaimer
 	//timer (time_t *rawtime);
 
-	while ((options = getopt (argc, argv, "n:f:s:m:c:p:ah")) != -1) // shortopts must be constants
+	while ((options = getopt (argc, argv, short_opt)) != -1) // shortopts must be constants
 	{
 		 /*
 		 if (argc=0||NULL)
