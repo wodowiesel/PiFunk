@@ -6,9 +6,10 @@ header for pifunk.c (dummy for now)
 #define _PIFUNK_H_
 
 
-char headertest ()
+void titel ()
 {
-printf ("\nPifunk Header! \n");
+printf ("\nPifunk\n");
+
 return 0;
 }
 
