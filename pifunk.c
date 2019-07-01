@@ -269,9 +269,12 @@ volatile unsigned 										*allof7e;
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
-#define CURBLOCK                       (0x04) // dec: 4 memflag?
-#elif   RASPBERRY
+#define CURBLOCK                       (0x04) // dec: 4 memflag
+#elif   RASPBERRY // other models
 #define PERIPH_VIRT_BASE               (0x20000000)
+#elif   RASPBERRYFOUR //pi4 -> waiting for documentation from adafruit
+#define PERIPH_VIRT_BASE               (0x20000000)
+#else
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -328,7 +331,7 @@ volatile unsigned 										*allof7e;
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
 #define PERIOD                          (1/PHASE) // 0.15915494309
 
-//----------from pifmadv -> helps to understand the things the normal fm-script didnt specified
+//----------from pifmadv -> helps to understand the things, the normal fm-script didnt specified
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
 #define PWM_BASE_OFFSET                 (0x0020C000)// dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
@@ -545,15 +548,15 @@ volatile unsigned 										*allof7e;
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
 //if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 //-----------------------------------
-char *description = "(experimental)"; // version-stage
+static char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
 //iterators for loops
 int a;
 int i;
-char j;
 int k;
 int l;
+char j;
 float x;
 
 //pi memorymap:
@@ -569,20 +572,21 @@ int opt;
 char *filename = "sound.wav";
 double freq;
 double subfreq = 67.0;
+double ctss_freq = 67.0;
 uint32_t Timing;
 char *mod;
 char *modu;
 char *fm = "fm";
 char *am = "am";
 char *callsign = "callsign";
-float volume = 1.0f;
+float volume = 1.1f;
 int power = 7;
+int powerlevel = 7;
 int samplerate = 22050;
 int channels = 1;
 double shift_ppm = 0;
 
 //menu variables
-int powerlevel = 7;
 int menuoption;
 int channelnumbercb;
 int channelnumberpmr;
@@ -591,7 +595,6 @@ int channelmode;
 int freqmode;
 int modeselect;
 int callnameselect;
-double ctss_freq;
 time_t rawtime;
 
 // IQ & carrier
@@ -601,8 +604,8 @@ uint32_t carrier_freq = 87600000; // why this value?
 //double Q = cos ((PERIOD*freq) + shift_ppm);
 //double RF_SUM = (I+Q);
 
-//  files
-FILE *sfp, *dfp;
+//files
+FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE infiles;
 FILE outfiles;
@@ -651,13 +654,16 @@ int shift = 0; //= (gpio % 10) * 3;
 //network sockets
 //custom port via tcp/ip or udp
 socklen_t addressLength;
+char *localip = "127.0.0.1";
 char *host = "localhost";
 int port = 8080;
 
-// GPS-coordinated
-float longitude;
-float latitude;
-float altitude;
+// GPS-coordinates
+//default Frankfurt in decimal °grad
+float longitude = 8.682127; // E
+float latitude = 50.110924; // N
+float altitude = 100.0; // elevation in meter above see level  (u.N.N.)
+
 //--------------------------------------------------
 // Structs
 struct tm *info;
@@ -752,24 +758,27 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-int filenamepath (char filename)  // expected int?
+int filecheck (char filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
+	printf ("\nTrying to play %s ... \n", filename);
+	printf ("\nOpening file ... \n");
+	printf ("\nallocating filename mem... \n");
+	filename = (char *) malloc (128);// allocating memory for filename
+	sprintf (filename, "\n%s\n", "file.ft");
 
   if (filename != "sound.wav")
 	{
-     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC);
+     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644)); // O_RDWR
 	   return fp;
 	}
 	else
 	{
-	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC); // sounds/sound.wav directory should be tested
+	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644)); // sounds/sound.wav directory should be tested
 	   return fp;
 	}
-
-	printf ("\nTrying to play %s ... \n", filename);
-	return filename; //,fp;
+	return fp;
 }
 
 double freqselect () // gets freq by typing in
@@ -1044,7 +1053,7 @@ void channelselect () // make a void
   scanf  ("%d", &channelmode);
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
   {
-         	case 1: printf ("\nPMR CHAN-MODE \n");
+					case 1: printf ("\nPMR CHAN-MODE \n");
 									channelmodepmr (freq); // gets freq from pmr list
 									break;
 
@@ -1052,7 +1061,7 @@ void channelselect () // make a void
 									channelmodecb (freq);
 									break;
 
-        	default: printf ("\nDefault: Returning... \n");
+					default: printf ("\nDefault: Returning... \n");
 									 break;
 	}
 	return;
@@ -1063,7 +1072,7 @@ void channelselect () // make a void
 int ledinactive (char filename, double freq, int samplerate)
 {
 		//check if transmitting
-		while (!play_wav (char filename, double freq, int samplerate))
+		while (!play_wav (char *filename, double freq, int samplerate))
 		{
 				//cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
@@ -1116,7 +1125,7 @@ float audiovol ()
      volbuffer [i] *= volumeMultiplier;
      printf ("\nValues: i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
 		 printf ("\nAdresses: i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
-     return volbuffer [i], volumeMultiplier;
+     return volbuffer [i];
 	}
 	return volbuffer [i], volumeMultiplier;
 }
@@ -1425,6 +1434,7 @@ int tx ()
 	printf ("\nBroadcasting now...! \n");
 	return 0;
 }
+
 //FM
 void modulationfm (int argc, char **argv)
 {
@@ -1439,7 +1449,7 @@ void modulationfm (int argc, char **argv)
 	return;
 }
 
-//AM --- not yet adapted, needs revision for freq
+//AM
 void WriteTone (double freq)
 {
 	double Frequencies = freq;
@@ -1459,24 +1469,18 @@ void WriteTone (double freq)
 	printf ("\nWriting tone \n");
 }
 
-void modulationam (int argc, char **argv) // better name function: sample/bitchecker
+int modulationam (int argc, char **argv, char *filename) // better name function: sample/bitchecker
 {
-	printf ("\nAm modulator starting \n");
-	    /*
-              {IQ (FileInput is a Mono Wav contains I on left Channel, Q on right channel)}
-              {IQFLOAT (FileInput is a Raw float interlaced I, Q)}
-              {RF (FileInput is a (float) Frequency, Time in nanoseconds}
-              {RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
-              {VFO (constant frequency)}
-    */
-
-		int fp = open (outfilename, O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
-    printf ("\nOpening File...\n");
-		outfilename = (char *) malloc (128);// allocating memory for filename
-		sprintf (outfilename, "\n%s\n", "out.ft");
+	/*{IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
+		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
+		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
+		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
+		{VFO (constant frequency)} */
+		printf ("\nam modulator starting \n");
+		// acual modulation stuff here for am
 		ledactive ();
 		close (fp);
-	  return;
+	  return fp;
 }
 
 int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
@@ -1486,12 +1490,12 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
   if (!(fp = open (filename, SFM_READ, &sfinfo)))
   {   // Open failed so print an error message.
         printf ("\nNot able to open input file for samplecheck %s \n", filename);
-				printf ("\nNot able to open input file for samplecheck %d \n", fp);
+				printf ("\nNot able to open filepointer for samplecheck %d \n", fp);
         // Print the error message from libsndfile.
         return 1;
   }
 		//-----------------
-
+	//sfinfo.samplerate = samplerate;
 	if (sfinfo.samplerate == 22050) //44 or 48 khz needs testing
 	{
 		printf ("\nSamplerate is 22050! (%d)\n", sfinfo.samplerate);
@@ -1510,7 +1514,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 	//--------------------
 	if (filebit != 16)
 	{
-		// read filebit here somehow
+		//read filebit here somehow
 		printf ("\nInput must be 16 bit! \n");
 		return 1;
 	}
@@ -1521,7 +1525,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
   while (readcount == read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
-	  for (k = 0 ; k < nb_samples ; k++)
+	  for (k = 0; k < nb_samples; k++)
 	  {
 		  char b = data [k*channels];
 			printf ("\nChannel buffer b = %c \n", b);
@@ -1531,11 +1535,11 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			}
 			else if (channels == 1)
 			{
-				printf ("\n File has %d channel (MONO)! \n Reading...", channels);
+				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
 				// stereo file, avg left + right --> should be mono at 22.05kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
-				printf ("\nb = %c", b);
+				printf ("\nb = %c \n", b);
 			}
 			else if (channels == 2)
 			{
@@ -1543,7 +1547,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			}
 			else
 			{
-					printf ("\nError: File has %d Channels!  (> 2 channels)  \n", channels);
+					printf ("\nError: File has %d Channels! (> 2 channels) \n", channels);
 			}
  			// was defined as global var above
 			printf ("\nnb_samples: %d \n", nb_samples);
@@ -1554,7 +1558,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			ampf = (x/32767.0f);
 			printf ("\nampf1: %f \n", ampf);
 
-      ampf2 = (fabs (ampf) < 1.0f/A) ? A * fabs (ampf)/(1.0f+ln (A)) : (1.0f+ln (A * fabs (ampf)))/(1.0f + ln (A)); //compand
+  		ampf2 = (fabs (ampf) < 1.0f/A) ? A * fabs (ampf)/(1.0f+ln (A)) : (1.0f+ln (A * fabs (ampf)))/(1.0f + ln (A)); //compand
 			printf ("\ncompand ampf2: %f \n", ampf2);
 
 			x = (int) (round (ampf2 * 32767.0f));
@@ -1565,16 +1569,15 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 
 			sampler = (1E9/samplerate); //44.000
 			printf ("\nsampler: %f \n", sampler);
-			printf ("\nNow writing tone in AM... \n");
+			printf ("\nNow writing tone in am ... \n");
 			void WriteTone (double freq); // somehow input freq here ?!?
-      //return channels, ampf, ampf2, x, factorizer, sampler;
+			//return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
 		printf ("\nwhile readcount ... \n");
   } // while loop
-
     // Close input and output files
     //fclose (FileFreqTiming);
-  fclose (sfp);
+  close (fp);
   printf ("\nFile saved! \n");
 	return samplerate;
 }
@@ -1584,30 +1587,6 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
 // squelch/treshhold to build in maybe -> scan function till signal?
 
-// read / import csv for pmr
-
-char csvreader ()
-{
-    printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System)... \n");
-		printf ("\nOrder of the list: Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL \n");
-    /*
-    sfp = fopen ("ctsspmr.csv", "r");// readonly!
-    dfp = fopen ("ctsswriter.csv", "w+"); // with + it updates , if exists overwrites
-    while (!feof (sfp))
-    {
-    	//here check for semicolon or comma delimiter (default)
-    	j = fgetc (sfp);
-    	fputc (j, dfp);
-    }
-		printf ("\n%s\n", j);
-    fclose (sfp);
-    fclose (dfp);
-		*/
-    printf ("\nCSV-import of CTSS-list finished! \n");
-
-    return j;
-}
-
 char callname ()
 {
     //if (*callsign == NULL){
@@ -1615,7 +1594,6 @@ char callname ()
 		scanf ("%d", &callnameselect);
 		switch (callnameselect)
 	  {
-
 	   case 1: printf ("\nType in your callsign: \n");
 						 scanf  ("%s", &callsign [0]);
 						 printf ("\nYour callsign is: %s \n", callsign);
@@ -1661,6 +1639,52 @@ int powerselect ()
 	return power;
 }
 
+// read / import csv for pmr
+char csvreader ()
+{
+    printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System)... \n");
+		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone,\nrToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode,\nTStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
+
+    rfp = fopen ("ctsspmr.csv", "r"); //read-only!
+    wfp = fopen ("ctsswriter.csv", "w+"); //with + it updates, if exists overwrites
+    while (!feof (rfp))
+    {
+    	//here check for semicolon or comma delimiter (default)
+    	j = fgetc (rfp);
+    	fputc (j, wfp);
+    }
+		printf ("\n%s\n", j);
+    fclose (rfp);
+    fclose (wfp);
+    printf ("\nCSV-import of CTSS-list finished! \n");
+    return j;
+}
+
+void cgimodule ()
+{
+ printf ("context-type:text/html\n\n");
+ printf ("<html>\n");
+ printf ("<head>\n"
+				"PiFunk - CGI\n"
+				"</head>\n");
+ printf ("<body>\n"
+				 "PiFunk - CGI\n"
+				 "</body>\n");
+ printf ("</html>\n");
+}
+
+void assistent () // assistent
+{
+		int filecheck (char filename);
+		powerselect ();
+		callname ();
+		modetype (freq);
+		samplecheck (filename, samplerate);
+		/*printf ("\nPress Enter to Continue for Transmission... \n");
+		//while (getchar () != '\n'); */
+		return;
+}
+
 void menu ()
 {
 	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: \n");
@@ -1668,7 +1692,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 1: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv); // go back to cmd if you want
+						int main (int argc, char **argv, const char short_opt); // go back to cmd if you want
 						break;
 
 		case 2: printf ("\nReading CSV for PMR... \n");
@@ -1684,24 +1708,12 @@ void menu ()
 	return;
 }
 
-void assistent () // assistent
-{
-		filenamepath (char filename);
-		powerselect ();
-		callname ();
-		modetype (freq);
-		samplecheck (filename, samplerate);
-		/*printf ("\nPress Enter to Continue for Transmission... \n");
-		//while (getchar () != '\n'); */
-    return;
-}
-
 //--------- MAIN
-int main (int argc, char **argv) // arguments for global use must! be in main
+int main (int argc, char **argv, const char *short_opts) // arguments for global use must! be in main
 {
-	const char *short_opt = "n:f:s:m:c:p:ah"; // g:
-	int options = 0;
 	argv [0] = "pifunk";
+	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
+	int options = 0;
 	char *filename = "sound.wav"; //= argv [1];
 	double freq = 446.006250; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
@@ -1713,21 +1725,20 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	//---
 	// for custom  programname, default is the filename itself
 	titel ();
-	printf ("\nArguments: %d / internal name: %s \n", argc-1, argv [0]);
+	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	printf ("\nshort_opt: %s \n", short_opt);
 	infos (); //information, disclaimer
 	//timer (time_t *rawtime);
 
-	while ((options = getopt (argc, argv, short_opt)) != -1) // shortopts must be constants
+	while ((options = getopt (argc, argv, short_opt)) != -1) // short_opt must be constants
 	{
-		 /*
-		 if (argc=0||NULL)
+		 if (argc == 0)
 		 {
 				fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		 }
-		 else
+		/* else
 		 {
 		*/
 		switch (options)
@@ -1782,10 +1793,10 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 							break;
 
 			case 'a':
-							if (argc==1)
+							if (argc == 1)
 							{
 								printf ("\nAssistent activated! \n");
-								assistent (); //  to menu -> must be refactored later
+								assistent (); // to assistent -> must be refactored later
 								break;
 							}
 							else
@@ -1795,7 +1806,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 							}
 
 			case 'h':
-							if (argc==1)
+							if (argc == 1)
 							{
 								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 								break;
@@ -1804,6 +1815,19 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 							{
 								printf ("\nError in -h \n");
 								return 1;
+							}
+
+			case 'u':
+							if (argc == 1)
+							{
+									printf ("\nOpening menu \n");
+									menu (); // extra menu for csv
+									break;
+							}
+							else
+							{
+									printf ("\nError in -u (menu) \n");
+									return 1;
 							}
 
 			default:
@@ -1816,6 +1840,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main
  		//}//end of else
 		//-- for debugging or information :)
 	printf ("\n-----------------\n");
+	printf ("\nshort_opt: %s \n", short_opt);
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %lf [MHz] \n", freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
@@ -1823,7 +1848,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 	printf ("\nChecking Callsign: %s \n", callsign);
 	printf ("\nChecking Output-Power: %d \n", power);
 	printf ("\n&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
-		/*
+	printf ("\nGPS-coordinates= long: %f , lat: %f , alt: %f  \n", longitude, latitude, altitude);
+	/*
 		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
 		//printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
 		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
@@ -1832,11 +1858,10 @@ int main (int argc, char **argv) // arguments for global use must! be in main
 		//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 		//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 		*/
-		//--
-		// gathering and parsing all given arguments to parse it to player
-	tx (); //transmussion
-	menu (); // extra for testing
 
-	printf ("\nEnd of Program! Closing... \n");
+	// gathering and parsing all given arguments to parse it to player
+	tx (); //transmission
+
+	printf ("\nEnd of Program! Closing... \n"); // EOF
 	return 0;
 }
