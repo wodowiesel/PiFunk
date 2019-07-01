@@ -607,11 +607,9 @@ uint32_t carrier_freq = 87600000; // why this value?
 //files
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
-FILE infiles;
-FILE outfiles;
+FILE wavefile;
 SNDFILE *infile;
 SNDFILE *outfile;
-char *outfilename;
 //snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit = 16;
@@ -758,7 +756,7 @@ int timer (time_t *rawtime)
    return 0;
 }
 
-int filecheck (char filename)  // expected int?
+int filecheck (char *filename, FILE wavefile)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
@@ -1069,7 +1067,7 @@ void channelselect () // make a void
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
-int ledinactive (char filename, double freq, int samplerate)
+int ledinactive (char *filename, double freq, int samplerate)
 {
 		//check if transmitting
 		while (!play_wav (char *filename, double freq, int samplerate))
@@ -1227,7 +1225,7 @@ void play_list () // exit func
 
 }
 
-void play_wav (char filename, double freq, int samplerate)
+void play_wav (char *filename, double freq, int samplerate)
 {
 
 	/*wiki https://en.wikipedia.org/wiki/WAV
@@ -1422,7 +1420,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 {
 	printf ("\nSample/bitchecker starting \n");
 		//-------
-  if (!(fp = open (filename, SFM_READ, &sfinfo)))
+  if (!(fp = open (filename, SFM_READ, &sfinfo))) //check wat SFM sfinfo does!?
   {   // Open failed so print an error message.
         printf ("\nNot able to open input file for samplecheck %s \n", filename);
 				printf ("\nNot able to open filepointer for samplecheck %d \n", fp);
@@ -1528,6 +1526,7 @@ void WriteTone (double freq)
 	double Frequencies = freq;
 	typedef struct
 	{
+
 		double Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
@@ -1550,7 +1549,7 @@ char callname ()
 		switch (callnameselect)
 	  {
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign [0]);
+						 scanf  ("%s", &callsign [8]);
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
@@ -1625,8 +1624,7 @@ int modulationam (int argc, char **argv, char *filename) // better name function
 		printf ("\nam modulator starting \n");
 		//void WriteTone (double freq);// actual modulation stuff here for am -> wrrite tone?
 		ledactive ();
-		close (fp);
-	  return fp;
+	  return 0;
 }
 
 void modulationfm (int argc, char **argv)//FM
@@ -1635,7 +1633,7 @@ void modulationfm (int argc, char **argv)//FM
     setupfm (); // gets filename & path or done by filmename() func
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-    void play_wav (char filename, double freq, int samplerate); // atof (argv [3]):22050)
+    void play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
 	  printf ("\nChecking & Setting LED for Transmission \n");
 	  ledactive ();
 	  printf ("\nNow transmitting on fm ... \n");
