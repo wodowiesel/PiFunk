@@ -1417,71 +1417,6 @@ void setupDMA ()
 
 //---------------------//
 // main progs
-int tx ()
-{
-
-  //pads need to be defined
-  //Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
-  //pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
-  //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
-
-	//GPIO needs to be ALT FUNC 0 to output the clock
-	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
-
-	//put here the play_wav or writing tone maybe?
-	//play_wav (char *filename, double freq, int samplerate);
-	ledactive ();
-	printf ("\nBroadcasting now...! \n");
-	return 0;
-}
-
-//FM
-void modulationfm (int argc, char **argv)
-{
-  	printf ("\nPreparing for FM... \n");
-    setupfm (); // gets filename & path or done by filmename() func
-	  printf ("\nSetting up DMA... \n");
-		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-    void play_wav (char filename, double freq, int samplerate); // atof (argv [3]):22050)
-	  printf ("\nChecking & Setting LED for Transmission \n");
-	  ledactive ();
-	  printf ("\nNow transmitting on fm ... \n");
-	return;
-}
-
-//AM
-void WriteTone (double freq)
-{
-	double Frequencies = freq;
-	typedef struct
-	{
-		double Frequency;
-		uint32_t WaitForThisSample;
-	} samplerf_t;
-	samplerf_t RfSample;
-	RfSample.Frequency = Frequencies;
-	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
-	printf ("\nFreq = %lf, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
-	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
-	{
-		fprintf (stderr, "\nUnable to write sample! \n");
-	}
-	printf ("\nWriting tone \n");
-}
-
-int modulationam (int argc, char **argv, char *filename) // better name function: sample/bitchecker
-{
-	/*{IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
-		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
-		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
-		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
-		{VFO (constant frequency)} */
-		printf ("\nam modulator starting \n");
-		// acual modulation stuff here for am
-		ledactive ();
-		close (fp);
-	  return fp;
-}
 
 int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
 {
@@ -1581,11 +1516,31 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
   printf ("\nFile saved! \n");
 	return samplerate;
 }
+// return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 
-//return freqmode, channels, ampf, ampf2, x, factorizer, sampler;;
 // all subch. -> base/default case 0 -> channel 0
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
 // squelch/treshhold to build in maybe -> scan function till signal?
+
+//AM
+void WriteTone (double freq)
+{
+	double Frequencies = freq;
+	typedef struct
+	{
+		double Frequency;
+		uint32_t WaitForThisSample;
+	} samplerf_t;
+	samplerf_t RfSample;
+	RfSample.Frequency = Frequencies;
+	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
+	printf ("\nFreq = %lf, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
+	{
+		fprintf (stderr, "\nUnable to write sample! \n");
+	}
+	printf ("\nWriting tone \n");
+}
 
 char callname ()
 {
@@ -1660,12 +1615,57 @@ char csvreader ()
     return j;
 }
 
+int modulationam (int argc, char **argv, char *filename) // better name function: sample/bitchecker
+{
+	/*{IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
+		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
+		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
+		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
+		{VFO (constant frequency)} */
+		printf ("\nam modulator starting \n");
+		//void WriteTone (double freq);// actual modulation stuff here for am -> wrrite tone?
+		ledactive ();
+		close (fp);
+	  return fp;
+}
+
+void modulationfm (int argc, char **argv)//FM
+{
+  	printf ("\nPreparing for FM... \n");
+    setupfm (); // gets filename & path or done by filmename() func
+	  printf ("\nSetting up DMA... \n");
+		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
+    void play_wav (char filename, double freq, int samplerate); // atof (argv [3]):22050)
+	  printf ("\nChecking & Setting LED for Transmission \n");
+	  ledactive ();
+	  printf ("\nNow transmitting on fm ... \n");
+		return;
+}
+
+int tx ()
+{
+
+  //pads need to be defined
+  //Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
+  //pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
+  //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
+
+	//GPIO needs to be ALT FUNC 0 to output the clock
+	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
+
+	//put here the play_wav or writing tone maybe?
+	//play_wav (char *filename, double freq, int samplerate);
+	ledactive ();
+	printf ("\nBroadcasting now...! \n");
+	return 0;
+}
+
 void cgimodule ()
 {
  printf ("context-type:text/html\n\n");
  printf ("<html>\n");
  printf ("<head>\n"
-				"PiFunk - CGI\n"
+				"PiFunk Project\n"
 				"</head>\n");
  printf ("<body>\n"
 				 "PiFunk - CGI\n"
@@ -1687,7 +1687,7 @@ void assistent () // assistent
 
 void menu ()
 {
-	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] Exit: \n");
+	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] CGI-Page // [4] Exit: \n");
  	scanf ("%d", &menuoption);
 	switch (menuoption)
 	{
@@ -1695,11 +1695,15 @@ void menu ()
 						int main (int argc, char **argv, const char short_opt); // go back to cmd if you want
 						break;
 
-		case 2: printf ("\nReading CSV for PMR... \n");
+		case 1: printf ("\nReading CSV for PMR... \n");
 						csvreader ();
 						break;
 
-		case 3: printf ("\nExiting... \n");
+		case 3: printf ("\nReading cgi via text/html for homepage... \n");
+						cgimodule ();
+						break;
+
+		case 4: printf ("\nExiting... \n");
 						exit (0);
 
 		default: printf ("\nError! \n");
@@ -1714,9 +1718,9 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 	argv [0] = "pifunk";
 	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
 	int options = 0;
-	char *filename = "sound.wav"; //= argv [1];
-	double freq = 446.006250; // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate = 22050;//= atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char *filename = "sound.wav"; // = argv [1];
+	double freq = 446.006250; // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate = 22050;// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm";// = argv [4];
 	char *callsign = "callsign";// = argv [5];
 	int power = 7;
@@ -1734,25 +1738,24 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 
 	while ((options = getopt (argc, argv, short_opt)) != -1) // short_opt must be constants
 	{
-		 if (argc == 0)
-		 {
+		if (argc == 0)
+		{
 				fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-		 }
-		/* else
-		 {
-		*/
+		}
+		/*else
+		{ */
 		switch (options)
 		{
 
 			case 'n':
 							filename = optarg;
 							printf ("\nFilename is %s \n", filename);
-							break;
+							//break;
 
 			case 'f':
 							freq = atof (optarg);
 							printf ("\nFrequency is %f \n", freq);
-							break;
+							//break;
 
 			case 's':
 							samplerate = atoi (optarg);
@@ -1767,30 +1770,31 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
 							  void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
-								break;
+								//break;
 							}
 							else if (!strcmp (mod, "am"))
 							{
 								printf ("\nPushing args to am Modulator... \n");
 								void modulationam (int argc, char **argv);
-								break;
+								//break;
 							}
 							else
 							{
 								printf ("\nError in -m \n");
-								return 1;
+								break;
+								//return 1;
 							}
 
 			case 'c':
 							callsign = optarg;
 							printf ("\nCallsign is %s \n", callsign);
-							break;
+							//break;
 
 				//power managment
 			case 'p':
 							power = atoi (optarg);
 							printf ("\nPower is %d \n", power);
-							break;
+							//break;
 
 			case 'a':
 							if (argc == 1)
@@ -1802,7 +1806,8 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							else
 							{
 								printf ("\nError in -a \n");
-								return 1;
+								break;
+								//return 1;
 							}
 
 			case 'h':
@@ -1814,7 +1819,8 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							else
 							{
 								printf ("\nError in -h \n");
-								return 1;
+								break;
+								//return 1;
 							}
 
 			case 'u':
@@ -1827,17 +1833,18 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							else
 							{
 									printf ("\nError in -u (menu) \n");
-									return 1;
+									break;
+									//return 1;
 							}
 
 			default:
 								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								return 1;
-		 } // end of switch
-		 break;
-		 //return filename, freq, samplerate, mod, callsign, power;
+		} // end of switch
+		break;
+
 	} // end of while
- 		//}//end of else
+ 	//}//end of else
 		//-- for debugging or information :)
 	printf ("\n-----------------\n");
 	printf ("\nshort_opt: %s \n", short_opt);
@@ -1848,8 +1855,10 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 	printf ("\nChecking Callsign: %s \n", callsign);
 	printf ("\nChecking Output-Power: %d \n", power);
 	printf ("\n&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
-	printf ("\nGPS-coordinates= long: %f , lat: %f , alt: %f  \n", longitude, latitude, altitude);
+	printf ("\nGPS-coordinates long: %f , lat: %f , alt: %f  \n", longitude, latitude, altitude);
+
 	/*
+		printf ("\n GPS-Module (Neo-7M) %gps  \n", gps);
 		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
 		//printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
 		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);

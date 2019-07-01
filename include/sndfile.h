@@ -287,7 +287,6 @@ enum
 
 /* Channel map values (used with SFC_SET/GET_CHANNEL_MAP).
 */
-
 enum
 {
 	SF_CHANNEL_MAP_INVALID = 0,
