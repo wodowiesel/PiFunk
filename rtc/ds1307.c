@@ -10,7 +10,7 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
-
+#include <stdio.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -44,20 +44,20 @@ enum ds_type {
 
 /* RTC registers don't differ much, except for the century flag */
 #define DS1307_REG_SECS		0x00	/* 00-59 */
-#	define DS1307_BIT_CH		0x80
-#	define DS1340_BIT_nEOSC		0x80
-#	define MCP7941X_BIT_ST		0x80
+#define DS1307_BIT_CH		0x80
+#define DS1340_BIT_NEOSC		0x80
+#define MCP7941X_BIT_ST		0x80
 #define DS1307_REG_MIN		0x01	/* 00-59 */
 #define DS1307_REG_HOUR		0x02	/* 00-23, or 1-12{am,pm} */
-#	define DS1307_BIT_12HR		0x40	/* in REG_HOUR */
-#	define DS1307_BIT_PM		0x20	/* in REG_HOUR */
-#	define DS1340_BIT_CENTURY_EN	0x80	/* in REG_HOUR */
-#	define DS1340_BIT_CENTURY	0x40	/* in REG_HOUR */
+#define DS1307_BIT_12HR		0x40	/* in REG_HOUR */
+#define DS1307_BIT_PM		0x20	/* in REG_HOUR */
+#define DS1340_BIT_CENTURY_EN	0x80	/* in REG_HOUR */
+#define DS1340_BIT_CENTURY	0x40	/* in REG_HOUR */
 #define DS1307_REG_WDAY		0x03	/* 01-07 */
-#	define MCP7941X_BIT_VBATEN	0x08
+#define MCP7941X_BIT_VBATEN	0x08
 #define DS1307_REG_MDAY		0x04	/* 01-31 */
 #define DS1307_REG_MONTH	0x05	/* 01-12 */
-#	define DS1337_BIT_CENTURY	0x80	/* in REG_MONTH */
+#define DS1337_BIT_CENTURY	0x80	/* in REG_MONTH */
 #define DS1307_REG_YEAR		0x06	/* 00-99 */
 
 /*
@@ -1101,7 +1101,7 @@ read_rtc:
 		break;
 	case ds_1340:
 		/* clock halted?  turn it on, so clock can tick. */
-		if (tmp & DS1340_BIT_nEOSC)
+		if (tmp & DS1340_BIT_NEOSC)
 			i2c_smbus_write_byte_data(client, DS1307_REG_SECS, 0);
 
 		tmp = i2c_smbus_read_byte_data(client, DS1340_REG_FLAG);

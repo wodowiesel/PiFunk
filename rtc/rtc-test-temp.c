@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include <common.h>
 #include <Wire.h>
+
 #define DS3231_I2C_ADDR             0x68
 #define DS3231_TEMPERATURE_MSB      0x11
 #define DS3231_TEMPERATURE_LSB      0x12
@@ -59,4 +62,3 @@ byte DS3231_get_LSB(){
 
 
 }
-

@@ -20,9 +20,10 @@ sudo apt-get install libsndfile1-dev
  gcc -g -std=c99 -lm -Iinclude -Llib -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a
  gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
  make (compile flag in male included)
-//std=99 is the same as -std=iso9899:1999
+//-std=c99 is the same as -std=iso9899:1999 or =gnu99
+  gcc -xc -E -v - -> to check out the path of include directory path if you want to do custom things
 
-//compile & run with admin/root permissions!!
+//run with admin/root permissions!!
  sudo pifunk sound.wav 100.000 22050 fm callsign
 
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
@@ -66,7 +67,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <unistd.h>
 
 // functionality includes
-#include <iso646.h> //c95 - back-compatible
+#include <iso646.h> //c95 - back-compatible  -std=iso9899:199409
 #include <argp.h>
 #include <string.h>
 #include <getopt.h>
@@ -97,6 +98,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <pwd.h>
 #include <poll.h>
 #include <argp.h>
+#include <common.h>
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -126,7 +128,6 @@ make compatible arguments/funcs for py/shell scripts
 #include <stdnoreturn.h>
 #include <stdatomic.h>
 #include <uchar.h>
-
 //for c++14/17
 /*
 #include <stdalign.h>
