@@ -67,7 +67,7 @@ GNU installer `sudo apt-get install gcc`
 
 `-Wall` for debug warning informations
 
-`-std=c99` (sometimes gnu99) for C99-standard
+`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
 
 `-lm` for math-lib is obligatory!
 
