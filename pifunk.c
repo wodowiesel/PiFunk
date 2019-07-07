@@ -179,8 +179,8 @@ using namespace std;
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
-//#include "libusb/libusb.h"
 #include "libusb/libusb/libusb.h"
+//#include "libusb/libusb.h"
 //#include "libusb/libusb/libusbi.h"
 //#include "libusb/libusb/hotplug.h"
 //#include "libusb/libusb/version.h"
@@ -214,11 +214,11 @@ using namespace std;
 #endif */
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.2"
+#define VERSION 						 "0.1.7.3"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (1)
+#define VERSION_PATCHLEVEL   (3)
 #define VERSION_STATUS 			 "e"
 
 //---- PI specific stuff
@@ -260,22 +260,25 @@ volatile unsigned 										*allof7e;
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  RPI // == 1                     // Original Raspberry Pi 1
+#ifdef  RPI // == 1                    // Original Raspberry Pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#elif   RASPI // >= 2                   // Raspberry Pi 2 & 3
+
+#elif   RASPI /* >= 2                   Raspberry Pi 2 & 3
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
-#elif   RASPBERRY // other models
+
+#elif   RASPBERRY 											// other models
 #define PERIPH_VIRT_BASE               (0x20000000)
+
 #elif   RASPBERRYFOUR //pi4 -> waiting for documentation from adafruit
 #define PERIPH_VIRT_BASE               (0x20000000)
-#else
+
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -596,7 +599,7 @@ int channelmode;
 int freqmode;
 int modeselect;
 int callnameselect;
-time_t rawtime;
+time_t t;
 
 // IQ & carrier
 uint16_t pis = 0x1234; // dec: 4660
@@ -728,7 +731,8 @@ struct option long_opt [] =
     {"power", 			required_argument, NULL, 'p'},
     //{"gpio",	  		required_argument, NULL, 'g'},
     {"assistent",		no_argument,       NULL, 'a'},
-    {"help",	  		no_argument,       NULL, 'h'}
+    {"help",	  		no_argument,       NULL, 'h'},
+		{"menu",	  		no_argument,       NULL, 'u'}
 };
 //----------
 /*
@@ -739,7 +743,8 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 //--------basic functions specified one after another
 void infos () //warnings and infos
 {
-    //red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red
+		printf ();
+		/*red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
     printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //collor escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
@@ -748,12 +753,14 @@ void infos () //warnings and infos
  		return;
 }
 
-int timer (time_t *rawtime)
+int timer (time_t t)
 {
-	 time (rawtime);
+
+	 time (&t);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
-   printf ("\nCurrent formated date & time : %s \n", buffer);
+   printf ("\nCurrent formated date & time : %s \n", ctime (&t););
+	 CCLog ("\nCCLog test\n");
    return 0;
 }
 
@@ -783,7 +790,7 @@ int filecheck (char *filename, FILE wavefile)  // expected int?
 double freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
-	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1b+ for 700Mhz chip, pi3 1.2ghz
+	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1B+ for 700 MHz chip, pi3 1.2 GHz
 	scanf  ("%lf", &freq);
 	printf ("\nYou chose: %lf MHz \n", freq);
   return freq;
@@ -1001,7 +1008,7 @@ double channelmodecb () // CB
 	return  freq;
 }
 
-void modselect (char *mod)
+void modselect (int argc, char **argv, char *mod)
 {
 	printf ("\nOpening Modulator... \n");
 	if (mod == "fm")
@@ -1140,8 +1147,8 @@ void clearscreen ()
 {
   printf ("\n\033[H\033[J\n");
   //fflush (stdin); // alterntives
-  //clsscr ();
-  //system ("clear")
+  clsscr ();
+  //system ("clear");
 }
 
 void modulate (int l)
@@ -1178,7 +1185,7 @@ void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
 /* Added functions to enable and disable carrier */
-// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) // 0x5A dec: 90
+// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) // 0x5A-> CARRIER dec: 90
 //struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};// set it to ! = LOW
 //ACCESS (CM_GP0CTL) == *((int*) &setupword); //setting cm
 }
@@ -1269,10 +1276,11 @@ void play_wav (char *filename, double freq, int samplerate)
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
-        float frac = ((dval - (float) intval)/2 + 0.5);
+        float frac = ((dval - intval)/2 + 0.5);
 				printf ("\nfrac: %f \n", frac);
         int fracval = (frac*clocksPerSample);
 				printf ("\nfracval: %d \n", fracval);
+
         bufPtr++;
         //problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
@@ -1615,7 +1623,7 @@ char csvreader ()
     return j;
 }
 
-int modulationam (int argc, char **argv, char *filename) // better name function: sample/bitchecker
+void modulationam (int argc, char **argv)
 {
 	/*{IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
 		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -1623,7 +1631,7 @@ int modulationam (int argc, char **argv, char *filename) // better name function
 		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
 		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
-		//void WriteTone (double freq);// actual modulation stuff here for am -> wrrite tone?
+		void WriteTone (double freq);// actual modulation stuff here for am -> wrrite tone?
 		ledactive ();
 	  return 0;
 }
@@ -1631,35 +1639,31 @@ int modulationam (int argc, char **argv, char *filename) // better name function
 void modulationfm (int argc, char **argv)//FM
 {
   	printf ("\nPreparing for FM... \n");
-    setupfm (); // gets filename & path or done by filmename() func
+    setupfm (); // gets filename & path or done by filecheck () func
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
     void play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
-	  printf ("\nChecking & Setting LED for Transmission \n");
-	  ledactive ();
-	  printf ("\nNow transmitting on fm ... \n");
 		return;
 }
 
-int tx ()
+int tx (int argc, char **argv)
 {
-
   //pads need to be defined
   //Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
   //pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
   //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
-
 	//GPIO needs to be ALT FUNC 0 to output the clock
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
-	//put here the play_wav or writing tone maybe?
 	//play_wav (char *filename, double freq, int samplerate);
+	void modselect (int argc, char **argv, char *mod)
 	ledactive ();
-	printf ("\nBroadcasting now...! \n");
+	printf ("\nBroadcasting now ...! \n");
+
 	return 0;
 }
 
-void cgimodule ()
+void cgimodule () // just a small test, not meant for pifunk
 {
  printf ("context-type:text/html\n\n");
  printf ("<html>\n");
@@ -1672,15 +1676,18 @@ void cgimodule ()
  printf ("</html>\n");
 }
 
-void assistent () // assistent
+void assistent () //assistent
 {
-		int filecheck (char filename);
-		powerselect ();
-		callname ();
-		modetype (freq);
+		printf ("\nStarting assistent for setting parameters! \n");
+		filecheck (filename);
 		samplecheck (filename, samplerate);
-		/*printf ("\nPress Enter to Continue for Transmission... \n");
-		//while (getchar () != '\n'); */
+		modetype (freq);
+		callname ();
+		powerselect ();
+
+		printf ("\nPress all information gatherd, going back to main \n");
+		//while (getchar () != '');
+
 		return;
 }
 
@@ -1705,27 +1712,27 @@ void menu ()
 		case 4: printf ("\nExiting... \n");
 						exit (0);
 
-		default: printf ("\nError! \n");
+		default: printf ("\nMenu: Error! \n");
 		 				 break;
 	}
 	return;
 }
 
 //--------- MAIN
-int main (int argc, char **argv, const char *short_opts) // arguments for global use must! be in main
+int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
-	argv [0] = "pifunk";
 	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
 	int options = 0;
+	argv [0] = "pifunk";
 	char *filename = "sound.wav"; // = argv [1];
 	double freq = 446.006250; // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate = 22050;// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-	char *mod = "fm";// = argv [4];
-	char *callsign = "callsign";// = argv [5];
-	int power = 7;
+	char *mod = "fm";// =argv [4];
+	char *callsign = "callsign";// =argv [5];
+	int power = 7;// =argv [6];
 	// atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	// atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
-	//---
+
 	// for custom  programname, default is the filename itself
 	titel ();
 	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
@@ -1733,7 +1740,7 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	printf ("\nshort_opt: %s \n", short_opt);
 	infos (); //information, disclaimer
-	//timer (time_t *rawtime);
+	int timer (time_t t); // date and time print
 
 	while ((options = getopt (argc, argv, short_opt)) != -1) // short_opt must be constants
 	{
@@ -1768,13 +1775,13 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							{
 								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
-							  void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
+							  //void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 								//break;
 							}
 							else if (!strcmp (mod, "am"))
 							{
 								printf ("\nPushing args to am Modulator... \n");
-								void modulationam (int argc, char **argv);
+								//void modulationam (int argc, char **argv);
 								//break;
 							}
 							else
@@ -1799,7 +1806,7 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							if (argc == 1)
 							{
 								printf ("\nAssistent activated! \n");
-								assistent (); // to assistent -> must be refactored later
+								assistent ();
 								break;
 							}
 							else
@@ -1818,8 +1825,7 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							else
 							{
 								printf ("\nError in -h \n");
-								break;
-								//return 1;
+								break;;
 							}
 
 			case 'u':
@@ -1833,15 +1839,14 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 							{
 									printf ("\nError in -u (menu) \n");
 									break;
-									//return 1;
 							}
 
 			default:
 								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								return 1;
 		} // end of switch
-		break;
 
+		break;
 	} // end of while
  	//}//end of else
 		//-- for debugging or information :)
@@ -1857,7 +1862,7 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 	printf ("\nGPS-coordinates long: %f , lat: %f , alt: %f  \n", longitude, latitude, altitude);
 
 	/*
-		printf ("\n GPS-Module (Neo-7M) %gps  \n", gps);
+		//printf ("\n GPS-Module (Neo-7M) %gps  \n", gps);
 		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
 		//printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
 		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
@@ -1868,7 +1873,7 @@ int main (int argc, char **argv, const char *short_opts) // arguments for global
 		*/
 
 	// gathering and parsing all given arguments to parse it to player
-	tx (); //transmission
+	int tx (int argc, char **argv); //transmission
 
 	printf ("\nEnd of Program! Closing... \n"); // EOF
 	return 0;
