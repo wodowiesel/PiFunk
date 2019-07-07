@@ -1204,7 +1204,7 @@ void setupfm ()
   if ((mem_fd = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
 	{
         printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
-        exit (-1);
+        return -1;
   }
 
   allof7e = (unsigned*) mmap (
@@ -1252,6 +1252,10 @@ void play_wav (char *filename, double freq, int samplerate)
 	play_list ();
 
 	int sz = lseek (fp, 0L, SEEK_END);
+	/* lseek: repositions the file offset of the open file description
+    associated with the file descriptor fd to the argument offset
+    according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
+	SEEK_END: The file offset is set to the size of the file plus offset bytes. */
   short *data = (short*) malloc (sz);
 
   for (int i = 0; i < 22; i++) // why i less then 22?
