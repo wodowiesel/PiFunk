@@ -17,8 +17,8 @@ sudo apt-get install libsndfile1-dev
 
 ->lm flag for math lib (obligatory), -g for debugger, -c for filesource for library, -c compile without linking
 =>compile with admin/root permissions!!
- gcc -g -std=c99 -lm -Iinclude -Llib -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a
- gcc -g -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
+ gcc -g -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a
+ gcc -g -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
  make (compile flag in male included)
 //-std=c99 is the same as -std=iso9899:1999 or =gnu99
   gcc -xc -E -v - -> to check out the path of include directory path if you want to do custom things
