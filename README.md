@@ -77,28 +77,31 @@ GNU installer `sudo apt-get install gcc`
 
 `-shared` for generating shared libraries
 
-`-lsndfile` for ALSA "snd"-lib
+`-lsndfile` libname for ALSA "snd"-lib
 
 `-c` for compiling without linking
 
 `-fPIC` for generating position independent code (PIC) 
 
-`-o` for output-filename
+`-o` for output-filename flag
+
+`-O3` for Optimization Stage 3 (memory, speed etc.) via compiler
 
 commands:
 
 manually generating libraries:
 
-`sudo gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -c -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.so lib/pifunk.a lib/pifunk.lib`
+`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -c -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.so lib/pifunk.a lib/pifunk.lib`
 
 manuallygenerating executable binary:
 
-`sudo gcc -g -Wall -std=c99 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
  optional:
+ 
 `sudo make` with pre-configured flags for compilation
 
-`sudoo clean` for removing .o files if neccessary
+`sudo clean` for removing .o files if neccessary
 
 ___
 
