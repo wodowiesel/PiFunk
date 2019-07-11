@@ -137,18 +137,17 @@ ___
 
 for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
-- Antenna should be grounded (PIN 9 right one next to GPIO4 ![Pinout](docs/pinout-gpio-pib+.jpg)
+- Antenna should be grounded (PIN 9 right one next to GPIO4 !) [Pinout](docs/pinout-gpio-pib+.jpg)
 
 - You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
 
-- Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (alu) with cooler for testing
+- Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
 - For handling overheating use cooling-ribs with fan (5V DC/0.2A 20x20mm) 
 
 - For transmission you should use tested Antennas!
 
-- Tip: You could use just a copper wire for 2m/70cm-band or
-other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
+- Tip: You could use just a copper wire for 2m/70cm-band or other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
 ___
 
 ### Disclaimer:
