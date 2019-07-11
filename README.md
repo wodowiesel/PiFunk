@@ -137,7 +137,8 @@ ___
 
 for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
-- Antenna should be grounded (PIN 9 right one next to GPIO4 !) [Pinout](docs/pinout-gpio-pib+.jpg)
+- Antenna should be grounded (PIN 9 right one next to GPIO4) to prevent noise and other problems
+[Pinout](docs/pinout-gpio-pib+.jpg)
 
 - You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
 
