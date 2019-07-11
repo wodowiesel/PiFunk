@@ -89,7 +89,7 @@ GNU installer `sudo apt-get install gcc`
 
 `-fPIC` for generating position independent code (PIC) for bigger programs
 
-`-O3` for Optimization Stage 3 (memory, speed etc.) via compiler
+`-O3` for Optimization Stage 1-3 (memory, speed etc.) via compiler
 
 `-o` for output-filename flag
 
@@ -141,7 +141,9 @@ ___
 
   (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 
-for more Specifications just visit [Adafruit](http://www.adafruit.com)
+for more specifications just visit [Adafruit](http://www.adafruit.com)
+
+or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 - Antenna should be grounded (see Pinout image) to prevent noise and other problems
 
@@ -176,7 +178,7 @@ ___
 
 - Private Project! Work in Progress (WIP)
 
-- I'm not a professional so **NO guarantees or warranty** for any damage or similar!!
+- I'm not a professional so **NO guarantees or warranty** for any damage etc.!!
 
 - Usage at your **own risk** !!
 
