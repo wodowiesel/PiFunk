@@ -150,10 +150,10 @@ for more Specifications just visit [Adafruit](http://www.adafruit.com)
 - For transmission you should use tested Antennas!
 
 - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C),  SCL0 (PIN 5 GPIO1 on I2C) & GND (PIN 9) 
--> need to activast I2C in pi config!
+-> need to activate I2C in pi config! `sudo raspi-config`
 
 - GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS (PCM_CLK, GPIO 14, PIN 12)
--> need to activast UART in pi config!
+-> need to activate UART (serial0) in pi config! `enable_uart=1`
 
 - Tip: You could use just a copper wire for 2m/70cm-band or other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
 ___
