@@ -131,22 +131,29 @@ ___
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- PWM on GPIO 4/Pin 7 @ 2-4 mA (50 mA max. on ALL pins or 16 per bank!!!)
+- Antenna: PWM on (GPIO 4, PIN 7, GPCLK0) @ 2-4 mA (50 mA max. on ALL Pins or 16 per bank!!!)
 
 (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 
 for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
 - Antenna should be grounded (PIN 9 right one next to GPIO4) to prevent noise and other problems
+
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
 - You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
-- For handling overheating use cooling-ribs with fan (5V DC/0.2A 20x20mm) 
+- For handling overheating use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm) 
 
 - For transmission you should use tested Antennas!
+
+- RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C),  SCL0 (PIN 5 GPIO1 on I2C) & GND (PIN 9) 
+-> need to activast I2C in pi config!
+
+- GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS (PCM_CLK, GPIO 14, PIN 12)
+-> need to activast UART in pi config!
 
 - Tip: You could use just a copper wire for 2m/70cm-band or other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
 ___
