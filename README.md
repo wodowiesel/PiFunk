@@ -157,13 +157,15 @@ or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 - For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f)!
 
-- RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C),  SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
+- RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
+
 -> need to activate I2C in pi config! `sudo raspi-config`
 
 ![RTC](docs/RTC-top.jpg)
 
-- GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS (PCM_CLK, GPIO 14, PIN 12)
--> need to activate UART (serial0) in pi config! `enable_uart=1`
+- GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 14, PIN 12)
+
+-> need to activate UART (serial0) in pi config! `enable_uart=1` Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
 ![GPS](docs/GPS-Neo7M.jpg)
 
