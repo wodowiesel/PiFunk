@@ -6,7 +6,7 @@
 
 **Early Experimental!**
 
-### Acknowledgements: 
+### Acknowledgements:
 based on PiFM/AM-Scripts
 ___
 
@@ -45,15 +45,17 @@ You will need some libraries for this:
 
 [RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
 
-`sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
-
-`sudo pip install RPi.GPIO` for Py2
-
-or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
-
 `sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
 
-then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz` and install it
+then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz`
+
+and install it
+
+`sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
+
+or `sudo pip install RPi.GPIO` for Py2
+
+or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
 then go to directory:
 
@@ -63,9 +65,13 @@ compile with:
 
 GNU installer `sudo apt-get install gcc`
 
-`-g` for debugger informations (optional 0-3 optimalization level)
+`-g3` for debugger informations (0-3 level, 2 is default)
 
 `-Wall` for debug warning informations
+
+`-v`	Print compilation infos
+
+`-DRASPI2` defines the macro to be used by the preprocessor (here the PI model 1-4)
 
 `-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
 
@@ -73,35 +79,35 @@ GNU installer `sudo apt-get install gcc`
 
 `-Iinclude ` for using include-directory with headerfiles
 
+`-lsndfile` -l links libname for ALSA "snd"-lib
+
 `-Llib` for using library-directory
+
+`-c` for compiling without linking for making .o object
 
 `-shared` for generating shared libraries
 
-`-lsndfile` libname for ALSA "snd"-lib
-
-`-c` for compiling without linking
-
-`-fPIC` for generating position independent code (PIC) 
-
-`-o` for output-filename flag
+`-fPIC` for generating position independent code (PIC) for bigger programs
 
 `-O3` for Optimization Stage 3 (memory, speed etc.) via compiler
+
+`-o` for output-filename flag
 
 commands:
 
 manually generating libraries:
 
-`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -c -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.so lib/pifunk.a lib/pifunk.lib`
+`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -c -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
-manuallygenerating executable binary:
+manually generating executable binary:
 
 `sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
  optional:
- 
+
 `sudo make` with pre-configured flags for compilation
 
-`sudo clean` for removing .o files if neccessary
+`sudo clean` for removing .o files if necessary
 
 ___
 
@@ -113,7 +119,7 @@ Arguments: `[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-
 
 extra single Arguments: -> no further argument needed
 
-`[-a]` for assistent in step-by-step
+`[-a]` for assistant in step-by-step
 
 `[-h]` for help with more infos and arguments
 
@@ -121,7 +127,7 @@ Use '. dot' as decimal-comma separator!
 
 default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
 
-Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700+ MHz range.
+Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700+ MHz range
 
 CTSS-Tones (38 included) for PMR can be found here [CTSS](ctsspmr.csv)
 
@@ -131,13 +137,13 @@ ___
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- Antenna: PWM on (GPIO 4, PIN 7, GPCLK0) @ 2-4 mA (50 mA max. on ALL Pins or 16 per bank!!!)
+- Antenna: PWM on (GPIO 4, PIN 7, GPCLK0) @ 2-4 mA (max. 50 mA on ALL Pins and 16 per bank!)
 
-(in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
+  (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 
 for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
-- Antenna should be grounded (PIN 9 right one next to GPIO4) to prevent noise and other problems
+- Antenna should be grounded (see Pinout image) to prevent noise and other problems
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
@@ -145,17 +151,25 @@ for more Specifications just visit [Adafruit](http://www.adafruit.com)
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
-- For handling overheating use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm) 
+- For handling overheating use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
 
-- For transmission you should use tested Antennas!
+- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f)!
 
-- RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C),  SCL0 (PIN 5 GPIO1 on I2C) & GND (PIN 9) 
+- RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C),  SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 -> need to activate I2C in pi config! `sudo raspi-config`
+
+![RTC](docs/RTC-top.jpg)
 
 - GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS (PCM_CLK, GPIO 14, PIN 12)
 -> need to activate UART (serial0) in pi config! `enable_uart=1`
 
-- Tip: You could use just a copper wire for 2m/70cm-band or other lambda(1/4)-antennas (17.5cm/6.9in for PMR)
+![GPS](docs/GPS-Neo7M.jpg)
+
+- Morsecode-table:
+
+![Morse](docs/morsecodeCW.jpg)
+
+- Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
 ___
 
 ### Disclaimer:
@@ -168,12 +182,12 @@ ___
 
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electroytic) capacitors (C=10-100 pF)
-with solenoid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
+- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors (C=10-100 pF)
+with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!
 
-* Thank you and have fun!
+* Thank you and have fun 73!
 ___
 
 ### Links:
