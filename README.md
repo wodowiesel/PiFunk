@@ -2,7 +2,7 @@
 
 ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
-## PiFunk Radio Transmitter - in FM/AM for HAM-bands
+## PiFunk Radio Transmitter - in FM/AM for HAM-Bands
 
 **Early Experimental!**
 
@@ -13,21 +13,23 @@ ___
 
 ### Configurations:
 
-get this program via:
+1. Get this program via:
 
 `git clone https://github.com/silicator/PiFunk`
 
-1-Wire by default BCM4 setting needs to be activated in boot-config for autostart
+2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
 
 via command: `sudo modprobe w1-gpio,gpiopin=4`
 
-Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO pin
+Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO Pin
 
 (if you have problems deactivate 1-wire config!)
 
-manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
+1-Wire by default BCM4 setting needs to be activated in boot-config for autostart
 
-add lines:
+3. Manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
+
+check/add lines:
 
 `dtoverlay=w1-gpio,gpiopin=4,pullup=0` add pullup=1 if needed
 
@@ -38,7 +40,8 @@ optional:
 `enable_uart=1` for UART RX & TX
 
 `dtoverlay=pps-gpio,gpiopin=18`
-Listen GPS 1 PPS signal for Pi Clock sync
+
+Listen to GPS 1PPS signal for Pi Clock (PIN 18) sync
 
 `init_uart_baud=9600`
 
@@ -46,24 +49,24 @@ Listen GPS 1 PPS signal for Pi Clock sync
 
 `pps-gpio` Add this line to the modulefile
 
-Save your edits with ctrl-o <return/enter> then exit with ctrl-x
+5. Save your edits with ctrl-o <return/enter> then exit with <ctrl-x>
 ___
 
 ### Installations:
 
-First update & upgrade system:
+5. First update & upgrade system:
 
 `sudo apt update` for system updates
 
 `sudo apt upgrade` for system upgrades
 
-You will need some libraries for this:
+6. You will need some libraries for this:
 
-`sudo apt-get install libsndfile1-dev`
+a) `sudo apt-get install libsndfile1-dev`
 
-`sudo apt-get install python-dev python3-dev` for py3
+b) `sudo apt-get install python-dev python3-dev` for py3
 
-[RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
+c) [RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
 
 `sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
 
@@ -77,15 +80,18 @@ or `sudo pip install RPi.GPIO` for Py2
 
 or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
-`sudo reboot` then reboot to apply the changes
+7. GNU installer `sudo apt-get install gcc`
 
-then go to directory:
+8. `sudo reboot` then reboot to apply the changes
 
-`cd PiFunk` with default path: `/home/pi/PiFunk`
 
-compile with:
 
-GNU installer `sudo apt-get install gcc`
+### Build:#
+9. Navigate to directory:
+
+a) `cd PiFunk` with default path: `/home/pi/PiFunk`
+
+b) GCC Compiler flags:
 
 `-g3` for debugger informations (0-3 level, 2 is default)
 
@@ -93,7 +99,10 @@ GNU installer `sudo apt-get install gcc`
 
 `-v`	Print compilation infos
 
-`-DRASPI2` defines the macro to be used by the preprocessor (here the PI model 0-4)
+`-DRASPI1` defines the macro to be used by the preprocessor (here the PI model 0-4)
+
+ -> will be detected my the make-file via the type of the ARM-Processor
+  (other macros possible if in the C-code implemented)
 
 `-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
 
@@ -107,7 +116,7 @@ GNU installer `sudo apt-get install gcc`
 
 `-c` for compiling without linking for making .o object
 
-`-shared` for generating shared libraries
+`-shared` for generating shared object libraries
 
 `-fPIC` for generating position independent code (PIC) for bigger programs
 
@@ -115,29 +124,48 @@ GNU installer `sudo apt-get install gcc`
 
 `-o` for output-filename flag
 
-### Build:
+10. Generating libraries:
 
-manually generating libraries:
+a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -c -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+*.c=C-SourcCcode, *.h=headerfile, *.i=assembled preprocessor-C-Code, *.s= preprocessed assembler code,
 
-manually generating executable binary:
+*.o= compiled objcet, *.lib=library object, *.a=static archive object, *.so=shared dynamic library object,
+
+*.out=default binary, pifunk(.bin)= executable binary (program)
+
+b) manually compiling/linking libraries:
+
+`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+
+c) manually compiling/linking executable binary:
 
 `sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
- optional:
+ d) optional:
+ -march=armv6l architecture version of ARM, -mtune=arm1176jzf-s architecture type tuning ("march=native" is auto option),
 
-`sudo make` with pre-configured flags for compilation
+ -mfloat-abi=hard floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’,
 
-`sudo clean` for removing .o files if necessary
+ -mfpu=vfp floating point hardware module,
+
+ -ffast-math increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
+
+`sudo make` with pre-configured flags for compilation for all Pi's
+
+`sudo clean` for removing *.o files if necessary
 
 ___
 
 ### Run:
 
-run with admin/root permissions:
+11. run with admin/root permissions:
 
-Arguments: `[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
+Arguments: would be best to input in this specific order to prevent problems
+
+Use '. dot' as decimal-comma separator!
+
+`[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
 
 extra single Arguments: -> no further argument needed
 
@@ -145,50 +173,62 @@ extra single Arguments: -> no further argument needed
 
 `[-h]` for help with more infos and arguments
 
-Use '. dot' as decimal-comma separator!
+`[-u]` for extra menu (csv, commandline)
 
 default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
 
-Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700+ MHz range
+Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi
 
-CTSS-Tones (38 included) for PMR can be found here [CTSS](ctsspmr.csv)
+it's recommended not to transmit on frequencies higher than the processor speed (at the moment)
+
+but results would be interesting to know
+
+explicit CTSS-Tones (38 included) for PMR can be found here: [CTSS](ctsspmr.csv)
 
 ___
 
-### Warnings:
+### Preparations:
 
-- Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
+12. Hardaere-Setup
+a) - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
 
-- Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
-  @ 2-4 mA (max. 50 mA on ALL PINs and 16 per bank!)
+b) - Check Specifications: my Pi B+ v1.2 @ 700 MHz/ 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
-- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f) if possible
-
- Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
-
-- Specifications: Pi 2B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor with driver bcm2835-v1.55
+ -> SoC from Broadcom	depending on pi model: BCM2835	BCM2836	BCM2837	BCM2837B0	BCM2837	BCM2837B0	BCM2711
 
   for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
   or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
+c) - Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
+
+  @ 2-4 mA (max. 50 mA on ALL PINs and 16 per bank!)
+
 - Antenna should be grounded (see Pinout image) to prevent noise and other problems
+
+- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f) if possible
+
+- Tip: You could use just a copper wire for antenna:
+
+ CB 11 m-Band (lambda/2, 5.5 m, 216.535" in") and 70 cm-Band (PMR) (lambda(1/4), 17.0 cm, 6.7" in)
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-- You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
+d) - You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
-- For handling overheating use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
+e) - For handling overheating of the Pi's processor use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
 
-- RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
+  you can overclock the Pi if you want to on own risk but it's not recommended
 
--> need to activate I2C in pi config! `sudo raspi-config`
+f) - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
+
+-> need to activate I2C in pi config!
 
 ![RTC](docs/RTC-top.jpg)
 
-- GPS: Module Neo 7M uses
+g) - GPS: Module Neo 7M uses
 
   5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
@@ -200,13 +240,15 @@ ___
 
 ![GPS](docs/GPS-Neo7M.jpg)
 
-- Morsecode-table:
+h) - Morsecode-table:
 
 ![Morsecode](docs/morsecodeCW.jpg)
 
 ___
 
-### Disclaimer:
+### Disclaimer
+
+13. Warnings/Caution:
 
 - Private Project! Work in Progress (WIP)
 
@@ -214,20 +256,24 @@ ___
 
 - Usage at your **own risk** !!
 
-- Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
+- Check laws of your country first! Some Frequencies are prohibited or need a HAM-License!
 
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
 
-  (C=10-100 pF) with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent
+  (C=10-100 pF) with solenoid (ring) toroid (ferrit) chokes (B=10-50 uH like the FT37-43)
 
-  transmission (TX) simultaneously on permitted frequencies!
+  or resistors (R=10 kOhm), diodes to prevent backflow
 
-* Help / Testers and Feedback always appreciated!
+  transmission (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
+
+* Help / Testers and Feedback always appreciated! :)
 
 * Thank you and have fun 73!
+
 ___
 
 ### Links:
+14.) additional Guidelines
 
 [GitPage](https://silicator.github.io/PiFunk/)
 
