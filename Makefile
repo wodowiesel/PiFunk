@@ -11,7 +11,10 @@ STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC
 
 UNAME := $(shell uname -m) #linux
 
-ifeq ($(UNAME), armv6l) #my version
+ifeq ($(UNAME), armv6l)
+	CFLAGS = $(STD_CFLAGS) -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=auto -ffast-math -DRASPI0
+	TARGET = pi0
+else ifeq ($(UNAME), armv6l)
 	CFLAGS = $(STD_CFLAGS) -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 	TARGET = pi1
 else ifeq ($(UNAME), armv7l)
@@ -21,10 +24,10 @@ else ifeq ($(UNAME), armv8l)
 		CFLAGS = $(STD_CFLAGS) -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
 		TARGET = pi3
 else ifeq ($(UNAME), armv8l)
-			CFLAGS = $(STD_CFLAGS) -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+			CFLAGS = $(STD_CFLAGS) -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
 			TARGET = pi4
 else
-	CFLAGS = $(STD_CFLAGS) -c -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math
+	CFLAGS = $(STD_CFLAGS) -c -march=native -mtune=native -mfloat-abi=softfp -mfpu=auto -DRASPIX
 	TARGET = other
 endif
 
