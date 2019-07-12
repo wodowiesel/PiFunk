@@ -188,7 +188,9 @@ ___
 
 ![RTC](docs/RTC-top.jpg)
 
-- GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
+- GPS: Module Neo 7M uses
+
+  5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
   it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
@@ -217,7 +219,7 @@ ___
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
 
   (C=10-100 pF) with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent
-  
+
   transmission (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!
