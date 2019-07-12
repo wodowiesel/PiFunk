@@ -7,10 +7,11 @@
 **Early Experimental!**
 
 ### Acknowledgements:
+
 based on PiFM/AM-Scripts
 ___
 
-### Preparations:
+### Configurations:
 
 get this program via:
 
@@ -27,12 +28,18 @@ Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO 
 manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
 
 add lines:
+
 `dtoverlay=w1-gpio,gpiopin=4,pullup=0` add pullup=1 if needed
 
 optional:
+
 `dtoverlay=i2c1-bcm2708` for I2C Bus
+
 `enable_uart=1` for UART RX & TX
-`dtoverlay=pps-gpio,gpiopin=18` Listen GPS 1 PPS signal for Pi Clock sync
+
+`dtoverlay=pps-gpio,gpiopin=18`
+Listen GPS 1 PPS signal for Pi Clock sync
+
 `init_uart_baud=9600`
 
 `sudo nano /etc/modules`
@@ -42,7 +49,7 @@ optional:
 Save your edits with ctrl-o <return/enter> then exit with ctrl-x
 ___
 
-### Build:
+### Installations:
 
 First update & upgrade system:
 
@@ -108,7 +115,7 @@ GNU installer `sudo apt-get install gcc`
 
 `-o` for output-filename flag
 
-commands:
+### Build:
 
 manually generating libraries:
 
@@ -126,7 +133,7 @@ manually generating executable binary:
 
 ___
 
-### Usage:
+### Run:
 
 run with admin/root permissions:
 
@@ -207,8 +214,11 @@ ___
 
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
-- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors (C=10-100 pF)
-  with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
+- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
+
+  (C=10-100 pF) with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent
+  
+  transmission (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!
 
