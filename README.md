@@ -26,7 +26,20 @@ Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO 
 
 manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
 
-add line: `dtoverlay=w1-gpio,gpiopin=4,pullup=0` (add pullup=1 if needed)
+add lines:
+`dtoverlay=w1-gpio,gpiopin=4,pullup=0` add pullup=1 if needed
+
+optional:
+`dtoverlay=i2c1-bcm2708` for I2C Bus
+`enable_uart=1` for UART RX & TX
+`dtoverlay=pps-gpio,gpiopin=18` Listen GPS 1 PPS signal for Pi Clock sync
+`init_uart_baud=9600`
+
+`sudo nano /etc/modules`
+
+`pps-gpio` Add this line to the modulefile
+
+Save your edits with ctrl-o <return/enter> then exit with ctrl-x
 ___
 
 ### Build:
@@ -56,6 +69,8 @@ and install it
 or `sudo pip install RPi.GPIO` for Py2
 
 or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
+
+`sudo reboot` then reboot to apply the changes
 
 then go to directory:
 
@@ -165,13 +180,17 @@ or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 - GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
--> need to activate UART (serial0) in pi config! `enable_uart=1` Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
+  it prints in NMEA format so change config `ttyAMA0` to `tty1`
+
+  `sudo cat /dev/ttyAMA0` or alternative `sudo cat /dev/ttyS0`
+
+-> need to activate UART (serial0) in pi config! Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
 ![GPS](docs/GPS-Neo7M.jpg)
 
 - Morsecode-table:
 
-![Morse](docs/morsecodeCW.jpg)
+![Morsecode](docs/morsecodeCW.jpg)
 
 - Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
 ___
