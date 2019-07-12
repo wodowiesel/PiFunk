@@ -137,9 +137,9 @@ ___
 
 - Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- Antenna: PWM on (GPIO 4, PIN 7, GPCLK0) @ 2-4 mA (max. 50 mA on ALL Pins and 16 per bank!)
+- Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM Pulse with Modulation @ 2-4 mA (max. 50 mA on ALL Pins and 16 per bank!)
 
-  (in example: Pi B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
+  (in example: Pi 2B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
 
 for more specifications just visit [Adafruit](http://www.adafruit.com)
 
@@ -155,7 +155,7 @@ or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 - For handling overheating use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
 
-- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f)!
+- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f)
 
 - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 
@@ -163,7 +163,7 @@ or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 ![RTC](docs/RTC-top.jpg)
 
-- GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 14, PIN 12)
+- GPS: Module Neo 7M uses 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
 -> need to activate UART (serial0) in pi config! `enable_uart=1` Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
@@ -187,7 +187,7 @@ ___
 - Check laws of your country first! Some Frequencies are prohibited or need a Ham-License!
 
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors (C=10-100 pF)
-with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
+  with solenoid toroid chokes (B=10-50 uH) or resistors (R=10 kOhm)/diodes to prevent transmission (TX) simultaneously on permitted frequencies!
 
 * Help / Testers and Feedback always appreciated!
 
