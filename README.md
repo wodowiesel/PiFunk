@@ -152,13 +152,16 @@ ___
 
 - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM Pulse with Modulation
-  @ 2-4 mA (max. 50 mA on ALL Pins and 16 per bank!)
+- Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
+  @ 2-4 mA (max. 50 mA on ALL PINs and 16 per bank!)
 
-- Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
+- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f) if possible
 
-- Pi 2B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor with driver bcm2835-v1.55
-  for more specifications just visit [Adafruit](http://www.adafruit.com)
+ Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
+
+- Specifications: Pi 2B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor with driver bcm2835-v1.55
+
+  for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
   or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
@@ -171,8 +174,6 @@ ___
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
 - For handling overheating use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
-
-- For transmission you should use tested/certified antennas with mounts (BNC/SDA/PL - m/f)
 
 - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 
