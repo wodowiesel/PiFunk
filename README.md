@@ -93,7 +93,7 @@ GNU installer `sudo apt-get install gcc`
 
 `-v`	Print compilation infos
 
-`-DRASPI2` defines the macro to be used by the preprocessor (here the PI model 1-4)
+`-DRASPI2` defines the macro to be used by the preprocessor (here the PI model 0-4)
 
 `-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
 
