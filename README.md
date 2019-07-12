@@ -150,15 +150,17 @@ ___
 
 ### Warnings:
 
-- Use (original) power supply 10 W, 5V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
+- Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5.5 V Pins possible)
 
-- Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM Pulse with Modulation @ 2-4 mA (max. 50 mA on ALL Pins and 16 per bank!)
+- Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM Pulse with Modulation
+  @ 2-4 mA (max. 50 mA on ALL Pins and 16 per bank!)
 
-  (in example: Pi 2B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor bcm2835-v1.55)
+- Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
 
-for more specifications just visit [Adafruit](http://www.adafruit.com)
+- Pi 2B+ v1.2 @ 700 MHz/512 MB RAM on ARM processor with driver bcm2835-v1.55
+  for more specifications just visit [Adafruit](http://www.adafruit.com)
 
-or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
+  or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 - Antenna should be grounded (see Pinout image) to prevent noise and other problems
 
@@ -192,7 +194,6 @@ or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 ![Morsecode](docs/morsecodeCW.jpg)
 
-- Tip: You could use just a copper wire for 2 m/70 cm-band or other lambda(1/4)-antennas (17.5 cm/6.9" in for PMR)
 ___
 
 ### Disclaimer:
