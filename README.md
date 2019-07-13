@@ -84,7 +84,7 @@ or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
 8. `sudo reboot` then reboot to apply the changes
 
-
+___
 
 ### Build:#
 9. Navigate to directory:
@@ -98,10 +98,10 @@ b) GCC Compiler flags:
 `-Wall` for debug warning informations
 
 `-v`	Print compilation infos
-
 `-DRASPI1` defines the macro to be used by the preprocessor (here the PI model 0-4)
 
  -> will be detected my the make-file via the type of the ARM-Processor
+ 
   (other macros possible if in the C-code implemented)
 
 `-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
@@ -157,39 +157,10 @@ c) manually compiling/linking executable binary:
 
 ___
 
-### Run:
-
-11. run with admin/root permissions:
-
-Arguments: would be best to input in this specific order to prevent problems
-
-Use '. dot' as decimal-comma separator!
-
-`[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
-
-extra single Arguments: -> no further argument needed
-
-`[-a]` for assistant in step-by-step
-
-`[-h]` for help with more infos and arguments
-
-`[-u]` for extra menu (csv, commandline)
-
-default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
-
-Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi
-
-it's recommended not to transmit on frequencies higher than the processor speed (at the moment)
-
-but results would be interesting to know
-
-explicit CTSS-Tones (38 included) for PMR can be found here: [CTSS](ctsspmr.csv)
-
-___
-
 ### Preparations:
 
-12. Hardaere-Setup
+11. Hardware-Setup
+
 a) - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
 
 b) - Check Specifications: my Pi B+ v1.2 @ 700 MHz/ 512 MB RAM on ARM processor with driver bcm2835-v1.55
@@ -246,6 +217,36 @@ h) - Morsecode-table:
 
 ___
 
+### Run:
+
+12. run with admin/root permissions:
+
+Arguments: would be best to input in this specific order to prevent problems
+
+Use '. dot' as decimal-comma separator!
+
+`[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
+
+extra single Arguments: -> no further argument needed
+
+`[-a]` for assistant in step-by-step
+
+`[-h]` for help with more infos and arguments
+
+`[-u]` for extra menu (csv, commandline)
+
+default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
+
+Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi
+
+it's recommended not to transmit on frequencies higher than the processor speed (at the moment)
+
+but results would be interesting to know
+
+explicit CTSS-Tones (38 included) for PMR can be found here: [CTSS](ctsspmr.csv)
+
+___
+
 ### Disclaimer
 
 13. Warnings/Caution:
@@ -273,6 +274,7 @@ ___
 ___
 
 ### Links:
+
 14.) additional Guidelines
 
 [GitPage](https://silicator.github.io/PiFunk/)
