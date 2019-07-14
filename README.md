@@ -6,14 +6,14 @@
 
 **Early Experimental!**
 
-### Acknowledgements:
+### Acknowledgements
 
 based on PiFM/AM-Scripts
 ___
 
-### Configurations:
+### Configurations
 
-1. Get this program via:
+1. Get this program via git or download it:
 
 `git clone https://github.com/silicator/PiFunk`
 
@@ -41,7 +41,7 @@ optional:
 
 `dtoverlay=pps-gpio,gpiopin=18`
 
-Listen to GPS 1PPS signal for Pi Clock (PIN 18) sync
+Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
 
 `init_uart_baud=9600`
 
@@ -52,7 +52,7 @@ Listen to GPS 1PPS signal for Pi Clock (PIN 18) sync
 5. Save your edits with ctrl-o <return/enter> then exit with <ctrl-x>
 ___
 
-### Installations:
+### Installations
 
 5. First update & upgrade system:
 
@@ -80,13 +80,17 @@ or `sudo pip install RPi.GPIO` for Py2
 
 or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
-7. GNU installer `sudo apt-get install gcc`
+7. Compiler installation:
+
+a) GNU C Compiler  `sudo apt-get install gcc`
+
+b)GNU GDB Debugger `sudo apt-get install gdbserver`
 
 8. `sudo reboot` then reboot to apply the changes
 
 ___
 
-### Build:#
+### Build
 9. Navigate to directory:
 
 a) `cd PiFunk` with default path: `/home/pi/PiFunk`
@@ -101,7 +105,7 @@ b) GCC Compiler flags:
 `-DRASPI1` defines the macro to be used by the preprocessor (here the PI model 0-4)
 
  -> will be detected my the make-file via the type of the ARM-Processor
- 
+
   (other macros possible if in the C-code implemented)
 
 `-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
@@ -157,9 +161,9 @@ c) manually compiling/linking executable binary:
 
 ___
 
-### Preparations:
+### Preparations
 
-11. Hardware-Setup
+11. Hardware-Setup:
 
 a) - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
 
@@ -217,9 +221,9 @@ h) - Morsecode-table:
 
 ___
 
-### Run:
+### Run
 
-12. run with admin/root permissions:
+12.Run with admin/root permissions:
 
 Arguments: would be best to input in this specific order to prevent problems
 
@@ -266,6 +270,7 @@ ___
   or resistors (R=10 kOhm), diodes to prevent backflow
 
   transmission (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
+
 
 * Help / Testers and Feedback always appreciated! :)
 
