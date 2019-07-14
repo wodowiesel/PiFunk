@@ -260,32 +260,38 @@ volatile unsigned 										*allof7e;
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  RPI0                  				 // Original Raspberry Pi 1
-#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x0C) //dec: 12
-// Original Raspberry Pi 1
-#elif   RPI1
+// unknown pi versions like banana
+#ifdef RASPIX
+#elif   RASPI0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 
-#elif   RPI2
+// Original Raspberry Pi 1
+#elif   RASPI1
+#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x0C) //dec: 12
+
+#elif   RASPI2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 
-#elif   RPI3
+#elif   RASPI3
 #define PERIPH_VIRT_BASE               (0x20000000)
 //pi4 -> waiting for documentation from adafruit
-#elif   RPI4
+#elif   RASPI4
 #define PERIPH_VIRT_BASE               (0x20000000)
 
 #elif   RASPBERRY 											// other models
+#define PERIPH_VIRT_BASE               (0x20000000)
+
+#elif   RPI 									     	   	// alternative
 #define PERIPH_VIRT_BASE               (0x20000000)
 
 #else
@@ -296,10 +302,9 @@ volatile unsigned 										*allof7e;
 #endif
 
 //---
-#define LENGTH                         (0x01000000) // dec: 1
+
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-//#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
-//#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
+#define LENGTH                         (0x01000000) // dec: 1
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
@@ -312,7 +317,8 @@ volatile unsigned 										*allof7e;
 #define DMAREF                         (0x7F)   // dec: 127 dma base reference
 #define MODULATE                       (0x4D72) // dec: 19826
 #define DMAC                           (0x0707) // dec: 1799
-
+//#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
+//#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
 // possibility to give argv 0-4 an specific address or pointer
 // addresses -> at least on my system-tests
 #define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640

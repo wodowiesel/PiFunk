@@ -26,6 +26,12 @@ else ifeq ($(UNAME), armv8l)
 else ifeq ($(UNAME), armv8l)
 			CFLAGS = $(STD_CFLAGS) -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
 			TARGET = pi4
+else ifeq ($(UNAME), armv7l)
+						CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+						TARGET = rpi
+else ifeq ($(UNAME), armv7l)
+						CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+						TARGET = raspberry
 else
 	CFLAGS = $(STD_CFLAGS) -c -march=native -mtune=native -mfloat-abi=softfp -mfpu=auto -DRASPIX
 	TARGET = other
