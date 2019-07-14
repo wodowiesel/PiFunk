@@ -193,9 +193,9 @@ using namespace std;
 #include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
-/* //preproccessor definitions
+//preproccessor definitions
 #ifdef __linux__ // ||__unix__
-  //printf ("\nProgram runs under UNIX/LINUX \n");
+  printf ("\nProgram runs under UNIX/LINUX \n");
 	//#pragma GCC dependency "pifunk.h"
 #elif __arm__
   printf ("\nProgram runs under ARM-Architecture! \n");
@@ -205,13 +205,13 @@ using namespace std;
 #endif
 
 #ifdef __GNUC__ && __STDC_VERSION__ >= 199901L
-   //printf ("\nUsing Gnu C with ANSI C99!!\n");
+   printf ("\nUsing Gnu C with ANSI C99!!\n");
 #elif __GNUC__
-   //#warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n"
+   /*#warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n" */
 #else
    //#error
    printf ("Program was not compiled with GNU and C99 standard! \n");
-#endif */
+#endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
 #define VERSION 						 "0.1.7.3"
@@ -260,23 +260,32 @@ volatile unsigned 										*allof7e;
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  RPI // == 1                    // Original Raspberry Pi 1
+#ifdef  RPI0                  				 // Original Raspberry Pi 1
+#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x0C) //dec: 12
+// Original Raspberry Pi 1
+#elif   RPI1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 
-#elif   RASPI /* >= 2                   Raspberry Pi 2 & 3
+#elif   RPI2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 
-#elif   RASPBERRY 											// other models
+#elif   RPI3
+#define PERIPH_VIRT_BASE               (0x20000000)
+//pi4 -> waiting for documentation from adafruit
+#elif   RPI4
 #define PERIPH_VIRT_BASE               (0x20000000)
 
-#elif   RASPBERRYFOUR //pi4 -> waiting for documentation from adafruit
+#elif   RASPBERRY 											// other models
 #define PERIPH_VIRT_BASE               (0x20000000)
 
 #else
@@ -361,7 +370,7 @@ volatile unsigned 										*allof7e;
 #define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
 
 // GPIO
-#define GPFSEL0                         0x00/4 // p.90 dec: 0
+#define GPFSEL0                         (0x00/4) // p.90 dec: 0
 #define GPFSEL1                         (0x04/4) // 1
 #define GPFSEL2                         (0x08/4) // 2
 #define GPPUD                           (0x94/4) // 37
@@ -482,7 +491,7 @@ volatile unsigned 										*allof7e;
 #define DMA_CHANNEL_MAX                 (14)
 #define DMA_CHANNEL_SIZE                (0x100) //256
 
-#define BCM2708_DMA_ACTIVE              (1<<0) //
+#define BCM2708_DMA_ACTIVE              (1<<0) //why bcm 2708?
 #define BCM2708_DMA_END                 (1<<1) //
 #define BCM2708_DMA_INT                 (1<<2) //
 #define BCM2708_DMA_WAIT_RESP           (1<<3) //
@@ -494,7 +503,7 @@ volatile unsigned 										*allof7e;
 #define BCM2708_DMA_DISDEBUG            (1<<28) //
 #define BCM2708_DMA_ABORT               (1<<30) //
 #define BCM2708_DMA_RESET               (1<<31) //
-#define BCM2708_DMA_PER_MAP(x)          ((x)<<16)
+#define BCM2708_DMA_PER_MAP(x)          ((x)<<16) //
 #define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16) //
 #define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20) //
 
@@ -579,7 +588,6 @@ double subfreq = 67.0;
 double ctss_freq = 67.0;
 uint32_t Timing;
 char *mod;
-char *modu;
 char *fm = "fm";
 char *am = "am";
 char *callsign = "callsign";
@@ -631,7 +639,7 @@ float data_filtered [2*BUFFER_LEN];
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
 //-20db = 10x attenuation, significantly more quiet
 //float volbuffer [SAMPLES_PER_BUFFER];
-float volumeLevelDb = -6.f; //cut amplitude in half
+//float volumeLevelDb = -6.f; //cut amplitude in half
 //float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 SF_INFO sfinfo;
 int nb_samples;
@@ -661,7 +669,7 @@ char *host = "localhost";
 int port = 8080;
 
 // GPS-coordinates
-//default Frankfurt in decimal °grad
+//default Frankfurt in decimal °grad (centigrade)
 float longitude = 8.682127; // E
 float latitude = 50.110924; // N
 float altitude = 100.0; // elevation in meter above see level  (u.N.N.)
@@ -796,14 +804,45 @@ double freqselect () // gets freq by typing in
   return freq;
 }
 //--------------------------------------------------
+float step ()
+{
+	float steps;
+	printf ("\nChoose PMR-Steps 6.25 / 12.5 kHz: \n");
+	scanf ("%f", &steps);
+	if (steps==6.25)
+	{
+	printf ("\nnSteps are %f kHz \n", steps);
+	break;
+	}
+	elseif (steps==12.5)
+	{
+	printf ("\nSteps are %f kHz \n", steps);
+	break;
+	}
+	else
+	{
+	printf ("\nNO steps could be determined, wrong input! \n");
+	break;
+	}
+
+return steps;
+}
+
 // Channel-mode
 double channelmodepmr () //PMR
 {
-	printf ("\nChoose PMR-Channel 1-17 (18 to exit): \n");
+	char *type;
+
+	printf ("\nChoose PMR-Type (a)nalog / (d)igital: \n");
+	scanf ("%s", &type);
+
+	if (type=="a")
+	{
+	printf ("\nChoose aPMR-Channel 1-16 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
-	{
-	 //---- Analog & digital
+	 {
+	 //---- Analog & DMR
 	 case 1: freq=446.00625; break;	// Standard
 	 case 2: freq=446.01875; break; // Geocaching
 	 case 3: freq=446.03125; break; // Standard
@@ -816,7 +855,7 @@ double channelmodepmr () //PMR
 	// dmr (tier 1) digital new since 28.09.2016
 	// extra 8 chan
 	// 12.5 kHz steps
-	 case 9:  freq=446.10312; break; // 6.25 kHz steps & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
+	 case 9:  freq=446.10312; break;
 	 case 10: freq=446.10625; break;
 	 case 11: freq=446.11875; break;
 	 case 12: freq=446.13125; break;
@@ -826,13 +865,62 @@ double channelmodepmr () //PMR
 	 case 16: freq=446.18125; break;
 	 case 17: freq=446.19375; break;
 
-	 //normaly up to 32 chan in dpmr
-
-	 case 18: exit (0);
-	 default:
-	 					freq=446.00625;
+	 case 17: exit (0);
+	 default:	freq=446.00625;
 	 					printf ("\nDefault channelnumber = 1 on freq = %lf \n", freq);
 						break;
+   }
+  }
+	elseif (type="d")
+	{
+	printf ("\nChoose dPMR-Channel 1-32 (33 to exit): \n");
+	scanf ("%d", &channelnumberpmr);
+	switch (channelnumberpmr)
+	 {
+   //FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
+	 case 1:		freq=446.003125; break;
+	 case 2":		freq=446.009375; break;
+	 case 3":		freq=446.015625; break;
+	 case 4":		freq=446.021875; break;
+	 case 5":		freq=446.028125; break;
+	 case 6":		freq=446.034375; break;
+	 case 7":		freq=446.040625; break;
+	 case 8":		freq=446.046875; break;
+	 case 9":		freq=446.053125; break;
+	 case 10":	freq=446.059375; break;
+	 case 11":	freq=446.065625; break;
+	 case 12":	freq=446.071875; break;
+	 case 13":	freq=446.078125; break;
+	 case 14":	freq=446.084375; break;
+	 case 15":	freq=446.090625; break;
+	 case 16":	freq=446.096875; break;
+	 case 17":	freq=446.103125; break;
+	 case 18":	freq=446.109375; break;
+	 case 19":	freq=446.115625; break;
+	 case 20":	freq=446.121875; break;
+	 case 21":	freq=446.128125; break;
+	 case 22":	freq=446.134375; break;
+	 case 23":	freq=446.140625; break;
+	 case 24":	freq=446.146875; break;
+	 case 25":	freq=446.153125; break;
+	 case 26":	freq=446.159375; break;
+	 case 27":	freq=446.165625; break;
+	 case 28":	freq=446.171875; break;
+	 case 29":	freq=446.178125; break;
+	 case 30":	freq=446.184375; break;
+	 case 31":	freq=446.190625; break;
+	 case 32":	freq=446.196875; break;
+	 //normaly up to 32 chan in dpmr
+	 case 33: 		exit (0);
+	 default:			freq=446.003125;
+	 							printf ("\nDefault channelnumber = 1 on freq = %lf \n", freq);
+								break;
+	 }
+	}
+  else
+	{
+		printf ("\nNO type could be determined, wrong input! \n");
+		break;
 	}
   printf ("\nChannelnumber = %d on freq = %lf \n", channelnumberpmr, freq);
 	return freq;
@@ -846,16 +934,16 @@ double subchannelmodepmr () //Pilot-tone
 	{
 		// FYI 19 (38)-kHz-Pilottone on UKW
 	 //---- Analog & digital
-	 case 0: subfreq=67.000; printf ("\nChannels (all) = 0 default CTSS-Chan 1 %lf \n", subfreq); break;	// Scan all Chan till active , now chan1
-	 case 1: subfreq=67.900; break;	//4.9 Hz step
-	 case 2: subfreq=71.900; break;
-	 case 3: subfreq=74.400; break;
-	 case 4: subfreq=77.000; break; // at 3-chan-PMR-devices its ch. 2
-	 case 5: subfreq=79.700; break; // Contest
-	 case 6: subfreq=82.500; break; // Events
-	 case 7: subfreq=85.400; break; // at 3-channel-PMR-devices it's ch. 3
-	 case 8: subfreq=88.500; break; // Standard
-	 case 9: subfreq=91.500; break;
+	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0 default CTSS-Chan 1 %lf \n", subfreq); break;	// Scan all Chan till active , now chan1
+	 case 1:  subfreq=67.900; break;	//4.9 Hz step
+	 case 2: 	subfreq=71.900; break;
+	 case 3: 	subfreq=74.400; break;
+	 case 4: 	subfreq=77.000; break; // at 3-chan-PMR-devices its ch. 2
+	 case 5: 	subfreq=79.700; break; // Contest
+	 case 6: 	subfreq=82.500; break; // Events
+	 case 7: 	subfreq=85.400; break; // at 3-channel-PMR-devices it's ch. 3
+	 case 8: 	subfreq=88.500; break; // Standard
+	 case 9:  subfreq=91.500; break;
 	 case 10: subfreq=94.800; break;
 	 case 11: subfreq=97.400; break;
 	 case 12: subfreq=100.000; break;
@@ -886,8 +974,7 @@ double subchannelmodepmr () //Pilot-tone
 	 case 37: subfreq=241.800; break;
 	 case 38: subfreq=250.300; break;
 	 case 39: exit (0);
-	 default:
-	 					subfreq=67.000;
+	 default: subfreq=67.000;
 						printf ("\nDefault subchannel = 1 on subfreq = %lf \n", subfreq);
 						break;
 	}
@@ -998,8 +1085,7 @@ double channelmodecb () // CB
 			case 80:   freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:   exit (0);
 
-			default:
-									freq=26.9650;
+			default:		freq=26.9650;
 									printf ("\nDefault CB chan = 1 %lf \n", freq);
 									break;
 
@@ -1060,14 +1146,17 @@ void channelselect () // make a void
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
   {
 					case 1: printf ("\nPMR CHAN-MODE \n");
-									channelmodepmr (freq); // gets freq from pmr list
+									step ();
+									channelmodepmr (); // gets freq from pmr list
 									break;
 
 		   		case 2: printf ("\nCB CHAN-MODE \n");
-									channelmodecb (freq);
+									channelmodecb ();
 									break;
 
-					default: printf ("\nDefault: Returning... \n");
+					default: printf ("\nDefault: PMR\n");
+										step ();
+										channelmodepmr (); // gets freq from pmr list
 									 break;
 	}
 	return;
