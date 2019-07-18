@@ -201,7 +201,7 @@ using namespace std;
 #endif
 #ifdef __arm__
   //printf ("Program runs under ARM-Architecture!");
-  #pragma arm
+  #pragma ARM
   // same as -CODE32
    //#error
 #endif
@@ -309,7 +309,7 @@ volatile unsigned 										*allof7e;
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x04) //dec: 12
+//#define CURBLOCK                       (0x04) //dec: 12
 
 //---
 
