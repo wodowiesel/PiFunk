@@ -194,13 +194,15 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
-#ifdef __linux__ // || __unix__
+#ifdef __linux__
+  // || __unix__
   //printf ("Program runs under UNIX/LINUX");
 	#pragma GCC dependency "pifunk.h"
 #endif
 #ifdef __arm__
   //printf ("Program runs under ARM-Architecture!");
-  #pragma arm // same as -CODE32
+  #pragma arm
+  // same as -CODE32
    //#error
 #endif
 
