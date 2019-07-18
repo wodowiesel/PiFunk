@@ -44,7 +44,7 @@ pifunk: pifunk.c
 					$(USER)$(CC)$(CFLAGS)$(LDFLAGS) -o bin/pifunk
 endif
 
-pifunk.i: pifunk.c
+pifunk: pifunk.c
 					$(CC)$(CFLAGS) -o -E include/pifunk.i
 
 pifunk.s: pifunk.c
