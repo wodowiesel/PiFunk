@@ -798,12 +798,12 @@ int filecheck (char *filename, FILE wavefile)  // expected int?
 
   if (filename != "sound.wav")
 	{
-     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644)); // O_RDWR
+     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
 	   return fp;
 	}
 	else
 	{
-	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644)); // sounds/sound.wav directory should be tested
+	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // sounds/sound.wav directory should be tested
 	   return fp;
 	}
 	return fp;
@@ -826,18 +826,14 @@ float step ()
 	if (steps==6.25)
 	{
 	printf ("\nnSteps are %f kHz \n", steps);
-	break;
+  return steps;
 	}
 	elseif (steps==12.5)
 	{
 	printf ("\nSteps are %f kHz \n", steps);
-	break;
+  return steps;
 	}
-	else
-	{
-	printf ("\nNO steps could be determined, wrong input! \n");
-	break;
-	}
+  else	printf ("\nNO steps could be determined, wrong input! \n");
 
 return steps;
 }
@@ -850,7 +846,7 @@ double channelmodepmr () //PMR
 	printf ("\nChoose PMR-Type (a)nalog / (d)igital: \n");
 	scanf ("%s", &type);
 
-	if (type=="a")
+	if (type="a")
 	{
 	printf ("\nChoose aPMR-Channel 1-16 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -879,7 +875,7 @@ double channelmodepmr () //PMR
 	 case 16: freq=446.18125; break;
 	 case 17: freq=446.19375; break;
 
-	 case 17: exit (0);
+	 case 18: exit (0);
 	 default:	freq=446.00625;
 	 					printf ("\nDefault channelnumber = 1 on freq = %lf \n", freq);
 						break;
@@ -1111,11 +1107,11 @@ double channelmodecb () // CB
 void modselect (int argc, char **argv, char *mod)
 {
 	printf ("\nOpening Modulator... \n");
-	if (mod == "fm")
+	if (mod = "fm")
 	{
 		void modulationfm (int argc, char **argv);
 	}
-	else if (mod == "am")
+	else if (mod = "am")
 	{
 		void modulationam (int argc, char **argv);
 	}
@@ -1134,20 +1130,20 @@ char modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 						mod = "fm";
-						void modselect (char *mod);
+						void modselect (int argc, char **argv, char *mod);
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 						mod = "am";
-						void modselect (char *mod);
+						void modselect (int argc, char **argv, char *mod);
 		        break;
 
 		case 3: printf ("\nExiting... \n");
 						exit (-1);
 
 		default:	mod = "fm";
-						printf ("\n Default = 1 \n");
-						break;
+						  printf ("\n Default = 1 \n");
+						  break;
 	}
 	return *mod;
 }
@@ -1250,7 +1246,7 @@ void clearscreen ()
 {
   printf ("\n\033[H\033[J\n");
   //fflush (stdin); // alterntives
-  clsscr ();
+  //clsscr ();
   //system ("clear");
 }
 
@@ -1307,7 +1303,7 @@ void setupfm ()
   if ((mem_fd = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
 	{
         printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
-        return -1;
+        return;
   }
 
   allof7e = (unsigned*) mmap (
@@ -1534,8 +1530,8 @@ void setupDMA ()
 
 int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
 {
-	printf ("\nSample/bitchecker starting \n");
-		//-------
+	printf ("\nSamplerate/bit-checker starting \n");
+		/*
   if (!(fp = open (filename, SFM_READ, &sfinfo))) //check wat SFM sfinfo does!?
   {   // Open failed so print an error message.
         printf ("\nNot able to open input file for samplecheck %s \n", filename);
@@ -1559,7 +1555,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
   {
 	printf ("\nInput samplerate must be at least 22.050 [kHz] for FM or 14.500 [kHz] for AM! \n");
 	return 1;
-	}
+} */
 	//--------------------
 	if (filebit != 16)
 	{
@@ -1723,7 +1719,7 @@ char csvreader ()
     	j = fgetc (rfp);
     	fputc (j, wfp);
     }
-		printf ("\n%s\n", j);
+		printf ("\n%d\n", j);
     fclose (rfp);
     fclose (wfp);
     printf ("\nCSV-import of CTSS-list finished! \n");
@@ -1740,7 +1736,7 @@ void modulationam (int argc, char **argv)
 		printf ("\nam modulator starting \n");
 		void WriteTone (double freq);// actual modulation stuff here for am -> wrrite tone?
 		ledactive ();
-	  return 0;
+	  return;
 }
 
 void modulationfm (int argc, char **argv)//FM
@@ -1749,7 +1745,7 @@ void modulationfm (int argc, char **argv)//FM
     setupfm (); // gets filename & path or done by filecheck () func
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-    void play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
+    play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
 		return;
 }
 
@@ -1763,7 +1759,7 @@ int tx (int argc, char **argv)
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
 	//play_wav (char *filename, double freq, int samplerate);
-	void modselect (int argc, char **argv, char *mod)
+	void modselect (int argc, char **argv, char *mod);
 	ledactive ();
 	printf ("\nBroadcasting now ...! \n");
 
@@ -1774,12 +1770,12 @@ void cgimodule () // just a small test, not meant for pifunk
 {
  printf ("context-type:text/html\n\n");
  printf ("<html>\n");
- printf ("<head>\n"
-				"PiFunk Project\n"
-				"</head>\n");
- printf ("<body>\n"
-				 "PiFunk - CGI\n"
-				 "</body>\n");
+ printf ("<head>\n");
+ printf	("PiFunk Project\n");
+ printf	("</head>\n");
+ printf ("<body>\n");
+ printf	("PiFunk - CGI\n");
+ printf	("</body>\n");
  printf ("</html>\n");
 }
 
