@@ -1667,19 +1667,19 @@ char callname ()
 		switch (callnameselect)
 	  {
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign);
-						 printf ("\nYour callsign is: %s \n", callsign);
+						 scanf  ("%s", &callsign [8]);
+						 printf ("\nYour callsign is: %s \n", callsign [8]);
 						 break;
 
-		 case 2: callsign = "callsign"; //default callsign
-						 printf ("\nUsing default callsign: %s \n", callsign);
+		 case 2: callsign [8] = "callsign"; //default callsign
+						 printf ("\nUsing default callsign: %s \n", callsign [8]);
 						 break;
 
-		 default: callsign = "callsign"; //default callsign
-		 					printf ("\nError! Using default callsign: %s \n", callsign);
+		 default: callsign [8] = "callsign"; //default callsign
+		 					printf ("\nError! Using default callsign: %s \n", callsign [8]);
 							break;
     }
-  	return callsign; //, &callsign, *callsign;
+  	return callsign [8]; //, &callsign, *callsign;
 }
 
 void modetype (double freq)
@@ -1837,7 +1837,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	double freq = 446.006250; // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate = 22050;// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm";// =argv [4];
-	char *callsign = "callsign";// =argv [5];
+	char *callsign [8]= "callsign";// =argv [5];
 	int power = 7;// =argv [6];
 	// atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	// atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
@@ -1901,8 +1901,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 							}
 
 			case 'c':
-							callsign = optarg;
-							printf ("\nCallsign is %s \n", callsign);
+							callsign [8] = optarg;
+							printf ("\nCallsign is %s \n", callsign [8]);
 							//break;
 
 				//power managment
@@ -1965,7 +1965,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	printf ("\nChecking Freq: %lf [MHz] \n", freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 	printf ("\nChecking Modulation: %s \n", mod);
-	printf ("\nChecking Callsign: %s \n", callsign);
+	printf ("\nChecking Callsign: %s \n", callsign [8]);
 	printf ("\nChecking Output-Power: %d \n", power);
 	printf ("\n&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
 	printf ("\nGPS-coordinates long: %f , lat: %f , alt: %f  \n", longitude, latitude, altitude);
