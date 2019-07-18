@@ -796,8 +796,8 @@ int filecheck (char *filename, FILE wavefile)  // expected int?
 	printf ("\nallocating filename mem... \n");
 	filename = (char *) malloc (128);// allocating memory for filename
 	sprintf (filename, "\n%s\n", "file.ft");
-
-  if (filename != "sound.wav")
+	char *stdfile= "sound.wav";
+  if (filename != stdfile)
 	{
      fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
 	   return fp;
@@ -846,11 +846,12 @@ float step ()
 double channelmodepmr () //PMR
 {
 	char *type;
-
+  char *analog = "a";
+	char *digital = "d";
 	printf ("\nChoose PMR-Type (a)nalog / (d)igital: \n");
 	scanf ("%s", &type);
 
-	if (type=="a")
+	if (type==analog)
 	{
 	printf ("\nChoose aPMR-Channel 1-16 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -885,7 +886,7 @@ double channelmodepmr () //PMR
 						break;
    }
   }
-	else if (type=="d")
+	else if (type==digital)
 	{
 	printf ("\nChoose dPMR-Channel 1-32 (33 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -933,8 +934,8 @@ double channelmodepmr () //PMR
 	}
   else
 	{
-		printf ("\nNO type could be determined, wrong input! \n");
-		type="d";
+		printf ("\nNO type could be determined, wrong input! Using analog as standard \n");
+		type=analog;
 	}
   printf ("\nChannelnumber = %d on freq = %lf \n", channelnumberpmr, freq);
 	return freq;
