@@ -1,7 +1,7 @@
 # pifunk makefile
 # should be run with sudo or root rights
 USER=sudo
-CC=gcc # use gnu c compiler
+CC= gcc # use gnu c compiler
 STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
 LDFLAGS=-lpthread -lgthread
 #-std=gnu99 same as -std=iso9899:1999 as alternative
@@ -40,37 +40,37 @@ endif
 
 ifneq ($(TARGET), other)
 
-pifunk: pifunk.c
-					$(USER)$(CC)$(CFLAGS)$(LDFLAGS) -o bin/pifunk
+#pifunk: pifunk.c
+#					$(USER)$(CC)$(CFLAGS)$(LDFLAGS) -c -o bin/pifunk
 endif
 
 pifunk: pifunk.c
-					$(CC)$(CFLAGS) -o -E include/pifunk.i
+				$(USER)$$(CC)$(CFLAGS) -o -E include/pifunk.i
 
 pifunk.s: pifunk.c
-					$(CC)$(CFLAGS) -o lib/pifunk.s
+					$(USER)$$(CC)$(CFLAGS) -o lib/pifunk.s
 
 pifunk.o: pifunk.c
-					$(CC)$(CFLAGS) -o lib/pifunk.o
+					$(USER)$$(CC)$(CFLAGS) -o lib/pifunk.o
 
 pifunk.a: pifunk.c
-					$(CC)$(CFLAGS) -o lib/pifunk.a
+					$(USER)$$(CC)$(CFLAGS) -o lib/pifunk.a
 
 pifunk.lib: pifunk.c
-					$(CC)$(CFLAGS) -o lib/pifunk.lib
+				  	$(USER)$$(CC)$(CFLAGS) -o lib/pifunk.lib
 
 pifunk.so: pifunk.c
-					$(CC)$(CFLAGS) -o lib/pifunk.so
+					$(USER)$$(CC)$(CFLAGS) -o lib/pifunk.so
 
 pifunk.out: pifunk.c
-					$(CC)$(CFLAGS) -o bin/pifunk.out
+					  $(USER)$$(CC)$(CFLAGS) -o bin/pifunk.out
 
 pifunk.bin: pifunk.c
-						$(USER)$(CC)$(CFLAGS) -o bin/pifunk.bin
+						$(USER)$$(USER)$(CC)$(CFLAGS) -o bin/pifunk.bin
 
 pifunk: pifunk.c
-				$(USER)$(CC)$(CFLAGS) -o bin/pifunk
+				$(USER)$$(USER)$(CC)$(CFLAGS) -o bin/pifunk
 
 install:
 
-clean: rm -f bin/pifunk.out
+clean: $(USER) rm -f bin/pifunk.out
