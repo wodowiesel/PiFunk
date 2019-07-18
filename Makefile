@@ -41,11 +41,11 @@ endif
 ifneq ($(TARGET), other)
 
 #pifunk: pifunk.c
-#					$(USER)$(CC)$(CFLAGS)$(LDFLAGS) -c -o bin/pifunk
+#					$(USER) $(CC)$(CFLAGS)$(LDFLAGS) -c -o bin/pifunk
 endif
 
 pifunki: pifunk.c
-				$(USER)$(CC)$(CFLAGS) -o -E include/pifunk.i
+				$(USER) $(CC)$(CFLAGS) -o -E include/pifunk.i
 
 pifunk.s: pifunk.c
 					$(USER)$(CC)$(CFLAGS) -o lib/pifunk.s
