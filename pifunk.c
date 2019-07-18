@@ -1805,7 +1805,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv);//, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR... \n");
