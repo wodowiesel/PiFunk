@@ -3,6 +3,7 @@
 USER=sudo
 CC=gcc # use gnu c compiler
 STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
+LDFLAGS=-lpthread -lgthread
 #-std=gnu99 same as -std=iso9899:1999 as alternative
 
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
@@ -40,11 +41,11 @@ endif
 ifneq ($(TARGET), other)
 
 pifunk: pifunk.c
-					$(USER)$(CC)$(CFLAGS) -c -o bin/pifunk
+					$(USER)$(CC)$(CFLAGS)$(LDFLAGS) -o bin/pifunk
 endif
 
 pifunk.i: pifunk.c
-					$(CC)$(CFLAGS)-o include/pifunk.i
+					$(CC)$(CFLAGS) -o -E include/pifunk.i
 
 pifunk.s: pifunk.c
 					$(CC)$(CFLAGS) -o lib/pifunk.s
@@ -64,8 +65,11 @@ pifunk.so: pifunk.c
 pifunk.out: pifunk.c
 					$(CC)$(CFLAGS) -o bin/pifunk.out
 
+pifunk.bin: pifunk.c
+						$(USER)$(CC)$(CFLAGS) -o bin/pifunk.bin
+
 pifunk: pifunk.c
-					$(USER)$(CC)$(CFLAGS) -o bin/pifunk
+				$(USER)$(CC)$(CFLAGS) -o bin/pifunk
 
 install:
 
