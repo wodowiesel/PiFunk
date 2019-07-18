@@ -197,7 +197,7 @@ using namespace std;
 #ifdef __linux__ // || __unix__
   //printf ("Program runs under UNIX/LINUX");
 	//#pragma GCC dependency "pifunk.h"
-#elif __arm__
+#else if __arm__
   //printf ("Program runs under ARM-Architecture!");
   #pragma arm // same as -CODE32
 #else
@@ -205,10 +205,10 @@ using namespace std;
    //printf ("Unknnown OS or not Linux!");
 #endif
 
-#ifdef (__GNUC__ && __STDC_VERSION__ >= 199901L)
+#ifdef __GNUC__
    //printf ("Using GNU C with ANSI C99!!");
    //#pragma GCC system_header
-#elif __GNUC__
+#else if __STDC_VERSION__ >= 199901L
    /*#warning  string */
    //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
 #else
@@ -765,7 +765,7 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 //--------basic functions specified one after another
 void infos () //warnings and infos
 {
-		printf ();
+		printf ("");
 		/*red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
     printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //collor escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
@@ -781,8 +781,7 @@ int timer (time_t t)
 	 time (&t);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
-   printf ("\nCurrent formated date & time : %s \n", ctime (&t););
-	 CCLog ("\nCCLog test\n");
+   printf ("\nCurrent formated date & time : %s \n", ctime (&t));
    return 0;
 }
 
@@ -828,14 +827,17 @@ float step ()
 	printf ("\nnSteps are %f kHz \n", steps);
   return steps;
 	}
-	elseif (steps==12.5)
+	else if (steps==12.5)
 	{
 	printf ("\nSteps are %f kHz \n", steps);
   return steps;
 	}
-  else	printf ("\nNO steps could be determined, wrong input! \n");
-
-return steps;
+  else
+  {
+  printf ("\nNO steps could be determined, wrong input! Using Standard 12.5\n");
+  steps = 12.5;
+  return steps;
+  }
 }
 
 // Channel-mode
@@ -881,7 +883,7 @@ double channelmodepmr () //PMR
 						break;
    }
   }
-	elseif (type="d")
+	else if (type="d")
 	{
 	printf ("\nChoose dPMR-Channel 1-32 (33 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -1164,10 +1166,10 @@ void channelselect () // make a void
 									channelmodecb ();
 									break;
 
-					default: printf ("\nDefault: PMR\n");
+					default:  printf ("\nDefault: PMR\n");
 										step ();
 										channelmodepmr (); // gets freq from pmr list
-									 break;
+									  break;
 	}
 	return;
 }
@@ -1177,11 +1179,12 @@ void channelselect () // make a void
 int ledinactive (char *filename, double freq, int samplerate)
 {
 		//check if transmitting
-		while (!play_wav (char *filename, double freq, int samplerate))
+	/*	while (!play_wav (char *filename, double freq, int samplerate))
 		{
 				//cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
 		}
+    */
     return 0;
 }
 
@@ -1201,7 +1204,7 @@ int ledactive ()
     //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav (char filename, double freq, int samplerate))
+		while (play_wav (char *filename, double freq, int samplerate))
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN17, HIGH);
@@ -1661,7 +1664,7 @@ char callname ()
 		switch (callnameselect)
 	  {
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign [8]);
+						 scanf  ("%s", &callsign);
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
@@ -1745,7 +1748,7 @@ void modulationfm (int argc, char **argv)//FM
     setupfm (); // gets filename & path or done by filecheck () func
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-    play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
+    //play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
 		return;
 }
 
@@ -1782,7 +1785,7 @@ void cgimodule () // just a small test, not meant for pifunk
 void assistent () //assistent
 {
 		printf ("\nStarting assistent for setting parameters! \n");
-		filecheck (filename);
+		filecheck (filename, wavefile);
 		samplecheck (filename, samplerate);
 		modetype (freq);
 		callname ();
@@ -1800,7 +1803,7 @@ void menu ()
  	scanf ("%d", &menuoption);
 	switch (menuoption)
 	{
-		case 1: printf ("\nShell - Commandline (main): \n");
+		case 0: printf ("\nShell - Commandline (main): \n");
 						int main (int argc, char **argv, const char short_opt); // go back to cmd if you want
 						break;
 
@@ -1822,7 +1825,7 @@ void menu ()
 }
 
 //--------- MAIN
-int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
+int main (int argc, char **argv) // arguments for global use must! be in main , const char *short_opt
 {
 	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
 	int options = 0;
