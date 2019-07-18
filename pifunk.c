@@ -277,6 +277,7 @@ volatile unsigned 										*allof7e;
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 #endif
+
 #ifdef  RASPI2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -284,6 +285,7 @@ volatile unsigned 										*allof7e;
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #endif
+
 #ifdef  RASPI3
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
@@ -302,12 +304,12 @@ volatile unsigned 										*allof7e;
 #ifdef  RPI 									     	   	// alternative
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
+
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) //dec: 12
-#endif
 
 //---
 
@@ -634,8 +636,8 @@ uint32_t carrier_freq = 87600000; // why this value?
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
-SNDFILE *infile;
-SNDFILE *outfile;
+//SNDFILE *infile;
+//SNDFILE *outfile;
 //snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit = 16;
@@ -765,7 +767,7 @@ RTC (DS3231/1307 driver as bcm) stuff here if needed
 //--------basic functions specified one after another
 void infos () //warnings and infos
 {
-		printf ("");
+		printf ("\n");
 		/*red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
     printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //collor escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
@@ -932,7 +934,7 @@ double channelmodepmr () //PMR
   else
 	{
 		printf ("\nNO type could be determined, wrong input! \n");
-		break;
+		type="d";
 	}
   printf ("\nChannelnumber = %d on freq = %lf \n", channelnumberpmr, freq);
 	return freq;
@@ -1804,7 +1806,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv, const char short_opt); // go back to cmd if you want
+						int main (int argc, char **argv, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR... \n");
@@ -1825,7 +1827,7 @@ void menu ()
 }
 
 //--------- MAIN
-int main (int argc, char **argv) // arguments for global use must! be in main , const char *short_opt
+int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
 {
 	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
 	int options = 0;
