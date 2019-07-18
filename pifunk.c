@@ -196,13 +196,12 @@ using namespace std;
 //preproccessor definitions
 #ifdef __linux__ // || __unix__
   //printf ("Program runs under UNIX/LINUX");
-	//#pragma GCC dependency "pifunk.h"
-#else if __arm__
+	#pragma GCC dependency "pifunk.h"
+#endif
+#ifdef __arm__
   //printf ("Program runs under ARM-Architecture!");
   #pragma arm // same as -CODE32
-#else
    //#error
-   //printf ("Unknnown OS or not Linux!");
 #endif
 
 #ifdef __GNUC__
