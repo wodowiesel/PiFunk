@@ -3,7 +3,7 @@
 USER=sudo
 CC=gcc # use gnu c compiler
 STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
-LDFLAGS=-lpthread #-lgthread
+LDFLAGS=-lpthread#-lgthread
 #-std=gnu99 same as -std=iso9899:1999 as alternative
 
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
@@ -31,7 +31,7 @@ else ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
 	TARGET = rpi
 else ifeq ($(UNAME), armv7l)
-	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERY
+	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 	TARGET = raspberry
 else
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1

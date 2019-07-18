@@ -67,7 +67,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <unistd.h>
 
 // functionality includes
-#include <iso646.h> //c95 - back-compatible  -std=iso9899:199409
+#include <iso646.h> //c95 back-compatible  -std=iso9899:199409
 #include <argp.h>
 #include <string.h>
 #include <getopt.h>
@@ -98,7 +98,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <pwd.h>
 #include <poll.h>
 #include <argp.h>
-#include <common.h>
+//#include <common.h>
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -175,7 +175,7 @@ using namespace std;
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
+//#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
@@ -194,26 +194,26 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
-#ifdef __linux__  || __unix__
-  printf ("\nProgram runs under UNIX/LINUX \n");
+#ifdef __linux__ // || __unix__
+  //printf ("Program runs under UNIX/LINUX");
 	//#pragma GCC dependency "pifunk.h"
 #elif __arm__
-  printf ("\nProgram runs under ARM-Architecture! \n");
-  //#pragma arm // same as -CODE32
+  //printf ("Program runs under ARM-Architecture!");
+  #pragma arm // same as -CODE32
 #else
    //#error
-   printf ("Unknnown OS! or not Linux! \n");
+   //printf ("Unknnown OS or not Linux!");
 #endif
 
 #ifdef __GNUC__ && __STDC_VERSION__ >= 199901L
-   printf ("\nUsing GNU C with ANSI C99!!\n");
+   //printf ("Using GNU C with ANSI C99!!");
    //#pragma GCC system_header
 #elif __GNUC__
    /*#warning  string */
-   printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99 \n");
+   //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
 #else
    //#error
-   printf ("Program was not compiled with GNU C and C99 standard! \n");
+   //printf ("Program was not compiled with GNU C and C99 standard!");
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
@@ -223,6 +223,10 @@ using namespace std;
 #define VERSION_BUILD        (7)
 #define VERSION_PATCHLEVEL   (4)
 #define VERSION_STATUS 			 "e"
+
+#define _GNU_SOURCE
+#define _POSIX_C_SOURCE
+#define _USE_MATH_DEFINES
 
 //---- PI specific stuff
 #define IN                    (0)
@@ -235,15 +239,11 @@ predefine if needed when not using bcm header
 #define HIGH (1)
 */
 
-#define _GNU_SOURCE
-#define _POSIX_C_SOURCE
-#define _USE_MATH_DEFINES
 //-------buffers
 #define PAGE_SIZE             (4*1024) //4096
 #define BLOCK_SIZE            (4*1024) //4096
 #define BUFFER_LEN            (8*1024) //8192
 #define BUFFERINSTRUCTIONS    (65536) //[1024]
-
 //#define sleep [1000]
 //#define usleep [1000]
 
@@ -893,37 +893,37 @@ double channelmodepmr () //PMR
 	 {
    //FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
 	 case 1:		freq=446.003125; break;
-	 case 2":		freq=446.009375; break;
-	 case 3":		freq=446.015625; break;
-	 case 4":		freq=446.021875; break;
-	 case 5":		freq=446.028125; break;
-	 case 6":		freq=446.034375; break;
-	 case 7":		freq=446.040625; break;
-	 case 8":		freq=446.046875; break;
-	 case 9":		freq=446.053125; break;
-	 case 10":	freq=446.059375; break;
-	 case 11":	freq=446.065625; break;
-	 case 12":	freq=446.071875; break;
-	 case 13":	freq=446.078125; break;
-	 case 14":	freq=446.084375; break;
-	 case 15":	freq=446.090625; break;
-	 case 16":	freq=446.096875; break;
-	 case 17":	freq=446.103125; break;
-	 case 18":	freq=446.109375; break;
-	 case 19":	freq=446.115625; break;
-	 case 20":	freq=446.121875; break;
-	 case 21":	freq=446.128125; break;
-	 case 22":	freq=446.134375; break;
-	 case 23":	freq=446.140625; break;
-	 case 24":	freq=446.146875; break;
-	 case 25":	freq=446.153125; break;
-	 case 26":	freq=446.159375; break;
-	 case 27":	freq=446.165625; break;
-	 case 28":	freq=446.171875; break;
-	 case 29":	freq=446.178125; break;
-	 case 30":	freq=446.184375; break;
-	 case 31":	freq=446.190625; break;
-	 case 32":	freq=446.196875; break;
+	 case 2:		freq=446.009375; break;
+	 case 3:		freq=446.015625; break;
+	 case 4:		freq=446.021875; break;
+	 case 5:		freq=446.028125; break;
+	 case 6:		freq=446.034375; break;
+	 case 7:		freq=446.040625; break;
+	 case 8:		freq=446.046875; break;
+	 case 9:		freq=446.053125; break;
+	 case 10:	freq=446.059375; break;
+	 case 11:	freq=446.065625; break;
+	 case 12:	freq=446.071875; break;
+	 case 13:	freq=446.078125; break;
+	 case 14:	freq=446.084375; break;
+	 case 15:	freq=446.090625; break;
+	 case 16:	freq=446.096875; break;
+	 case 17:	freq=446.103125; break;
+	 case 18:	freq=446.109375; break;
+	 case 19:	freq=446.115625; break;
+	 case 20:	freq=446.121875; break;
+	 case 21:	freq=446.128125; break;
+	 case 22:	freq=446.134375; break;
+	 case 23:	freq=446.140625; break;
+	 case 24:	freq=446.146875; break;
+	 case 25:	freq=446.153125; break;
+	 case 26:	freq=446.159375; break;
+	 case 27:	freq=446.165625; break;
+	 case 28:	freq=446.171875; break;
+	 case 29:	freq=446.178125; break;
+	 case 30:	freq=446.184375; break;
+	 case 31:	freq=446.190625; break;
+	 case 32:	freq=446.196875; break;
 	 //normaly up to 32 chan in dpmr
 	 case 33: 		exit (0);
 	 default:			freq=446.003125;
