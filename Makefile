@@ -44,8 +44,8 @@ ifneq ($(TARGET), other)
 #					$(USER) $(CC)$(CFLAGS)$(LDFLAGS) -c -o bin/pifunk
 endif
 
-pifunki: pifunk.c
-				$(USER) $(CC)$(CFLAGS) -o -E include/pifunk.i
+#pifunki: pifunk.c
+#				$(USER) $(CC)$(CFLAGS) -o -E include/pifunk.i
 
 pifunk.s: pifunk.c
 					$(USER)$(CC)$(CFLAGS) -o lib/pifunk.s
