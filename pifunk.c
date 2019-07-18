@@ -207,13 +207,11 @@ using namespace std;
 
 #ifdef __GNUC__
    //printf ("Using GNU C with ANSI C99!!");
-   //#pragma GCC system_header
-#else if __STDC_VERSION__ >= 199901L
+   #pragma GCC system_header
+#endif
+#ifdef __STDC_VERSION__ >= 199901L
    /*#warning  string */
    //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
-#else
-   //#error
-   //printf ("Program was not compiled with GNU C and C99 standard!");
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
@@ -298,14 +296,15 @@ volatile unsigned 										*allof7e;
 #define XTAL_CLOCK                     (54.0E6)
 #define DMA_CHANNEL                    (6)
 #endif
+
 #ifdef  RASPBERRY 											// other models
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
+
 #ifdef  RPI 									     	   	// alternative
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
 
-#else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
@@ -657,7 +656,7 @@ float data_filtered [2*BUFFER_LEN];
 //float volbuffer [SAMPLES_PER_BUFFER];
 //float volumeLevelDb = -6.f; //cut amplitude in half
 //float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
-SF_INFO sfinfo;
+//SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
 float A = 87.6f; // compression parameter -> this might be the carrier too
@@ -1827,7 +1826,7 @@ void menu ()
 }
 
 //--------- MAIN
-int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main
+int main (int argc, char **argv) // arguments for global use must! be in main! const char *short_opt
 {
 	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
 	int options = 0;
