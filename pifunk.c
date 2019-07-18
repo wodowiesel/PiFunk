@@ -205,7 +205,7 @@ using namespace std;
    //printf ("Unknnown OS or not Linux!");
 #endif
 
-#ifdef __GNUC__ && __STDC_VERSION__ >= 199901L
+#ifdef (__GNUC__ && __STDC_VERSION__ >= 199901L)
    //printf ("Using GNU C with ANSI C99!!");
    //#pragma GCC system_header
 #elif __GNUC__
@@ -254,7 +254,7 @@ volatile unsigned 										*allof7e;
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
 #define ALLOF7ED											(*allof7e - SUB_BASE)
 #define PIN_GND                       9 // which is the GPIO pin 17 for led
-#define PIN17                         RPI_GPIO_P1_11 // which is the GPIO pin 17 for led
+#define PIN17                         RPI_GPIO_P17 // which is the GPIO pin 17 for led
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
@@ -269,24 +269,24 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-
+#endif
 // Original Raspberry Pi 1
 #ifdef  RASPI1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-
+#endif
 #ifdef  RASPI2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
-
+#endif
 #ifdef  RASPI3
 #define PERIPH_VIRT_BASE               (0x20000000)
-
+#endif
 //pi4 -> waiting for documentation from adafruit
 #ifdef  RASPI4
 #define PERIPH_VIRT_BASE               (0xFE000000)
@@ -295,13 +295,13 @@ volatile unsigned 										*allof7e;
 #define MEM_FLAG                       (0x04)
 #define XTAL_CLOCK                     (54.0E6)
 #define DMA_CHANNEL                    (6)
-
+#endif
 #ifdef  RASPBERRY 											// other models
 #define PERIPH_VIRT_BASE               (0x20000000)
-
+#endif
 #ifdef  RPI 									     	   	// alternative
 #define PERIPH_VIRT_BASE               (0x20000000)
-
+#endif
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
