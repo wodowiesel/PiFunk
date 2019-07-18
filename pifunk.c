@@ -850,7 +850,7 @@ double channelmodepmr () //PMR
 	printf ("\nChoose PMR-Type (a)nalog / (d)igital: \n");
 	scanf ("%s", &type);
 
-	if (type="a")
+	if (type=="a")
 	{
 	printf ("\nChoose aPMR-Channel 1-16 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -885,7 +885,7 @@ double channelmodepmr () //PMR
 						break;
    }
   }
-	else if (type="d")
+	else if (type=="d")
 	{
 	printf ("\nChoose dPMR-Channel 1-32 (33 to exit): \n");
 	scanf ("%d", &channelnumberpmr);

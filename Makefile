@@ -44,8 +44,8 @@ ifneq ($(TARGET), other)
 #					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -c -o bin/pifunk
 endif
 
-#pifunk.i: pifunk.c
-#				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o -E include/pifunk.i
+pifunk.i: pifunk.c
+				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o include/pifunk.i #-E
 
 pifunk.s: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.s
@@ -71,6 +71,6 @@ pifunk.bin: pifunk.c
 pifunk: pifunk.c
 				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o bin/pifunk
 
-install: $(USER)
+install: $(USER) cd PiFunk
 
 clean: $(USER) rm -f bin/pifunk.out
