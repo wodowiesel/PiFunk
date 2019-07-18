@@ -261,44 +261,49 @@ volatile unsigned 										*allof7e;
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
 // unknown pi versions like banana
-#ifdef RASPIX
-#elif   RASPI0
+#ifdef  RASPI0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 
 // Original Raspberry Pi 1
-#elif   RASPI1
+#ifdef  RASPI1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 
-#elif   RASPI2
+#ifdef  RASPI2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 
-#elif   RASPI3
+#ifdef  RASPI3
 #define PERIPH_VIRT_BASE               (0x20000000)
+
 //pi4 -> waiting for documentation from adafruit
-#elif   RASPI4
+#ifdef  RASPI4
+#define PERIPH_VIRT_BASE               (0xFE000000)
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define DRAM_PHYS_BASE                 (0xC0000000)
+#define MEM_FLAG                       (0x04)
+#define XTAL_CLOCK                     (54.0E6)
+#define DMA_CHANNEL                    (6)
+
+#ifdef  RASPBERRY 											// other models
 #define PERIPH_VIRT_BASE               (0x20000000)
 
-#elif   RASPBERRY 											// other models
-#define PERIPH_VIRT_BASE               (0x20000000)
-
-#elif   RPI 									     	   	// alternative
+#ifdef  RPI 									     	   	// alternative
 #define PERIPH_VIRT_BASE               (0x20000000)
 
 #else
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK
+#define CURBLOCK                       (0x04) //dec: 12
 #endif
 
 //---
@@ -308,7 +313,7 @@ volatile unsigned 										*allof7e;
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
-#define DMABASE                        0x7E007000 // dec: 2113957888
+#define DMABASE                        (0x7E007000) // dec: 2113957888
 #define CLKBASE                        (0x7E101000) // dec: 2114981888
 #define GPFSEL3                        (0x7E200000) // p.90 dec: 2116026368
 #define PWMBASE                        (0x7E20C000) // controller dec: 2116075520

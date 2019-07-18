@@ -21,26 +21,26 @@ else ifeq ($(UNAME), armv7l)
 	CFLAGS = $(STD_CFLAGS) -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
 	TARGET = pi2
 else ifeq ($(UNAME), armv8l)
-		CFLAGS = $(STD_CFLAGS) -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
-		TARGET = pi3
+	CFLAGS = $(STD_CFLAGS) -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
+	TARGET = pi3
 else ifeq ($(UNAME), armv8l)
-			CFLAGS = $(STD_CFLAGS) -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
-			TARGET = pi4
+	CFLAGS = $(STD_CFLAGS) -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+	TARGET = pi4
 else ifeq ($(UNAME), armv7l)
-						CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
-						TARGET = rpi
+	CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+	TARGET = rpi
 else ifeq ($(UNAME), armv7l)
-						CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
-						TARGET = raspberry
+	CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERY
+	TARGET = raspberry
 else
-	CFLAGS = $(STD_CFLAGS) -c -march=native -mtune=native -mfloat-abi=softfp -mfpu=auto -DRASPIX
+	CFLAGS = $(STD_CFLAGS) -c -march=native -mtune=native -mfloat-abi=softfp -mfpu=auto -DRASPI
 	TARGET = other
 endif
 
 ifneq ($(TARGET), other)
 
-app: pifunk.c
-					$(USER)$(CC)$(CFLAGS)-o bin/pifunk
+pifunk: pifunk.c
+					$(USER)$(CC)$(CFLAGS)-c -o bin/pifunk
 endif
 
 pifunk.i: pifunk.c
@@ -69,4 +69,4 @@ pifunk: pifunk.c
 
 install:
 
-clean: rm -f bin/*.o
+clean: rm -f bin/*.out
