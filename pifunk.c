@@ -1111,7 +1111,7 @@ double channelmodecb () // CB
 void modselect (int argc, char **argv, char *mod)
 {
 	printf ("\nOpening Modulator... \n");
-	if (mod ==) fm)
+	if (mod == fm)
 	{
 		void modulationfm (int argc, char **argv);
 	}
