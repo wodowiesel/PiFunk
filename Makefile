@@ -3,7 +3,7 @@
 USER=sudo
 CC=gcc # use gnu c compiler
 STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
-LDFLAGS=-lpthread -lgthread
+LDFLAGS=-lpthread #-lgthread
 #-std=gnu99 same as -std=iso9899:1999 as alternative
 
 # Enable ARM-specific options only on ARM, and compilation of the app only on ARM
@@ -34,43 +34,43 @@ else ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERY
 	TARGET = raspberry
 else
-	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
+	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 	TARGET = other
 endif
 
 ifneq ($(TARGET), other)
 
 #pifunk: pifunk.c
-#					$(USER) $(CC)$(CFLAGS)$(LDFLAGS) -c -o bin/pifunk
+#					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -c -o bin/pifunk
 endif
 
 #pifunk.i: pifunk.c
-#				$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o -E include/pifunk.i
+#				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o -E include/pifunk.i
 
 pifunk.s: pifunk.c
-					$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o lib/pifunk.s
+					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.s
 
 pifunk.o: pifunk.c
-					$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o lib/pifunk.o
+					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.o
 
 pifunk.a: pifunk.c
-					$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o lib/pifunk.a
+					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.a
 
 pifunk.lib: pifunk.c
-				  	$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o lib/pifunk.lib
+				  	$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.lib
 
 pifunk.so: pifunk.c
-					 $(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o lib/pifunk.so
+					 $(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.so
 
 pifunk.out: pifunk.c
-					  $(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o bin/pifunk.out
+					  $(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o bin/pifunk.out
 
 pifunk.bin: pifunk.c
-						$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o bin/pifunk.bin
+						$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS)-o bin/pifunk.bin
 
 pifunk: pifunk.c
-				$(USER) $(CC)$(STD_CFLAGS)$(CFLAGS) -o bin/pifunk
+				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o bin/pifunk
 
-install:
+install: $(USER)
 
 clean: $(USER) rm -f bin/pifunk.out
