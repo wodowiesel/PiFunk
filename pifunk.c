@@ -201,14 +201,14 @@ using namespace std;
 #endif
 #ifdef __arm__
   //printf ("Program runs under ARM-Architecture!");
-  #pragma ARM
+  //#pragma ARM
   // same as -CODE32
    //#error
 #endif
 
 #ifdef __GNUC__
    //printf ("Using GNU C with ANSI C99!!");
-   #pragma GCC system_header
+   //#pragma GCC system_header
 #endif
 #ifdef __STDC_VERSION__ >= 199901L
    /*#warning  string */
@@ -1111,11 +1111,11 @@ double channelmodecb () // CB
 void modselect (int argc, char **argv, char *mod)
 {
 	printf ("\nOpening Modulator... \n");
-	if (mod = "fm")
+	if (mod ==) fm)
 	{
 		void modulationfm (int argc, char **argv);
 	}
-	else if (mod = "am")
+	else if (mod == am)
 	{
 		void modulationam (int argc, char **argv);
 	}
