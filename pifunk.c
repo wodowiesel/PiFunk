@@ -194,31 +194,34 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
-#ifdef __linux__ // ||__unix__
+#ifdef __linux__  || __unix__
   printf ("\nProgram runs under UNIX/LINUX \n");
 	//#pragma GCC dependency "pifunk.h"
 #elif __arm__
   printf ("\nProgram runs under ARM-Architecture! \n");
+  //#pragma arm // same as -CODE32
 #else
    //#error
    printf ("Unknnown OS! or not Linux! \n");
 #endif
 
 #ifdef __GNUC__ && __STDC_VERSION__ >= 199901L
-   printf ("\nUsing Gnu C with ANSI C99!!\n");
+   printf ("\nUsing GNU C with ANSI C99!!\n");
+   //#pragma GCC system_header
 #elif __GNUC__
-   /*#warning "Using Gnu C without C99 standard!! Please compile with flag -std=c99 \n" */
+   /*#warning  string */
+   printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99 \n");
 #else
    //#error
-   printf ("Program was not compiled with GNU and C99 standard! \n");
+   printf ("Program was not compiled with GNU C and C99 standard! \n");
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.3"
+#define VERSION 						 "0.1.7.4"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (3)
+#define VERSION_PATCHLEVEL   (4)
 #define VERSION_STATUS 			 "e"
 
 //---- PI specific stuff

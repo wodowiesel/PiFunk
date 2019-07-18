@@ -12,7 +12,7 @@ STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC
 UNAME := $(shell uname -m) #linux
 
 ifeq ($(UNAME), armv6l)
-	CFLAGS = $(STD_CFLAGS) -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=auto -ffast-math -DRASPI0
+	CFLAGS = $(STD_CFLAGS) -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
 	TARGET = pi0
 else ifeq ($(UNAME), armv6l)
 	CFLAGS = $(STD_CFLAGS) -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
@@ -33,40 +33,40 @@ else ifeq ($(UNAME), armv7l)
 	CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERY
 	TARGET = raspberry
 else
-	CFLAGS = $(STD_CFLAGS) -c -march=native -mtune=native -mfloat-abi=softfp -mfpu=auto -DRASPI
+	CFLAGS = $(STD_CFLAGS) -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
 	TARGET = other
 endif
 
 ifneq ($(TARGET), other)
 
 pifunk: pifunk.c
-					$(USER)$(CC)$(CFLAGS)-c -o bin/pifunk
+					$(USER)$(CC)$(CFLAGS) -c -o bin/pifunk
 endif
 
 pifunk.i: pifunk.c
 					$(CC)$(CFLAGS)-o include/pifunk.i
 
 pifunk.s: pifunk.c
-					$(CC)$(CFLAGS)-o lib/pifunk.s
+					$(CC)$(CFLAGS) -o lib/pifunk.s
 
 pifunk.o: pifunk.c
-					$(CC)$(CFLAGS)-o lib/pifunk.o
+					$(CC)$(CFLAGS) -o lib/pifunk.o
 
 pifunk.a: pifunk.c
-					$(CC)$(CFLAGS)-o lib/pifunk.a
+					$(CC)$(CFLAGS) -o lib/pifunk.a
 
 pifunk.lib: pifunk.c
-					$(CC)$(CFLAGS)-o lib/pifunk.lib
+					$(CC)$(CFLAGS) -o lib/pifunk.lib
 
 pifunk.so: pifunk.c
-					$(CC)$(CFLAGS)-o lib/pifunk.so
+					$(CC)$(CFLAGS) -o lib/pifunk.so
 
 pifunk.out: pifunk.c
-					$(CC)$(CFLAGS)-o bin/pifunk.out
+					$(CC)$(CFLAGS) -o bin/pifunk.out
 
 pifunk: pifunk.c
-					$(USER)$(CC)$(CFLAGS)-o bin/pifunk
+					$(USER)$(CC)$(CFLAGS) -o bin/pifunk
 
 install:
 
-clean: rm -f bin/*.out
+clean: rm -f bin/pifunk.out
