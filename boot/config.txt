@@ -10,9 +10,11 @@ modprobe i2c_bcm2708
 modprobe i2c_dev
 chmod 666 /dev/i2c-1
 adduser pi i2c
+enable_uart=1 #for UART RX & TX
 
 dtoverlay=gpiopin=4,pullup=0
 dtoverlay=i2c-rtc,ds3231
+dtoverlay=pps-gpio,gpiopin=18
 dtoverlay=w1-gpio
 
 #Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
