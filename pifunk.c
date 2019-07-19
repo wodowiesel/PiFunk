@@ -21,7 +21,8 @@ sudo apt-get install libsndfile1-dev
  gcc -g -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
  make (compile flag in male included)
 //-std=c99 is the same as -std=iso9899:1999 or =gnu99
-  gcc -xc -E -v - -> to check out the path of include directory path if you want to do custom things
+	-E tells to stop after preprocessing stage
+	-v verbose
 
 //run with admin/root permissions!!
  sudo pifunk sound.wav 100.000 22050 fm callsign

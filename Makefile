@@ -2,7 +2,7 @@
 # should be run with sudo or root rights
 USER=sudo
 CC=gcc # use gnu c compiler
-STD_CFLAGS=-Wall -std=c99 -g3 -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
+STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -O3 -v -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
 LDFLAGS=-lpthread#-lgthread
 #-std=gnu99 same as -std=iso9899:1999 as alternative
 
@@ -45,10 +45,10 @@ ifneq ($(TARGET), other)
 endif
 
 pifunk.i: pifunk.c
-				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o include/pifunk.i #-E
+				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -E -C -o include/pifunk.i
 
 pifunk.s: pifunk.c
-					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.s
+					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -s -o lib/pifunk.s
 
 pifunk.o: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) -o lib/pifunk.o
