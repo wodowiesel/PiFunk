@@ -62,7 +62,7 @@ ___
 
 6. You will need some libraries for this:
 
-a) `sudo apt-get install libsndfile1-dev`
+a) `sudo apt-get install libsndfile1-dev` or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
 
 b) `sudo apt-get install python-dev python3-dev` for py3
 
@@ -84,7 +84,7 @@ or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
 
 a) GNU C Compiler  `sudo apt-get install gcc`
 
-b)GNU GDB Debugger `sudo apt-get install gdbserver`
+b) GNU GDB Debugger `sudo apt-get install gdbserver`
 
 8. `sudo reboot` then reboot to apply the changes
 
@@ -101,7 +101,8 @@ b) GCC Compiler flags:
 
 `-Wall` for debug warning informations
 
-`-v`	Print compilation infos
+`-v`	Print compilation verbose infos
+
 `-DRASPI1` defines the macro to be used by the preprocessor (here the PI model 0-4)
 
  -> will be detected my the make-file via the type of the ARM-Processor
@@ -118,7 +119,7 @@ b) GCC Compiler flags:
 
 `-Llib` for using library-directory
 
-`-c` for compiling without linking for making .o object
+`-c` for compiling without linking for making object
 
 `-shared` for generating shared object libraries
 
@@ -134,30 +135,30 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 *.c=C-SourcCcode, *.h=headerfile, *.i=assembled preprocessor-C-Code, *.s= preprocessed assembler code,
 
-*.o= compiled objcet, *.lib=library object, *.a=static archive object, *.so=shared dynamic library object,
+*.o= compiled objcet, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
 
 *.out=default binary, pifunk(.bin)= executable binary (program)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -g -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
  d) optional:
- -march=armv6l architecture version of ARM, -mtune=arm1176jzf-s architecture type tuning ("march=native" is auto option),
+ -march=armv6l architecture version of ARM, -mtune=arm1176jzf-s architecture type tuning ("march=native" is auto option)
 
- -mfloat-abi=hard floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’,
+ -mfloat-abi=hard floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
- -mfpu=vfp floating point hardware module,
+ -mfpu=vfp floating point hardware module
 
  -ffast-math increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
 `sudo make` with pre-configured flags for compilation for all Pi's
 
-`sudo clean` for removing *.o files if necessary
+`sudo clean` for removing *.out files if necessary
 
 ___
 
