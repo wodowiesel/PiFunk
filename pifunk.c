@@ -99,7 +99,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <pwd.h>
 #include <poll.h>
 #include <argp.h>
-//#include <common.h>
+#include <common.h>
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -567,16 +567,16 @@ volatile unsigned 										*allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-#define VOLUME_REFERENCE 1;
 //#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
 //#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) //|| 1<<bit// |=
 //#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
-
+#define VOLUME_REFERENCE 								(1)
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
 
-//if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
-//if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
+if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
+if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
+#define RTC_I2C_ADR                       	(0x68)
 //-----------------------------------
 static char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
