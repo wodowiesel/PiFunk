@@ -7,5 +7,5 @@
 RPi.GPIO>=0.6.5 #or at least 0.6.2
 libsndfile1-dev>=1.0.28-5 # https://packages.debian.org/de/sid/libsndfile1-dev
 libusb>=1.0.22
-numpy>=1.8.0
+#numpy>=1.8.0
 gcc>=8.3 #or g++
