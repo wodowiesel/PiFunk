@@ -1,5 +1,7 @@
 # /boot/config.txt
 
+# normal settings for the pi
+
 force_turbo=1 #needed if overclocking or setting specific values
 arm_freq=700 #or pi1/2, pi3/4 has 900
 gpu_freq=250 #for pi1/2, pi3/4 has 400
@@ -10,7 +12,9 @@ modprobe i2c_bcm2708
 modprobe i2c_dev
 chmod 666 /dev/i2c-1
 adduser pi i2c
+
 enable_uart=1 #for UART RX & TX
+init_uart_baud=9600
 
 dtoverlay=gpiopin=4,pullup=0
 dtoverlay=i2c-rtc,ds3231
@@ -18,7 +22,7 @@ dtoverlay=pps-gpio,gpiopin=18
 dtoverlay=w1-gpio
 
 #Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
-#do open path of w1-device 
+#do open path of w1-device
 ls /sys/bus/w1/devices/
 
 #tempsensor
