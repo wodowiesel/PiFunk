@@ -13,15 +13,15 @@ gdb 7.11.1 debugger
  You will need alsa library for this:
 
 sudo apt-get install libsndfile1-dev
- cd PiFunk // goto path
+cd PiFunk // goto path
 
-->lm flag for math lib (obligatory), -g for debugger, -c for filesource for library, -c compile without linking
+->lm flag for math lib (obligatory), -g3 for debugger, -c for not linkin to library
 =>compile with admin/root permissions!!
- gcc -g -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk.o pifunk.out pifunk.so pifunk.a
- gcc -g -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk
- make (compile flag in male included)
-//-std=c99 is the same as -std=iso9899:1999 or =gnu99
-	-E tells to stop after preprocessing stage
+ gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk.i pifunk.s pifunk.o pifunk.a pifunk.so pifunk.lib
+ gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk pifunk.out
+ or do make (compile flags in make included)
+ -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++11
+ -E tells to stop after preprocessing stage
 	-v verbose
 
 //run with admin/root permissions!!
@@ -600,7 +600,7 @@ char *spi0_map;
 //arguments
 int opt;
 char *filename = "sound.wav";
-double freq;
+double freq = fabs (freq);
 double subfreq = 67.0;
 double ctss_freq = 67.0;
 uint32_t Timing;
@@ -609,11 +609,11 @@ char *fm = "fm";
 char *am = "am";
 char *callsign = "callsign";
 float volume = 1.1f;
-int power = 7;
-int powerlevel = 7;
-int samplerate = 22050;
+int power = abs (7);
+int powerlevel = abs (7);
+int samplerate = abs (22050);
 int channels = 1;
-double shift_ppm = 0;
+double shift_ppm = 0.0;
 
 //menu variables
 int menuoption;
@@ -628,7 +628,6 @@ time_t t;
 
 // IQ & carrier
 uint16_t pis = 0x1234; // dec: 4660
-uint32_t carrier_freq = 87600000; // why this value?
 //double I = sin ((PERIOD*freq) + shift_ppm);
 //double Q = cos ((PERIOD*freq) + shift_ppm);
 //double RF_SUM = (I+Q);
@@ -641,10 +640,11 @@ FILE wavefile;
 //SNDFILE *outfile;
 //snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
-int filebit = 16;
+int filebit = abs (16);
 int readcount;
 int readBytes;
-float datanew, dataold = 0;
+float datanew = 0;
+float dataold = 0;
 char data_name [1024];
 char buffer [80];
 float data [2*BUFFER_LEN];
@@ -661,7 +661,8 @@ float data_filtered [2*BUFFER_LEN];
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
-float A = 87.6f; // compression parameter -> this might be the carrier too
+float A = 87.6f; // compression parameter
+uint32_t carrier_freq = 87600000; // -> this might be the carrier too, why this value?
 float FactAmplitude = 2.0; //maybe here amp-modulator type input?
 float ampf;
 float ampf2;
@@ -689,7 +690,7 @@ int port = 8080;
 //default Frankfurt in decimal °grad (centigrade)
 float longitude = 8.682127; // E
 float latitude = 50.110924; // N
-float altitude = 100.0; // elevation in meter above see level  (u.N.N.)
+float altitude = fabs (100.00); // elevation in meter above see level  (u.N.N.)
 
 //--------------------------------------------------
 // Structs
@@ -1775,7 +1776,7 @@ int tx (int argc, char **argv)
 
 void cgimodule () // just a small test, not meant for pifunk
 {
- printf ("context-type:text/html\n\n");
+ printf ("\ncontext-type:text/html\n");
  printf ("<html>\n");
  printf ("<head>\n");
  printf	("PiFunk Project\n");
@@ -1835,15 +1836,18 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	int options = 0;
 	argv [0] = "pifunk";
 	char *filename = "sound.wav"; // = argv [1];
-	double freq = 446.006250; // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate = 22050;// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	double freq = fabs (446.006250); // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate = abs (22050);// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm";// =argv [4];
 	char *callsign = "callsign";// =argv [5];
 	int power = 7;// =argv [6];
-	// atoll () is meant for integers & it stops parsing when it finds the first non-digit
-	// atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
-
-	// for custom  programname, default is the filename itself
+	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
+	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
+	abs () for int
+	fabs () for double
+	fabsf () for float
+	*/
+	// for custom programname, default is the filename itself
 	titel ();
 	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
@@ -1856,7 +1860,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	{
 		if (argc == 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		}
 		/*else
 		{ */

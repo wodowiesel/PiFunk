@@ -39,11 +39,11 @@ optional:
 
 `enable_uart=1` for UART RX & TX
 
-`dtoverlay=pps-gpio,gpiopin=18`
+`init_uart_baud=9600`
+
+`dtoverlay=pps-gpio,gpiopin=18` for GPS-device
 
 Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
-
-`init_uart_baud=9600`
 
 `sudo nano /etc/modules`
 
@@ -109,7 +109,7 @@ b) GCC Compiler flags:
 
   (other macros possible if in the C-code implemented)
 
-`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard
+`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++11 or 14
 
 `-lm` for math-lib is obligatory!
 
