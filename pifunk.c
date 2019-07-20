@@ -17,12 +17,12 @@ cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger, -c for not linkin to library
 =>compile with admin/root permissions!!
- gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk.i pifunk.s pifunk.o pifunk.a pifunk.so pifunk.lib
- gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o pifunk pifunk.out
+ sudo gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ sudo gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
  -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++11
  -E tells to stop after preprocessing stage
-	-v verbose
+ -v verbose
 
 //run with admin/root permissions!!
  sudo pifunk sound.wav 100.000 22050 fm callsign
@@ -53,7 +53,6 @@ don't forget to apt-get upgrade and update
 todo:
 memory-stuff
 pointer & address corrections
-playlist func
 tone generator for ctss (sin?)
 make compatible arguments/funcs for py/shell scripts
 */
