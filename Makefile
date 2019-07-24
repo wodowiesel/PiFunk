@@ -61,10 +61,10 @@ endif
 #@echo " Compiling PiFunk "
 
 pifunk.i: pifunk.c
-				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
+				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-C -o include/pifunk.i #-E
 
 pifunk.s: pifunk.c
-					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(ASFLAGS) $(CFLAGS) -o lib/pifunk.s
+					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -o lib/pifunk.s
 
 pifunk.o: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.o
