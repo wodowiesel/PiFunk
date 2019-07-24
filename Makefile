@@ -5,7 +5,7 @@ CC=gcc# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
-ASFLAGS=-S
+ASFLAGS=-s
 LDFLAGS=-lm -lpthread#-lgthread
 LDLIBS=-Llib -lsndfile -shared
 PATH=/home/pi
@@ -66,10 +66,10 @@ endif
 #				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i
 
 pifunk.S: pifunk.c
-	$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -o lib/pifunk.S
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.S
 
 pifunk.s: pifunk.c
-	$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
 
 pifunk.o: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.o
