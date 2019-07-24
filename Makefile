@@ -16,18 +16,16 @@ MAKEINFO=makeinfo
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 
 UNAME:=$(shell uname -m) #linux
-CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
-TARGET=pi1
 
 ifeq ($(UNAME), armv5l)
 CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
 TARGET=pi0
 endif
 
-#ifeq ($(UNAME), armv6l)
-
-
-#endif
+ifeq ($(UNAME), armv6l)
+CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+TARGET=pi1
+endif
 
 ifeq ($(UNAME), armv7l)
 CFLAGS =-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
