@@ -573,8 +573,8 @@ volatile unsigned 										*allof7e;
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
 
-if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
-if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
+//if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
+//if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 #define RTC_I2C_ADRESS                       	(0x68)
 //-----------------------------------
 static char *description = "(experimental)"; // version-stage
