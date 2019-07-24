@@ -18,21 +18,27 @@ UNAME := $(shell uname -m) #linux
 ifeq ($(UNAME), armv6l)
 	CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
 	TARGET = pi0
+endif
 ifeq ($(UNAME), armv6l)
 	CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 	TARGET = pi1
+endif
 ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
 	TARGET = pi2
+endif
 ifeq ($(UNAME), armv8l)
 	CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
 	TARGET = pi3
+endif
 ifeq ($(UNAME), armv8l)
 	CFLAGS = -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
 	TARGET = pi4
+endif
 ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
 	TARGET = rpi
+endif
 ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 	TARGET = raspberry
@@ -41,12 +47,11 @@ else
 	TARGET = other
 endif
 
-@echo "Compiling PiFunk ....."
-
 pifunk.info: pifunk.texi
-						 $(USER) $(MAKEINFO)
+						 $(USER) $(MAKEINFO) -v
 
-ifneq ($(TARGET), other)
+@echo "Compiling PiFunk ....."
+ifeq ($(TARGET), other)
 
 pifunk: pifunk.c
 				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -c -o bin/pifunk
