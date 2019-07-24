@@ -1,57 +1,57 @@
 # pifunk makefile
 # should run with sudo or root rights
-USER=sudo
+USER=#sudo
 CC=gcc # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread #-lgthread
+LDFLAGS=-lm -lpthread#-lgthread
 LDLIBS=-Llib -lsndfile -shared
 PATH=/home/pi
 MAKEINFO=makeinfo
-# Determine the hardware platform.
-# Enable ARM-specific options only on ARM, and compilation of the app only on ARM
-
+#Determine the hardware platform.
+#Enable ARM-specific options only on ARM, and compilation of the app only on ARM
+CFLAGS =-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 UNAME := $(shell uname -m) #linux
 
 ifeq ($(UNAME), armv5l)
-CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
+CFLAGS =-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
 TARGET = pi0
 endif
 
 ifeq ($(UNAME), armv6l)
-CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+
 TARGET = pi1
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
+CFLAGS =-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
 TARGET = pi2
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
+CFLAGS =-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
 TARGET = pi3
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS = -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+CFLAGS =-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
 TARGET = pi4
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+CFLAGS =-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
 TARGET = rpi
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
+CFLAGS =-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 TARGET = raspberry
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
+CFLAGS =-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
 TARGET = raspi
 endif
 
@@ -61,7 +61,7 @@ endif
 #@echo " Compiling PiFunk "
 
 pifunk.i: pifunk.c
-				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-C -o include/pifunk.i #-E
+				  $(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -o include/pifunk.i # -C
 
 pifunk.s: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -o lib/pifunk.s
