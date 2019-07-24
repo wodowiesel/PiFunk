@@ -98,7 +98,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <pwd.h>
 #include <poll.h>
 #include <argp.h>
-#include <common.h>
+//#include <common.h>
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -210,7 +210,7 @@ using namespace std;
    //printf ("Using GNU C with ANSI C99!!");
    //#pragma GCC system_header
 #endif
-#ifdef __STDC_VERSION__ >= 199901L
+#ifdef __STDC_VERSION__ = 199901L
    /*#warning  string */
    //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
 #endif
@@ -599,7 +599,7 @@ char *spi0_map;
 //arguments
 int opt;
 char *filename = "sound.wav";
-double freq = fabs (freq);
+double freq = abs (freq);
 double subfreq = 67.0;
 double ctss_freq = 67.0;
 uint32_t Timing;
