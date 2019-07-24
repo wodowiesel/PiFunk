@@ -6,7 +6,7 @@ STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread #-lgthread
+LDFLAGS=-lm -lpthread -lgthread
 LDLIBS=-Llib -lsndfile -shared
 PATH=/home/pi
 MAKEINFO=makeinfo
@@ -19,26 +19,32 @@ ifeq ($(UNAME), armv6l)
 	CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
 	TARGET = pi0
 endif
+
 ifeq ($(UNAME), armv6l)
 	CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 	TARGET = pi1
 endif
+
 ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
 	TARGET = pi2
 endif
+
 ifeq ($(UNAME), armv8l)
 	CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
 	TARGET = pi3
 endif
+
 ifeq ($(UNAME), armv8l)
 	CFLAGS = -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
 	TARGET = pi4
 endif
+
 ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
 	TARGET = rpi
 endif
+
 ifeq ($(UNAME), armv7l)
 	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 	TARGET = raspberry
@@ -47,15 +53,10 @@ else
 	TARGET = other
 endif
 
-pifunk.info: pifunk.texi
-						 $(USER) $(MAKEINFO) -v
+#pifunk.info: pifunk.texi
+#						 $(USER) $(MAKEINFO)
 
-@echo "Compiling PiFunk ....."
-ifeq ($(TARGET), other)
-
-pifunk: pifunk.c
-				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -c -o bin/pifunk
-endif
+@echo " Compiling PiFunk "
 
 pifunk.i: pifunk.c
 				  $(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -E -C -o include/pifunk.i
@@ -83,6 +84,12 @@ pifunk.bin: pifunk.c
 
 pifunk: 		pifunk.c
 						$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -o bin/pifunk
+
+ifeq ($(TARGET), other)
+
+pifunk: pifunk.c
+				$(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -c -o bin/pifunk
+endif
 
 install: $(USER) cd $(PATH)/PiFunk
 				 $(USER) install -m 0755 pifunk $(PATH)/bin
