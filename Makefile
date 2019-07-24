@@ -1,7 +1,7 @@
 # pifunk makefile
 # should run with sudo or root rights
 USER=sudo
-CC=gcc # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
+CC=gcc# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
@@ -12,18 +12,20 @@ PATH=/home/pi
 MAKEINFO=makeinfo
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
-CFLAGS =-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+
 UNAME := $(shell uname -m) #linux
+CFLAGS =-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+TARGET = pi1
 
 ifeq ($(UNAME), armv5l)
-CFLAGS =-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
-TARGET = pi0
+CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
+TARGET=pi0
 endif
 
-ifeq ($(UNAME), armv6l)
+#ifeq ($(UNAME), armv6l)
 
-TARGET = pi1
-endif
+
+#endif
 
 ifeq ($(UNAME), armv7l)
 CFLAGS =-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
@@ -61,10 +63,12 @@ endif
 #@echo " Compiling PiFunk "
 
 #pifunk.i: pifunk.c
-#				  $(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i
+#				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i
+pifunk.S: pifunk.c
+$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -S -o lib/pifunk.S
 
 pifunk.s: pifunk.c
-					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -o lib/pifunk.s
+$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
 
 pifunk.o: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.o
