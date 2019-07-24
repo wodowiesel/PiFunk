@@ -1,12 +1,13 @@
 # pifunk makefile
 # should run with sudo or root rights
 USER=sudo
-CC=gcc# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
+CC=gcc # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread#-lgthread
+LDFLAGS=-lm -lpthread
+#-lgthread
 LDLIBS=-Llib -lsndfile -shared
 PATH=/home/pi
 MAKEINFO=makeinfo
@@ -62,26 +63,26 @@ endif
 
 #@echo " Compiling PiFunk "
 
-#pifunk.i: pifunk.c
-#				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i
+pifunk.i: pifunk.c
+				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i
 
-#pifunk.S: pifunk.c
-#					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.S
+pifunk.S: pifunk.c
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.S
 
-#pifunk.s: pifunk.c
-#					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
+pifunk.s: pifunk.c
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -o lib/pifunk.s
 
 pifunk.o: pifunk.c
-					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) -o lib/pifunk.o#$(CFLAGS) 
+					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.o
 
 pifunk.a: pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.a
 
 pifunk.lib: pifunk.c
-				  	$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.lib
+						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.lib
 
 pifunk.so: pifunk.c
-					 $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
+					 $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.so
 
 pifunk.out: pifunk.c
 					  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o bin/pifunk.out
