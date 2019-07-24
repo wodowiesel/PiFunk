@@ -16,43 +16,43 @@ MAKEINFO=makeinfo
 UNAME := $(shell uname -m) #linux
 
 ifeq ($(UNAME), armv5l)
-	CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
-	TARGET = pi0
+CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
+TARGET = pi0
 endif
 
 ifeq ($(UNAME), armv6l)
-	CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
-	TARGET = pi1
+CFLAGS = -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+TARGET = pi1
 endif
 
 ifeq ($(UNAME), armv7l)
-	CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
-	TARGET = pi2
+CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
+TARGET = pi2
 endif
 
 ifeq ($(UNAME), armv8l)
-	CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
-	TARGET = pi3
+CFLAGS = -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
+TARGET = pi3
 endif
 
 ifeq ($(UNAME), armv8l)
-	CFLAGS = -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
-	TARGET = pi4
+CFLAGS = -march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+TARGET = pi4
 endif
 
 ifeq ($(UNAME), armv7l)
-	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
-	TARGET = rpi
+CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+TARGET = rpi
 endif
 
 ifeq ($(UNAME), armv7l)
-	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
-	TARGET = raspberry
+CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
+TARGET = raspberry
 endif
 
 ifeq ($(UNAME), armv7l)
-	CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
-	TARGET = raspi
+CFLAGS = -march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
+TARGET = raspi
 endif
 
 #pifunk.info: pifunk.texi
@@ -61,7 +61,7 @@ endif
 #@echo " Compiling PiFunk "
 
 pifunk.i: pifunk.c
-				  $(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
+				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
 
 pifunk.s: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(ASFLAGS) $(CFLAGS) -o lib/pifunk.s
