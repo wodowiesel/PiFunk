@@ -599,7 +599,7 @@ char *spi0_map;
 //arguments
 int opt;
 char *filename = "sound.wav";
-double freq = abs (freq);
+double freq = fabs (446.006250);
 double subfreq = 67.0;
 double ctss_freq = 67.0;
 uint32_t Timing;
