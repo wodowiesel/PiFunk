@@ -65,11 +65,11 @@ endif
 #pifunk.i: pifunk.c
 #				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i
 
-pifunk.S: pifunk.c
-					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.S
+#pifunk.S: pifunk.c
+#					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.S
 
-pifunk.s: pifunk.c
-					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
+#pifunk.s: pifunk.c
+#					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
 
 pifunk.o: pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.o
