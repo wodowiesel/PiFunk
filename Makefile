@@ -56,7 +56,7 @@ endif
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
 
-@#echo " Compiling PiFunk "
+#@echo " Compiling PiFunk "
 
 pifunk.i: pifunk.c
 				  $(USER) $(CC)$(STD_CFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -E -C -o include/pifunk.i
