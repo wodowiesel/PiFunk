@@ -1,7 +1,8 @@
 # pifunk makefile
 # should run with sudo or root rights
 USER=sudo
-CC=gcc # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
+CC=gcc
+# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
