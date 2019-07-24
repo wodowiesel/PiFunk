@@ -72,7 +72,7 @@ endif
 #					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS) -c -o lib/pifunk.s
 
 pifunk.o: pifunk.c
-					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.o
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) -o lib/pifunk.o#$(CFLAGS) 
 
 pifunk.a: pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -o lib/pifunk.a
