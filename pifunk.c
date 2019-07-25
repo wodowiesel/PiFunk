@@ -20,8 +20,8 @@ cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger, -c for not linkin to library
 =>compile with admin/root permissions!!
- sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
+ sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
  -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++17 (11/14)
  -E tells to stop after preprocessing stage
@@ -203,7 +203,7 @@ using namespace std;
   //printf ("Program runs under ARM-Architecture!");
   //#pragma ARM
   // same as -CODE32
-   //#error
+  //#error
 #endif
 
 #ifdef __GNUC__
@@ -224,7 +224,7 @@ using namespace std;
 #define VERSION_STATUS 			 "e"
 
 #define _GNU_SOURCE
-#define _POSIX_C_SOURCE 199309L
+#define _POSIX_C_SOURCE = 200809L //or 199309L
 #define _USE_MATH_DEFINES
 
 //---- PI specific stuff

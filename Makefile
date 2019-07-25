@@ -7,7 +7,7 @@ STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.
 CXX=g++
 CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.c -O3
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread -lsndfile -D_USE_MATH_DEFINES -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host
+LDFLAGS=-lm -lpthread -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -L/opt/vc/lib -lbcm_host
 #-lgthread
 LDLIBS=-Llib -shared
 PATH=/home/pi
