@@ -103,7 +103,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
-#include <bcm_host.h> // opt/vc/include/
+#include "opt/vc/include/bcm_host.h"
 //#include <common.h>
 
 // on posix linux
