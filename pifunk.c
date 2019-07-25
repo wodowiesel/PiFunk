@@ -13,7 +13,7 @@ gdb 7.11.1 debugger
  You will need alsa library for this:
 sudo apt-get install libsndfile1-dev
 
-sudo apt-get libraspberrypi-dev raspberrypi-kernel-headers
+sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
  -lbcm_host //firmware v1.20190718 located in /opt/vc/include/
 
 cd PiFunk // goto path
