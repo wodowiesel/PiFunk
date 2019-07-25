@@ -99,6 +99,8 @@ make compatible arguments/funcs for py/shell scripts
 #include <pwd.h>
 #include <poll.h>
 #include <argp.h>
+#include <uchar.h>
+#include <opt/vc/include/bcm_host.h>
 //#include <common.h>
 
 // on posix linux
@@ -124,9 +126,6 @@ make compatible arguments/funcs for py/shell scripts
 #include <net/if.h>
 #include <netdb.h>
 #include <ifaddrs.h>
-
-
-#include <uchar.h>
 
 //for c++11/14/17
 /*

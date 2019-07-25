@@ -7,9 +7,9 @@ STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread
+LDFLAGS=-lm -lpthread -lsndfile -lbcm_host
 #-lgthread
-LDLIBS=-Llib -lsndfile -shared
+LDLIBS=-Llib -shared
 PATH=/home/pi
 MAKEINFO=makeinfo
 #Determine the hardware platform.
@@ -28,33 +28,33 @@ TARGET=pi1
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS =-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
-TARGET = pi2
+CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
+TARGET=pi2
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS =-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
-TARGET = pi3
+CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
+TARGET=pi3
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS =-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
-TARGET = pi4
+CFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+TARGET=pi4
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS =-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
-TARGET = rpi
+CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+TARGET=rpi
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS =-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET = raspberry
+CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
+TARGET= raspberry
 endif
 
-ifeq ($(UNAME), armv7l)
-CFLAGS =-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
-TARGET = raspi
+ifneq ($(UNAME), armv7l)
+CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
+TARGET=raspi
 endif
 
 #pifunk.info: pifunk.texi
