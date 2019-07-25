@@ -52,7 +52,7 @@ CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASP
 TARGET= raspberry
 endif
 
-ifneq ($(UNAME), armv7l)
+ifeq ($(UNAME), NULL)
 CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
 TARGET=raspi
 endif
