@@ -19,7 +19,7 @@ ___
 
 2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
 
-via command: `sudo modprobe w1-gpio,gpiopin=4`
+or manually via command: `sudo modprobe w1-gpio,gpiopin=4`
 
 Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO Pin
 
@@ -33,6 +33,8 @@ check/add lines:
 
 `dtoverlay=w1-gpio,gpiopin=4,pullup=0` add pullup=1 if needed
 
+`dtoverlay=audio=on` for bcm audio
+
 optional:
 
 `dtoverlay=i2c1-bcm2708` for I2C Bus
@@ -40,6 +42,8 @@ optional:
 `enable_uart=1` for UART RX & TX
 
 `init_uart_baud=9600`
+
+`dtparam=spi=on` for SPI support
 
 `dtoverlay=pps-gpio,gpiopin=18` for GPS-device
 
@@ -64,15 +68,17 @@ ___
 
 a) `sudo apt-get install libsndfile1-dev` or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
 
-b) `sudo apt-get install python-dev python3-dev` for py3
+b) `sudo apt-get libraspberrypi-dev raspberrypi-kernel-headers` for Kernel
 
-c) [RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
+c) `sudo apt-get install python-dev python3-dev` for py3
+
+d) [RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
 
 `sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
 
 then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz`
 
-and install it
+and install it:
 
 `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
@@ -128,6 +134,10 @@ b) GCC Compiler flags:
 `-O3` for Optimization Stage 1-3 (memory, speed etc.) via compiler
 
 `-o` for output-filename flag
+
+`-D_USE_MATH_DEFINES` for math lib
+
+`-lbcm_host` for loading firmware v1.20190718 located in /opt/vc/include/
 
 10. Generating libraries:
 
