@@ -3,11 +3,11 @@
 USER=sudo
 CC=gcc
 # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
-STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
+STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -fPIC pifunk.c -O3
 CXX=g++
-CXXFLAGS=-Wall -std=c++14 -g3 -ggdb -v -O3 -Iinclude -fPIC pifunk.c
+CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -fPIC pifunk.c -O3
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread -lsndfile -lbcm_host
+LDFLAGS=-lm -lpthread -lsndfile -lbcm_host -D_USE_MATH_DEFINES
 #-lgthread
 LDLIBS=-Llib -shared
 PATH=/home/pi
@@ -57,10 +57,10 @@ CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASP
 TARGET=raspi
 endif
 
+#@echo " Compiling PiFunk "
+
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
-
-#@echo " Compiling PiFunk "
 
 pifunk.i: pifunk.c
 				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) -E -C -o include/pifunk.i

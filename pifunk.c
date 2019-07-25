@@ -11,21 +11,23 @@ gdb 7.11.1 debugger
  git clone https://github.com/silicator/PiFunk
 ->instructions:
  You will need alsa library for this:
-
 sudo apt-get install libsndfile1-dev
+
+sudo apt-get libraspberrypi-dev raspberrypi-kernel-headers
+ -lbcm_host //firmware v1.20190718 located in /opt/vc/include/
+
 cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger, -c for not linkin to library
 =>compile with admin/root permissions!!
- sudo gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- sudo gcc -g3 -std=c99 -lm -O3 -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk bin/pifunk.out
+ sudo gcc -g3 -std=c99 -lm -lbcm_host -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ sudo gcc -g3 -std=c99 -lm -lbcm_host -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
  -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++11
  -E tells to stop after preprocessing stage
  -v verbose
 
-sudo apt-get libraspberrypi-dev raspberrypi-kernel-headers
- -lbcm_host //firmware v1.20190718 located  in /opt/vc/include/
+
 
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
 virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
@@ -43,6 +45,7 @@ do not shortout or do overstress it with more than 3.3V! it may cause damages
 more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
 used python 3.7.x on original Raspbian
+-----------------------
 don't forget to apt-get upgrade and update
 
 1) Pi-FM version - frequency modulation direction left/right ← , →
