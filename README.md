@@ -115,7 +115,7 @@ b) GCC Compiler flags:
 
  -> will be detected by my the makefile via the type of the ARM-Processor
 
-  (other macros possible if in the C-code implemented)
+ (other macros possible if in the C-code implemented)
 
 `-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++17 or (11/14 as you like)
 
@@ -139,7 +139,11 @@ b) GCC Compiler flags:
 
 `-D_USE_MATH_DEFINES` for math lib
 
-`-lbcm_host` for loading firmware v1.20190718 located in /opt/vc/include/
+`-D_POSIX_C_SOURCE=199309L` for posix needed for bcm
+
+`-I/opt/vc/include/` for loading bcm header folder
+
+`-L/opt/vc/lib -lbcm_host` for loading firmware v1.20190718
 
 10. Generating libraries:
 
@@ -160,6 +164,7 @@ c) manually compiling/linking executable binary:
 `sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
  d) optional:
+
  -march=armv6l architecture version of ARM, -mtune=arm1176jzf-s architecture type tuning ("march=native" is auto option)
 
  -mfloat-abi=hard floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
@@ -170,7 +175,7 @@ c) manually compiling/linking executable binary:
 
 `sudo make` with pre-configured flags for compilation for all Pi's
 
-`sudo clean` for removing *.out files if necessary
+`sudo clean` for removing pifunk.out/pifunk.o files if necessary
 
 ___
 
@@ -236,7 +241,7 @@ ___
 
 ### Run
 
-12.Run with admin/root permissions:
+12. Run with admin/root permissions:
 
 Arguments: would be best to input in this specific order to prevent problems
 
@@ -293,7 +298,7 @@ ___
 
 ### Links:
 
-14.) additional Guidelines
+14. Additional Guidelines
 
 [GitPage](https://silicator.github.io/PiFunk/)
 

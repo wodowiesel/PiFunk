@@ -23,7 +23,7 @@ cd PiFunk // goto path
  sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
  sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
- -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++11
+ -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++17 (11/14)
  -E tells to stop after preprocessing stage
  -v verbose
 
