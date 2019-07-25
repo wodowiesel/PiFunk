@@ -224,7 +224,7 @@ using namespace std;
 #define VERSION_STATUS 			 "e"
 
 #define _GNU_SOURCE
-#define _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 199309L
 #define _USE_MATH_DEFINES
 
 //---- PI specific stuff
