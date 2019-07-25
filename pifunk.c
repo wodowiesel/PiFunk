@@ -24,16 +24,15 @@ cd PiFunk // goto path
  -E tells to stop after preprocessing stage
  -v verbose
 
-//run with admin/root permissions!!
- sudo pifunk sound.wav 100.000 22050 fm callsign
+sudo apt-get libraspberrypi-dev raspberrypi-kernel-headers
+ -lbcm_host //firmware v1.20190718 located  in /opt/vc/include/
 
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
 virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
- wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -lm -std=c99 -g -x c - && ./a.out sound.wav
+ wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=c99 -g -lm -x c && ./pifunk.out sound.wav
 
 LICENSE: GPLv2/3 !!
-Credits: PiFM scripts from http://www.icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter
-!!!!!!! program needs more testing on real pi -> See Disclaimer!!!!!
+!!!!!!! program needs more testing on real pi !!!!!!!
 
 -----Disclaimer-----
 Rewritten for own purposes!
@@ -43,7 +42,7 @@ at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals 
 do not shortout or do overstress it with more than 3.3V! it may cause damages
 more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
-used python 3.7.x on orig. Raspbian
+used python 3.7.x on original Raspbian
 don't forget to apt-get upgrade and update
 
 1) Pi-FM version - frequency modulation direction left/right ← , →
@@ -64,8 +63,10 @@ make compatible arguments/funcs for py/shell scripts
 #include <stdarg.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdalign.h>
+#include <stdnoreturn.h>
+#include <stdatomic.h>
 #include <unistd.h>
-
 // functionality includes
 #include <iso646.h> //c95 back-compatible  -std=iso9899:199409
 #include <argp.h>
@@ -99,6 +100,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <poll.h>
 #include <argp.h>
 //#include <common.h>
+
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
@@ -109,13 +111,13 @@ make compatible arguments/funcs for py/shell scripts
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
 
 #include <linux/spi/spidev.h>
 //#include <missing.h>
 
 // ip host socket
-#include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -123,20 +125,10 @@ make compatible arguments/funcs for py/shell scripts
 #include <netdb.h>
 #include <ifaddrs.h>
 
-//-- c11
-#include <stdalign.h>
-#include <stdnoreturn.h>
-#include <stdatomic.h>
-#include <uchar.h>
-//for c++14/17
-/*
-#include <stdalign.h>
-#include <stdnoreturn.h>
-#include <stdatomic.h>
-#include <uchar.h>
-*/
 
-//for c++14/17
+#include <uchar.h>
+
+//for c++11/14/17
 /*
 #include <iostream.h>
 #include <sstream.h>
@@ -148,6 +140,11 @@ make compatible arguments/funcs for py/shell scripts
 #include <iomanip.h>
 #include <algorithm.h>
 #include <vector.h>
+#include <stdalign.h>
+#include <stdnoreturn.h>
+#include <stdatomic.h>
+#include <uchar.h>
+#include <cstring.h>
 using namespace std;
 */
 
@@ -210,17 +207,17 @@ using namespace std;
    //printf ("Using GNU C with ANSI C99!!");
    //#pragma GCC system_header
 #endif
-#ifdef __STDC_VERSION__ = 199901L
+#ifdef __STDC_VERSION__ //>= 199901L
    /*#warning  string */
    //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.4"
+#define VERSION 						 "0.1.7.5"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (4)
+#define VERSION_PATCHLEVEL   (5)
 #define VERSION_STATUS 			 "e"
 
 #define _GNU_SOURCE
@@ -262,7 +259,6 @@ volatile unsigned 										*allof7e;
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-// unknown pi versions like banana
 #ifdef  RASPI0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -298,7 +294,7 @@ volatile unsigned 										*allof7e;
 #define DMA_CHANNEL                    (6)
 #endif
 
-#ifdef  RASPBERRY 											// other models
+#ifdef  RASPBERRY 											// other models like banana
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
 
@@ -306,13 +302,11 @@ volatile unsigned 										*allof7e;
 #define PERIPH_VIRT_BASE               (0x20000000)
 #endif
 
-#define PERIPH_VIRT_BASE               (0x20000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 //#define CURBLOCK                       (0x04) //dec: 12
 
 //---
-
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define LENGTH                         (0x01000000) // dec: 1
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
@@ -566,9 +560,9 @@ volatile unsigned 										*allof7e;
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
 
-//#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
-//#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) //|| 1<<bit// |=
-//#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) //|| 1<<bit// |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 #define VOLUME_REFERENCE 								(1)
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
@@ -1831,7 +1825,7 @@ void menu ()
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main! const char *short_opt
 {
-	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:
+	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:d:b:
 	int options = 0;
 	argv [0] = "pifunk";
 	char *filename = "sound.wav"; // = argv [1];
@@ -1840,10 +1834,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	char *mod = "fm";// =argv [4];
 	char *callsign = "callsign";// =argv [5];
 	int power = 7;// =argv [6];
+	int dmachannel = 0; // =argv [7];
+	double bandwidth = 100.0; //=argv [8];
+	int gpiopin = 4; //=argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
-	fabs () for double
+	fabs () for double must be constant
 	fabsf () for float
 	*/
 	// for custom programname, default is the filename itself
@@ -1909,12 +1906,22 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 							printf ("\nCallsign is %s \n", callsign);
 							//break;
 
-				//power managment
+			 //power managment
 			case 'p':
 							power = atoi (optarg);
 							printf ("\nPower is %d \n", power);
 							//break;
+			/*
+			case 'd':
+								dmachannel = atof (optarg);
+								printf ("\nDMA-channel is %d \n", dmachannel);
+								//break;
 
+			case 'b':
+								bandwidth = atoi (optarg);
+								printf ("\nBandwith is %f \n", bandwidth);
+								//break;
+							*/
 			case 'a':
 							if (argc == 1)
 							{
@@ -1938,7 +1945,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 							else
 							{
 								printf ("\nError in -h \n");
-								break;;
+								break;
 							}
 
 			case 'u':
