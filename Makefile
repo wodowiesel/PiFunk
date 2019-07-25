@@ -3,9 +3,9 @@
 USER=sudo
 CC=gcc
 # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
-STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -fPIC pifunk.c -O3
+STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.c -O3
 CXX=g++
-CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -fPIC pifunk.c -O3
+CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.c -O3
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lsndfile -lbcm_host -D_USE_MATH_DEFINES
 #-lgthread

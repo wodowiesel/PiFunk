@@ -104,6 +104,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <argp.h>
 #include <uchar.h>
 #include "opt/vc/include/bcm_host.h"
+#include "opt/vc/include/interface/vcos/vcos.h"
 //#include <common.h>
 
 // on posix linux
