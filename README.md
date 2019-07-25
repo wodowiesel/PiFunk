@@ -103,19 +103,21 @@ a) `cd PiFunk` with default path: `/home/pi/PiFunk`
 
 b) GCC Compiler flags:
 
-`-g3` for debugger informations (0-3 level, 2 is default)
+`-g3` for compiler debugger informations (0-3 level, 2 is default)
+
+`-gdbserver` for GNU debugger informations
 
 `-Wall` for debug warning informations
 
-`-v`	Print compilation verbose infos
+`-v` Print compilation verbose informations
 
 `-DRASPI1` defines the macro to be used by the preprocessor (here the PI model 0-4)
 
- -> will be detected my the make-file via the type of the ARM-Processor
+ -> will be detected by my the makefile via the type of the ARM-Processor
 
   (other macros possible if in the C-code implemented)
 
-`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++11 or 14
+`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++17 or (11/14 as you like)
 
 `-lm` for math-lib is obligatory!
 
