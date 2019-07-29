@@ -55,8 +55,8 @@ don't forget to apt-get upgrade and update
 todo:
 memory-stuff
 pointer & address corrections
-tone generator for ctss (sin?)
 make compatible arguments/funcs for py/shell scripts
+tone generator for ctss (sin?)
 */
 
 //std includes
@@ -103,9 +103,8 @@ make compatible arguments/funcs for py/shell scripts
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
-#include "opt/vc/include/bcm_host.h"
-#include "opt/vc/include/interface/vcos/vcos.h"
 //#include <common.h>
+//#include <missing.h>
 
 // on posix linux
 #include <sys/cdefs.h>
@@ -121,7 +120,7 @@ make compatible arguments/funcs for py/shell scripts
 #include <sys/ioctl.h>
 
 #include <linux/spi/spidev.h>
-//#include <missing.h>
+
 
 // ip host socket
 #include <arpa/inet.h>
@@ -162,6 +161,8 @@ using namespace std;
 */
 
 // broadcom arm processor for mapping phys. addresses
+#include "opt/vc/include/bcm_host.h" // firmware stuff
+#include "opt/vc/include/interface/vcos/vcos.h"
 #include "bcm2835/src/bcm2835.h"
 
 //GPIO includes here 0.6.5 used
@@ -175,7 +176,7 @@ using namespace std;
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-//#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
+#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
@@ -194,12 +195,11 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
-#ifdef __linux__
-  // || __unix__
+#ifdef __LINUX__ // || __UNIX__
   //printf ("Program runs under UNIX/LINUX");
 	#pragma GCC dependency "pifunk.h"
 #endif
-#ifdef __arm__
+#ifdef __ARM__
   //printf ("Program runs under ARM-Architecture!");
   //#pragma ARM
   // same as -CODE32
@@ -216,15 +216,15 @@ using namespace std;
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.5"
+#define VERSION 						 "0.1.7.6"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (5)
+#define VERSION_PATCHLEVEL   (6)
 #define VERSION_STATUS 			 "e"
 
 #define _GNU_SOURCE
-#define _POSIX_C_SOURCE = 200809L //or 199309L
+#define _POSIX_C_SOURCE = 		200809L //or 199309L
 #define _USE_MATH_DEFINES
 
 //---- PI specific stuff
@@ -268,7 +268,7 @@ volatile unsigned 										*allof7e;
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 #endif
-// Original Raspberry Pi 1
+
 #ifdef  RASPI1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -564,15 +564,17 @@ volatile unsigned 										*allof7e;
 #define DATA_SIZE                       (1000)
 
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) //|| 1<<bit// |=
+#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+
 #define VOLUME_REFERENCE 								(1)
+//RTC (DS3231/1307 driver as bcm) stuff here if needed
+#define RTC_I2C_ADRESS                  (0x68)
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
-
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
 //if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
-#define RTC_I2C_ADRESS                       	(0x68)
+
 //-----------------------------------
 static char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
@@ -651,15 +653,15 @@ float data_filtered [2*BUFFER_LEN];
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
 //-20db = 10x attenuation, significantly more quiet
-//float volbuffer [SAMPLES_PER_BUFFER];
-//float volumeLevelDb = -6.f; //cut amplitude in half
-//float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
+float volbuffer [SAMPLES_PER_BUFFER];
+float volumeLevelDb = -6.f; //cut amplitude in half
+float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
 float A = 87.6f; // compression parameter
 uint32_t carrier_freq = 87600000; // -> this might be the carrier too, why this value?
-float FactAmplitude = 2.0; //maybe here amp-modulator type input?
+float FactAmplitude = 2.0; //maybe here amp-modulator input?
 float ampf;
 float ampf2;
 float factorizer;
@@ -751,16 +753,14 @@ struct option long_opt [] =
     {"mod",	    		required_argument, NULL, 'm'},
     {"callsign",	  required_argument, NULL, 'c'},
     {"power", 			required_argument, NULL, 'p'},
-    //{"gpio",	  		required_argument, NULL, 'g'},
+    {"gpio",	  		required_argument, NULL, 'g'},
+		{"dma",	  			required_argument, NULL, 'd'},
+		{"bandwidth",	  required_argument, NULL, 'b'},
     {"assistent",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
 };
-//----------
-/*
-RTC (DS3231/1307 driver as bcm) stuff here if needed
 
-*/
 
 //--------basic functions specified one after another
 void infos () //warnings and infos
@@ -783,6 +783,30 @@ int timer (time_t t)
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
    printf ("\nCurrent formated date & time : %s \n", ctime (&t));
    return 0;
+}
+//----- programm functions
+int gpioselect (int gpiopin)
+{
+	printf ("\nPlease choose GPIO-Pin (GPIO4=Pin7 default) or 20, 32, 34 \n");
+  scanf ("%d", &gpiopin);
+	printf ("\nYour GPIO for Transmission is %d ... \n", gpiopin);
+	return gpiopin;
+}
+
+int dmaselect (int dmachannel)
+{
+	printf ("\nPlease choose the DMA-Channel \n");
+  scanf ("%d", &dmachannel);
+	printf ("\nYour DMA-Channel is %d ... \n", dmachannel);
+	return dmachannel;
+}
+
+double bandwidthselect (double bandwidth)
+{
+	printf ("\nPlease choose the bandwidth (default=100.00 kHz) \n");
+  scanf ("%f", &bandwidth);
+	printf ("\nYour bandwidth is %f ... \n", bandwidth);
+	return bandwidth;
 }
 
 int filecheck (char *filename, FILE wavefile)  // expected int?
@@ -891,15 +915,15 @@ double channelmodepmr () //PMR
 	switch (channelnumberpmr)
 	 {
    //FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
-	 case 1:		freq=446.003125; break;
-	 case 2:		freq=446.009375; break;
-	 case 3:		freq=446.015625; break;
-	 case 4:		freq=446.021875; break;
-	 case 5:		freq=446.028125; break;
-	 case 6:		freq=446.034375; break;
-	 case 7:		freq=446.040625; break;
-	 case 8:		freq=446.046875; break;
-	 case 9:		freq=446.053125; break;
+	 case 1:	freq=446.003125; break;
+	 case 2:	freq=446.009375; break;
+	 case 3:	freq=446.015625; break;
+	 case 4:	freq=446.021875; break;
+	 case 5:	freq=446.028125; break;
+	 case 6:	freq=446.034375; break;
+	 case 7:	freq=446.040625; break;
+	 case 8:	freq=446.046875; break;
+	 case 9:	freq=446.053125; break;
 	 case 10:	freq=446.059375; break;
 	 case 11:	freq=446.065625; break;
 	 case 12:	freq=446.071875; break;
@@ -1791,6 +1815,9 @@ void assistent () //assistent
 		modetype (freq);
 		callname ();
 		powerselect ();
+		int gpioselect (int gpiopin);
+		int dmaselect (int dmachannel);
+		double bandwidthselect (double bandwidth);
 
 		printf ("\nPress all information gatherd, going back to main \n");
 		//while (getchar () != '');
@@ -1828,7 +1855,7 @@ void menu ()
 //--------- MAIN
 int main (int argc, char **argv) // arguments for global use must! be in main! const char *short_opt
 {
-	const char *short_opt = "n:f:s:m:c:p:ahu"; // g:d:b:
+	const char *short_opt = "n:f:s:m:c:p:g:d:b:ahu"; // program flags
 	int options = 0;
 	argv [0] = "pifunk";
 	char *filename = "sound.wav"; // = argv [1];
@@ -1839,7 +1866,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	int power = 7;// =argv [6];
 	int dmachannel = 0; // =argv [7];
 	double bandwidth = 100.0; //=argv [8];
-	int gpiopin = 4; //=argv [9];
+	int gpiopin = abs(4); //=argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
@@ -1914,7 +1941,12 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 							power = atoi (optarg);
 							printf ("\nPower is %d \n", power);
 							//break;
-			/*
+
+			case 'g':
+								gpiopin = atof (optarg);
+								printf ("\nGPIO is %d \n", gpiopin);
+								//break;
+
 			case 'd':
 								dmachannel = atof (optarg);
 								printf ("\nDMA-channel is %d \n", dmachannel);
@@ -1924,7 +1956,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 								bandwidth = atoi (optarg);
 								printf ("\nBandwith is %f \n", bandwidth);
 								//break;
-							*/
+
 			case 'a':
 							if (argc == 1)
 							{
