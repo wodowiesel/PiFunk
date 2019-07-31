@@ -262,33 +262,48 @@ volatile unsigned 										*allof7e;
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef  RASPI0
+#ifdef 	(RASPI) == 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
+
 #endif
 
-#ifdef  RASPI1
+#ifdef  (RASPI) == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
+#define CLOCK_BASE										 (19.2E6)
+#define DMA_CHANNEL										 (14)
 #endif
 
-#ifdef  RASPI2
+#ifdef  (RASPI) == 2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
+#define PERIPH_PHYS_BASE               (0x7E000000)
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
+#define CLOCK_BASE									   (19.2E6)
+#define DMA_CHANNEL										 (14)
 #endif
 
-#ifdef  RASPI3
+#ifdef  (RASPI) == 3
 #define PERIPH_VIRT_BASE               (0x20000000)
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
+#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
+#define MEM_FLAG                       (0x04) // dec: 4
+#define CURBLOCK                       (0x04) // dec: 4 memflag
+#define CLOCK_BASE									   (19.2E6)
+#define DMA_CHANNEL										 (14)
 #endif
-//pi4 -> waiting for documentation from adafruit
-#ifdef  RASPI4
+
+#ifdef  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
 #define PERIPH_VIRT_BASE               (0xFE000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0xC0000000)
@@ -297,17 +312,16 @@ volatile unsigned 										*allof7e;
 #define DMA_CHANNEL                    (6)
 #endif
 
-#ifdef  RASPBERRY 											// other models like banana
-#define PERIPH_VIRT_BASE               (0x20000000)
-#endif
-
 #ifdef  RPI 									     	   	// alternative
 #define PERIPH_VIRT_BASE               (0x20000000)
-#endif
-
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
-//#define CURBLOCK                       (0x04) //dec: 12
+#define CURBLOCK                       (0x04) //dec: 12
+#endif
+
+#else
+#error Unknown Raspberry Pi version (variable RASPI)
+#endif
 
 //---
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
