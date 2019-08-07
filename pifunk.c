@@ -606,14 +606,14 @@ char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
-double xtal_freq_recip=1.0/CLOCK_BASE;
+float xtal_freq_recip=1.0/CLOCK_BASE;
 //-----------------------------------------
 //arguments
 int opt;
 char *filename = "sound.wav";
-double freq = fabs (446.006250);
-double subfreq = 67.0;
-double ctss_freq = 67.0;
+float freq = fabs (446.006250);
+float subfreq = 67.0;
+float ctss_freq = 67.0;
 uint32_t Timing;
 char *mod;
 char *fm = "fm";
@@ -639,28 +639,27 @@ time_t t;
 
 // IQ & carrier
 uint16_t pis = 0x1234; // dec: 4660
-//double I = sin ((PERIOD*freq) + shift_ppm);
-//double Q = cos ((PERIOD*freq) + shift_ppm);
-//double RF_SUM = (I+Q);
+//float I = sin ((PERIOD*freq) + shift_ppm);
+//float Q = cos ((PERIOD*freq) + shift_ppm);
+//float RF_SUM = (I+Q);
 
 //files
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
-//SNDFILE *infile;
-//SNDFILE *outfile;
-//snd_output_t *output = NULL;
+SNDFILE *infile;
+SNDFILE *outfile;
+snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit = abs (16);
 int readcount;
 int readBytes;
 float datanew = 0;
 float dataold = 0;
-char data_name [1024];
-char buffer [80];
 float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
-
+char data_name [1024];
+char buffer [80];
 //audio & sample control
 // logarithmic modulation
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
@@ -702,6 +701,7 @@ int port = 8080;
 float longitude = 8.682127; // E
 float latitude = 50.110924; // N
 float altitude = fabs (100.00); // elevation in meter above see level  (u.N.N.)
+
 
 //--------------------------------------------------
 // Structs
@@ -849,8 +849,8 @@ double freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1B+ for 700 MHz chip, pi3 1.2 GHz
-	scanf  ("%lf", &freq);
-	printf ("\nYou chose: %lf MHz \n", freq);
+	scanf  ("%f", &freq);
+	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
 }
 //--------------------------------------------------
@@ -963,7 +963,7 @@ double channelmodepmr () //PMR
 	 //normaly up to 32 chan in dpmr
 	 case 33: 		exit (0);
 	 default:			freq=446.003125;
-	 							printf ("\nDefault channelnumber = 1 on freq = %lf \n", freq);
+	 							printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
 								break;
 	 }
 	}
@@ -972,7 +972,7 @@ double channelmodepmr () //PMR
 		printf ("\nNO type could be determined, wrong input! Using analog as standard \n");
 		type=analog;
 	}
-  printf ("\nChannelnumber = %d on freq = %lf \n", channelnumberpmr, freq);
+  printf ("\nChannelnumber = %d on freq = %f \n", channelnumberpmr, freq);
 	return freq;
 }
 
@@ -984,7 +984,7 @@ double subchannelmodepmr () //Pilot-tone
 	{
 		// FYI 19 (38)-kHz-Pilottone on UKW
 	 //---- Analog & digital
-	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0 default CTSS-Chan 1 %lf \n", subfreq); break;	// Scan all Chan till active , now chan1
+	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 %f \n", subfreq); break;	// Scan all Chan till active , now chan1
 	 case 1:  subfreq=67.900; break;	//4.9 Hz step
 	 case 2: 	subfreq=71.900; break;
 	 case 3: 	subfreq=74.400; break;
@@ -1025,10 +1025,10 @@ double subchannelmodepmr () //Pilot-tone
 	 case 38: subfreq=250.300; break;
 	 case 39: exit (0);
 	 default: subfreq=67.000;
-						printf ("\nDefault subchannel = 1 on subfreq = %lf \n", subfreq);
+						printf ("\nDefault subchannel = 1 on subfreq = %f \n", subfreq);
 						break;
 	}
-  printf ("\nSubchannelnumber = %d on subfreq = %lf \n", subchannelnumberpmr, subfreq);
+  printf ("\nSubchannelnumber = %d on subfreq = %f \n", subchannelnumberpmr, subfreq);
 	return freq;
 }
 
@@ -1136,11 +1136,11 @@ double channelmodecb () // CB
 			case 81:   exit (0);
 
 			default:		freq=26.9650;
-									printf ("\nDefault CB chan = 1 %lf \n", freq);
+									printf ("\nDefault CB chan = 1 %f \n", freq);
 									break;
 
 	}
-  printf ("\nUsing channel = %d on freq =  %lf \n", channelnumbercb, freq);
+  printf ("\nUsing channel = %d on freq =  %f \n", channelnumbercb, freq);
 	return  freq;
 }
 
@@ -1214,10 +1214,10 @@ void channelselect () // make a void
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
-int ledinactive (char *filename, double freq, int samplerate)
+int ledinactive (char *filename, float freq, int samplerate)
 {
 		//check if transmitting
-	/*	while (!play_wav (char *filename, double freq, int samplerate))
+	/*	while (!play_wav (char *filename, float freq, int samplerate))
 		{
 				//cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
@@ -1242,7 +1242,7 @@ int ledactive ()
     //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav (char *filename, double freq, int samplerate))
+		while (play_wav (char *filename, float freq, int samplerate))
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN17, HIGH);
@@ -1373,7 +1373,7 @@ void play_list () // exit func
 
 }
 
-void play_wav (char *filename, double freq, int samplerate)
+void play_wav (char *filename, float freq, int samplerate)
 {
 
 	/*wiki https://en.wikipedia.org/wiki/WAV
@@ -1656,7 +1656,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			sampler = (1E9/samplerate); //44.000
 			printf ("\nsampler: %f \n", sampler);
 			printf ("\nNow writing tone in am ... \n");
-			void WriteTone (double freq); // somehow input freq here ?!?
+			void WriteTone (float freq); // somehow input freq here ?!?
 			//return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
 		printf ("\nwhile readcount ... \n");
@@ -1674,19 +1674,19 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 // squelch/treshhold to build in maybe -> scan function till signal?
 
 //AM
-void WriteTone (double freq)
+void WriteTone (float freq)
 {
-	double Frequencies = freq;
+	float Frequencies = freq;
 	typedef struct
 	{
 
-		double Frequency;
+		float Frequency;
 		uint32_t WaitForThisSample;
 	} samplerf_t;
 	samplerf_t RfSample;
 	RfSample.Frequency = Frequencies;
 	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
-	printf ("\nFreq = %lf, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
@@ -1717,7 +1717,7 @@ char callname ()
   	return callsign; //, &callsign, *callsign;
 }
 
-void modetype (double freq)
+void modetype (float freq)
 {
 	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
 	scanf ("%d", &modeselect);
@@ -1775,7 +1775,7 @@ void modulationam (int argc, char **argv)
 		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
 		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
-		void WriteTone (double freq);// actual modulation stuff here for am -> wrrite tone?
+		void WriteTone (float freq);// actual modulation stuff here for am -> wrrite tone?
 		ledactive ();
 	  return;
 }
@@ -1786,7 +1786,7 @@ void modulationfm (int argc, char **argv)//FM
     setupfm (); // gets filename & path or done by filecheck () func
 	  printf ("\nSetting up DMA... \n");
 		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
-    //play_wav (char *filename, double freq, int samplerate); // atof (argv [3]):22050)
+    //play_wav (char *filename, float freq, int samplerate); // atof (argv [3]):22050)
 		return;
 }
 
@@ -1799,7 +1799,7 @@ int tx (int argc, char **argv)
 	//GPIO needs to be ALT FUNC 0 to output the clock
 	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
-	//play_wav (char *filename, double freq, int samplerate);
+	//play_wav (char *filename, float freq, int samplerate);
 	void modselect (int argc, char **argv, char *mod);
 	ledactive ();
 	printf ("\nBroadcasting now ...! \n");
@@ -1872,13 +1872,13 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	int options = 0;
 	argv [0] = "pifunk";
 	char *filename = "sound.wav"; // = argv [1];
-	double freq = fabs (446.006250); // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+	float freq = fabs (446.006250); // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate = abs (22050);// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm";// =argv [4];
 	char *callsign = "callsign";// =argv [5];
 	int power = 7;// =argv [6];
 	int dmachannel = 0; // =argv [7];
-	double bandwidth = 100.0; //=argv [8];
+	float bandwidth = 100.0; //=argv [8];
 	int gpiopin = abs(4); //=argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
@@ -1905,7 +1905,6 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 		{ */
 		switch (options)
 		{
-
 			case 'n':
 							filename = optarg;
 							printf ("\nFilename is %s \n", filename);
@@ -1967,7 +1966,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 
 			case 'b':
 								bandwidth = atoi (optarg);
-								printf ("\nBandwith is %f \n", bandwidth);
+								printf ("\nBandwidth is %f \n", bandwidth);
 								//break;
 
 			case 'a':
@@ -2019,27 +2018,30 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
  	//}//end of else
 		//-- for debugging or information :)
 	printf ("\n-----------------\n");
-	printf ("\nshort_opt: %s \n", short_opt);
+	printf ("\nChecking short_opt: %s \n", short_opt);
 	printf ("\nChecking File: %s \n", filename);
-	printf ("\nChecking Freq: %lf [MHz] \n", freq);
+	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 	printf ("\nChecking Modulation: %s \n", mod);
 	printf ("\nChecking Callsign: %s \n", callsign);
 	printf ("\nChecking Output-Power: %d \n", power);
-	printf ("\n&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power);
-	printf ("\nGPS-coordinates long: %f , lat: %f , alt: %f  \n", longitude, latitude, altitude);
+	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
+	printf ("\nChecking DMA-channel: %d \n", dmachannel);
+	printf ("\nChecking Bandwidth is %f \n", bandwidth);
+	printf ("\nHostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, ip, port);
+	printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+	printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
+	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
+/*
+	printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
+	printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
+	printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \n argv(2): %f / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d / GPIO: %d \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
+	printf ("\n&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
 
-	/*
-		//printf ("\n GPS-Module (Neo-7M) %gps  \n", gps);
-		//printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power);
-		//printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \nargv(2): %lf / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d  \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-		//printf ("&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
-		//printf ("*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p  \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
-		//printf ("\nHostname: %s , WAN+LAN-IP: %s , Port: %d \n", host, ip, port);
-		//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-		//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
-		*/
-
+	printf ("\n GPS-Module (Neo-7M) %gps  \n", gps);
+	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
+	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+*/
 	// gathering and parsing all given arguments to parse it to player
 	int tx (int argc, char **argv); //transmission
 
