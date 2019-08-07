@@ -9,6 +9,7 @@
 ### Acknowledgements
 
 based on PiFM/AM-Scripts
+
 ___
 
 ### Configurations
@@ -49,11 +50,12 @@ optional:
 
 Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
 
-`sudo nano /etc/modules`
+`sudo nano /etc/modules` opens modle config with text editor
 
 `pps-gpio` Add this line to the modulefile
 
 5. Save your edits with ctrl-o <return/enter> then exit with <ctrl-x>
+
 ___
 
 ### Installations
@@ -84,11 +86,11 @@ and install it:
 
 or `sudo pip install RPi.GPIO` for Py2
 
-or alternative ways: `sudo apt-get -y install python3-rpi.gpio`
+or alternative way: `sudo apt-get -y install python3-rpi.gpio`
 
 7. Compiler installation:
 
-a) GNU C Compiler  `sudo apt-get install gcc`
+a) GNU C Compiler `sudo apt-get install gcc` or g++
 
 b) GNU GDB Debugger `sudo apt-get install gdbserver`
 
@@ -97,6 +99,7 @@ b) GNU GDB Debugger `sudo apt-get install gdbserver`
 ___
 
 ### Build
+
 9. Navigate to directory:
 
 a) `cd PiFunk` with default path: `/home/pi/PiFunk`
@@ -111,7 +114,7 @@ b) GCC Compiler flags:
 
 `-v` Print compilation verbose informations
 
-`-DRASPI1` defines the macro to be used by the preprocessor (here the PI model 0-4)
+`-DRASPI1` defines the macro to be used by the preprocessor (here the PI1 model or 0-4, else std-values)
 
  -> will be detected by my the makefile via the type of the ARM-Processor
 
@@ -149,7 +152,7 @@ b) GCC Compiler flags:
 
 a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-SourcCcode, *.h=headerfile, *.i=assembled preprocessor-C-Code, *.s= preprocessed assembler code,
+*.c=C-source ccode, *.h=headerfile, *.i=assembled preprocessor C code, *.s= preprocessed assembler code,
 
 *.o= compiled objcet, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
 
@@ -163,7 +166,7 @@ c) manually compiling/linking executable binary:
 
 `sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
- d) optional:
+d) optional:
 
  -march=armv6l architecture version of ARM, -mtune=arm1176jzf-s architecture type tuning ("march=native" is auto option)
 
@@ -185,17 +188,17 @@ ___
 
 a) - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
 
-b) - Check Specifications: my Pi B+ v1.2 @ 700 MHz/ 512 MB RAM on ARM processor with driver bcm2835-v1.55
+b) - Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
- -> SoC from Broadcom	depending on pi model: BCM2835	BCM2836	BCM2837	BCM2837B0	BCM2837	BCM2837B0	BCM2711
+-> SoC from Broadcom	depending on pi model: BCM2835	BCM2836	BCM2837	BCM2837B0	BCM2837	BCM2837B0	BCM2711
 
-  for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
+for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
-  or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
+or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 c) - Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
-  @ 2-4 mA (max. 50 mA on ALL PINs and 16 per bank!)
+@ 2-4 mA (max. 50 mA on ALL PINs and 16 per bank!)
 
 - Antenna should be grounded (see Pinout image) to prevent noise and other problems
 
@@ -203,7 +206,7 @@ c) - Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
 - Tip: You could use just a copper wire for antenna:
 
- CB 11 m-Band (lambda/2, 5.5 m, 216.535" in") and 70 cm-Band (PMR) (lambda(1/4), 17.0 cm, 6.7" in)
+ CB 11 m-Band (lambda/2, 5.5 m, 216.535" in) and 70 cm-Band (PMR) (lambda(1/4), 17.0 cm, 6.7" in)
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
@@ -213,7 +216,7 @@ d) - You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenn
 
 e) - For handling overheating of the Pi's processor use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
 
-  you can overclock the Pi if you want to on own risk but it's not recommended
+you can overclock the Pi if you want to on own risk but it's not recommended
 
 f) - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 
@@ -223,11 +226,11 @@ f) - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PI
 
 g) - GPS: Module Neo 7M uses
 
-  5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
+5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
-  it prints in NMEA format so change config `ttyAMA0` to `tty1`
+it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
-  `sudo cat /dev/ttyAMA0` or alternative `sudo cat /dev/ttyS0`
+`sudo cat /dev/ttyAMA0` or alternative `sudo cat /dev/ttyS0`
 
 -> need to activate UART (serial0) in pi config! Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
@@ -249,7 +252,7 @@ Use '. dot' as decimal-comma separator!
 
 `[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
 
-extra single Arguments: -> no further argument needed
+extra single menu-flags: -> no further argument needed
 
 `[-a]` for assistant in step-by-step
 
@@ -312,4 +315,4 @@ ___
 
 [License Guideline](LICENSE.md) under Open-Source GPLv3.0
 
-Would appreciate being named in the source.
+Would appreciate being named in the source, Thank you.
