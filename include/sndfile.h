@@ -334,7 +334,7 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 typedef __int64					sf_count_t ;
 #define SF_COUNT_MAX		0x7fffffffffffffffi64
 #else
-typedef @TYPEOF_SF_COUNT_T	sf_count_t ;
+typedef TYPEOF_SF_COUNT_T	sf_count_t ;
 typedef int								sf_count_t ;
 #define SF_COUNT_MAX			@SF_COUNT_MAX@
 #endif

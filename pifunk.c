@@ -214,11 +214,11 @@ using namespace std;
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.6"
+#define VERSION 						 "0.1.7.7"
 #define VERSION_MAJOR        (0)
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (6)
+#define VERSION_PATCHLEVEL   (7)
 #define VERSION_STATUS 			 "e"
 
 #define _GNU_SOURCE
@@ -666,7 +666,7 @@ char buffer [80];
 //-20db = 10x attenuation, significantly more quiet
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volumeMultiplier = (int volume_reference * pow (10, (volumeLevelDb/20.f) ));
+float volumeMultiplier = (volume_reference) * pow (10, (volumeLevelDb/20.f) );
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
@@ -877,7 +877,7 @@ float step ()
 }
 
 // Channel-mode
-double channelmodepmr () //PMR
+float channelmodepmr () //PMR
 {
 	char *type;
   char *analog = "a";
@@ -975,7 +975,7 @@ double channelmodepmr () //PMR
 	return freq;
 }
 
-double subchannelmodepmr () //Pilot-tone
+float subchannelmodepmr () //Pilot-tone
 {
 	printf ("\nChoose Sub-Channel 0-38 (39 to exit): \n");
 	scanf ("%d", &subchannelnumberpmr);
@@ -1031,7 +1031,7 @@ double subchannelmodepmr () //Pilot-tone
 	return freq;
 }
 
-double channelmodecb () // CB
+float channelmodecb () // CB
 {
 	printf ("\nChoose CB-Channel 0-80 (81 to exit): \n");
 	scanf ("%d", &channelnumbercb);
@@ -1606,7 +1606,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 	// While there are frames in the input file, read them,
 	//process them and write them to the output file
 	//----------------------
-	nb_samples = (readcount/channels);
+	int nb_samples = (readcount/channels);
   while (readcount == read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
