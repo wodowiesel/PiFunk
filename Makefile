@@ -15,30 +15,31 @@ MAKEINFO=makeinfo
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 
+PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-)
 UNAME:=$(shell uname -m) #linux
 
 ifeq ($(UNAME), armv5l)
-CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI0
+CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=0
 TARGET=pi0
 endif
 
 ifeq ($(UNAME), armv6l)
-CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=1
 TARGET=pi1
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI2
+CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=2
 TARGET=pi2
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI3
+CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=3
 TARGET=pi3
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+CFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=4
 TARGET=pi4
 endif
 
@@ -57,7 +58,7 @@ CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASP
 TARGET=raspi
 endif
 
-#@echo " Compiling PiFunk "
+@echo " Compiling PiFunk "
 
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)

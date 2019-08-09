@@ -4,7 +4,7 @@ include MANIFEST
 include requirements.txt
 include Makefile
 
-recursive-include docs/ *.
-recursive-include *.c *.h *.o *.out *.i *.a *.s *.so *.lib *.html *.txt *.py *.csv
+recursive-include docs/*.
+recursive-include *.c *.h *.o *.out *.i *.a *.s *.so *.lib *.html *.txt *.py *.csv *.bin
 
 prune logs
