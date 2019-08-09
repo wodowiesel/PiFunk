@@ -15,7 +15,7 @@ MAKEINFO=makeinfo
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 RM:= rm -f
-PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-)
+PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010
 UNAME:=$(shell uname -m) #linux
 
 ifeq ($(UNAME), armv5l)
