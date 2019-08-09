@@ -174,7 +174,7 @@ using namespace std;
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
+//#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
@@ -666,7 +666,7 @@ char buffer [80];
 //-20db = 10x attenuation, significantly more quiet
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volumeMultiplier = (volume_reference) * pow (10, (volumeLevelDb/20.f) );
+float volumeMultiplier = 1 * pow (10, (volumeLevelDb/20.f) );
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
