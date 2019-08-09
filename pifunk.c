@@ -577,8 +577,8 @@ volatile unsigned 										*allof7e;
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-#define VOLUME_REFERENCE 	1
-#define SAMPLES_PER_BUFFER 	512
+#define SAMPLES_PER_BUFFER 							512
+
 //RTC (DS3231/1307 driver as bcm) stuff here if needed
 #define RTC_I2C_ADRESS                  0x68
 //----------------------------------
@@ -618,6 +618,7 @@ char *fm = "fm";
 char *am = "am";
 char *callsign = "callsign";
 float volume = 1.1f;
+const int VOLUME_REFERENCE =	1
 int power = abs (7);
 int powerlevel = abs (7);
 int samplerate = abs (22050);
