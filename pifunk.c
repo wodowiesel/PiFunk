@@ -646,8 +646,8 @@ uint16_t pis = 0x1234; // dec: 4660
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
-SNDFILE *infile;
-SNDFILE *outfile;
+//SNDFILE *infile;
+//SNDFILE *outfile;
 //snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit = abs (16);
@@ -666,7 +666,7 @@ char buffer [80];
 //-20db = 10x attenuation, significantly more quiet
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volumeMultiplier = 1 * pow (10, (volumeLevelDb/20.f) );
+float volumeMultiplier = pow (10, (volumeLevelDb/20.f) );
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
