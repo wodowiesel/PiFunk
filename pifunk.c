@@ -261,7 +261,7 @@ volatile unsigned 										*allof7e;
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
 
-if 	(RASPI) == 0
+#if 	(RASPI) == 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -270,7 +270,7 @@ if 	(RASPI) == 0
 
 #endif
 
-if  (RASPI) == 1
+#if  (RASPI) == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -280,7 +280,7 @@ if  (RASPI) == 1
 #define DMA_CHANNEL										 14
 #endif
 
-#ifdef  (RASPI) == 2
+#if  (RASPI) == 2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -291,7 +291,7 @@ if  (RASPI) == 1
 #define DMA_CHANNEL										 (14)
 #endif
 
-if (RASPI) == 3
+#if (RASPI) == 3
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -578,8 +578,8 @@ if  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-#define VOLUME_REFERENCE 								1
-#define SAMPLES_PER_BUFFER
+#define VOLUME_REFERENCE 	1
+#define SAMPLES_PER_BUFFER 	512
 //RTC (DS3231/1307 driver as bcm) stuff here if needed
 #define RTC_I2C_ADRESS                  0x68
 //----------------------------------
@@ -588,7 +588,7 @@ if  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
 //if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 
 //-----------------------------------
-static char *description = "(experimental)"; // version-stage
+char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
 //iterators for loops
@@ -779,7 +779,7 @@ void infos () //warnings and infos
 {
 		printf ("\n");
 		/*red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
-    printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //collor escape command for resetting
+    printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //color escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7\n");
@@ -844,7 +844,7 @@ int filecheck (char *filename, FILE wavefile)  // expected int?
 	return fp;
 }
 
-double freqselect () // gets freq by typing in
+float freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
 	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1B+ for 700 MHz chip, pi3 1.2 GHz
