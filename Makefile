@@ -63,40 +63,40 @@ endif
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
 
-pifunk.i: pifunk.c
-				  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
+pifunk.i:	pifunk.c
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
 
-pifunk.S: pifunk.c
+pifunk.S:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
 
-pifunk.s: pifunk.c
+pifunk.s:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-o lib/pifunk.s
 
-pifunk.o: pifunk.c
+pifunk.o:	pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.o
 
-pifunk.a: pifunk.c
+pifunk.a:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.a
 
-pifunk.lib: pifunk.c
+pifunk.lib:	pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.lib
 
-pifunk.so: pifunk.c
-					 $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
+pifunk.so:	pifunk.c
+						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
 
-pifunk.out: pifunk.c
-					  $(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
+pifunk.out:	pifunk.c
+						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
 
 pifunk.bin: pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
 
-pifunk: pifunk.c
-				$(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
+pifunk:	pifunk.c
+				$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
 
-install: $(USER) cd $(PATH)/PiFunk
-				 $(USER) install -m 0755 pifunk $(PATH)/bin
+install:	$(USER) cd $(PATH)/PiFunk
+					$(USER) install -m 0755 pifunk $(PATH)/bin
 
-uninstall: $(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
+uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
 
-.PHONY: clean
-clean: $(USER) $(RM) bin/pifunk.out lib/pifunk.o
+.PHONY:	clean
+clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o
