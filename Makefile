@@ -58,7 +58,7 @@ CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASP
 TARGET=raspi
 endif
 
-@echo " Compiling PiFunk "
+#@echo Compiling PiFunk
 
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
