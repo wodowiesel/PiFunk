@@ -666,7 +666,7 @@ char buffer [80];
 //-20db = 10x attenuation, significantly more quiet
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volumeMultiplier = 10E(volumeLevelDb/20.f);
+float volumeMultiplier = 10E(volumeLevelDb/20);
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
