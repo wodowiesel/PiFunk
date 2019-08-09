@@ -267,7 +267,6 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-
 #endif
 
 #if  (RASPI) == 1
@@ -302,7 +301,8 @@ volatile unsigned 										*allof7e;
 #define DMA_CHANNEL										 (14)
 #endif
 
-if  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
+#if  (RASPI) == 4
+//pi4 -> waiting for documentation from adafruit
 #define PERIPH_VIRT_BASE               (0xFE000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0xC0000000)
@@ -316,9 +316,8 @@ if  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) //dec: 12
-
 #else
-#error Unknown Raspberry Pi version (variable RASPI)
+//#error Unknown Raspberry Pi version (variable RASPI)
 #endif
 
 //---
@@ -588,7 +587,7 @@ if  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
 //if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 
 //-----------------------------------
-char *description = "(experimental)"; // version-stage
+const char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
 //iterators for loops
