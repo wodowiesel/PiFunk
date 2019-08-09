@@ -618,7 +618,7 @@ char *fm = "fm";
 char *am = "am";
 char *callsign = "callsign";
 float volume = 1.1f;
-const int VOLUME_REFERENCE =	1
+const int volume_reference =	1;
 int power = abs (7);
 int powerlevel = abs (7);
 int samplerate = abs (22050);
@@ -666,7 +666,7 @@ char buffer [80];
 //-20db = 10x attenuation, significantly more quiet
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volumeMultiplier = VOLUME_REFERENCE * pow (10, (volumeLevelDb/20.f) );
+float volumeMultiplier = (int volume_reference * pow (10, (volumeLevelDb/20.f) ));
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
@@ -1878,7 +1878,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	int power = 7;// =argv [6];
 	int dmachannel = 0; // =argv [7];
 	float bandwidth = 100.0; //=argv [8];
-	int gpiopin = abs(4); //=argv [9];
+	int gpiopin = abs (4); //=argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
