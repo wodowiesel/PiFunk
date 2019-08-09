@@ -14,7 +14,7 @@ PATH=/home/pi
 MAKEINFO=makeinfo
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
-
+RM:= rm -f
 PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-)
 UNAME:=$(shell uname -m) #linux
 
@@ -97,6 +97,6 @@ install: $(USER) cd $(PATH)/PiFunk
 				 $(USER) install -m 0755 pifunk $(PATH)/bin
 
 uninstall: $(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
-#$(RM) = rm -f
+
 .PHONY: clean
 clean: $(USER) $(RM) bin/pifunk.out lib/pifunk.o
