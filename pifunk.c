@@ -27,8 +27,6 @@ cd PiFunk // goto path
  -E tells to stop after preprocessing stage
  -v verbose
 
-
-
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
 virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
  wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=c99 -g -lm -x c && ./pifunk.out sound.wav
@@ -262,7 +260,8 @@ volatile unsigned 										*allof7e;
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 //-----
-#ifdef 	(RASPI) == 0
+
+if 	(RASPI) == 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -271,14 +270,14 @@ volatile unsigned 										*allof7e;
 
 #endif
 
-#ifdef  (RASPI) == 1
+if  (RASPI) == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#define CLOCK_BASE										 (19.2E6)
-#define DMA_CHANNEL										 (14)
+#define CLOCK_BASE										 19.2E6
+#define DMA_CHANNEL										 14
 #endif
 
 #ifdef  (RASPI) == 2
@@ -292,7 +291,7 @@ volatile unsigned 										*allof7e;
 #define DMA_CHANNEL										 (14)
 #endif
 
-#ifdef  (RASPI) == 3
+if (RASPI) == 3
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -303,7 +302,7 @@ volatile unsigned 										*allof7e;
 #define DMA_CHANNEL										 (14)
 #endif
 
-#ifdef  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
+if  (RASPI) == 4 //pi4 -> waiting for documentation from adafruit
 #define PERIPH_VIRT_BASE               (0xFE000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0xC0000000)
@@ -317,7 +316,6 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) //dec: 12
-#endif
 
 #else
 #error Unknown Raspberry Pi version (variable RASPI)
@@ -580,9 +578,10 @@ volatile unsigned 										*allof7e;
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-#define VOLUME_REFERENCE 								(1)
+#define VOLUME_REFERENCE 								1
+#define SAMPLES_PER_BUFFER
 //RTC (DS3231/1307 driver as bcm) stuff here if needed
-#define RTC_I2C_ADRESS                  (0x68)
+#define RTC_I2C_ADRESS                  0x68
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
@@ -649,7 +648,7 @@ FILE FileFreqTiming;
 FILE wavefile;
 SNDFILE *infile;
 SNDFILE *outfile;
-snd_output_t *output = NULL;
+//snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
 int filebit = abs (16);
 int readcount;
@@ -2027,8 +2026,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	printf ("\nChecking Output-Power: %d \n", power);
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
-	printf ("\nChecking Bandwidth is %f \n", bandwidth);
-	printf ("\nHostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, ip, port);
+	printf ("\nChecking Bandwidth: is %f \n", bandwidth);
+	printf ("\nChecking Hostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, localip, port);
 	printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
 	printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
 	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
