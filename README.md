@@ -54,7 +54,7 @@ Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
 
 `pps-gpio` Add this line to the modulefile
 
-5. Save your edits with ctrl-o <return/enter> then exit with <ctrl-x>
+5. Save your edits with ctrl-o <return/enter> then exit with ctrl-x
 
 ___
 
@@ -152,11 +152,11 @@ b) GCC Compiler flags:
 
 a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-source ccode, *.h=headerfile, *.i=assembled preprocessor C code, *.s= preprocessed assembler code,
+*.c=C-source ccode, *.h=headerfile, *.i=assembled preprocessor C code, *.s=preprocessed assembler code,
 
-*.o= compiled objcet, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
+*.o=compiled object, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
 
-*.out=default binary, pifunk(.bin)= executable binary (program)
+*.out=default binary, pifunk(.bin)=executable binary (program)
 
 b) manually compiling/linking libraries:
 
