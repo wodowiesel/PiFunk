@@ -7,11 +7,13 @@ STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.
 CXX=g++
 CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.c -O3
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -L/opt/vc/lib -lbcm_host
-#-lgthread
+LDFLAGS=-lm -lpthread -lgthread -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -L/opt/vc/lib -lbcm_host
+
 LDLIBS=-Llib -shared
 PATH=/home/pi
 MAKEINFO=makeinfo
+EXECUTABLE=pifunk
+VERSION=0.1.7.6
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 RM=rm -f
