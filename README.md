@@ -128,6 +128,8 @@ b) GCC Compiler flags:
 
 `-lsndfile` -l links libname for ALSA "snd"-lib
 
+`-lgthread` lib for threads
+
 `-Llib` for using library-directory
 
 `-c` for compiling without linking for making object
@@ -160,25 +162,27 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lgthread -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lgthread -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
 d) optional:
 
- -march=armv6l architecture version of ARM, -mtune=arm1176jzf-s architecture type tuning ("march=native" is auto option)
+ `-march=armv6l` architecture version of ARM
+ 
+ `-mtune=arm1176jzf-s` special architecture type tuning ("march=native" is auto option)
 
- -mfloat-abi=hard floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
+ `-mfloat-abi=hard` floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
- -mfpu=vfp floating point hardware module
+ `-mfpu=vfp` floating point hardware module
 
- -ffast-math increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
+ `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
-`sudo make` with pre-configured flags for compilation for all Pi's
+ `sudo make` with pre-configured flags for compilation for all Pi's
 
-`sudo clean` for removing pifunk.out/pifunk.o files if necessary
+ `sudo clean` for removing pifunk.out and pifunk.o files if necessary
 
 ___
 
@@ -190,7 +194,7 @@ a) - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0
 
 b) - Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
--> SoC from Broadcom	depending on pi model: BCM2835	BCM2836	BCM2837	BCM2837B0	BCM2837	BCM2837B0	BCM2711
+-> SoC from Broadcom	depending on pi model: BCM2835,	BCM2836,	BCM2837,	BCM2837B0,	BCM2837,	BCM2837B0,	BCM2711
 
 for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
