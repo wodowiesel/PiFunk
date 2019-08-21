@@ -128,7 +128,9 @@ b) GCC Compiler flags:
 
 `-lsndfile` -l links libname for ALSA "snd"-lib
 
-`-lgthread` lib for threads
+`-lpthread` lib for process threads
+
+`-lgthread` lib for graphic threads
 
 `-Llib` for using library-directory
 
@@ -162,17 +164,17 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lgthread -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lpthread -lgthread -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lgthread -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lpthread -lgthread -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
 d) optional:
 
- `-march=armv6l` architecture version of ARM
- 
- `-mtune=arm1176jzf-s` special architecture type tuning ("march=native" is auto option)
+ `-march=armv6l` architecture version of ARM ("native" is auto option)
+
+ `-mtune=arm1176jzf-s` special architecture type tuning
 
  `-mfloat-abi=hard` floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
