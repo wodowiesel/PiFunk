@@ -65,39 +65,41 @@ endif
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
 
-pifunk.i:	pifunk.c
+pifunk.i:	pifunk.c pifunk.h
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
 
-pifunk.S:	pifunk.c
+pifunk.S:	pifunk.c pifunk.h
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
 
-pifunk.s:	pifunk.c
+pifunk.s:	pifunk.c pifunk.h
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-o lib/pifunk.s
 
-pifunk.o:	pifunk.c
+pifunk.o:	pifunk.c pifunk.h
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.o
 
-pifunk.a:	pifunk.c
+pifunk.a:	pifunk.c pifunk.h
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.a
 
-pifunk.lib:	pifunk.c
+pifunk.lib:	pifunk.c pifunk.h
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.lib
 
-pifunk.so:	pifunk.c
+pifunk.so:	pifunk.c pifunk.h
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
 
-pifunk.out:	pifunk.c
+pifunk.out:	pifunk.c pifunk.h
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
 
-pifunk.bin: pifunk.c
+pifunk.bin: pifunk.c pifunk.h
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
 
-pifunk:	pifunk.c
+pifunk:	pifunk.c pifunk.h pifunk.o
 				$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
 
+.PHONY: install
 install:	$(USER) cd $(PATH)/PiFunk
 					$(USER) install -m 0755 pifunk $(PATH)/bin
 
+.PHONY: uninstall
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
 
 .PHONY:	clean

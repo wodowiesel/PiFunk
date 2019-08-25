@@ -14,7 +14,6 @@ include_directories(
 set(pifunk_HEADERS
   	include/pifunk.h
   	include/sndfile.h
-  	media.h
   	)
 
 set(pifunk_SOURCES
