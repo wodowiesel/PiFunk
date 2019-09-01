@@ -660,7 +660,7 @@ float data_filtered [2*BUFFER_LEN];
 char data_name [1024];
 char buffer [80];
 //audio & sample control
-// logarithmic modulation
+//logarithmic modulation
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
 //-20db = 10x attenuation, significantly more quiet
@@ -1831,7 +1831,7 @@ void assistent () //assistent
 		int dmaselect (int dmachannel);
 		double bandwidthselect (double bandwidth);
 
-		printf ("\nPress all information gatherd, going back to main \n");
+		printf ("\nPress all information gathered, going back to main \n");
 		//while (getchar () != '');
 
 		return;
@@ -1877,8 +1877,8 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	char *callsign = "callsign";// =argv [5];
 	int power = 7;// =argv [6];
 	int dmachannel = 0; // =argv [7];
-	float bandwidth = 100.0; //=argv [8];
-	int gpiopin = abs (4); //=argv [9];
+	float bandwidth = 100.00; // =argv [8];
+	int gpiopin = abs (4); // =argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
@@ -1955,7 +1955,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 
 			case 'g':
 								gpiopin = atof (optarg);
-								printf ("\nGPIO is %d \n", gpiopin);
+								printf ("\nGPIO-Pin is %d \n", gpiopin);
 								//break;
 
 			case 'd':
