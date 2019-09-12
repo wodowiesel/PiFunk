@@ -1,6 +1,6 @@
-/* PiFunk (C) 2018-2019 silicator a.k.a wiesel
-
-OS: raspbian (stretch) incl. desktop & recommended software v4.14 (8. April 2019) based on debian
+/* PiFunk (C) 2018-2019 silicator a.k.a Wiesel
+version=0.1.7.7e
+OS: raspbian (stretch) incl. desktop & recommended software v4.14+ (8. April 2019) based on debian
 SHA-256:a3ced697ca0481bb0ab3b1bd42c93eb24de6264f4b70ea0f7b6ecd74b33d83eb
 -> get it here https://www.raspberrypi.org/downloads/raspbian/
 -> or direct link https://downloads.raspberrypi.org/raspbian_full_latest => 2019-04-08-raspbian-stretch-full.zip
@@ -222,7 +222,7 @@ using namespace std;
 #define VERSION_STATUS 			 "e"
 
 #define _GNU_SOURCE
-#define _POSIX_C_SOURCE = 		200809L //or 199309L
+#define _POSIX_C_SOURCE = 		(200809L) //or 199309L
 #define _USE_MATH_DEFINES
 
 //---- PI specific stuff
@@ -250,7 +250,7 @@ volatile unsigned 										*allof7e;
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
 #define ALLOF7ED											(*allof7e - SUB_BASE)
-#define PIN_GND                       9 // which is the GPIO pin 17 for led
+#define PIN_GND                       (9) // which is the GPIO pin 17 for led
 #define PIN17                         RPI_GPIO_P17 // which is the GPIO pin 17 for led
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
@@ -267,6 +267,7 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
+#define PLLD_FREQ											 (500000000)
 #endif
 
 #if  (RASPI) == 1
@@ -275,8 +276,9 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#define CLOCK_BASE										 19.2E6
-#define DMA_CHANNEL										 14
+#define CLOCK_BASE										 (19.2E6)
+#define DMA_CHANNEL										 (14)
+#define PLLD_FREQ											 (500000000)
 #endif
 
 #if  (RASPI) == 2
@@ -288,9 +290,11 @@ volatile unsigned 										*allof7e;
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6)
 #define DMA_CHANNEL										 (14)
+#define PLLD_FREQ 										 (500000000)
 #endif
 
 #if (RASPI) == 3
+// BCM2835
 #define PERIPH_VIRT_BASE               (0x20000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -299,16 +303,22 @@ volatile unsigned 										*allof7e;
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6)
 #define DMA_CHANNEL										 (14)
+#define PLLD_FREQ 										 (500000000)
 #endif
 
 #if  (RASPI) == 4
-//pi4 -> waiting for documentation from adafruit
+//pi4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000)
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0xC0000000)
 #define MEM_FLAG                       (0x04)
+#define PAGE_SIZE 										 (4096)
 #define XTAL_CLOCK                     (54.0E6)
 #define DMA_CHANNEL                    (6)
+#define PLLD_FREQ 										 (750000000)
+#define BUFFER_TIME 									 (1000000)
+#define PWM_WRITES_PER_SAMPLE 				 (10)
+#define PWM_CHANNEL_RANGE 						 (32)
 #endif
 
 #ifdef  RPI 									     	   	// alternative
@@ -316,8 +326,9 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) //dec: 12
+
 #else
-//#error Unknown Raspberry Pi version (variable RASPI)
+#error 	Unknown Raspberry Pi version (variable RASPI)
 #endif
 
 //---
@@ -370,9 +381,12 @@ volatile unsigned 										*allof7e;
 
 //----------from pifmadv -> helps to understand the things, the normal fm-script didnt specified
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
-#define PWM_BASE_OFFSET                 (0x0020C000)// dec: 2146304
+#define DMA15_BASE_OFFSET 						  (0x00E05000)
+#define TIMER_BASE_OFFSET 						  (0x00003000)
+#define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
 #define CLK_BASE_OFFSET                 (0x00101000) // dec:1052672
+#define CLK0_BASE_OFFSET 							  (0x00101070)
 #define CLK_LEN                         (0x1300) // dec: 4864
 #define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
 #define GPIO_LEN                        (0x100) // dec: 256
@@ -577,10 +591,9 @@ volatile unsigned 										*allof7e;
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-#define SAMPLES_PER_BUFFER 							512
-
+#define SAMPLES_PER_BUFFER 							(512)
 //RTC (DS3231/1307 driver as bcm) stuff here if needed
-#define RTC_I2C_ADRESS                  0x68
+#define RTC_I2C_ADRESS                  (0x68)
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
@@ -605,6 +618,7 @@ char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
 float xtal_freq_recip=1.0/CLOCK_BASE;
+
 //-----------------------------------------
 //arguments
 int opt;
@@ -617,13 +631,15 @@ char *mod;
 char *fm = "fm";
 char *am = "am";
 char *callsign = "callsign";
-float volume = 1.1f;
-const int volume_reference =	1;
 int power = abs (7);
 int powerlevel = abs (7);
 int samplerate = abs (22050);
 int channels = 1;
 double shift_ppm = 0.0;
+
+float divider = (PLLD_FREQ/(2000*228*(1.+ppm/1.E6)));
+uint32_t idivider = (uint32_t) divider;
+uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
 //menu variables
 int menuoption;
@@ -637,7 +653,7 @@ int callnameselect;
 time_t t;
 
 // IQ & carrier
-uint16_t pis = 0x1234; // dec: 4660
+uint16_t pis = (0x1234); // dec: 4660
 //float I = sin ((PERIOD*freq) + shift_ppm);
 //float Q = cos ((PERIOD*freq) + shift_ppm);
 //float RF_SUM = (I+Q);
@@ -659,14 +675,17 @@ float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
 char data_name [1024];
 char buffer [80];
+
 //audio & sample control
 //logarithmic modulation
 //samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
 //-20db = 10x attenuation, significantly more quiet
+float volume = 1.1f;
+const int volume_reference =	1;
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-//float volumeMultiplier = 10E(volumeLevelDb/20);
+float volumeMultiplier = 10E(volumeLevelDb/20);
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
@@ -700,7 +719,6 @@ int port = 8080;
 float longitude = 8.682127; // E
 float latitude = 50.110924; // N
 float altitude = fabs (100.00); // elevation in meter above see level  (u.N.N.)
-
 
 //--------------------------------------------------
 // Structs

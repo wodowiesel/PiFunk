@@ -13,12 +13,13 @@ LDLIBS=-Llib -shared
 PATH=/home/pi
 MAKEINFO=makeinfo
 EXECUTABLE=pifunk
-VERSION=0.1.7.6
+VERSION=0.1.7.7
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 RM=rm -f
 PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010
 UNAME:=$(shell uname -m) #linux
+RPI_VERSION := $(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]")
 
 ifeq ($(UNAME), armv5l)
 CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=0
@@ -40,7 +41,7 @@ CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math
 TARGET=pi3
 endif
 
-ifeq ($(UNAME), armv8l)
+ifeq ($(UNAME), armv8l && $(shell expr $(RPI_VERSION) \>= 4), 1)
 CFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=4
 TARGET=pi4
 endif
@@ -89,17 +90,17 @@ pifunk.so:	pifunk.c pifunk.h
 pifunk.out:	pifunk.c pifunk.h
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
 
-pifunk.bin: pifunk.c pifunk.h
+pifunk.bin: pifunk.c pifunk.h pifunk.o
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
 
 pifunk:	pifunk.c pifunk.h pifunk.o
 				$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
 
-.PHONY: install
+.PHONY: 	install
 install:	$(USER) cd $(PATH)/PiFunk
 					$(USER) install -m 0755 pifunk $(PATH)/bin
 
-.PHONY: uninstall
+.PHONY: 		uninstall
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
 
 .PHONY:	clean
