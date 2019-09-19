@@ -4,7 +4,7 @@ USER=sudo
 CC=gcc
 CXX=g++
 # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
-STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c 
+STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c
 CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lgthread -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -L/opt/vc/lib -lbcm_host
@@ -19,7 +19,7 @@ VERSION=0.1.7.7
 RM=rm -f
 PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010
 UNAME:=$(shell uname -m) #linux
-RPI_VERSION := $(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]")
+RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]")
 
 ifeq ($(UNAME), armv5l)
 CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=0
@@ -96,6 +96,9 @@ pifunk.bin: pifunk.c pifunk.h pifunk.o
 pifunk:	pifunk.c pifunk.h pifunk.o
 				$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
 
+.PHONY: 		piversion
+piversion:	$(USER) $(RPI_VERSION)
+
 .PHONY: 	install
 install:	$(USER) cd $(PATH)/PiFunk
 					$(USER) install -m 0755 pifunk $(PATH)/bin
@@ -104,4 +107,4 @@ install:	$(USER) cd $(PATH)/PiFunk
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
 
 .PHONY:	clean
-clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o
+clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o build/pifunk
