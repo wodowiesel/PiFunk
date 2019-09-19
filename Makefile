@@ -2,14 +2,14 @@
 # should run with sudo or root rights
 USER=sudo
 CC=gcc
-# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
-STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.c -O3
 CXX=g++
-CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -fPIC pifunk.c -O3
+# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
+STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c 
+CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lgthread -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -L/opt/vc/lib -lbcm_host
-
 LDLIBS=-Llib -shared
+
 PATH=/home/pi
 MAKEINFO=makeinfo
 EXECUTABLE=pifunk
