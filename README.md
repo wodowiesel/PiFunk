@@ -198,9 +198,9 @@ ___
 
 11. Hardware-Setup:
 
-a) - Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
+a) Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
 
-b) - Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
+b) Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
 -> SoC from Broadcom	depending on pi model: BCM2835,	BCM2836,	BCM2837,	BCM2837B0,	BCM2837,	BCM2837B0,	BCM2711
 
@@ -208,7 +208,7 @@ for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
 or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
-c) - Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
+c) Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
 @ 2-4 mA (max. 50 mA on ALL PINs and 16 per bank!)
 
@@ -222,21 +222,21 @@ c) - Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-d) - You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
+d) You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
-e) - For handling overheating of the Pi's processor use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
+e) For handling overheating of the Pi's processor use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
 
 you can overclock the Pi if you want to on own risk but it's not recommended
 
-f) - RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
+f) RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 
 -> need to activate I2C in pi config!
 
 ![RTC](docs/RTC-top.jpg)
 
-g) - GPS: Module Neo 7M uses
+g) GPS: Module Neo 7M uses
 
 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
@@ -248,7 +248,7 @@ it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
 ![GPS](docs/GPS-Neo7M.jpg)
 
-h) - Morsecode-table:
+h) Morsecode-table:
 
 ![Morsecode](docs/morsecodeCW.jpg)
 
