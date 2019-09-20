@@ -197,17 +197,19 @@ using namespace std;
   //printf ("Program runs under UNIX/LINUX");
 	#pragma GCC dependency "pifunk.h"
 #endif
+
 #ifdef __ARM__
   //printf ("Program runs under ARM-Architecture!");
   //#pragma ARM
-  // same as -CODE32
-  //#error
+  //same as -CODE32
+  //#error NOT ARM
 #endif
 
 #ifdef __GNUC__
    //printf ("Using GNU C with ANSI C99!!");
    //#pragma GCC system_header
 #endif
+
 #ifdef __STDC_VERSION__ //>= 199901L
    /*#warning  string */
    //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
@@ -225,24 +227,31 @@ using namespace std;
 #define _POSIX_C_SOURCE = 		(200809L) //or 199309L
 #define _USE_MATH_DEFINES
 
-//---- PI specific stuff
+// simple operators stuff
 #define IN                    (0)
 #define OUT                   (1)
 #define FALSE                 (0)
 #define TRUE                  (1)
 /*
 predefine if needed when not using bcm header
-#define LOW (0)
-#define HIGH (1)
+#define LOW 									(0)
+#define HIGH 									(1)
 */
 
-//-------buffers
+//mathematical stuff
+#define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
+#define PI                              (3.14159265358979323846)
+#define PHASE                           (2*PI) // 6.28318530718
+#define HALF_PERIOD                     (1/PI) // 0.31830988618
+#define PERIOD                          (1/PHASE) // 0.15915494309
+
+// buffers
 #define PAGE_SIZE             (4*1024) //4096
 #define BLOCK_SIZE            (4*1024) //4096
 #define BUFFER_LEN            (8*1024) //8192
 #define BUFFERINSTRUCTIONS    (65536) //[1024]
-//#define sleep [1000]
-//#define usleep [1000]
+//#define sleep 								[1000]
+//#define usleep 								[1000]
 
 //--------I-O access via GPIO
 volatile unsigned 										*gpio;
@@ -259,79 +268,8 @@ volatile unsigned 										*allof7e;
 #define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
-//-----
 
-#if 	(RASPI) == 0
-#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
-#define PERIPH_PHYS_BASE               (0x7E000000)
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x0C) //dec: 12
-#define PLLD_FREQ											 (500000000)
-#endif
-
-#if  (RASPI) == 1
-#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
-#define PERIPH_PHYS_BASE               (0x7E000000)
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x0C) //dec: 12
-#define CLOCK_BASE										 (19.2E6)
-#define DMA_CHANNEL										 (14)
-#define PLLD_FREQ											 (500000000)
-#endif
-
-#if  (RASPI) == 2
-#define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
-#define PERIPH_PHYS_BASE               (0x7E000000)
-#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
-#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
-#define MEM_FLAG                       (0x04) // dec: 4
-#define CURBLOCK                       (0x04) // dec: 4 memflag
-#define CLOCK_BASE									   (19.2E6)
-#define DMA_CHANNEL										 (14)
-#define PLLD_FREQ 										 (500000000)
-#endif
-
-#if (RASPI) == 3
-// BCM2835
-#define PERIPH_VIRT_BASE               (0x20000000)
-#define PERIPH_PHYS_BASE               (0x7E000000)
-#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
-#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
-#define MEM_FLAG                       (0x04) // dec: 4
-#define CURBLOCK                       (0x04) // dec: 4 memflag
-#define CLOCK_BASE									   (19.2E6)
-#define DMA_CHANNEL										 (14)
-#define PLLD_FREQ 										 (500000000)
-#endif
-
-#if  (RASPI) == 4
-//pi4 - BCM2838
-#define PERIPH_VIRT_BASE               (0xFE000000)
-#define PERIPH_PHYS_BASE               (0x7E000000)
-#define DRAM_PHYS_BASE                 (0xC0000000)
-#define MEM_FLAG                       (0x04)
-#define PAGE_SIZE 										 (4096)
-#define XTAL_CLOCK                     (54.0E6)
-#define DMA_CHANNEL                    (6)
-#define PLLD_FREQ 										 (750000000)
-#define BUFFER_TIME 									 (1000000)
-#define PWM_WRITES_PER_SAMPLE 				 (10)
-#define PWM_CHANNEL_RANGE 						 (32)
-#endif
-
-#ifdef  RPI 									     	   	// alternative
-#define PERIPH_VIRT_BASE               (0x20000000)
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x04) //dec: 12
-
-#else
-#error 	Unknown Raspberry Pi version (variable RASPI)
-#endif
-
-//---
+// standard & general definitions
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define LENGTH                         (0x01000000) // dec: 1
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
@@ -346,8 +284,9 @@ volatile unsigned 										*allof7e;
 #define DMAREF                         (0x7F)   // dec: 127 dma base reference
 #define MODULATE                       (0x4D72) // dec: 19826
 #define DMAC                           (0x0707) // dec: 1799
-//#define PWMCLK_CNTL                    (0x5A000016) // dec: 1509949462
-//#define PWMCLK_DIV                     (0x5A002800) // dec: 1509959680
+#define PWMCLK_CNTL0                   (0x5A000016) // dec: 1509949462
+#define PWMCLK_DIV0                    (0x5A002800) // dec: 1509959680
+
 // possibility to give argv 0-4 an specific address or pointer
 // addresses -> at least on my system-tests
 #define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640
@@ -372,14 +311,7 @@ volatile unsigned 										*allof7e;
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 #define FILE_PTR                        (0x73) // dec: 115
 
-//mathematical stuff
-#define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
-#define PI                              (3.14159265358979323846)
-#define PHASE                           (2*PI) // 6.28318530718
-#define HALF_PERIOD                     (1/PI) // 0.31830988618
-#define PERIOD                          (1/PHASE) // 0.15915494309
-
-//----------from pifmadv -> helps to understand the things, the normal fm-script didnt specified
+//----------helps to understand the things, the normal fm-script didnt specified
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
 #define DMA15_BASE_OFFSET 						  (0x00E05000)
 #define TIMER_BASE_OFFSET 						  (0x00003000)
@@ -576,8 +508,6 @@ volatile unsigned 										*allof7e;
 #define MEM_FLAG_NO_INIT                (1 << 5) /* don't initialise (default is initialise to all ones */
 #define MEM_FLAG_HINT_PERMALOCK         (1 << 6) /* Likely to be locked for long periods of time. */
 
-#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) //3221225472
-
 #define PAGE_SHIFT                      (12)
 #define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
 
@@ -586,14 +516,87 @@ volatile unsigned 										*allof7e;
 
 #define SUBSIZE                         (1)
 #define DATA_SIZE                       (1000)
+#define SAMPLES_PER_BUFFER 							(512)
 
+#define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) //3221225472
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-#define SAMPLES_PER_BUFFER 							(512)
 //RTC (DS3231/1307 driver as bcm) stuff here if needed
 #define RTC_I2C_ADRESS                  (0x68)
+
+//----- specific pi adresses & definitions
+#ifdef 	(RASPI) == 0
+#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x0C) //dec: 12
+#define PLLD_FREQ											 (500000000)
+#endif
+
+#ifdef  (RASPI) == 1
+#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x0C) //dec: 12
+#define CLOCK_BASE										 (19.2E6)
+#define DMA_CHANNEL										 (14)
+#define PLLD_FREQ											 (500000000)
+#endif
+
+#ifdef  (RASPI) == 2
+#define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
+#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
+#define MEM_FLAG                       (0x04) // dec: 4
+#define CURBLOCK                       (0x04) // dec: 4 memflag
+#define CLOCK_BASE									   (19.2E6)
+#define DMA_CHANNEL										 (14)
+#define PLLD_FREQ 										 (500000000)
+#endif
+
+#ifdef 	(RASPI) == 3
+// BCM2835
+#define PERIPH_VIRT_BASE               (0x20000000)
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
+#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
+#define MEM_FLAG                       (0x04) // dec: 4
+#define CURBLOCK                       (0x04) // dec: 4 memflag
+#define CLOCK_BASE									   (19.2E6)
+#define DMA_CHANNEL										 (14)
+#define PLLD_FREQ 										 (500000000)
+#endif
+
+#ifdef  (RASPI) == 4
+//pi4 - BCM2838
+#define PERIPH_VIRT_BASE               (0xFE000000)
+#define PERIPH_PHYS_BASE               (0x7E000000)
+#define DRAM_PHYS_BASE                 (0xC0000000)
+#define MEM_FLAG                       (0x04)
+#define PAGE_SIZE 										 (4096)
+#define XTAL_CLOCK                     (54.0E6)
+#define DMA_CHANNEL                    (6)
+#define PLLD_FREQ 										 (750000000)
+#define BUFFER_TIME 									 (1000000)
+#define PWM_WRITES_PER_SAMPLE 				 (10)
+#define PWM_CHANNEL_RANGE 						 (32)
+#endif
+
+#ifdef  RPI 									     	   	// alternative
+#define PERIPH_VIRT_BASE               (0x20000000)
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x04) //dec: 12
+
+#else
+#error 	Unknown Raspberry Pi version (variable RASPI)
+#endif
+
 //----------------------------------
 /* try a modprobe of i2C-BUS*/
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
@@ -637,7 +640,7 @@ int samplerate = abs (22050);
 int channels = 1;
 double shift_ppm = 0.0;
 
-float divider = (PLLD_FREQ/(2000*228*(1.+ppm/1.E6)));
+float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)));
 uint32_t idivider = (uint32_t) divider;
 uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
@@ -654,9 +657,9 @@ time_t t;
 
 // IQ & carrier
 uint16_t pis = (0x1234); // dec: 4660
-//float I = sin ((PERIOD*freq) + shift_ppm);
-//float Q = cos ((PERIOD*freq) + shift_ppm);
-//float RF_SUM = (I+Q);
+float I = sin ((PERIOD*freq) + shift_ppm);
+float Q = cos ((PERIOD*freq) + shift_ppm);
+float RF_SUM = (I+Q);
 
 //files
 FILE *rfp, *wfp;
@@ -666,7 +669,7 @@ FILE wavefile;
 //SNDFILE *outfile;
 //snd_output_t *output = NULL;
 int fp = STDIN_FILENO;
-int filebit = abs (16);
+int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
 int readBytes;
 float datanew = 0;
@@ -678,7 +681,6 @@ char buffer [80];
 
 //audio & sample control
 //logarithmic modulation
-//samples max. 10 kHz resolution for am / 14.5 kHz FM radio can be recorded
 //volume in dB 0db = unity gain, no attenuation, full amplitude signal
 //-20db = 10x attenuation, significantly more quiet
 float volume = 1.1f;
@@ -686,8 +688,10 @@ const int volume_reference =	1;
 float volbuffer [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
 float volumeMultiplier = 10E(volumeLevelDb/20);
+
+//samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
 //SF_INFO sfinfo;
-int nb_samples;
+int nb_samples = (readcount/channels);
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
 float A = 87.6f; // compression parameter
 uint32_t carrier_freq = 87600000; // -> this might be the carrier too, why this value?
@@ -700,25 +704,25 @@ float sampler;
 //instructor for access
 unsigned long frameinfo;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
-int bufPtr = 0;
-int instrCnt = 0;
+int bufPtr 		= 0;
+int instrCnt 	= 0;
 int instrPage;
 int constPage;
-int reg = 0; //= gpio / 10;
-int shift = 0; //= (gpio % 10) * 3;
+int reg 			= 0; //= gpio / 10;
+int shift 		= 0; //= (gpio % 10) * 3;
 
 //network sockets
 //custom port via tcp/ip or udp
 socklen_t addressLength;
 char *localip = "127.0.0.1";
-char *host = "localhost";
-int port = 8080;
+char *host 		= "localhost";
+int 	port 		= 8080;
 
 // GPS-coordinates
 //default Frankfurt in decimal °grad (centigrade)
 float longitude = 8.682127; // E
-float latitude = 50.110924; // N
-float altitude = fabs (100.00); // elevation in meter above see level  (u.N.N.)
+float latitude 	= 50.110924; // N
+float altitude	= fabs (100.00); // elevation in meter above see level (u.N.N.)
 
 //--------------------------------------------------
 // Structs
@@ -831,11 +835,11 @@ int dmaselect (int dmachannel)
 	return dmachannel;
 }
 
-double bandwidthselect (double bandwidth)
+float bandwidthselect (float bandwidth)
 {
-	printf ("\nPlease choose the bandwidth (default=100.00 kHz) \n");
+	printf ("\nPlease choose the bandwidth (default=15.00 kHz) \n");
   scanf ("%f", &bandwidth);
-	printf ("\nYour bandwidth is %f ... \n", bandwidth);
+	printf ("\nYour bandwidth is %f \n", bandwidth);
 	return bandwidth;
 }
 
@@ -918,6 +922,7 @@ float channelmodepmr () //PMR
 	 case 6: freq=446.06875; break; // Events
 	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
 	 case 8: freq=446.09375; break; // Standard
+	 
   //-----Digital only
 	// dmr (tier 1) digital new since 28.09.2016
 	// extra 8 chan
@@ -1228,6 +1233,7 @@ void channelselect () // make a void
 	}
 	return;
 }
+
 //--------------LED stuff
 //controlling via py possible but c stuff can be useful too by bcm funcs!
 //turn on LED (with 100 kOhm pullup resistor while transmitting
@@ -1293,6 +1299,7 @@ float audiovol ()
 	return volumeMultiplier;
 }
 */
+
 //--------------- Voids
 void handSig () // exit func
 {
@@ -1380,8 +1387,10 @@ void setupfm ()
    //SETBIT (GPFSEL0, 14);
    //CLRBIT (GPFSEL0, 13);
    //CLRBIT (GPFSEL0, 12);
+
 	 carrierhigh ();
 }
+
 ///------------------------------------
 //relevant for transmitting stuff
 void play_list () // exit func
@@ -1399,14 +1408,15 @@ void play_wav (char *filename, float freq, int samplerate)
     245 × 60 × 3 = 44100
     245 active lines/field × 60 fields/second × 3 samples/line = 44100 samples/second
     (490 active lines per frame, out of 525 lines total)
-    PAL:
-    294 × 50 × 3 = 44100
+
+    PAL:294 × 50 × 3 = 44100
     294 active lines/field × 50 fields/second × 3 samples/line = 44100 samples/second
     (588 active lines per frame, out of 625 lines total)
 	*/
-   // after getting filename insert then open
-	printf ("\nAllocating file to mem for wave ... \n");
+
 	play_list ();
+  // after getting filename insert then open
+	printf ("\nAllocating file to mem for wave ... \n");
 
 	int sz = lseek (fp, 0L, SEEK_END);
 	/* lseek: repositions the file offset of the open file description
@@ -1423,7 +1433,6 @@ void play_wav (char *filename, float freq, int samplerate)
 
   while (readBytes == read (fp, &data, 1024))
   {
-				//normally in 15 Hz bandwidth
         float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
 				printf ("\nfmconstant: %f \n", fmconstant);
         int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
@@ -1433,7 +1442,7 @@ void play_wav (char *filename, float freq, int samplerate)
 				printf ("\ndatanew: %f \n", datanew);
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
 				printf ("\nsample: %f \n", sample);
-        float dval = sample*15.0; // actual transmitted sample, 15 is standard bandwidth (about 75 kHz) better 14.5
+        float dval = sample*15.0; // actual transmitted sample, 15 hz is standard bandwidth (about 75 kHz) better 14.5
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
@@ -1473,21 +1482,13 @@ void play_wav (char *filename, float freq, int samplerate)
         bufPtr = (bufPtr+1) % (BUFFERINSTRUCTIONS); // [1024] for buffer
 
         dataold = datanew;
-        //ss->consume (data, readBytes);// ss-> for stereo
+
+        //ster->consume (data, readBytes); // ster -> for stereo
         printf ("\nReading bytes from fp ... \n");
   }
 
    close (fp);
-   //close (*filename);
    printf ("\nClosing file \n");
-}
-
-void unsetupDMA ()
-{
-	//struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
-	//DMA0->CS = 1<<31; // reset dma controller
-	printf ("\nUnsetting DMA done \n");
-	exit (-1);
 }
 
 void setupDMA ()
@@ -1499,7 +1500,7 @@ void setupDMA ()
 	signal (SIGHUP,  handSig);
 	signal (SIGQUIT, handSig);
 
-	// allocate a few pages of ram
+	//allocate a few pages of ram
   //getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int) ((500.0/freq) * (float) (1<<12) + 0.5);
 	printf ("\ncenterFreqDivider %d \n", centerFreqDivider);
@@ -1583,13 +1584,22 @@ void setupDMA ()
    printf ("\nSetup DMA done! \n");
 }
 
-//---------------------//
-// main progs
+void unsetupDMA ()
+{
+	//struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
+	//DMA0->CS = 1<<31; // reset dma controller
+	printf ("\nUnsetting DMA done \n");
+
+	exit (-1);
+}
+
+//------- main progs
 
 int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
 {
 	printf ("\nSamplerate/bit-checker starting \n");
-		/*
+
+	/*
   if (!(fp = open (filename, SFM_READ, &sfinfo))) //check wat SFM sfinfo does!?
   {   // Open failed so print an error message.
         printf ("\nNot able to open input file for samplecheck %s \n", filename);
@@ -1597,9 +1607,9 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
         // Print the error message from libsndfile.
         return 1;
   }
-		//-----------------
+
 	//sfinfo.samplerate = samplerate;
-	if (sfinfo.samplerate == 22050) //44 or 48 khz needs testing
+	if (sfinfo.samplerate == 22050) //44 or 48 kHz needs testing
 	{
 		printf ("\nSamplerate is 22050! (%d)\n", sfinfo.samplerate);
 		return sfinfo.samplerate;
@@ -1613,18 +1623,25 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
   {
 	printf ("\nInput samplerate must be at least 22.050 [kHz] for FM or 14.500 [kHz] for AM! \n");
 	return 1;
-} */
-	//--------------------
+}
+*/
+
+	// check filebits here somehow (via SFM)
 	if (filebit != 16)
 	{
-		//read filebit here somehow
-		printf ("\nInput must be 16 bit! \n");
+
+		printf ("\nError: Input must be 16 bit! \n");
 		return 1;
 	}
-	// While there are frames in the input file, read them,
+	else
+	{
+		printf ("\nInput is 16 bit! \n");
+		return 0;
+	}
+
+	//While there are frames in the input file, read them,
 	//process them and write them to the output file
 	//----------------------
-	int nb_samples = (readcount/channels);
   while (readcount == read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm?
@@ -1895,7 +1912,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	char *callsign = "callsign";// =argv [5];
 	int power = 7;// =argv [6];
 	int dmachannel = 0; // =argv [7];
-	float bandwidth = 100.00; // =argv [8];
+	float bandwidth = 15.00; // =argv [8];
 	int gpiopin = abs (4); // =argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
