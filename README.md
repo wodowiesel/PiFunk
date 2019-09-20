@@ -2,7 +2,7 @@
 
 ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
-## PiFunk Radio Transmitter - in FM/AM for HAM-Bands
+## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
 
 **Early Experimental!**
 
@@ -164,11 +164,11 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lpthread -lgthread -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -g3 -Wall -std=c99 -O3 -lm -Iinclude -Llib -lsndfile -lpthread -lgthread -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
 d) optional:
 
@@ -178,14 +178,20 @@ d) optional:
 
  `-mfloat-abi=hard` floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
- `-mfpu=vfp` floating point hardware module
+ `-mfpu=vfp` virtual floating point hardware module
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
+ 
+ `sudo piversion` for checking your piversion
+ 
+ `sudo install` for installing pifunk files incl. build folder
+ 
+ `sudo uninstall` for uninstalling pifunk files
 
  `sudo make` with pre-configured flags for compilation for all Pi's
 
- `sudo clean` for removing pifunk.out and pifunk.o files if necessary
-
+ `sudo clean` for removing pifunk.out and pifunk.o files in bin folder if necessary
+ 
 ___
 
 ### Preparations
@@ -238,7 +244,7 @@ it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
 `sudo cat /dev/ttyAMA0` or alternative `sudo cat /dev/ttyS0`
 
--> need to activate UART (serial0) in pi config! Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
+-> need to activate UART (serial 0) in pi config! Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
 ![GPS](docs/GPS-Neo7M.jpg)
 
@@ -270,9 +276,7 @@ default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p
 
 Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi
 
-it's recommended not to transmit on frequencies higher than the processor speed (at the moment)
-
-but results would be interesting to know
+it's recommended not to transmit on frequencies higher than the processor speed (at the moment) but results would be interesting to know
 
 explicit CTSS-Tones (38 included) for PMR can be found here: [CTSS](ctsspmr.csv)
 
@@ -297,7 +301,6 @@ ___
   or resistors (R=10 kOhm), diodes to prevent backflow
 
   transmission (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
-
 
 * Help / Testers and Feedback always appreciated! :)
 
