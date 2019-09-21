@@ -194,25 +194,25 @@ using namespace std;
 //------------------------------------------------------------------------------
 //preproccessor definitions
 #ifdef __LINUX__ // || __UNIX__
-  //printf ("Program runs under UNIX/LINUX");
+  printf ("\nProgram runs under UNIX/LINUX\n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __ARM__
-  //printf ("Program runs under ARM-Architecture!");
+  printf ("\nProgram runs under ARM-Architecture!\n");
   //#pragma ARM
   //same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __GNUC__
-   //printf ("Using GNU C with ANSI C99!!");
+   printf ("\nnUsing GNU C with ANSI C99!!\n");
    //#pragma GCC system_header
 #endif
 
 #ifdef __STDC_VERSION__ //>= 199901L
-   /*#warning  string */
-   //printf ("Using GNU C without C99 standard!! Please compile with flag -std=c99");
+   /*#warning "\nPlease compile with flag -std=c99\n" string */
+   printf ("\nUsing GNU C with C99 standard!!\n"");
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
@@ -221,13 +221,13 @@ using namespace std;
 #define VERSION_MINOR        (1)
 #define VERSION_BUILD        (7)
 #define VERSION_PATCHLEVEL   (7)
-#define VERSION_STATUS 			 "e"
+#define VERSION_STATUS 			 "experimental"
 
 #define _GNU_SOURCE
 #define _POSIX_C_SOURCE = 		(200809L) //or 199309L
-#define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES // for math lm lib needed
 
-// simple operators stuff
+// simple operators
 #define IN                    (0) //
 #define OUT                   (1) //
 #define FALSE                 (0) //
@@ -287,8 +287,8 @@ volatile unsigned 										*allof7e; //
 #define PWMCLK_CNTL0                   (0x5A000016) // dec: 1509949462
 #define PWMCLK_DIV0                    (0x5A002800) // dec: 1509959680
 
-// possibility to give argv 0-4 an specific address or pointer
-// addresses -> at least on my system-tests
+// possibility to give argv 0-4 a specific address or pointer
+// addresses
 #define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640
 #define NAME_ADR                        (0x7FFFFFFEC08)  // dec: 8796093017096
 #define FILE_ADR                        (0x7FFFFFFFEC10) // dec: 140737488350224
@@ -536,7 +536,7 @@ volatile unsigned 										*allof7e; //
 
 #ifdef 	(RASPI) == 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
-#define PERIPH_PHYS_BASE               (0x7E000000)
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
@@ -568,8 +568,8 @@ volatile unsigned 										*allof7e; //
 
 #ifdef 	(RASPI) == 3
 // BCM2835
-#define PERIPH_VIRT_BASE               (0x20000000)
-#define PERIPH_PHYS_BASE               (0x7E000000)
+#define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
@@ -598,12 +598,13 @@ volatile unsigned 										*allof7e; //
 #error 	Unknown Raspberry Pi version (variable RASPI)
 #endif
 
-//----------------------------------
+
 /* try a modprobe of i2C-BUS*/
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
 //if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 
-//-----------------------------------
+//----------------------------------
+//program version status and default device
 const char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
@@ -615,7 +616,7 @@ int l;
 char j;
 float x;
 
-//pi memorymap:
+//pi memory-map:
 int  mem_fd;
 char *gpio_mem;
 char *gpio_map;
@@ -656,7 +657,7 @@ int modeselect;
 int callnameselect;
 time_t t;
 
-// IQ & carrier
+//IQ & carrier
 uint16_t pis = (0x1234); // dec: 4660
 float I = sin ((PERIOD*freq) + shift_ppm);
 float Q = cos ((PERIOD*freq) + shift_ppm);
@@ -852,7 +853,7 @@ int filecheck (char *filename, FILE wavefile)  // expected int?
 	printf ("\nOpening file ... \n");
 	printf ("\nallocating filename mem... \n");
 	filename = (char *) malloc (128);// allocating memory for filename
-	sprintf (filename, "\n%s\n", "file.ft");
+	sprintf (filename, "\n%s \n", "file.ft");
 	char *stdfile= "sound.wav";
   if (filename != stdfile)
 	{
