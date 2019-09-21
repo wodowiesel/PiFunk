@@ -228,19 +228,19 @@ using namespace std;
 #define _USE_MATH_DEFINES
 
 // simple operators stuff
-#define IN                    (0)
-#define OUT                   (1)
-#define FALSE                 (0)
-#define TRUE                  (1)
+#define IN                    (0) //
+#define OUT                   (1) //
+#define FALSE                 (0) //
+#define TRUE                  (1) //
 /*
 predefine if needed when not using bcm header
-#define LOW 									(0)
-#define HIGH 									(1)
+#define LOW 									(0) //
+#define HIGH 									(1) //
 */
 
 //mathematical stuff
 #define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
-#define PI                              (3.14159265358979323846)
+#define PI                              (3.14159265358979323846) //
 #define PHASE                           (2*PI) // 6.28318530718
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
 #define PERIOD                          (1/PHASE) // 0.15915494309
@@ -250,12 +250,12 @@ predefine if needed when not using bcm header
 #define BLOCK_SIZE            (4*1024) //4096
 #define BUFFER_LEN            (8*1024) //8192
 #define BUFFERINSTRUCTIONS    (65536) //[1024]
-//#define sleep 								[1000]
-//#define usleep 								[1000]
+//#define sleep 								[1000] //
+//#define usleep 								[1000] //
 
-//--------I-O access via GPIO
-volatile unsigned 										*gpio;
-volatile unsigned 										*allof7e;
+// I-O access via GPIO
+volatile unsigned 										*gpio; //
+volatile unsigned 										*allof7e; //
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
 #define ALLOF7ED											(*allof7e - SUB_BASE)
@@ -313,11 +313,11 @@ volatile unsigned 										*allof7e;
 
 //----------helps to understand the things, the normal fm-script didnt specified
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
-#define DMA15_BASE_OFFSET 						  (0x00E05000)
-#define TIMER_BASE_OFFSET 						  (0x00003000)
+#define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544
+#define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
 #define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
-#define CLK_BASE_OFFSET                 (0x00101000) // dec:1052672
+#define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
 #define CLK0_BASE_OFFSET 							  (0x00101070)
 #define CLK_LEN                         (0x1300) // dec: 4864
 #define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
@@ -371,9 +371,9 @@ volatile unsigned 										*allof7e;
 #define A2W_PLLD_ANA0                   (0x1050/4) //1044
 #define A2W_PLLH_ANA0                   (0x1070/4) //1052
 #define A2W_PLLB_ANA0                   (0x10F0/4) //1084
-#define A2W_PLL_KA_SHIFT                (7)
-#define A2W_PLL_KI_SHIFT                (19)
-#define A2W_PLL_KP_SHIFT                (15)
+#define A2W_PLL_KA_SHIFT                (7) //
+#define A2W_PLL_KI_SHIFT                (19) //
+#define A2W_PLL_KP_SHIFT                (15) //
 
 #define PLLA_CTRL                       (0x1100/4) //1088
 #define PLLA_FRAC                       (0x1200/4) //1152
@@ -417,8 +417,8 @@ volatile unsigned 										*allof7e;
 #define PWM_RNG2                        (0x20/4) //8
 #define PWM_FIFO                        (0x18/4) //6
 
-#define PWMCLK_CNTL                     (40)
-#define PWMCLK_DIV                      (41)
+#define PWMCLK_CNTL                     (40) //
+#define PWMCLK_DIV                      (41) //
 
 #define PWMCTL_PWEN1                    (1<<0) //
 #define PWMCTL_MODE1                    (1<<1) //
@@ -447,8 +447,8 @@ volatile unsigned 										*allof7e;
 #define PCM_INT_STC_A                   (0x1C/4) //7
 #define PCM_GRAY                        (0x20/4) //8
 
-#define PCMCLK_CNTL                     (38)
-#define PCMCLK_DIV                      (39)
+#define PCMCLK_CNTL                     (38) //
+#define PCMCLK_DIV                      (39) //
 
 // PAD
 #define GPIO_PAD_0_27                   (0x2C/4)  //11
@@ -456,8 +456,8 @@ volatile unsigned 										*allof7e;
 #define GPIO_PAD_46_52                  (0x34/4)  //13
 
 // DMA
-#define DMA_CHANNEL                     (14)
-#define DMA_CHANNEL_MAX                 (14)
+#define DMA_CHANNEL                     (14) //
+#define DMA_CHANNEL_MAX                 (14) //
 #define DMA_CHANNEL_SIZE                (0x100) //256
 
 #define BCM2708_DMA_ACTIVE              (1<<0) //why bcm 2708?
@@ -488,16 +488,16 @@ volatile unsigned 										*allof7e;
 #define DMA_CS_ACTIVE			              (1<<0) //
 #define DMA_CS_END			                (1<<1) //
 #define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) //0xF=15
-#define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20)
+#define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20) //
 
-#define DREQ_PCM_TX                     (2)
-#define DREQ_PCM_RX                     (3)
-#define DREQ_SMI                        (4)
-#define DREQ_PWM                        (5)
-#define DREQ_SPI_TX                     (6)
-#define DREQ_SPI_RX                     (7)
-#define DREQ_SPI_SLAVE_TX               (8)
-#define DREQ_SPI_SLAVE_RX               (9)
+#define DREQ_PCM_TX                     (2) //
+#define DREQ_PCM_RX                     (3) //
+#define DREQ_SMI                        (4) //
+#define DREQ_PWM                        (5) //
+#define DREQ_SPI_TX                     (6) //
+#define DREQ_SPI_RX                     (7) //
+#define DREQ_SPI_SLAVE_TX               (8) //
+#define DREQ_SPI_SLAVE_RX               (9) //
 
 #define MEM_FLAG_DISCARDABLE            (1 << 0) /* can be resized to 0 at any time. Use for cached data */
 #define MEM_FLAG_NORMAL                 (0 << 2) /* normal allocating alias. Don't use from ARM */
@@ -508,55 +508,62 @@ volatile unsigned 										*allof7e;
 #define MEM_FLAG_NO_INIT                (1 << 5) /* don't initialise (default is initialise to all ones */
 #define MEM_FLAG_HINT_PERMALOCK         (1 << 6) /* Likely to be locked for long periods of time. */
 
-#define PAGE_SHIFT                      (12)
+#define PAGE_SHIFT                      (12) //
 #define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
 
 #define NUM_SAMPLES                     (64000) //
 #define NUM_CBS                         (NUM_SAMPLES * 2) //
 
-#define SUBSIZE                         (1)
-#define DATA_SIZE                       (1000)
-#define SAMPLES_PER_BUFFER 							(512)
+#define SUBSIZE                         (1) //
+#define DATA_SIZE                       (1000) //
+#define SAMPLES_PER_BUFFER 							(512) //
 
 #define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) //3221225472
-#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile int* volatile unsigned*
+#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-//RTC (DS3231/1307 driver as bcm) stuff here if needed
-#define RTC_I2C_ADRESS                  (0x68)
+//RTC (DS3231/1307 driver as bcm)
+#define RTC_I2C_ADRESS                  (0x68) //
 
 //----- specific pi adresses & definitions
+#ifdef  RPI 									     	   	// alternative BCM2711B0
+#define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
+#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x04) //dec: 12
+#define PLLFREQ 											 (500000000.) //
+
 #ifdef 	(RASPI) == 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000)
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#define PLLD_FREQ											 (500000000)
+#define PLLD_FREQ											 (500000000.) //
 #endif
 
 #ifdef  (RASPI) == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
-#define PERIPH_PHYS_BASE               (0x7E000000)
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
-#define CLOCK_BASE										 (19.2E6)
-#define DMA_CHANNEL										 (14)
-#define PLLD_FREQ											 (500000000)
+#define CLOCK_BASE										 (19.2E6) //
+#define DMA_CHANNEL										 (14) //
+#define PLLD_FREQ											 (500000000.) //
 #endif
 
 #ifdef  (RASPI) == 2
 #define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
-#define PERIPH_PHYS_BASE               (0x7E000000)
+#define PERIPH_PHYS_BASE               (0x7E000000) //
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
-#define CLOCK_BASE									   (19.2E6)
-#define DMA_CHANNEL										 (14)
-#define PLLD_FREQ 										 (500000000)
+#define CLOCK_BASE									   (19.2E6) //
+#define DMA_CHANNEL										 (14) //
+#define PLLD_FREQ 										 (500000000.) //
 #endif
 
 #ifdef 	(RASPI) == 3
@@ -567,31 +574,25 @@ volatile unsigned 										*allof7e;
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
-#define CLOCK_BASE									   (19.2E6)
-#define DMA_CHANNEL										 (14)
-#define PLLD_FREQ 										 (500000000)
+#define CLOCK_BASE									   (19.2E6) //
+#define DMA_CHANNEL										 (14) //
+#define PLLD_FREQ 										 (500000000.) //
 #endif
 
 #ifdef  (RASPI) == 4
 //pi4 - BCM2838
-#define PERIPH_VIRT_BASE               (0xFE000000)
-#define PERIPH_PHYS_BASE               (0x7E000000)
-#define DRAM_PHYS_BASE                 (0xC0000000)
-#define MEM_FLAG                       (0x04)
-#define PAGE_SIZE 										 (4096)
-#define XTAL_CLOCK                     (54.0E6)
-#define DMA_CHANNEL                    (6)
-#define PLLD_FREQ 										 (750000000)
-#define BUFFER_TIME 									 (1000000)
-#define PWM_WRITES_PER_SAMPLE 				 (10)
-#define PWM_CHANNEL_RANGE 						 (32)
+#define PERIPH_VIRT_BASE               (0xFE000000) //
+#define PERIPH_PHYS_BASE               (0x7E000000) //
+#define DRAM_PHYS_BASE                 (0xC0000000) //
+#define MEM_FLAG                       (0x04) //
+#define PAGE_SIZE 										 (4096) //
+#define XTAL_CLOCK                     (54.0E6) //
+#define DMA_CHANNEL                    (6) //
+#define BUFFER_TIME 									 (1000000) //
+#define PWM_WRITES_PER_SAMPLE 				 (10) //
+#define PWM_CHANNEL_RANGE 						 (32) //
+#define PLLD_FREQ 										 (750000000.) //
 #endif
-
-#ifdef  RPI 									     	   	// alternative
-#define PERIPH_VIRT_BASE               (0x20000000)
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x04) //dec: 12
 
 #else
 #error 	Unknown Raspberry Pi version (variable RASPI)
@@ -922,7 +923,7 @@ float channelmodepmr () //PMR
 	 case 6: freq=446.06875; break; // Events
 	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
 	 case 8: freq=446.09375; break; // Standard
-	 
+
   //-----Digital only
 	// dmr (tier 1) digital new since 28.09.2016
 	// extra 8 chan
