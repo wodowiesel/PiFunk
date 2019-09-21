@@ -101,7 +101,6 @@ tone generator for ctss (sin?)
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
-//#include <common.h>
 //#include <missing.h>
 
 // on posix linux
@@ -158,23 +157,23 @@ using namespace std;
 #include <conio.h> // dos-header
 */
 
-// broadcom arm processor for mapping phys. addresses
+//broadcom arm processor for mapping phys. addresses
 #include "opt/vc/include/bcm_host.h" // firmware stuff
 #include "opt/vc/include/interface/vcos/vcos.h"
 #include "bcm2835/src/bcm2835.h"
 
-//GPIO includes here 0.6.5 used
-//#include "RPI.GPIO/source/c_gpio.h"
+//RPI.GPIO includes here, 0.6.5 used
+#include "RPI.GPIO/source/c_gpio.h"
 #include "RPI.GPIO/source/event_gpio.h"
-//#include "RPI.GPIO/source/py_pwm.h"
+#include "RPI.GPIO/source/py_pwm.h"
 #include "RPI.GPIO/source/soft_pwm.h"
-//#include "RPI.GPIO/source/constants.h"
+#include "RPI.GPIO/source/constants.h"
 #include "RPI.GPIO/source/common.h"
 #include "RPI.GPIO/source/cpuinfo.h"
 
-// see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
-// download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-//#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
+//see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
+//download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
+#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
 //extra library https://github.com/libusb/libusb
 //for usb soundcards for mic and alsa usage
@@ -182,8 +181,8 @@ using namespace std;
 //#include "libusb/libusb.h"
 //#include "libusb/libusb/libusbi.h"
 //#include "libusb/libusb/hotplug.h"
-//#include "libusb/libusb/version.h"
-//#include "libusb/libusb/version_name.h"
+#include "libusb/libusb/version.h"
+#include "libusb/libusb/version_name.h"
 //#include "libusb/libusb/os/linux_usbfs.h"
 #include "libusb/libusb/os/poll_posix.h"
 #include "libusb/libusb/os/threads_posix.h"
@@ -195,6 +194,11 @@ using namespace std;
 //preproccessor definitions
 #ifdef __LINUX__ // || __UNIX__
   printf ("\nProgram runs under UNIX/LINUX\n");
+	#pragma GCC dependency "pifunk.h"
+#endif
+
+#ifdef __UNIX__
+  printf ("\nProgram runs under UNIX\n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
@@ -212,18 +216,18 @@ using namespace std;
 
 #ifdef __STDC_VERSION__ //>= 199901L
    /*#warning "\nPlease compile with flag -std=c99\n" string */
-   printf ("\nUsing GNU C with C99 standard!!\n"");
+   printf ("\nUsing GNU C with C99 standard!!\n");
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.7"
-#define VERSION_MAJOR        (0)
-#define VERSION_MINOR        (1)
-#define VERSION_BUILD        (7)
-#define VERSION_PATCHLEVEL   (7)
-#define VERSION_STATUS 			 "experimental"
+#define VERSION 						 "0.1.7.7e" // my version
+#define VERSION_MAJOR        (0) //
+#define VERSION_MINOR        (1) //
+#define VERSION_BUILD        (7) //
+#define VERSION_PATCHLEVEL   (7) //
+#define VERSION_STATUS 			 "experimental" // WIP work in progress
 
-#define _GNU_SOURCE
+#define _GNU_SOURCE // for using gcc compiler
 #define _POSIX_C_SOURCE = 		(200809L) //or 199309L
 #define _USE_MATH_DEFINES // for math lm lib needed
 
@@ -240,7 +244,7 @@ predefine if needed when not using bcm header
 
 //mathematical stuff
 #define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
-#define PI                              (3.14159265358979323846) //
+#define PI                              (3.14159265358979323846) // radial constant
 #define PHASE                           (2*PI) // 6.28318530718
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
 #define PERIOD                          (1/PHASE) // 0.15915494309
@@ -250,7 +254,7 @@ predefine if needed when not using bcm header
 #define BLOCK_SIZE            (4*1024) //4096
 #define BUFFER_LEN            (8*1024) //8192
 #define BUFFERINSTRUCTIONS    (65536) //[1024]
-//#define sleep 								[1000] //
+//#define sleep 								[1000] // for waiting between functions & tasks
 //#define usleep 								[1000] //
 
 // I-O access via GPIO
@@ -311,14 +315,14 @@ volatile unsigned 										*allof7e; //
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 #define FILE_PTR                        (0x73) // dec: 115
 
-//----------helps to understand the things, the normal fm-script didnt specified
+//---the normal fm-script didn't specified that
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
 #define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544
 #define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
 #define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
 #define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
-#define CLK0_BASE_OFFSET 							  (0x00101070)
+#define CLK0_BASE_OFFSET 							  (0x00101070) // dec: 1052784
 #define CLK_LEN                         (0x1300) // dec: 4864
 #define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
 #define GPIO_LEN                        (0x100) // dec: 256
@@ -339,12 +343,12 @@ volatile unsigned 										*allof7e; //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
 
 // GPIO
-#define GPFSEL0                         (0x00/4) // p.90 dec: 0
-#define GPFSEL1                         (0x04/4) // 1
-#define GPFSEL2                         (0x08/4) // 2
-#define GPPUD                           (0x94/4) // 37
-#define GPPUDCLK0                       (0x98/4) // 38
-#define GPPUDCLK1                       (0x9C/4) // 39
+#define GPFSEL0                         (0x00/4) //p.90 dec: 0
+#define GPFSEL1                         (0x04/4) //1
+#define GPFSEL2                         (0x08/4) //2
+#define GPPUD                           (0x94/4) //37
+#define GPPUDCLK0                       (0x98/4) //38
+#define GPPUDCLK1                       (0x9C/4) //39
 
 #define CORECLK_CNTL                    (0x08/4) //2
 #define CORECLK_DIV                     (0x0C/4) //3
@@ -501,8 +505,8 @@ volatile unsigned 										*allof7e; //
 
 #define MEM_FLAG_DISCARDABLE            (1 << 0) /* can be resized to 0 at any time. Use for cached data */
 #define MEM_FLAG_NORMAL                 (0 << 2) /* normal allocating alias. Don't use from ARM */
-#define MEM_FLAG_DIRECT                 (1 << 2) /* 0xC alias uncached */
-#define MEM_FLAG_COHERENT               (2 << 2) /* 0x8 alias. Non-allocating in L2 but coherent */
+#define MEM_FLAG_DIRECT                 (1 << 2) /* 0xC dec: 12 alias uncached */
+#define MEM_FLAG_COHERENT               (2 << 2) /* 0x8 dec: 8 alias. Non-allocating in L2 but coherent */
 #define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) /* Allocating in L2 */
 #define MEM_FLAG_ZERO                   (1 << 4)  /* initialise buffer to all zeros */
 #define MEM_FLAG_NO_INIT                (1 << 5) /* don't initialise (default is initialise to all ones */
@@ -518,32 +522,32 @@ volatile unsigned 										*allof7e; //
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
 
-#define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) //3221225472
+#define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 //RTC (DS3231/1307 driver as bcm)
-#define RTC_I2C_ADRESS                  (0x68) //
+#define RTC_I2C_ADRESS                  (0x68) // dec: 104
 
 //----- specific pi adresses & definitions
 #ifdef  RPI 									     	   	// alternative BCM2711B0
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x04) //dec: 12
-#define PLLFREQ 											 (500000000.) //
+#define CURBLOCK                       (0x04) //dec: 4
+#define PLLD_FREQ 										 (500000000.) //
 
-#ifdef 	(RASPI) == 0
+#ifdef 	(RASPI) == 0 // pi zero & w
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x0C) //dec: 12
+#define CURBLOCK                       (0x0C) // dec: 12
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  (RASPI) == 1
+#ifdef  (RASPI) == 1 // pi 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -554,9 +558,9 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  (RASPI) == 2
-#define PERIPH_VIRT_BASE               (0x3F000000) //dec: 1056964608
-#define PERIPH_PHYS_BASE               (0x7E000000) //
+#ifdef  (RASPI) == 2 // pi2
+#define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
@@ -566,8 +570,7 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef 	(RASPI) == 3
-// BCM2835
+#ifdef 	(RASPI) == 3 // BCM2835
 #define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -579,19 +582,18 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef  (RASPI) == 4
-//pi4 - BCM2838
-#define PERIPH_VIRT_BASE               (0xFE000000) //
-#define PERIPH_PHYS_BASE               (0x7E000000) //
-#define DRAM_PHYS_BASE                 (0xC0000000) //
-#define MEM_FLAG                       (0x04) //
+#ifdef  (RASPI) == 4 //pi4 - BCM2838
+#define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+#define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+#define MEM_FLAG                       (0x04) // dec: 4
 #define PAGE_SIZE 										 (4096) //
 #define XTAL_CLOCK                     (54.0E6) //
 #define DMA_CHANNEL                    (6) //
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
-#define PLLD_FREQ 										 (750000000.) //
+#define PLLD_FREQ 										 (750000000.) // has higher freq than pi0-3
 #endif
 
 #else
