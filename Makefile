@@ -7,7 +7,7 @@ CXX=g++
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread -lgthread -lbcm_host -lsndfile -shared
+LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
 LDLIBS=-Llib -L/opt/vc/lib
 
 PATH=/home/pi
@@ -90,7 +90,7 @@ pifunk.so:	pifunk.c
 pifunk.out:	pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
 
-pifunk.bin: pifunk.c pifunk.h pifunk.o
+pifunk.bin: pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
 
 pifunk:	pifunk.c pifunk.h pifunk.o
@@ -102,6 +102,18 @@ piversion:	$(USER) $(RPI_VERSION)
 .PHONY: 	install
 install:	cd $(PATH)/PiFunk
 					$(USER) install -m 0755 pifunk $(PATH)/bin/
+
+.PHONY: 	help
+help:			cd $(PATH)/PiFunk/bin/
+					$(USER) sudo ./pifunk -h
+
+.PHONY: 		assistent
+assistent:	cd $(PATH)/PiFunk/bin/
+						$(USER) sudo ./pifunk -a
+
+.PHONY: 	run
+run:			cd $(PATH)/PiFunk/bin/
+					$(USER) sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
 .PHONY: 		uninstall
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
