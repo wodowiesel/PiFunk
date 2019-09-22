@@ -7,8 +7,8 @@ CXX=g++
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread -lgthread -lbcm_host -lsndfile
-LDLIBS=-Llib -L/opt/vc/lib -shared
+LDFLAGS=-lm -lpthread -lgthread -lbcm_host -lsndfile -shared
+LDLIBS=-Llib -L/opt/vc/lib
 
 PATH=/home/pi
 MAKEINFO=makeinfo
@@ -67,7 +67,7 @@ endif
 #						 $(USER) $(MAKEINFO)
 
 pifunk.i:	pifunk.c
-					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
+					$(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
 
 pifunk.S:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
