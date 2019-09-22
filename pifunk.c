@@ -282,7 +282,7 @@ volatile unsigned 										*allof7e; //
 #define CURBLOCK                       (0x04) //dec: 4
 #define PLLD_FREQ 										 (500000000.) //
 
-#ifdef 	(RASPI) == 0 // pi zero & w
+#ifdef 	RASPI == 0 // pi zero & w
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -291,7 +291,7 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  (RASPI) == 1 // pi 1
+#ifdef  RASPI == 1 // pi 1
 #define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -645,7 +645,7 @@ int samplerate = abs (22050);
 int channels = 1;
 double shift_ppm = 0.0;
 
-float divider = (500000000/(2000*228*(1.+shift_ppm/1.E6))); //PLLD_FREQ = 500000000.
+//float divider = (500000000/(2000*228*(1.+shift_ppm/1.E6) ) ); //PLLD_FREQ = 500000000.
 //uint32_t idivider = (float) divider;
 //uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
@@ -1380,11 +1380,11 @@ void setupfm ()
 
   allof7e = (unsigned*) mmap (
 								NULL,
-								LENGTH, // length
+								0x01000000, // LENGTH
 								PROT_READ|PROT_WRITE, //
 								MAP_SHARED, //
 								mem_fd, //
-								PERIPH_VIRT_BASE); // base
+								PERIPH_VIRT_BASE); // base 0x01000000
 
   if ((int) allof7e == -1)
 	{
