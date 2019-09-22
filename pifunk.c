@@ -1384,7 +1384,7 @@ void setupfm ()
 								PROT_READ|PROT_WRITE, //
 								MAP_SHARED, //
 								mem_fd, //
-								PERIPH_VIRT_BASE); // base 0x01000000
+								0x20000000); //  PERIPH_VIRT_BASE 
 
   if ((int) allof7e == -1)
 	{
