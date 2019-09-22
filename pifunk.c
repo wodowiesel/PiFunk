@@ -527,8 +527,8 @@ volatile unsigned 										*allof7e; //
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-//RTC (DS3231/1307 driver as bcm)
-#define RTC_I2C_ADRESS                  (0x68) // dec: 104
+//RTC (DS3231/DS1307 driver as bcm)
+#define RTC_I2C_ADDRESS                  (0x68) // dec: 104
 
 //----- specific pi adresses & definitions
 #ifdef  RPI 									     	   	// alternative BCM2711B0
