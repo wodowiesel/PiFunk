@@ -4,16 +4,16 @@ USER=sudo
 CC=gcc
 CXX=g++
 # use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
-STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c
-CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c
+STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
+CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 ASFLAGS=-s
-LDFLAGS=-lm -lpthread -lgthread -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -L/opt/vc/lib -lbcm_host
-LDLIBS=-Llib -shared
+LDFLAGS= -lm -lpthread -lgthread -lbcm_host -lsndfile
+LDLIBS=-Llib -L/opt/vc/lib -shared
 
 PATH=/home/pi
 MAKEINFO=makeinfo
 EXECUTABLE=pifunk
-VERSION=0.1.7.7
+VERSION=0.1.7.7e
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 RM=rm -f

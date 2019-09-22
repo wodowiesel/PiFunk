@@ -943,7 +943,7 @@ float channelmodepmr () //PMR
 
 	 case 18: exit (0);
 	 default:	freq=446.00625;
-	 					printf ("\nDefault channelnumber = 1 on freq = %lf \n", freq);
+	 					printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
 						break;
    }
   }
