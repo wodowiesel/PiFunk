@@ -645,8 +645,8 @@ int samplerate = abs (22050);
 int channels = 1;
 double shift_ppm = 0.0;
 
-float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)));
-uint32_t idivider = divider;
+float divider = (500000000./(2000*228*(1.+shift_ppm/1.E6))); //PLLD_FREQ = 500000000.
+uint32_t idivider = (float) divider;
 uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
 //menu variables
@@ -690,10 +690,9 @@ char buffer [80];
 //-20db = 10x attenuation, significantly more quiet
 float volume = 1.1f;
 const int volume_reference =	1;
-float volbuffer [SAMPLES_PER_BUFFER];
+float volbuffer = [SAMPLES_PER_BUFFER];
 float volumeLevelDb = -6.f; //cut amplitude in half
-
-float volumeMultiplier = 10E(-6/20); //volumeLevelDb
+float volumeMultiplier = 10E(-0.3); //volumeLevelDb
 
 //samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
 //SF_INFO sfinfo;
