@@ -1925,7 +1925,7 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 	fabsf () for float
 	*/
 	// for custom programname, default is the filename itself
-	titel ();
+	void title ();
 	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
