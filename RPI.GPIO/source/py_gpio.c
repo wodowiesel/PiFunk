@@ -240,9 +240,9 @@ static PyObject *py_setup_channel(PyObject *self, PyObject *args, PyObject *kwar
       if (PyErr_Occurred())
          return NULL;
       chanlist = NULL;
-   } else if PyList_Check(chanlist) {
+   } else if (PyList_Check(chanlist)) {
       // do nothing
-   } else if PyTuple_Check(chanlist) {
+   } else if (PyTuple_Check(chanlist)) {
       chantuple = chanlist;
       chanlist = NULL;
    } else {
@@ -578,7 +578,7 @@ static unsigned int chan_from_gpio(unsigned int gpio)
    else
       chans = 40;
    for (chan=1; chan<=chans; chan++)
-      if (*(*pin_to_gpio+chan) == gpio)
+      if (*(*pin_to_gpio+chan) == (int)gpio)
          return chan;
    return -1;
 }

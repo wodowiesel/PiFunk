@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=pifunk
+Exec=pifunk
+StartupNotify=true
+Terminal=true

@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include <common.h>
 #include <Wire.h>
+
 #define DS3231_I2C_ADDR             0x68
 #define DS3231_TEMPERATURE_MSB      0x11
 #define DS3231_TEMPERATURE_LSB      0x12
@@ -19,7 +22,8 @@ void loop()
 
   Serial.print(temp_msb);
 
-  switch(temp_lsb){
+  switch(temp_lsb)
+  {
   case 0:
     Serial.println(".00");
     break;
@@ -38,7 +42,8 @@ void loop()
   delay(2000);
 }
 
-byte DS3231_get_MSB(){
+byte DS3231_get_MSB()
+{
   Wire.beginTransmission(DS3231_I2C_ADDR);
   Wire.write(DS3231_TEMPERATURE_MSB);
   Wire.endTransmission();
@@ -48,7 +53,8 @@ byte DS3231_get_MSB(){
 
 }
 
-byte DS3231_get_LSB(){
+byte DS3231_get_LSB()
+{
 
   Wire.beginTransmission(DS3231_I2C_ADDR);
   Wire.write(DS3231_TEMPERATURE_LSB);
@@ -59,4 +65,3 @@ byte DS3231_get_LSB(){
 
 
 }
-

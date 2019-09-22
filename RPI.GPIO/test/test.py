@@ -1,6 +1,9 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
+from __future__ import print_function
+if hasattr(__builtins__, 'raw_input'):
+    input = raw_input
 """
-Copyright (c) 2013-2016 Ben Croston
+Copyright (c) 2013-2018 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -29,6 +32,8 @@ LOOP_IN = 16 connected with 1K resistor to LOOP_OUT
 LOOP_OUT = 22
 """
 
+import os
+import subprocess
 import sys
 import warnings
 import time
@@ -43,7 +48,9 @@ GND_PIN = 6
 LED_PIN = 12
 LED_PIN_BCM = 18
 SWITCH_PIN = 18
+SWITCH_PIN_BCM = 24
 LOOP_IN = 16
+LOOP_IN_BCM = 23
 LOOP_OUT = 22
 
 non_interactive = False
@@ -245,6 +252,15 @@ class TestInputOutput(unittest.TestCase):
     def tearDown(self):
         GPIO.cleanup()
 
+class TestSoftPWMExists(unittest.TestCase):
+    def runTest(self):
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        pwm = GPIO.PWM(LED_PIN, 50)
+        with self.assertRaises(RuntimeError):
+            pwm2 = GPIO.PWM(LED_PIN, 49)
+        GPIO.cleanup()
+
 class TestSoftPWM(unittest.TestCase):
     @unittest.skipIf(non_interactive, 'Non interactive mode')
     def runTest(self):
@@ -252,13 +268,13 @@ class TestSoftPWM(unittest.TestCase):
         GPIO.setup(LED_PIN, GPIO.OUT)
         pwm = GPIO.PWM(LED_PIN, 50)
         pwm.start(100)
-        print "\nPWM tests"
-        response = raw_input('Is the LED on (y/n) ? ').upper()
+        print("\nPWM tests")
+        response = input('Is the LED on (y/n) ? ').upper()
         self.assertEqual(response,'Y')
         pwm.start(0)
-        response = raw_input('Is the LED off (y/n) ? ').upper()
+        response = input('Is the LED off (y/n) ? ').upper()
         self.assertEqual(response,'Y')
-        print "LED Brighten/fade test..."
+        print("LED Brighten/fade test...")
         for i in range(0,3):
             for x in range(0,101,5):
                 pwm.ChangeDutyCycle(x)
@@ -267,7 +283,7 @@ class TestSoftPWM(unittest.TestCase):
                 pwm.ChangeDutyCycle(x)
                 time.sleep(0.1)
         pwm.stop()
-        response = raw_input('Did it work (y/n) ? ').upper()
+        response = input('Did it work (y/n) ? ').upper()
         self.assertEqual(response,'Y')
         GPIO.cleanup()
 
@@ -324,15 +340,15 @@ class TestSetWarnings(unittest.TestCase):
 
 class TestVersions(unittest.TestCase):
     def test_rpi_info(self):
-        print 'RPi Board Information'
-        print '---------------------'
-        for key,val in GPIO.RPI_INFO.items():
-            print '%s => %s'%(key,val)
-        response = raw_input('\nIs this board info correct (y/n) ? ').upper()
+        print('RPi Board Information')
+        print('---------------------')
+        for key,val in list(GPIO.RPI_INFO.items()):
+            print('%s => %s'%(key,val))
+        response = input('\nIs this board info correct (y/n) ? ').upper()
         self.assertEqual(response, 'Y')
 
     def test_gpio_version(self):
-        response = raw_input('\nRPi.GPIO version %s - is this correct (y/n) ? '%GPIO.VERSION).upper()
+        response = input('\nRPi.GPIO version %s - is this correct (y/n) ? '%GPIO.VERSION).upper()
         self.assertEqual(response, 'Y')
 
 class TestGPIOFunction(unittest.TestCase):
@@ -360,7 +376,7 @@ class TestSwitchBounce(unittest.TestCase):
 
     def cb(self,chan):
         self.switchcount += 1
-        print 'Button press',self.switchcount
+        print('Button press',self.switchcount)
 
     def setUp(self):
         GPIO.setmode(GPIO.BOARD)
@@ -369,7 +385,7 @@ class TestSwitchBounce(unittest.TestCase):
     @unittest.skipIf(non_interactive, 'Non interactive mode')
     def test_switchbounce(self):
         self.switchcount = 0
-        print "\nSwitch bounce test.  Press switch at least 10 times and count..."
+        print("\nSwitch bounce test.  Press switch at least 10 times and count...")
         GPIO.add_event_detect(SWITCH_PIN, GPIO.FALLING, callback=self.cb, bouncetime=200)
         while self.switchcount < 10:
             time.sleep(1)
@@ -378,12 +394,12 @@ class TestSwitchBounce(unittest.TestCase):
     @unittest.skipIf(non_interactive, 'Non interactive mode')
     def test_event_detected(self):
         self.switchcount = 0
-        print "\nGPIO.event_detected() switch bounce test.  Press switch at least 10 times and count..."
+        print("\nGPIO.event_detected() switch bounce test.  Press switch at least 10 times and count...")
         GPIO.add_event_detect(SWITCH_PIN, GPIO.FALLING, bouncetime=200)
         while self.switchcount < 10:
             if GPIO.event_detected(SWITCH_PIN):
                 self.switchcount += 1
-                print 'Button press',self.switchcount
+                print('Button press',self.switchcount)
         GPIO.remove_event_detect(SWITCH_PIN)
 
     def tearDown(self):
@@ -395,6 +411,54 @@ class TestEdgeDetection(unittest.TestCase):
         GPIO.setup(LOOP_IN, GPIO.IN)
         GPIO.setup(LOOP_OUT, GPIO.OUT)
 
+    #  Running a shell command with os.sytem has caused problems
+    #  with sending SIGCHLD to the polling thread, causing it
+    #  to exit.  Test for that.
+    def testShellCmdWithWaitForEdge(self):
+        self.finished = False
+        def shellcmd():
+            for i in range(50):
+                os.system('sleep 0')
+                subprocess.call('sleep 0', shell=True)
+            self.finished = True
+        def makehigh():
+            GPIO.output(LOOP_OUT, GPIO.HIGH)
+
+        GPIO.output(LOOP_OUT, GPIO.LOW)
+        t1 = Timer(0.1, shellcmd)
+        t2 = Timer(0.5, makehigh)
+        t1.start()
+        t2.start()
+        starttime = time.time()
+        channel = GPIO.wait_for_edge(LOOP_IN, GPIO.RISING, timeout=1000)
+        endtime = time.time()
+        self.assertGreater(endtime - starttime, 0.5)
+        self.assertLess(endtime - starttime, 0.6)
+        self.assertEqual(channel, LOOP_IN)
+
+        # make sure tasks in this test have finished before continuing
+        while not self.finished:
+            time.sleep(0.1)
+
+    def testShellCmdWithEventCallback(self):
+        self.run_cb = False
+
+        def cb(channel):
+            self.run_cb = True
+
+        GPIO.output(LOOP_OUT, GPIO.LOW)
+        GPIO.add_event_detect(LOOP_IN, GPIO.RISING, callback=cb)
+        time.sleep(0.01)
+
+        for i in range(50):
+            os.system('sleep 0')
+            subprocess.call('sleep 0', shell=True)
+
+        GPIO.output(LOOP_OUT, GPIO.HIGH)
+        time.sleep(0.01)
+        GPIO.remove_event_detect(LOOP_IN)
+        self.assertEqual(self.run_cb, True)
+
     def testWaitForEdgeInLoop(self):
         def makelow():
             GPIO.output(LOOP_OUT, GPIO.LOW)
@@ -405,7 +469,11 @@ class TestEdgeDetection(unittest.TestCase):
         while True:
             t = Timer(0.1, makelow)
             t.start()
-            GPIO.wait_for_edge(LOOP_IN, GPIO.FALLING)
+            starttime = time.time()
+            channel = GPIO.wait_for_edge(LOOP_IN, GPIO.FALLING, timeout=200)
+            endtime = time.time()
+            self.assertLess(endtime-starttime, 0.12)
+            self.assertEqual(channel, LOOP_IN)
             GPIO.output(LOOP_OUT, GPIO.HIGH)
             count += 1
             if time.time() - timestart > 5 or count > 150:
@@ -657,14 +725,29 @@ class TestCleanup(unittest.TestCase):
     def test_cleanone(self):
         GPIO.setup(LOOP_OUT, GPIO.OUT)
         GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.setup(SWITCH_PIN, GPIO.IN)
+        GPIO.setup(LOOP_IN, GPIO.IN)
+        GPIO.add_event_detect(SWITCH_PIN, GPIO.FALLING)
+        GPIO.add_event_detect(LOOP_IN, GPIO.RISING)
+        time.sleep(0.2)  # wait for udev to set permissions
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
+        self.assertEqual(GPIO.gpio_function(SWITCH_PIN), GPIO.IN)
+        self.assertEqual(GPIO.gpio_function(LOOP_IN), GPIO.IN)
+        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s'%SWITCH_PIN_BCM))
+        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s'%LOOP_IN_BCM))
+        GPIO.cleanup(SWITCH_PIN)
+        time.sleep(0.2)  # wait for udev to set permissions
+        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s'%SWITCH_PIN_BCM))
+        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s'%LOOP_IN_BCM))
+        GPIO.cleanup(LOOP_IN)
+        time.sleep(0.2)  # wait for udev to set permissions
+        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s'%SWITCH_PIN_BCM))
+        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s'%LOOP_IN_BCM))
         GPIO.cleanup(LOOP_OUT)
-        GPIO.setmode(GPIO.BOARD)
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.IN)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
         GPIO.cleanup(LED_PIN)
-        GPIO.setmode(GPIO.BOARD)
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.IN)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.IN)
 

@@ -1,19 +1,17 @@
 ## travis
 
-# matrix:
-# include:
-
+#matrix:
+#    include:
 os: linux
 dist: trusty
-#precise
-family: unix
+sudo: required
+compiler: gcc
 group: stable
-#env:
+family: unix
+env:
  #- ARCH=x86
  #- ARCH=x64
  - ARCH=arm
-sudo: required
-#true
 
 language: python
 
@@ -24,11 +22,10 @@ python:
   - 3.3
   - 3.4
   - 3.5
-  - 3.6-dev 
+  - 3.6-dev
   - nightly
   - pypy
   - pypy3
-#DJANGO_VERSION=1.8.2 --> need flask too for db if used (not yet)
 
 before_cache: -r -f $HOME/.cache/pip/log/debug.log
 
@@ -43,85 +40,85 @@ language: c
    - $HOME/.cache
    - $HOME/.pyenv
      bundler: true
-  
+
 #git-branches
 branches:
  only:
   - master
  # - alpha
-  
+
 ## command to install dependencies
-before_install: 
+before_install:
   #- sudo apt-get update
   #- sudo apt-get upgrade
-  
+
   ## for virtualisation/simulation of linux/raspberry pi but hardware gpios not possible!
-  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass 
+  #- sudo apt-get install qemu-system-arm wget xz-utils sshpass
   ## ARM- architecture needed !
   #- install-dependencies-arm.sh
 
-install: 
- #- sudo apt-get install git
+install:
+ # - sudo apt-get install git
  # - key
- #- pip install 
- #-r requirements.txt 
+ # - pip install
+ # -r requirements.txt
  # --user # param if no sudo/root-access
-  #- sudo apt-get install gcc 
- #- sudo python setup.py install
- 
- #- sudo pip install RPi.GPIO
+ # - sudo apt-get install gcc
+ # - sudo python setup.py install
+
+ # - sudo pip install RPi.GPIO
  - sudo apt-get install RPI.GPIO
- #- sudo apt-get install python-rpi.gpio
- #- sudo pip install python-rpi.gpio
-  
+ # - sudo apt-get install python-rpi.gpio
+ # - sudo pip install python-rpi.gpio
+
  # -q Django==$DJANGO_VERSION
  # -q Flask==$Flask_VERSION
- 
- #- git clone https://github.com/polaco1782/raspberry-qemu.git
- #- wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
- #- unxz "2015-11-21-raspbian-jessie-lite.img.xz"
- 
+
+ # - git clone https://github.com/polaco1782/raspberry-qemu.git
+ # - wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
+ # - unxz "2015-11-21-raspbian-jessie-lite.img.xz"
+
  # - virtualenv ./nodeps
  # - ./nodeps/bin/python setup.py install
  # - curl-config --version; pip freeze
- #- git clone git@github.com:polaco1782/raspberry-qemu.git
- 
- 
+ # - git clone git@github.com:polaco1782/raspberry-qemu.git
+
+
 notifications:
-  email: false 
+  email: false
 
 # command to run tests +scripts
-before_script: 
+before_script:
  - git clone git://github.com/silicator/PiFunk
  # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
  # - before-script-linux.sh
 
-# fast_finish: true	
+ # fast_finish: true
 script:
-# - key
+ # - key
  - nosetests
  - coveralls
- #- sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
- - cd ./PiFunk
- 
- #compiling with gcc here 
- 
- - gcc -lm -libsndfile -std=c99 -g pifunk.c -o pifunk pifunk.o 
- - sudo make clean 
+ # - sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
+ - cd PiFunk
+
+ #compiling with gcc here
+
+ - sudo -g -Wall -std=c99 -O3 -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
+ - sudo make clean
  - sudo make
- - sudo make install 
- 
- - sudo pifunk sound.wav 100.0000 22500 fm callsign 
+ - sudo make install
+ #run programm
+ - sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
  #- sudo python pifunk.py
- 
+
  ##script-plugins if needed
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
 
 after_script:
 
-# before_deploy: ./before-deploy-linux.sh
+ # before_deploy: ./before-deploy-linux.sh
 
 deploy:
   # provider: releases
@@ -133,9 +130,10 @@ deploy:
     # repo: silicator/PiFunk
     # tags: true
   # skip_cleanup: true
-  
- after_failure:
 
+ after_failure:
+ #
+ 
  after_success:
  # - coveralls
  # - coverage combine

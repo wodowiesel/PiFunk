@@ -61,7 +61,7 @@ int setup(void)
 {
     int mem_fd;
     uint8_t *gpio_mem;
-    uint32_t peri_base;
+    uint32_t peri_base = 0;
     uint32_t gpio_base;
     unsigned char buf[4];
     FILE *fp;
@@ -95,8 +95,7 @@ int setup(void)
         if ((fp = fopen("/proc/cpuinfo", "r")) == NULL)
             return SETUP_CPUINFO_FAIL;
 
-        while(!feof(fp) && !found) {
-            fgets(buffer, sizeof(buffer), fp);
+        while(!feof(fp) && !found && fgets(buffer, sizeof(buffer), fp)) {
             sscanf(buffer, "Hardware	: %s", hardware);
             if (strcmp(hardware, "BCM2708") == 0 || strcmp(hardware, "BCM2835") == 0) {
                 // pi 1 hardware
@@ -113,6 +112,8 @@ int setup(void)
             return SETUP_NOT_RPI_FAIL;
     }
 
+    if (!peri_base)
+        return SETUP_NOT_RPI_FAIL;
     gpio_base = peri_base + GPIO_BASE_OFFSET;
 
     // mmap the GPIO memory registers

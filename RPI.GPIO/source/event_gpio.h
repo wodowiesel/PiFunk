@@ -31,6 +31,6 @@ int add_edge_callback(unsigned int gpio, void (*func)(unsigned int gpio));
 int event_detected(unsigned int gpio);
 int gpio_event_added(unsigned int gpio);
 int event_initialise(void);
-void event_cleanup(unsigned int gpio);
+void event_cleanup(int gpio);
 void event_cleanup_all(void);
 int blocking_wait_for_edge(unsigned int gpio, unsigned int edge, int bouncetime, int timeout);

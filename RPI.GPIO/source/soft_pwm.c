@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013 Ben Croston
+Copyright (c) 2013-2018 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -50,13 +50,14 @@ void remove_pwm(unsigned int gpio)
     {
         if (p->gpio == gpio)
         {
-            if (prev == NULL)
+            if (prev == NULL) {
                 pwm_list = p->next;
-            else
+            } else {
                 prev->next = p->next;
+            }
             temp = p;
             p = p->next;
-            free(temp);
+            temp->running = 0; // signal the thread to stop. The thread will free() the pwm struct when it's done with it.
         } else {
             prev = p;
             p = p->next;
@@ -109,7 +110,7 @@ void *pwm_thread(void *threadarg)
 
     // clean up
     output_gpio(p->gpio, 0);
-    remove_pwm(p->gpio);
+    free(p);
     pthread_exit(NULL);
 }
 
@@ -131,6 +132,7 @@ struct pwm *add_new_pwm(unsigned int gpio)
 }
 
 struct pwm *find_pwm(unsigned int gpio)
+/* Return the pwm record for gpio, creating it if it does not exist */
 {
     struct pwm *p = pwm_list;
 
@@ -203,12 +205,27 @@ void pwm_start(unsigned int gpio)
         p->running = 0;
         return;
     }
+    pthread_detach(threads);
 }
 
 void pwm_stop(unsigned int gpio)
 {
-    struct pwm *p;
+    remove_pwm(gpio);
+}
 
-    if ((p = find_pwm(gpio)) != NULL)
-        p->running = 0;
+// returns 1 if there is a PWM for this gpio, 0 otherwise
+int pwm_exists(unsigned int gpio)
+{
+    struct pwm *p = pwm_list;
+
+    while (p != NULL)
+    {
+        if (p->gpio == gpio)
+        {
+            return 1;
+        } else {
+            p = p->next;
+        }
+    }
+    return 0;
 }
