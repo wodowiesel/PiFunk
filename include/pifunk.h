@@ -6,7 +6,7 @@ header for pifunk.c (dummy for now)
 #define _PIFUNK_H_
 
 
-void titel ()
+void title ()
 {
 printf ("\nWelcome to PiFunk!\n");
 

@@ -68,9 +68,9 @@ ___
 
 6. You will need some libraries for this:
 
-a) `sudo apt-get install libsndfile1-dev` or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
+a) `sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers` for Kernel & Firmware
 
-b) `sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers` for Kernel & Firmware
+b) `sudo apt-get install libsndfile1-dev` or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
 
 c) `sudo apt-get install python-dev python3-dev` for py3
 

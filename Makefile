@@ -7,8 +7,8 @@ CXX=g++
 STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 ASFLAGS=-s
-LDFLAGS= -lm -lpthread -lgthread -lbcm_host -lsndfile
-LDLIBS=-Llib -L/opt/vc/lib -shared
+LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
+LDLIBS=-Llib -L/opt/vc/lib
 
 PATH=/home/pi
 MAKEINFO=makeinfo
@@ -66,31 +66,31 @@ endif
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
 
-pifunk.i:	pifunk.c pifunk.h
+pifunk.i:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
 
-pifunk.S:	pifunk.c pifunk.h
+pifunk.S:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
 
-pifunk.s:	pifunk.c pifunk.h
+pifunk.s:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS) $(ASFLAGS)-o lib/pifunk.s
 
-pifunk.o:	pifunk.c pifunk.h
+pifunk.o:	pifunk.c
 					$(USER) $(CC)$(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.o
 
-pifunk.a:	pifunk.c pifunk.h
+pifunk.a:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.a
 
-pifunk.lib:	pifunk.c pifunk.h
+pifunk.lib:	pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.lib
 
-pifunk.so:	pifunk.c pifunk.h
+pifunk.so:	pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
 
-pifunk.out:	pifunk.c pifunk.h
+pifunk.out:	pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
 
-pifunk.bin: pifunk.c pifunk.h pifunk.o
+pifunk.bin: pifunk.c
 						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
 
 pifunk:	pifunk.c pifunk.h pifunk.o
@@ -100,8 +100,20 @@ pifunk:	pifunk.c pifunk.h pifunk.o
 piversion:	$(USER) $(RPI_VERSION)
 
 .PHONY: 	install
-install:	$(USER) cd $(PATH)/PiFunk
-					$(USER) install -m 0755 pifunk $(PATH)/bin
+install:	cd $(PATH)/PiFunk
+					$(USER) install -m 0755 pifunk $(PATH)/bin/
+
+.PHONY: 	help
+help:			cd $(PATH)/PiFunk/bin/
+					$(USER) sudo ./pifunk -h
+
+.PHONY: 		assistent
+assistent:	cd $(PATH)/PiFunk/bin/
+						$(USER) sudo ./pifunk -a
+
+.PHONY: 	run
+run:			cd $(PATH)/PiFunk/bin/
+					$(USER) sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
 .PHONY: 		uninstall
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
