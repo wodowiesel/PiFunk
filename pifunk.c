@@ -275,7 +275,7 @@ volatile unsigned 										*allof7e; //
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 
 //----- specific pi adresses & definitions
-#ifdef  RPI 									     	   	// alternative BCM2711B0
+#ifdef  RPI // alternative BCM2711B0
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
@@ -292,14 +292,14 @@ volatile unsigned 										*allof7e; //
 #endif
 
 #ifdef  (RASPI) == 1 // pi 1
-#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 #define CLOCK_BASE										 19.2E6 //
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 (500000000.) //
+#define PLLD_FREQ											 500000000. //
 #endif
 
 #ifdef  (RASPI) == 2 // pi2
@@ -332,6 +332,7 @@ volatile unsigned 										*allof7e; //
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define PAGE_SIZE 										 (4096) //
+#define CLOCK_BASE									   (19.2E6) //
 #define XTAL_CLOCK                     (54.0E6) //
 #define DMA_CHANNEL                    (6) //
 #define BUFFER_TIME 									 (1000000) //
@@ -342,7 +343,7 @@ volatile unsigned 										*allof7e; //
 
 // standard & general definitions
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define LENGTH                         (0x01000000) // dec: 1
+#define LENGTH                         0x01000000 // dec: 1
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
@@ -586,19 +587,19 @@ volatile unsigned 										*allof7e; //
 
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
-#define SAMPLES_PER_BUFFER 							(512) //
-
-//RTC (DS3231/DS1307 driver as bcm)
-#define RTC_I2C_ADDRESS                  (0x68) // dec: 104
-
-#else
-#error 	//Unknown Raspberry Pi version (variable RASPI)
-#endif
+#define SAMPLES_PER_BUFFER 							512 //
 
 #define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+
+//RTC (DS3231/DS1307 driver as bcm)
+#define RTC_I2C_ADDRESS                  (0x68) // dec: 104
+
+#else
+//#error Unknown Raspberry Pi version (variable RASPI)
+#endif
 
 /* try a modprobe of i2C-BUS*/
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
@@ -623,7 +624,8 @@ char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
-float xtal_freq_recip=1.0/CLOCK_BASE;
+
+float xtal_freq=1.0/19.2E6; //LOCK_BASE
 
 //-----------------------------------------
 //arguments
@@ -644,7 +646,7 @@ int channels = 1;
 double shift_ppm = 0.0;
 
 float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)));
-uint32_t idivider = (uint32_t) divider;
+uint32_t idivider = divider;
 uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
 //menu variables
@@ -809,7 +811,8 @@ void infos () //warnings and infos
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7\n");
-		printf ("\nDevicename: %s\n", device);
+		printf ("\nDevicename: %s \n", device);
+    printf ("\nxtal_freq: %f \n", xtal_freq);
  		return;
 }
 
@@ -1346,7 +1349,8 @@ void freeRealMemPage (void **vAddr)
 {
 		printf ("\nFreeing vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
-		free    (vAddr); // free the ram
+		free    (vAddr); // free the ram#
+
 }
 
 void carrierhigh () // enables it
