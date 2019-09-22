@@ -101,8 +101,8 @@ tone generator for ctss (sin?)
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
-#include <config.h>
-//#include <missing.h> 
+//#include <config.h>
+//#include <missing.h>
 
 // on posix linux
 #include <sys/cdefs.h>
