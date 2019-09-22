@@ -50,9 +50,9 @@ optional:
 
 Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
 
-`sudo nano /etc/modules` opens modle config with text editor
+`sudo nano /etc/modules` opens modules.conf with text editor (provide one too)
 
-`pps-gpio` Add this line to the modulefile
+`pps-gpio` Add this line
 
 5. Save your edits with ctrl-o <return/enter> then exit with ctrl-x
 
@@ -62,9 +62,9 @@ ___
 
 5. First update & upgrade system:
 
-`sudo apt update` for system updates
+`sudo apt-get update` for system updates
 
-`sudo apt upgrade` for system upgrades
+`sudo apt-get upgrade` for system upgrades
 
 6. You will need some libraries for this:
 
@@ -114,43 +114,45 @@ b) GCC Compiler flags:
 
 `-v` Print compilation verbose informations
 
+`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++17 or (11/14 as you like)
+
+`-Iinclude ` for using include-directory with headerfiles
+
+`-I/opt/vc/include/` for loading bcm-header folder
+
+`-L/opt/vc/lib` for loading bcm folder
+
+`-Llib` for using library-directory
+
+`-lm` for math-lib is obligatory!
+
+`-lbcm_host` for loading firmware v1.20190718
+
+`-lpthread` lib for process threads
+
+`-lgthread` lib for graphic threads
+
+`-lsndfile` -l links libname for ALSA "snd"-lib
+
+`-shared` for generating shared object libraries
+
+`-c` for compiling without linking for making object
+
+`-D_POSIX_C_SOURCE=199309L` for posix needed with bcm
+
+`-D_USE_MATH_DEFINES` for math lib
+
 `-DRASPI1` defines the macro to be used by the preprocessor (here the PI1 model or 0-4, else std-values)
 
  -> will be detected by my the makefile via the type of the ARM-Processor
 
  (other macros possible if in the C-code implemented)
 
-`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++17 or (11/14 as you like)
-
-`-lm` for math-lib is obligatory!
-
-`-Iinclude ` for using include-directory with headerfiles
-
-`-lsndfile` -l links libname for ALSA "snd"-lib
-
-`-lpthread` lib for process threads
-
-`-lgthread` lib for graphic threads
-
-`-Llib` for using library-directory
-
-`-c` for compiling without linking for making object
-
-`-shared` for generating shared object libraries
-
 `-fPIC` for generating position independent code (PIC) for bigger programs
 
 `-O3` for Optimization Stage 1-3 (memory, speed etc.) via compiler
 
 `-o` for output-filename flag
-
-`-D_USE_MATH_DEFINES` for math lib
-
-`-D_POSIX_C_SOURCE=199309L` for posix needed for bcm
-
-`-I/opt/vc/include/` for loading bcm header folder
-
-`-L/opt/vc/lib -lbcm_host` for loading firmware v1.20190718
 
 10. Generating libraries:
 
@@ -164,13 +166,15 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
 d) optional:
+
+Flags:
 
  `-march=armv6l` architecture version of ARM ("native" is auto option)
 
@@ -183,6 +187,8 @@ d) optional:
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
  
  `sudo piversion` for checking your piversion
+ 
+ Makefile commands:
  
  `sudo install` for installing pifunk files incl. build folder
  
@@ -315,6 +321,8 @@ ___
 [GitPage](https://silicator.github.io/PiFunk/)
 
 [Readme Guideline](README.md)
+
+[Wiki](https://github.com/silicator/PiFunk/wiki)
 
 [Contribution Guideline](docs/CONTRIBUTING.md)
 
