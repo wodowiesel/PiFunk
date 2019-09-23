@@ -121,7 +121,7 @@ tone generator for ctss (sin?)
 
 //linux kernel headers
 //#include <linux/module.h>
-#include <linux/init.h>
+//#include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/interrupt.h>
