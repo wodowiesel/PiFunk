@@ -103,6 +103,7 @@ tone generator for ctss (sin?)
 #include <argp.h>
 #include <uchar.h>
 #include <i2c.h>
+#include <metrics.h>
 //#include <config.h>
 //#include <missing.h>
 
@@ -124,7 +125,6 @@ tone generator for ctss (sin?)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/string.h>
-#include <metrics.h>
 #include <linux/i2c.h>
 #include <linux/bcd.h>
 #include <linux/spi/spidev.h>

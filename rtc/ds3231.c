@@ -15,8 +15,8 @@
 #include <stdio.h>
 #include <common.h>
 #include <i2c.h>
-#include <ds3231.h>
 #include <metrics.h>
+#include <ds3231.h>
 
 #define SLAVE_ADDR_WRITE b(11010000)
 #define SLAVE_ADDR_READ b(11010001)
