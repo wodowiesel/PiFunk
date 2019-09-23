@@ -123,16 +123,16 @@ tone generator for ctss (sin?)
 //#include <linux/module.h>
 //#include <linux/init.h>
 //#include <linux/slab.h>
-#include <linux/string.h>
 //#include <linux/interrupt.h>
 //#include <linux/io.h>
 //#include <linux/clk.h>
 //#include <linux/completion.h>
 //#include <linux/err.h>
+//#include <linux/bcd.h>
 //#include <linux/platform_device.h>
+#include <linux/string.h>
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>		//Needed for I2C port
-#include <linux/bcd.h>
 #include <linux/spi/spidev.h>
 #include <linux/rtc.h>
 //#include <linux/rtc/ds1307.h>
