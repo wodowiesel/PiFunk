@@ -127,7 +127,7 @@ tone generator for ctss (sin?)
 //#include <linux/interrupt.h>
 //#include <linux/io.h>
 //#include <linux/clk.h>
-#include <linux/completion.h>
+//#include <linux/completion.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
