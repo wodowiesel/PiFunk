@@ -1934,7 +1934,7 @@ void menu ()
 }
 
 //--------- MAIN
-int main (int argc, char **argv) // arguments for global use must! be in main! const char *short_opt
+int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main! const char *short_opt
 {
 	const char *short_opt = "n:f:s:m:c:p:g:d:b:ahu"; // program flags
 	int options = 0;
@@ -1974,53 +1974,53 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 		switch (options)
 		{
 			case 'n':
-							filename = optarg;
-							printf ("\nFilename is %s \n", filename);
-							//break;
+							 filename = optarg;
+							 printf ("\nFilename is %s \n", filename);
+							 //break;
 
 			case 'f':
-							freq = atof (optarg);
-							printf ("\nFrequency is %f \n", freq);
-							//break;
+							 freq = atof (optarg);
+							 printf ("\nFrequency is %f \n", freq);
+							 //break;
 
 			case 's':
-							samplerate = atoi (optarg);
-							printf ("\nSamplerate is %d \n", samplerate);
-							samplecheck (filename, samplerate);
-							break;
+							 samplerate = atoi (optarg);
+							 printf ("\nSamplerate is %d \n", samplerate);
+							 samplecheck (filename, samplerate);
+							 break;
 
 			case 'm':
-							mod = optarg;
-							if (!strcmp (mod, "fm"))
-							{
+							 mod = optarg;
+							 if (!strcmp (mod, "fm"))
+							 {
 								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
 							  //void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 								//break;
-							}
-							else if (!strcmp (mod, "am"))
-							{
+							 }
+							 else if (!strcmp (mod, "am"))
+							 {
 								printf ("\nPushing args to am Modulator... \n");
 								//void modulationam (int argc, char **argv);
 								//break;
-							}
-							else
-							{
+							 }
+							 else
+							 {
 								printf ("\nError in -m \n");
 								break;
 								//return 1;
-							}
+							 }
 
 			case 'c':
-							callsign = optarg;
-							printf ("\nCallsign is %s \n", callsign);
-							//break;
+							 callsign = optarg;
+							 printf ("\nCallsign is %s \n", callsign);
+							 //break;
 
-			 //power managment
+			//power managment
 			case 'p':
-							power = atoi (optarg);
-							printf ("\nPower is %d \n", power);
-							//break;
+							 power = atoi (optarg);
+							 printf ("\nPower is %d \n", power);
+							 //break;
 
 			case 'g':
 								gpiopin = atof (optarg);
@@ -2038,43 +2038,43 @@ int main (int argc, char **argv) // arguments for global use must! be in main! c
 								//break;
 
 			case 'a':
-							if (argc == 1)
-							{
+							 if (argc == 1)
+							 {
 								printf ("\nAssistent activated! \n");
 								assistent ();
 								break;
-							}
-							else
-							{
+							 }
+							 else
+							 {
 								printf ("\nError in -a \n");
 								break;
 								//return 1;
-							}
+							 }
 
 			case 'h':
-							if (argc == 1)
-							{
+							 if (argc == 1)
+							 {
 								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
 								break;
-							}
-							else
-							{
+							 }
+							 else
+							 {
 								printf ("\nError in -h \n");
 								break;
-							}
+							 }
 
 			case 'u':
-							if (argc == 1)
-							{
+							 if (argc == 1)
+							 {
 									printf ("\nOpening menu \n");
 									menu (); // extra menu for csv
 									break;
-							}
-							else
-							{
+							 }
+							 else
+							 {
 									printf ("\nError in -u (menu) \n");
 									break;
-							}
+							 }
 
 			default:
 								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
