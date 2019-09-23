@@ -7,7 +7,7 @@ obj-$(CONFIG_RTC_HCTOSYS)	+= hctosys.o
 obj-$(CONFIG_RTC_SYSTOHC)	+= systohc.o
 obj-$(CONFIG_RTC_CLASS)		+= rtc-core.o
 rtc-core-y			:= class.o interface.o
- 
+
 ifdef CONFIG_RTC_DRV_EFI
 rtc-core-y			+= rtc-efi-platform.o
 endif
