@@ -1,9 +1,5 @@
 /*
-DS3231.h - Header file for the DS3231 Real-Time Clock
-
-Version: 1.0.1
-(c) 2014 Korneliusz Jarzebski
-www.jarzebski.pl
+ds3231.h - Header file for the DS3231 Real-Time Clock
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the version 3 GNU General Public License as
