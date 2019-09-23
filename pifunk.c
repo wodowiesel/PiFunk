@@ -1934,7 +1934,7 @@ void menu ()
 }
 
 //--------- MAIN
-int main (int argc, char **argv, const char *short_opt) // arguments for global use must! be in main! const char *short_opt
+int main (int argc, char **argv) // arguments for global use must be in main!
 {
 	const char *short_opt = "n:f:s:m:c:p:g:d:b:ahu"; // program flags
 	int options = 0;
