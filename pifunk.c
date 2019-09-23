@@ -102,7 +102,6 @@ tone generator for ctss (sin?)
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
-#include <i2c.h>
 #include <metrics.h>
 //#include <config.h>
 //#include <missing.h>
@@ -126,14 +125,13 @@ tone generator for ctss (sin?)
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/i2c.h>
+#include <linux/i2c-dev.h>		//Needed for I2C port
 #include <linux/bcd.h>
 #include <linux/spi/spidev.h>
 #include <linux/rtc.h>
 //#include <linux/rtc/ds1307.h>
 #include <linux/rtc/ds3231.h>
-#include <ds3231.h>
-
-
+#include <ds3231.h> // rtc/
 
 // ip host socket
 #include <arpa/inet.h>
@@ -179,6 +177,7 @@ using namespace std;
 #include "bcm2835/src/bcm2835.h"
 
 //RPI.GPIO includes here, 0.6.5 used
+#include "RPI.GPIO/source/i2c.h"
 #include "RPI.GPIO/source/c_gpio.h"
 #include "RPI.GPIO/source/event_gpio.h"
 //#include "RPI.GPIO/source/py_pwm.h"
