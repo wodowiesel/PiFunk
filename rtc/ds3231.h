@@ -76,11 +76,12 @@ typedef enum
     DS3231_MATCH_DY_H_M   = 0b00010000
 } DS3231_alarm2_t;
 
+/*
 class DS3231
 {
-    public:
+  public:
 
-	bool begin(void);
+  bool begin(void);
 
 	void setDateTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
 	void setDateTime(uint32_t t);
@@ -119,7 +120,7 @@ class DS3231
 	char* dateFormat(const char* dateFormat, RTCDateTime dt);
 	char* dateFormat(const char* dateFormat, RTCAlarmTime dt);
 
-    private:
+  private:
 	RTCDateTime t;
 
 	char *strDayOfWeek(uint8_t dayOfWeek);
@@ -144,5 +145,5 @@ class DS3231
 	void writeRegister8(uint8_t reg, uint8_t value);
 	uint8_t readRegister8(uint8_t reg);
 };
-
+*/
 #endif
