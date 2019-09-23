@@ -68,6 +68,7 @@ tone generator for ctss (sin?)
 #include <stdnoreturn.h>
 #include <stdatomic.h>
 #include <unistd.h>
+
 // functionality includes
 #include <iso646.h> //c95 back-compatible  -std=iso9899:199409
 #include <argp.h>
@@ -101,6 +102,7 @@ tone generator for ctss (sin?)
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
+#include <i2c.h>
 //#include <config.h>
 //#include <missing.h>
 
@@ -117,7 +119,20 @@ tone generator for ctss (sin?)
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 
+//linux includes
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+#include <metrics.h>
+#include <linux/i2c.h>
+#include <linux/bcd.h>
 #include <linux/spi/spidev.h>
+#include <linux/rtc.h>
+//#include <linux/rtc/ds1307.h>
+#include <linux/rtc/ds3231.h>
+#include <ds3231.h>
+
 
 
 // ip host socket
@@ -596,7 +611,10 @@ volatile unsigned 										*allof7e; //
 
 //RTC (DS3231/DS1307 driver as bcm)
 #define RTC_I2C_ADDRESS                  (0x68) // dec: 104
-
+#define DS3231_TEMPERATURE_MSB           (0x11)
+#define DS3231_TEMPERATURE_LSB           (0x12)
+#define SLAVE_ADDR_WRITE                 b(11010000)
+#define SLAVE_ADDR_READ                  b(11010001)
 #else
 //#error Unknown Raspberry Pi version (variable RASPI)
 #endif
@@ -1384,7 +1402,7 @@ void setupfm ()
 								PROT_READ|PROT_WRITE, //
 								MAP_SHARED, //
 								mem_fd, //
-								0x20000000); //  PERIPH_VIRT_BASE 
+								0x20000000); //  PERIPH_VIRT_BASE
 
   if ((int) allof7e == -1)
 	{

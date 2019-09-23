@@ -44,64 +44,64 @@ enum ds_type
 
 
 /* RTC registers don't differ much, except for the century flag */
-#define DS1307_REG_SECS		0x00	/* 00-59 */
-#define DS1307_BIT_CH		0x80
-#define DS1340_BIT_NEOSC		0x80
-#define MCP7941X_BIT_ST		0x80
-#define DS1307_REG_MIN		0x01	/* 00-59 */
-#define DS1307_REG_HOUR		0x02	/* 00-23, or 1-12{am,pm} */
-#define DS1307_BIT_12HR		0x40	/* in REG_HOUR */
-#define DS1307_BIT_PM		0x20	/* in REG_HOUR */
+#define DS1307_REG_SECS				0x00	/* 00-59 */
+#define DS1307_BIT_CH					0x80
+#define DS1340_BIT_NEOSC			0x80
+#define MCP7941X_BIT_ST				0x80
+#define DS1307_REG_MIN				0x01	/* 00-59 */
+#define DS1307_REG_HOUR				0x02	/* 00-23, or 1-12{am,pm} */
+#define DS1307_BIT_12HR				0x40	/* in REG_HOUR */
+#define DS1307_BIT_PM					0x20	/* in REG_HOUR */
 #define DS1340_BIT_CENTURY_EN	0x80	/* in REG_HOUR */
-#define DS1340_BIT_CENTURY	0x40	/* in REG_HOUR */
-#define DS1307_REG_WDAY		0x03	/* 01-07 */
-#define MCP7941X_BIT_VBATEN	0x08
-#define DS1307_REG_MDAY		0x04	/* 01-31 */
-#define DS1307_REG_MONTH	0x05	/* 01-12 */
-#define DS1337_BIT_CENTURY	0x80	/* in REG_MONTH */
-#define DS1307_REG_YEAR		0x06	/* 00-99 */
+#define DS1340_BIT_CENTURY		0x40	/* in REG_HOUR */
+#define DS1307_REG_WDAY				0x03	/* 01-07 */
+#define MCP7941X_BIT_VBATEN		0x08
+#define DS1307_REG_MDAY				0x04	/* 01-31 */
+#define DS1307_REG_MONTH			0x05	/* 01-12 */
+#define DS1337_BIT_CENTURY		0x80	/* in REG_MONTH */
+#define DS1307_REG_YEAR				0x06	/* 00-99 */
 
 /*
  * Other registers (control, status, alarms, trickle charge, NVRAM, etc)
  * start at 7, and they differ a LOT. Only control and status matter for
  * basic RTC date and time functionality; be careful using them.
  */
-# define DS1307_REG_CONTROL	0x07		/* or ds1338 */
-#	define DS1307_BIT_OUT		0x80
-#	define DS1338_BIT_OSF		0x20
-#	define DS1307_BIT_SQWE		0x10
-#	define DS1307_BIT_RS1		0x02
-#	define DS1307_BIT_RS0		0x01
-# define DS1337_REG_CONTROL	0x0e
-#	define DS1337_BIT_NEOSC		0x80
-#	define DS1339_BIT_BBSQI		0x20
-#	define DS3231_BIT_BBSQW		0x40 /* same as BBSQI */
-#	define DS1337_BIT_RS2		0x10
-#	define DS1337_BIT_RS1		0x08
-#	define DS1337_BIT_INTCN		0x04
-#	define DS1337_BIT_A2IE		0x02
-#	define DS1337_BIT_A1IE		0x01
-# define DS1340_REG_CONTROL	0x07
-#	define DS1340_BIT_OUT		0x80
-#	define DS1340_BIT_FT		0x40
+# define DS1307_REG_CONTROL			0x07		/* or ds1338 */
+#	define DS1307_BIT_OUT					0x80
+#	define DS1338_BIT_OSF					0x20
+#	define DS1307_BIT_SQWE				0x10
+#	define DS1307_BIT_RS1					0x02
+#	define DS1307_BIT_RS0					0x01
+# define DS1337_REG_CONTROL			0x0e
+#	define DS1337_BIT_NEOSC				0x80
+#	define DS1339_BIT_BBSQI				0x20
+#	define DS3231_BIT_BBSQW				0x40 /* same as BBSQI */
+#	define DS1337_BIT_RS2					0x10
+#	define DS1337_BIT_RS1					0x08
+#	define DS1337_BIT_INTCN				0x04
+#	define DS1337_BIT_A2IE				0x02
+#	define DS1337_BIT_A1IE				0x01
+# define DS1340_REG_CONTROL			0x07
+#	define DS1340_BIT_OUT					0x80
+#	define DS1340_BIT_FT					0x40
 #	define DS1340_BIT_CALIB_SIGN	0x20
-#	define DS1340_M_CALIBRATION	0x1f
-# define DS1340_REG_FLAG		0x09
-#	define DS1340_BIT_OSF		0x80
-# define DS1337_REG_STATUS	0x0f
-#	define DS1337_BIT_OSF		0x80
-#	define DS1337_BIT_A2I		0x02
-#	define DS1337_BIT_A1I		0x01
+#	define DS1340_M_CALIBRATION		0x1f
+# define DS1340_REG_FLAG				0x09
+#	define DS1340_BIT_OSF					0x80
+# define DS1337_REG_STATUS			0x0f
+#	define DS1337_BIT_OSF					0x80
+#	define DS1337_BIT_A2I					0x02
+#	define DS1337_BIT_A1I					0x01
 # define DS1339_REG_ALARM1_SECS	0x07
 
 # define DS13XX_TRICKLE_CHARGER_MAGIC	0xa0
 
-# define RX8025_REG_CTRL1	0x0e
-#	define RX8025_BIT_2412		0x20
-# define RX8025_REG_CTRL2	0x0f
-#	define RX8025_BIT_PON		0x10
-#	define RX8025_BIT_VDET		0x40
-#	define RX8025_BIT_XST		0x20
+# define RX8025_REG_CTRL1				0x0e
+#	define RX8025_BIT_2412				0x20
+# define RX8025_REG_CTRL2				0x0f
+#	define RX8025_BIT_PON					0x10
+#	define RX8025_BIT_VDET				0x40
+#	define RX8025_BIT_XST					0x20
 
 
 struct ds1307
