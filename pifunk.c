@@ -135,9 +135,10 @@ tone generator for ctss (sin?)
 #include <linux/i2c-dev.h>		//Needed for I2C port
 #include <linux/spi/spidev.h>
 #include <linux/rtc.h>
+
 //#include <linux/rtc/ds1307.h>
 //#include <linux/rtc/ds3231.h>
-#include <ds3231.h> // rtc/
+#include "rtc/ds3231.h" //
 
 // ip host socket
 #include <arpa/inet.h>
