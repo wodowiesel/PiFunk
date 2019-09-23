@@ -102,7 +102,7 @@ tone generator for ctss (sin?)
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
-#include <metrics.h>
+//#include <metrics.h>
 //#include <config.h>
 //#include <missing.h>
 
