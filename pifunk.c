@@ -306,15 +306,15 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RASPI == 1 // pi 1
-#define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
+#ifdef  RASPI == 1 // pi 1 my version
+#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) //dec: 12
 #define CLOCK_BASE										 19.2E6 //
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 500000000. //
+#define PLLD_FREQ											 (500000000.) //
 #endif
 
 #ifdef  (RASPI) == 2 // pi2
@@ -358,7 +358,7 @@ volatile unsigned 										*allof7e; //
 
 // standard & general definitions
 #define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define LENGTH                         0x01000000 // dec: 1
+#define LENGTH                         (0x01000000) // dec: 1
 #define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
 #define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
@@ -602,7 +602,7 @@ volatile unsigned 										*allof7e; //
 
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
-#define SAMPLES_PER_BUFFER 							512 //
+#define SAMPLES_PER_BUFFER 							(512) //
 
 #define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
@@ -615,6 +615,8 @@ volatile unsigned 										*allof7e; //
 #define DS3231_TEMPERATURE_LSB           (0x12)
 #define SLAVE_ADDR_WRITE                 b(11010000)
 #define SLAVE_ADDR_READ                  b(11010001)
+#define DS1307_I2C_INPUT_ADDR            (0xD0)            // Adresse ueber die auf den DS1307 geschr. wird
+#define DS1307_I2C_OUTPUT_ADDR           (0xD1)            // Adresse ueber die auf den DS1307 geschr. wird
 #else
 //#error Unknown Raspberry Pi version (variable RASPI)
 #endif
