@@ -129,7 +129,7 @@ tone generator for ctss (sin?)
 //#include <linux/clk.h>
 //#include <linux/completion.h>
 //#include <linux/err.h>
-#include <linux/platform_device.h>
+//#include <linux/platform_device.h>
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>		//Needed for I2C port
 #include <linux/bcd.h>
