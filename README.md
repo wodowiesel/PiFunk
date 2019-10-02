@@ -48,7 +48,7 @@ optional:
 
 `dtoverlay=pps-gpio,gpiopin=18` for GPS-device pps(puls-pro-second)-support
 
-Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
+Listen to GPS 1 PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK) for sync & accuracy
 
 `sudo nano /etc/modules` opens modules.conf with text editor (provide one too)
 
