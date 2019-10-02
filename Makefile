@@ -3,9 +3,9 @@
 USER=sudo
 CC=gcc
 CXX=g++
-# use gnu c compiler -std=gnu99 same as -std=iso9899:1999 alternative
-STD_CFLAGS=-Wall -std=c99 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
-CXXFLAGS=-Wall -std=c++17 -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
+# use gnu c compiler -std=gnu99 is c99 -std=iso9899:1999 with gnu extentions
+STD_CFLAGS=-Wall -std=gnu99 -pedantic-errors -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
+CXXFLAGS=-Wall -std=gnu++17 -pedantic-errors -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
 LDLIBS=-Llib -L/opt/vc/lib
@@ -109,11 +109,11 @@ help:			cd $(PATH)/PiFunk/bin/
 
 .PHONY: 		assistent
 assistent:	cd $(PATH)/PiFunk/bin/
-						$(USER) sudo ./pifunk -a
+						$(USER) ./pifunk -a
 
 .PHONY: 	run
 run:			cd $(PATH)/PiFunk/bin/
-					$(USER) sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
+					$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
 .PHONY: 		uninstall
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin

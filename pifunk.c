@@ -18,18 +18,20 @@ sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 
 cd PiFunk // goto path
 
-->lm flag for math lib (obligatory), -g3 for debugger, -c for not linkin to library
+->lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
 =>compile with admin/root permissions!!
- sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- sudo gcc -g3 -std=c99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
+ sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
- -std=c99 is the same as -std=iso9899:1999 or =gnu99 or -std=c++17 (11/14)
+ -std=c99 is the same as -std=iso9899:1999
+ or =gnu99 supports c99 + additional gnu extensions
+ or -std=c17 (11/14 also)
  -E tells to stop after preprocessing stage
  -v verbose
 
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
 virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
- wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=c99 -g -lm -x c && ./pifunk.out sound.wav
+ wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g -lm -x c && ./pifunk.out sound.wav
 
 LICENSE: GPLv2/3 !!
 !!!!!!! program needs more testing on real pi !!!!!!!

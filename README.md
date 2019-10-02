@@ -46,7 +46,7 @@ optional:
 
 `dtparam=spi=on` for SPI support
 
-`dtoverlay=pps-gpio,gpiopin=18` for GPS-device
+`dtoverlay=pps-gpio,gpiopin=18` for GPS-device pps(puls-pro-second)-support
 
 Listen to GPS 1 PPS signal for Pi Clock (PIN 18) sync
 
@@ -90,9 +90,9 @@ or alternative way: `sudo apt-get -y install python3-rpi.gpio`
 
 7. Compiler installation:
 
-a) GNU C Compiler `sudo apt-get install gcc` or g++
+a) GNU C Compiler GCC `sudo apt-get install gcc` or g++
 
-b) GNU GDB Debugger `sudo apt-get install gdbserver`
+b) GNU Debugger GDB `sudo apt-get install gdbserver`
 
 8. `sudo reboot` then reboot to apply the changes
 
@@ -106,15 +106,21 @@ a) `cd PiFunk` with default path: `/home/pi/PiFunk`
 
 b) GCC Compiler flags:
 
-`-g3` for compiler debugger informations (0-3 level, 2 is default)
+`-g3` for normal GNU compiler debug informations (0-3 level, 2 is default)
 
-`-gdbserver` for GNU debugger informations
+`-ggdb3` for GNU debugger informations level 3
 
-`-Wall` for debug warning informations
+`-Wall` for debug all warning informations
 
 `-v` Print compilation verbose informations
 
-`-std=c99` (sometimes gnu99 or as iso -std=iso9899:1999) for C99-standard or -std=c++17 or (11/14 as you like)
+`-std=c99` (as iso `-std=iso9899:1999` strict)
+
+`-std=gnu99` with additional gnu extention to c99
+
+(or `-std=gnu++17` or 11/14 as you like when using g++)
+
+`-pedantic-errors` for error console messages if problem between c99 and gnu extentions
 
 `-Iinclude ` for using include-directory with headerfiles
 
@@ -132,7 +138,7 @@ b) GCC Compiler flags:
 
 `-lgthread` lib for graphic threads
 
-`-lsndfile` -l links libname for ALSA "snd"-lib
+`-lsndfile` -l links library name for ALSA "snd"-lib
 
 `-shared` for generating shared object libraries
 
@@ -142,9 +148,9 @@ b) GCC Compiler flags:
 
 `-D_USE_MATH_DEFINES` for math lib
 
-`-DRASPI1` defines the macro to be used by the preprocessor (here the PI1 model or 0-4, else std-values)
+`-DRASPI1` defines the macro to be used by the preprocessor (here the PIX model or 0-4, else std-values 1-3)
 
- -> will be detected by my the makefile via the type of the ARM-Processor
+ -> will be detected by the makefile via the type of the ARM-Processor
 
  (other macros possible if in the C-code implemented)
 
@@ -158,7 +164,7 @@ b) GCC Compiler flags:
 
 a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-source ccode, *.h=headerfile, *.i=assembled preprocessor C code, *.s=preprocessed assembler code,
+*.c=C-code, *.h=headerfile, *.i=assembled preprocessor C code, *.S=assembler-code, *.s=preprocessed assembler code,
 
 *.o=compiled object, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
 
@@ -166,11 +172,11 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -g3 -Wall -std=c99 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
 
 d) optional:
 
@@ -185,19 +191,19 @@ Flags:
  `-mfpu=vfp` virtual floating point hardware module
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
- 
+
  `sudo piversion` for checking your piversion
- 
+
  Makefile commands:
- 
+
  `sudo install` for installing pifunk files incl. build folder
- 
+
  `sudo uninstall` for uninstalling pifunk files
 
  `sudo make` with pre-configured flags for compilation for all Pi's
 
  `sudo clean` for removing pifunk.out and pifunk.o files in bin folder if necessary
- 
+
 ___
 
 ### Preparations
