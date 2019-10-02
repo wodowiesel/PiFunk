@@ -883,25 +883,23 @@ float bandwidthselect (float bandwidth)
 	return bandwidth;
 }
 
-int filecheck (char *filename, FILE wavefile)  // expected int?
+int filecheck (char *filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   scanf ("%s", &filename);
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
-	printf ("\nallocating filename mem... \n");
+	printf ("\nAllocating filename memory... \n");
 	filename = (char *) malloc (128);// allocating memory for filename
-	sprintf (filename, "\n%s \n", "file.ft");
-	char *stdfile= "sound.wav";
+	sprintf (filename, "\n%s\n", "file.ft");
+	char *stdfile = "sound.wav";
   if (filename != stdfile)
 	{
      fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
-	   return fp;
 	}
 	else
 	{
 	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // sounds/sound.wav directory should be tested
-	   return fp;
 	}
 	return fp;
 }
@@ -922,32 +920,31 @@ float step ()
 	scanf ("%f", &steps);
 	if (steps==6.25)
 	{
-	printf ("\nnSteps are %f kHz \n", steps);
-  return steps;
+	printf ("\nSteps are %f kHz \n", steps);
 	}
 	else if (steps==12.5)
 	{
 	printf ("\nSteps are %f kHz \n", steps);
-  return steps;
 	}
   else
   {
-  printf ("\nNO steps could be determined, wrong input! Using Standard 12.5\n");
+  printf ("\nNO steps could be determined, wrong input! Using Standard 12.5 \n");
   steps = 12.5;
-  return steps;
   }
+  return steps;
 }
 
 // Channel-mode
 float channelmodepmr () //PMR
 {
-	char *type;
+	int type; //= "1";
   char *analog = "a";
 	char *digital = "d";
-	printf ("\nChoose PMR-Type (a)nalog / (d)igital: \n");
-	scanf ("%s", &type);
 
-	if (type==analog)
+	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
+	scanf ("%d", &type);
+
+	if (type==1)
 	{
 	printf ("\nChoose aPMR-Channel 1-16 (18 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -983,7 +980,7 @@ float channelmodepmr () //PMR
 						break;
    }
   }
-	else if (type==digital)
+	else if (type==2)
 	{
 	printf ("\nChoose dPMR-Channel 1-32 (33 to exit): \n");
 	scanf ("%d", &channelnumberpmr);
@@ -1032,9 +1029,9 @@ float channelmodepmr () //PMR
   else
 	{
 		printf ("\nNO type could be determined, wrong input! Using analog as standard \n");
-		type=analog;
+		type=1;
 	}
-  printf ("\nChannelnumber = %d on freq = %f \n", channelnumberpmr, freq);
+  printf ("\nChannelnumber = %d on freq = %f on type %d \n", channelnumberpmr, freq, type);
 	return freq;
 }
 
@@ -1046,11 +1043,11 @@ float subchannelmodepmr () //Pilot-tone
 	{
 		// FYI 19 (38)-kHz-Pilottone on UKW
 	 //---- Analog & digital
-	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 %f \n", subfreq); break;	// Scan all Chan till active , now chan1
+	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 on %f \n", subfreq); break;	// Scan all Chan till active , now chan1
 	 case 1:  subfreq=67.900; break;	//4.9 Hz step
 	 case 2: 	subfreq=71.900; break;
 	 case 3: 	subfreq=74.400; break;
-	 case 4: 	subfreq=77.000; break; // at 3-chan-PMR-devices its ch. 2
+	 case 4: 	subfreq=77.000; break; // at 3-chan-PMR-devices it's ch. 2
 	 case 5: 	subfreq=79.700; break; // Contest
 	 case 6: 	subfreq=82.500; break; // Events
 	 case 7: 	subfreq=85.400; break; // at 3-channel-PMR-devices it's ch. 3
@@ -1778,7 +1775,7 @@ char callname ()
 		switch (callnameselect)
 	  {
 	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign);
+						 //scanf  ("%s", &callsign);
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
@@ -1899,7 +1896,7 @@ void cgimodule () // just a small test, not meant for pifunk
 void assistent () //assistent
 {
 		printf ("\nStarting assistent for setting parameters! \n");
-		filecheck (filename, wavefile);
+		filecheck (filename);
 		samplecheck (filename, samplerate);
 		modetype (freq);
 		callname ();
@@ -1908,7 +1905,7 @@ void assistent () //assistent
 		int dmaselect (int dmachannel);
 		float bandwidthselect (float bandwidth);
 
-		printf ("\nPress all information gathered, going back to main \n");
+		printf ("\nAll information gathered, going back to main \n");
 		//while (getchar () != '');
 
 		return;
