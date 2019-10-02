@@ -244,7 +244,7 @@ using namespace std;
 #endif
 //------------------------------------------------------------------------------
 // Definitions & Makros
-#define VERSION 						 "0.1.7.7e" // my version
+#define VERSION 						 "0.1.7.7" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
@@ -257,7 +257,7 @@ using namespace std;
 #endif
 */
 #define _POSIX_C_SOURCE   		200809L //or 199309L
-#define _USE_MATH_DEFINES // for math lm lib needed
+//#define _USE_MATH_DEFINES // for math lm lib needed
 
 // simple operators
 #define IN                    (0) //
@@ -266,10 +266,10 @@ using namespace std;
 #define TRUE                  (1) //
 
 //predefine if needed when not using bcm header
-/*
-#define LOW 									(0) //
-#define HIGH 									(1) //
-*/
+//#define HIGH 									0x1 //
+//#define LOW 									0x0 //
+
+
 
 //mathematical stuff
 #define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
