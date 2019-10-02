@@ -672,6 +672,8 @@ uint32_t Timing;
 char *mod;
 char *fm = "fm";
 char *am = "am";
+char *analog = "a";
+char *digital = "d";
 char *callsign = "callsign";
 int power = abs (7);
 int powerlevel = abs (7);
@@ -886,7 +888,7 @@ float bandwidthselect (float bandwidth)
 int filecheck (char *filename)  // expected int?
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  scanf ("%s", &filename);
+  //scanf ("%s", &filename);
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory... \n");
@@ -938,15 +940,13 @@ float step ()
 float channelmodepmr () //PMR
 {
 	int type; //= "1";
-  char *analog = "a";
-	char *digital = "d";
 
 	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
 	scanf ("%d", &type);
 
 	if (type==1)
 	{
-	printf ("\nChoose aPMR-Channel 1-16 (18 to exit): \n");
+	printf ("\nChoose %s PMR-Channel 1-16 (18 to exit): \n", analog);
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	 {
@@ -982,7 +982,7 @@ float channelmodepmr () //PMR
   }
 	else if (type==2)
 	{
-	printf ("\nChoose dPMR-Channel 1-32 (33 to exit): \n");
+	printf ("\nChoose %s PMR-Channel 1-32 (33 to exit): \n", digital);
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	 {
@@ -1028,8 +1028,8 @@ float channelmodepmr () //PMR
 	}
   else
 	{
-		printf ("\nNO type could be determined, wrong input! Using analog as standard \n");
-		type=1;
+    type=1;
+		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", analog);
 	}
   printf ("\nChannelnumber = %d on freq = %f on type %d \n", channelnumberpmr, freq, type);
 	return freq;
@@ -1770,7 +1770,7 @@ void WriteTone (float freq)
 char callname ()
 {
     //if (*callsign == NULL){
-		printf ("\nYou don't have specified a callsign yet!\nPress (1) for custom or (2) default 'callsign': \n");
+		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
 		scanf ("%d", &callnameselect);
 		switch (callnameselect)
 	  {
@@ -1787,7 +1787,7 @@ char callname ()
 		 					printf ("\nError! Using default callsign: %s \n", callsign);
 							break;
     }
-  	return callsign; //, &callsign, *callsign;
+  	return callsign;
 }
 
 void modetype (float freq)
