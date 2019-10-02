@@ -250,9 +250,13 @@ using namespace std;
 #define VERSION_BUILD        (7) //
 #define VERSION_PATCHLEVEL   (7) //
 #define VERSION_STATUS 			 "experimental" // WIP work in progress
+/*
+#ifdef _GNU_SOURCE
+# define basename __basename_gnu
 
-#define _GNU_SOURCE // for using gcc compiler
-#define _POSIX_C_SOURCE = 		(200809L) //or 199309L
+#endif
+*/
+#define _POSIX_C_SOURCE   		200809L //or 199309L
 #define _USE_MATH_DEFINES // for math lm lib needed
 
 // simple operators
@@ -260,8 +264,9 @@ using namespace std;
 #define OUT                   (1) //
 #define FALSE                 (0) //
 #define TRUE                  (1) //
+
+//predefine if needed when not using bcm header
 /*
-predefine if needed when not using bcm header
 #define LOW 									(0) //
 #define HIGH 									(1) //
 */
@@ -315,17 +320,17 @@ volatile unsigned 										*allof7e; //
 #endif
 
 #ifdef  RASPI == 1 // pi 1 my version
-#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
-#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x0C) //dec: 12
+#define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_PHYS_BASE               0x7E000000 // dec: 2113929216
+#define DRAM_PHYS_BASE                 0x40000000 //dec: 1073741824
+#define MEM_FLAG                       0x0C // alternative
+#define CURBLOCK                       0x0C //dec: 12
 #define CLOCK_BASE										 19.2E6 //
-#define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 (500000000.) //
+#define DMA_CHANNEL										 14 //
+#define PLLD_FREQ											 500000000. //
 #endif
 
-#ifdef  (RASPI) == 2 // pi2
+#ifdef  RASPI == 2 // pi2
 #define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -337,7 +342,7 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef 	(RASPI) == 3 // BCM2835
+#ifdef 	RASPI == 3 // BCM2835
 #define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -349,7 +354,7 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef  (RASPI) == 4 //pi4 - BCM2838
+#ifdef  RASPI == 4 //pi4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
@@ -2099,8 +2104,8 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: is %f \n", bandwidth);
 	printf ("\nChecking Hostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, localip, port);
-	printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
-	printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
+	//printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+	//printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
 	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
 /*
 	printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
