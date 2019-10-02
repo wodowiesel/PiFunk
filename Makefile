@@ -4,8 +4,8 @@ USER=sudo
 CC=gcc
 CXX=g++
 # use gnu c compiler -std=gnu99 is c99 -std=iso9899:1999 with gnu extentions
-STD_CFLAGS=-Wall -std=gnu99 -pedantic-errors -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
-CXXFLAGS=-Wall -std=gnu++17 -pedantic-errors -g3 -ggdb -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
+STD_CFLAGS=-Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
+CXXFLAGS=-Wall -std=gnu++17 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
 LDLIBS=-Llib -L/opt/vc/lib
