@@ -148,9 +148,9 @@ b) GCC Compiler flags:
 
 `-D_USE_MATH_DEFINES` for math lib
 
-`-DRASPI1` defines the macro to be used by the preprocessor (here the PIX model or 0-4, else std-values 1-3)
+`-DRASPI=1` defines the macro to be used by the preprocessor (here the PIX model or 0-4, else std-values 1-3)
 
- -> will be detected by the makefile via the type of the ARM-Processor
+ -> will be detected by the Makefile via the type of the ARM-Processor
 
  (other macros possible if in the C-code implemented)
 
@@ -164,7 +164,7 @@ b) GCC Compiler flags:
 
 a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-code, *.h=headerfile, *.i=assembled preprocessor C code, *.S=assembler-code, *.s=preprocessed assembler code,
+*.c=C-code, *.h=headerfile, *.i=assembled preprocessor C-code, *.S=assembler-code, *.s=preprocessed assembler-code,
 
 *.o=compiled object, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
 
@@ -172,15 +172,13 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -lgthread -O3 -fPIC pifunk.c -shared -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -o bin/pifunk.out bin/pifunk`
+`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -DRASPI=1 -o bin/pifunk.out bin/pifunk`
 
-d) optional:
-
-Flags:
+d) optional Pi-Flags:
 
  `-march=armv6l` architecture version of ARM ("native" is auto option)
 
@@ -194,7 +192,7 @@ Flags:
 
  `sudo piversion` for checking your piversion
 
- Makefile commands:
+e) Makefile commands:
 
  `sudo install` for installing pifunk files incl. build folder
 
