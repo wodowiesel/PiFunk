@@ -183,11 +183,11 @@ using namespace std;
 //broadcom arm processor for mapping phys. addresses
 #include "opt/vc/include/bcm_host.h" // firmware stuff
 #include "opt/vc/include/interface/vcos/vcos.h"
-#include "bcm2835/src/bcm2835.h"
+#include "bcm2835/src/bcm2835.h" // pi 0 &A & B+
 
 //RPI.GPIO includes here, 0.6.5 used
 #include "RPI.GPIO/source/i2c.h"
-#include "RPI.GPIO/source/c_gpio.h"
+//#include "RPI.GPIO/source/c_gpio.h"
 #include "RPI.GPIO/source/event_gpio.h"
 //#include "RPI.GPIO/source/py_pwm.h"
 #include "RPI.GPIO/source/soft_pwm.h"
@@ -216,7 +216,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //preproccessor definitions
-#ifdef __LINUX__ // || __UNIX__
+#ifdef __LINUX__
   printf ("\nProgram runs under UNIX/LINUX\n");
 	#pragma GCC dependency "pifunk.h"
 #endif
@@ -242,14 +242,7 @@ using namespace std;
    /*#warning "\nPlease compile with flag -std=c99\n" string */
    //printf ("\nUsing GNU C with C99 standard!!\n");
 #endif
-//------------------------------------------------------------------------------
-// Definitions & Makros
-#define VERSION 						 "0.1.7.7" // my version
-#define VERSION_MAJOR        (0) //
-#define VERSION_MINOR        (1) //
-#define VERSION_BUILD        (7) //
-#define VERSION_PATCHLEVEL   (7) //
-#define VERSION_STATUS 			 "experimental" // WIP work in progress
+
 /*
 #ifdef _GNU_SOURCE
 # define basename __basename_gnu
@@ -259,6 +252,15 @@ using namespace std;
 #define _POSIX_C_SOURCE   		200809L //or 199309L
 //#define _USE_MATH_DEFINES // for math lm lib needed
 
+//------------------------------------------------------------------------------
+// Definitions & Makros
+#define VERSION 						 "0.1.7.7" // my version
+#define VERSION_MAJOR        (0) //
+#define VERSION_MINOR        (1) //
+#define VERSION_BUILD        (7) //
+#define VERSION_PATCHLEVEL   (7) //
+#define VERSION_STATUS 			 "experimental" // WIP work in progress
+
 // simple operators
 #define IN                    (0) //
 #define OUT                   (1) //
@@ -266,10 +268,8 @@ using namespace std;
 #define TRUE                  (1) //
 
 //predefine if needed when not using bcm header
-//#define HIGH 									0x1 //
-//#define LOW 									0x0 //
-
-
+//#define HIGH 									0x1 // 1
+//#define LOW 									0x0 // 0
 
 //mathematical stuff
 #define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
@@ -279,12 +279,12 @@ using namespace std;
 #define PERIOD                          (1/PHASE) // 0.15915494309
 
 // buffers
-#define PAGE_SIZE             (4*1024) //4096
-#define BLOCK_SIZE            (4*1024) //4096
-#define BUFFER_LEN            (8*1024) //8192
-#define BUFFERINSTRUCTIONS    (65536) //[1024]
-//#define sleep 								[1000] // for waiting between functions & tasks
-//#define usleep 								[1000] //
+#define PAGE_SIZE                       (4*1024) //4096
+#define BLOCK_SIZE                      (4*1024) //4096
+#define BUFFER_LEN                      (8*1024) //8192
+#define BUFFERINSTRUCTIONS              (65536) //[1024]
+//#define sleep 							         	[1000] // for waiting between functions & tasks
+//#define usleep 								        [1000] //
 
 // I-O access via GPIO
 volatile unsigned 										*gpio; //
@@ -560,7 +560,8 @@ volatile unsigned 										*allof7e; //
 #define DMA_CHANNEL_MAX                 (14) //
 #define DMA_CHANNEL_SIZE                (0x100) //256
 
-#define BCM2708_DMA_ACTIVE              (1<<0) //why bcm 2708?
+//Technically 2708 is the family, and 2835 is a specific implementation arm
+#define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
 #define BCM2708_DMA_INT                 (1<<2) //
 #define BCM2708_DMA_WAIT_RESP           (1<<3) //
@@ -624,12 +625,12 @@ volatile unsigned 										*allof7e; //
 
 //RTC (DS3231/DS1307 driver as bcm)
 #define RTC_I2C_ADDRESS                  (0x68) // dec: 104
-#define DS3231_TEMPERATURE_MSB           (0x11)
-#define DS3231_TEMPERATURE_LSB           (0x12)
-#define SLAVE_ADDR_WRITE                 b(11010000)
-#define SLAVE_ADDR_READ                  b(11010001)
-#define DS1307_I2C_INPUT_ADDR            (0xD0)            // Adresse ueber die auf den DS1307 geschr. wird
-#define DS1307_I2C_OUTPUT_ADDR           (0xD1)            // Adresse ueber die auf den DS1307 geschr. wird
+#define DS3231_TEMPERATURE_MSB           (0x11) //17
+#define DS3231_TEMPERATURE_LSB           (0x12) //18
+#define SLAVE_ADDR_WRITE                 b(11010000) //
+#define SLAVE_ADDR_READ                  b(11010001) //
+#define DS1307_I2C_INPUT_ADDR            (0xD0) // read 208
+#define DS1307_I2C_OUTPUT_ADDR           (0xD1) // write 2019
 #else
 //#error Unknown Raspberry Pi version (variable RASPI)
 #endif
