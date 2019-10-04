@@ -4,8 +4,8 @@ USER=sudo
 CC=gcc
 CXX=g++
 # use gnu c compiler -std=gnu99 is c99 -std=iso9899:1999 with gnu extentions
-STD_CFLAGS=-Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
-CXXFLAGS=-Wall -std=gnu++17 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
+STD_CFLAGS=-Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
+CXXFLAGS=-Wall -Werror -std=gnu++99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
 LDLIBS=-Llib -L/opt/vc/lib
@@ -17,7 +17,7 @@ VERSION=0.1.7.7e
 #Determine the hardware platform.
 #Enable ARM-specific options only on ARM, and compilation of the app only on ARM
 RM=rm -f
-PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010
+PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010 -> 1.2 B+
 UNAME:=$(shell uname -m) #linux
 RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]")
 
@@ -56,15 +56,11 @@ CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASP
 TARGET= raspberry
 endif
 
-ifeq ($(UNAME), NULL)
-CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
-TARGET=raspi
-endif
-
 #@echo Compiling PiFunk
 
 #pifunk.info: pifunk.texi
 #						 $(USER) $(MAKEINFO)
+all: pifunk
 
 pifunk.i:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-E -C -o include/pifunk.i
@@ -103,9 +99,12 @@ piversion:	$(USER) $(RPI_VERSION)
 install:	cd $(PATH)/PiFunk
 					$(USER) install -m 0755 pifunk $(PATH)/bin/
 
+.PHONY: 	uninstall
+uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
+
 .PHONY: 	help
 help:			cd $(PATH)/PiFunk/bin/
-					$(USER) sudo ./pifunk -h
+					$(USER) ./pifunk -h
 
 .PHONY: 		assistent
 assistent:	cd $(PATH)/PiFunk/bin/
@@ -115,8 +114,5 @@ assistent:	cd $(PATH)/PiFunk/bin/
 run:			cd $(PATH)/PiFunk/bin/
 					$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
-.PHONY: 		uninstall
-uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
-
 .PHONY:	clean
-clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o build/pifunk
+clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o bin/pifunk

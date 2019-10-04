@@ -250,7 +250,7 @@ using namespace std;
 #endif
 */
 #define _POSIX_C_SOURCE   		200809L //or 199309L
-//#define _USE_MATH_DEFINES // for math lm lib needed
+//#define _USE_MATH_DEFINES // for math lm lib
 
 //------------------------------------------------------------------------------
 // Definitions & Makros
@@ -290,7 +290,7 @@ using namespace std;
 volatile unsigned 										*gpio; //
 volatile unsigned 										*allof7e; //
 
-// GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT(x, y)
+// GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7ED											(*allof7e - SUB_BASE)
 #define PIN_GND                       (9) // which is the GPIO pin 17 for led
 #define PIN17                         RPI_GPIO_P17 // which is the GPIO pin 17 for led
@@ -303,7 +303,7 @@ volatile unsigned 										*allof7e; //
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 
 //----- specific pi adresses & definitions
-#ifdef  RPI // alternative BCM2711B0
+#ifdef  RPI || RASPBERRY // alternative BCM2711B0
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
@@ -424,9 +424,6 @@ volatile unsigned 										*allof7e; //
 #define GPIO_LEN                        (0x100) // dec: 256
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
-#define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
-#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  //0x64 = dec: 100
-#define PADGPIO                         (0x5A000018) // dec: 1509949464
 
 #define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET) //
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
@@ -446,10 +443,23 @@ volatile unsigned 										*allof7e; //
 #define GPPUDCLK0                       (0x98/4) //38
 #define GPPUDCLK1                       (0x9C/4) //39
 
-#define CORECLK_CNTL                    (0x08/4) //2
-#define CORECLK_DIV                     (0x0C/4) //3
+// PADS
+//Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
+//Drive Strength (power 7 standard): 0 = 2 mA, 7 = 16 mA.
+
+#define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
+#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  //0x64 = dec: 100
+#define PADGPIO                         (0x5A000018) // dec: 1509949464
+#define GPIO_PAD_0_27                   (0x2C/4)  //11
+#define GPIO_PAD_28_45                  (0x30/4)  //12
+#define GPIO_PAD_46_52                  (0x34/4)  //13
+
 #define GPCLK_CNTL                      (0x70/4) //28
 #define GPCLK_DIV                       (0x74/4) //29
+
+#define CORECLK_CNTL                    (0x08/4) //2
+#define CORECLK_DIV                     (0x0C/4) //3
+
 #define EMMCCLK_CNTL                    (0x1C0/4) //112
 #define EMMCCLK_DIV                     (0x1C4/4) //113
 
@@ -546,20 +556,10 @@ volatile unsigned 										*allof7e; //
 #define PCM_INTEN_A                     (0x18/4) //6
 #define PCM_INT_STC_A                   (0x1C/4) //7
 #define PCM_GRAY                        (0x20/4) //8
-
 #define PCMCLK_CNTL                     (38) //
 #define PCMCLK_DIV                      (39) //
 
-// PAD
-#define GPIO_PAD_0_27                   (0x2C/4)  //11
-#define GPIO_PAD_28_45                  (0x30/4)  //12
-#define GPIO_PAD_46_52                  (0x34/4)  //13
-
 // DMA
-#define DMA_CHANNEL                     (14) //
-#define DMA_CHANNEL_MAX                 (14) //
-#define DMA_CHANNEL_SIZE                (0x100) //256
-
 //Technically 2708 is the family, and 2835 is a specific implementation arm
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
@@ -577,10 +577,14 @@ volatile unsigned 										*allof7e; //
 #define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16) //
 #define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20) //
 
-#define DMA_CS                          (0x00/4) //0
+#define DMA_CHANNEL                     (14) //
+#define DMA_CHANNEL_MAX                 (14) //
+#define DMA_CHANNEL_SIZE                (0x100) //256
+
 #define DMA_CONBLK_AD                   (0x04/4) //1
 #define DMA_DEBUG                       (0x20/4) //8
 
+#define DMA_CS                          (0x00/4) //0
 #define DMA_CS_RESET		                (1<<31) //
 #define DMA_CS_ABORT			              (1<<30) //
 #define DMA_CS_DISDEBUG		              (1<<29) //
@@ -591,15 +595,19 @@ volatile unsigned 										*allof7e; //
 #define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) //0xF=15
 #define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20) //
 
+//Request
 #define DREQ_PCM_TX                     (2) //
 #define DREQ_PCM_RX                     (3) //
+
 #define DREQ_SMI                        (4) //
 #define DREQ_PWM                        (5) //
+
 #define DREQ_SPI_TX                     (6) //
 #define DREQ_SPI_RX                     (7) //
 #define DREQ_SPI_SLAVE_TX               (8) //
 #define DREQ_SPI_SLAVE_RX               (9) //
 
+// memory
 #define MEM_FLAG_DISCARDABLE            (1 << 0) /* can be resized to 0 at any time. Use for cached data */
 #define MEM_FLAG_NORMAL                 (0 << 2) /* normal allocating alias. Don't use from ARM */
 #define MEM_FLAG_DIRECT                 (1 << 2) /* 0xC dec: 12 alias uncached */
@@ -624,15 +632,17 @@ volatile unsigned 										*allof7e; //
 #define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 //RTC (DS3231/DS1307 driver as bcm)
-#define RTC_I2C_ADDRESS                  (0x68) // dec: 104
-#define DS3231_TEMPERATURE_MSB           (0x11) //17
-#define DS3231_TEMPERATURE_LSB           (0x12) //18
 #define SLAVE_ADDR_WRITE                 b(11010000) //
 #define SLAVE_ADDR_READ                  b(11010001) //
-#define DS1307_I2C_INPUT_ADDR            (0xD0) // read 208
-#define DS1307_I2C_OUTPUT_ADDR           (0xD1) // write 2019
+
+#define RTC_I2C_ADDRESS                  (0x68) // dec: 104
+#define DS3231_TEMPERATURE_MSB           (0x11) // dec: 17
+#define DS3231_TEMPERATURE_LSB           (0x12) // dec: 18
+
+#define DS1307_I2C_INPUT_ADDR            (0xD0) // read dec: 208
+#define DS1307_I2C_OUTPUT_ADDR           (0xD1) // write dec: 2019
 #else
-//#error Unknown Raspberry Pi version (variable RASPI)
+//#error Unknown Raspberry Pi version (variable RASPI=X)
 #endif
 
 /* try a modprobe of i2C-BUS*/
@@ -751,6 +761,10 @@ int instrPage;
 int constPage;
 int reg 			= 0; //= gpio / 10;
 int shift 		= 0; //= (gpio % 10) * 3;
+pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
+pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
+//GPIO needs to be ALT FUNC 0 to output the clock
+//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
 //network sockets
 //custom port via tcp/ip or udp
@@ -760,7 +774,7 @@ char *host 		= "localhost";
 int 	port 		= 8080;
 
 // GPS-coordinates
-//default Frankfurt in decimal °grad (centigrade)
+//default Germany-Frankfurt(Main) in decimal °grad (centigrade)
 float longitude = 8.682127; // E
 float latitude 	= 50.110924; // N
 float altitude	= fabs (100.00); // elevation in meter above see level (u.N.N.)
@@ -772,7 +786,7 @@ struct sockaddr_in localAddress;
 //struct client_addr.sin_addr;
 //struct local.sin_addr;
 
-struct PAGEINFO // should use here bcm intern funcs-> repair
+struct PAGEINFO // should use here bcm intern funcs-> repair p/v
 {
 		void *p; // physical address BCM2836_PERI_BASE
 		void *v; // virtual address
@@ -823,14 +837,15 @@ struct DMAREGS
 struct option long_opt [] =
 {
 		{"filename",		required_argument, NULL, 'n'},
-		{"freq",   			required_argument, NULL, 'f'},
+		{"freqency",   	required_argument, NULL, 'f'},
     {"samplerate", 	required_argument, NULL, 's'},
-    {"mod",	    		required_argument, NULL, 'm'},
+    {"modulation",	required_argument, NULL, 'm'},
     {"callsign",	  required_argument, NULL, 'c'},
     {"power", 			required_argument, NULL, 'p'},
     {"gpio",	  		required_argument, NULL, 'g'},
 		{"dma",	  			required_argument, NULL, 'd'},
 		{"bandwidth",	  required_argument, NULL, 'b'},
+    {"type",	  		required_argument, NULL, 't'},
     {"assistent",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
@@ -1276,7 +1291,8 @@ void channelselect () // make a void
 //turn on LED (with 100 kOhm pullup resistor while transmitting
 int ledinactive (char *filename, float freq, int samplerate)
 {
-		//check if transmitting
+	//check if transmitting
+  printf ("\nChecking Transmission status \n");
 	/*	while (!play_wav (char *filename, float freq, int samplerate))
 		{
 				//cm2835_gpio_write (PIN17, LOW);
@@ -1288,7 +1304,7 @@ int ledinactive (char *filename, float freq, int samplerate)
 
 int ledactive ()
 {
-//simulation of gpio for debug
+// initialize bcm
 /*
   bcm2835_set_debug (1);
   if (!bcm2835_init ())
@@ -1308,7 +1324,7 @@ int ledactive ()
 			bcm2835_gpio_write (PIN17, HIGH);
 			printf ("\nLED ON - Transmission...! \n");
 			// wait a bit
-			bcm2835_delay (500);
+			bcm2835_delay (100);
 		}
 	}
 	else // if no transmission than turn it off // (ledactive != 0)
@@ -1318,8 +1334,8 @@ int ledactive ()
 	}
    //bcm2835_close ();
 	 */
-	 printf ("\nBCM 2835 closing \n");
-   return 0;
+	printf ("\nLED active \n");
+  return 0;
 }
 
 /*
@@ -1813,7 +1829,7 @@ void modetype (float freq)
 
 int powerselect ()
 {
-	printf ("\nType in powerlevel (0-7 from 2-14 mA): \n");
+	printf ("\nType in powerlevel (0-7 from 2-16 mA): \n");
 	scanf ("%d", &power);
 	printf ("\nPowerlevel was set to: %d \n", power);
 	return power;
@@ -1822,7 +1838,7 @@ int powerselect ()
 // read / import csv for pmr
 char csvreader ()
 {
-    printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System)... \n");
+    printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System) ... \n");
 		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone,\nrToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode,\nTStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
 
     rfp = fopen ("ctsspmr.csv", "r"); //read-only!
@@ -1865,12 +1881,6 @@ void modulationfm (int argc, char **argv)//FM
 
 int tx (int argc, char **argv)
 {
-  //pads need to be defined
-  //Drive Strength (power 7 standard): 0 = 2mA, 7 = 16mA. Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
-  //pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
-  //pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
-	//GPIO needs to be ALT FUNC 0 to output the clock
-	//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
 	//play_wav (char *filename, float freq, int samplerate);
 	void modselect (int argc, char **argv, char *mod);
@@ -1880,7 +1890,7 @@ int tx (int argc, char **argv)
 	return 0;
 }
 
-void cgimodule () // just a small test, not meant for pifunk
+void cgimodule () //
 {
  printf ("\ncontext-type:text/html\n");
  printf ("<html>\n");
@@ -2059,7 +2069,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or menu [-u] \n");
 								break;
 							 }
 							 else
@@ -2089,7 +2099,8 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 		break;
 	} // end of while
  	//}//end of else
-		//-- for debugging or information :)
+
+	//-- for debugging or information
 	printf ("\n-----------------\n");
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	printf ("\nChecking File: %s \n", filename);
@@ -2097,21 +2108,16 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 	printf ("\nChecking Modulation: %s \n", mod);
 	printf ("\nChecking Callsign: %s \n", callsign);
-	printf ("\nChecking Output-Power: %d \n", power);
+	printf ("\nChecking Output-Powerlevel: %d \n", power);
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: is %f \n", bandwidth);
+  printf ("\nChecking Type 1/analog, 2/digital: is %d \n", type);
 	printf ("\nChecking Hostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, localip, port);
-	//printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+  printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
+  //printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
 	//printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
-	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
 /*
-	printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
-	printf ("\n*Pointers-> argc: %p / Name: %p / File: %p / Freq: %p / Samplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", argc, *argv [0], *argv [1], *argv [2], *argv [3], *argv [4], *argv [5], *argv [6]);
-	printf ("\nArguments: argc: %d / argv(0): %s / argv(1): %s \n argv(2): %f / argv(3): %d / argv(4): %s / argv(5): %s / argv(6): %d / GPIO: %d \n", argc, argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6]);
-	printf ("\n&Adresses-> argc: %p / Name: %p \nFile: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6]);
-
-	printf ("\n GPS-Module (Neo-7M) %gps  \n", gps);
 	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 */

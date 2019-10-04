@@ -4,7 +4,7 @@
 
 ## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
 
-**Early Experimental!**
+**Early Experimental! (WIP)**
 
 ### Acknowledgements
 
@@ -19,8 +19,6 @@ ___
 `git clone https://github.com/silicator/PiFunk`
 
 2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
-
-or manually via command: `sudo modprobe w1-gpio,gpiopin=4`
 
 Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO Pin
 
@@ -54,7 +52,7 @@ Sync to GPS 1 PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK / PWM0) fo
 
 `pps-gpio` Add this line
 
-5. Save your edits with ctrl-o <return/enter> then exit with ctrl-x
+5. Save your changes with ctrl-o <return/enter> then exit with ctrl-x
 
 ___
 
@@ -90,7 +88,7 @@ or alternative way: `sudo apt-get -y install python3-rpi.gpio`
 
 7. Compiler installation:
 
-a) GNU C Compiler GCC `sudo apt-get install gcc` or g++
+a) GNU C Compiler GCC `sudo apt-get install gcc-9.1` or g++
 
 b) GNU Debugger GDB `sudo apt-get install gdbserver`
 
@@ -112,6 +110,8 @@ b) GCC Compiler flags:
 
 `-Wall` for debug all warning informations
 
+`-Werror` for debug error informations
+
 `-v` Print compilation verbose informations
 
 `-std=c99` (as iso `-std=iso9899:1999` strict)
@@ -132,7 +132,7 @@ b) GCC Compiler flags:
 
 `-lm` for math-lib is obligatory!
 
-`-lbcm_host` for loading firmware v1.20190718
+`-lbcm_host` for loading bcm firmware v1.20190718
 
 `-lpthread` lib for process threads
 
@@ -144,11 +144,11 @@ b) GCC Compiler flags:
 
 `-c` for compiling without linking for making object
 
-`-D_POSIX_C_SOURCE=199309L` for posix needed with bcm
+`-D_POSIX_C_SOURCE=200809L` for posix needed with bcm
 
 `-D_USE_MATH_DEFINES` for math lib
 
-`-DRASPI=1` defines the macro to be used by the preprocessor (here the PIX model or 0-4, else std-values 1-3)
+`-DRASPI=1` defines the macro to be used by the preprocessor (here the Pi model or 0-4, else std-values 0-3)
 
  -> will be detected by the Makefile via the type of the ARM-Processor
 
@@ -172,11 +172,11 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -DRASPI=1 -o bin/pifunk.out bin/pifunk`
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk bin/pifunk.out`
 
 d) optional Pi-Flags:
 
@@ -232,7 +232,7 @@ c) Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-d) You can try to smooth it out with a 1:X (3-9)-balun if using long HF antenna
+d) You can try to smooth the Resistence R out with a 1:X (2-43)-balun if using long HF antenna
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
@@ -258,7 +258,9 @@ it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
 ![GPS](docs/GPS-Neo7M.jpg)
 
-h) Morsecode-table:
+h) Morse-code-table:
+
+Will be implemented later!
 
 ![Morsecode](docs/morsecodeCW.jpg)
 
@@ -296,19 +298,19 @@ ___
 
 13. Warnings/Caution:
 
-- Private Project! Work in Progress (WIP)
+- Private Project! It's Early Access & Work in Progress (WIP)!
 
 - I'm not a professional so **NO guarantees or warranty** for any damage etc.!!
 
-- Usage at your **own risk** !!
+- Usage at **your own risk** !!
 
 - Check laws of your country first! Some Frequencies are prohibited or need a HAM-License!
 
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
 
-  (C=10-100 pF) with solenoid (ring) toroid (ferrit) chokes (B=10-50 uH like the FT37-43)
+  (C=10-100 pF) with solenoid (ring) toroid (ferrite) chokes (B=10-50 uH like the FT37-43)
 
-  or resistors (R=10 kOhm), diodes to prevent backflow
+  or resistors (R=~10 kOhm), diodes to prevent backflow
 
   transmission (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
 
