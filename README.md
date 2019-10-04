@@ -6,15 +6,13 @@
 
 **Early Experimental! (WIP)**
 
-### Acknowledgements
-
-based on PiFM/AM-Scripts
-
 ___
 
 ### Configurations
 
-1. Get this program via git or download it:
+1. Get this program:
+
+`sudo apt-get install git` via git or download it on the page as tar.gz/zip
 
 `git clone https://github.com/silicator/PiFunk`
 
@@ -36,13 +34,13 @@ check/add lines:
 
 optional:
 
+`dtparam=spi=on` for SPI support
+
 `dtoverlay=i2c1-bcm2708` for I2C Bus
 
 `enable_uart=1` for UART RX & TX
 
-`init_uart_baud=9600`
-
-`dtparam=spi=on` for SPI support
+`init_uart_baud=9600` data transmission rate
 
 `dtoverlay=pps-gpio,gpiopin=18` for GPS-device pps(puls-pro-second)-support
 
@@ -304,7 +302,7 @@ ___
 
 - Usage at **your own risk** !!
 
-- Check laws of your country first! Some Frequencies are prohibited or need a HAM-License!
+- Check laws of your country first! Some Frequencies & Powerlevels (Watt) are prohibited or need at least a HAM-License!
 
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
 
@@ -314,7 +312,7 @@ ___
 
   transmission (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
 
-* Help / Testers and Feedback always appreciated! :)
+* Help / Testers and Feedback are always appreciated! :)
 
 * Thank you and have fun 73!
 
@@ -326,9 +324,9 @@ ___
 
 [GitPage](https://silicator.github.io/PiFunk/)
 
-[Readme Guideline](README.md)
-
 [Wiki](https://github.com/silicator/PiFunk/wiki)
+
+[Readme Guideline](README.md)
 
 [Contribution Guideline](docs/CONTRIBUTING.md)
 
@@ -339,3 +337,9 @@ ___
 [License Guideline](LICENSE.md) under Open-Source GPLv3.0
 
 Would appreciate being named in the source, Thank you.
+
+### Acknowledgements
+
+ 15. Credits
+
+based on pifm/am , pifmadv  scripts/snippets
