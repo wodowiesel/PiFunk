@@ -20,9 +20,10 @@ cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
 =>compile with admin/root permissions!!
- sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -D_POSIX_C_SOURCE=199309L -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
+ Libs: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ program: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
+ -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
  or =gnu99 supports c99 + additional gnu extensions
  or -std=c17 (11/14 also)
@@ -183,7 +184,7 @@ using namespace std;
 //broadcom arm processor for mapping phys. addresses
 #include "opt/vc/include/bcm_host.h" // firmware stuff
 #include "opt/vc/include/interface/vcos/vcos.h"
-#include "bcm2835/src/bcm2835.h" // pi 0 &A & B+
+#include "bcm2835/src/bcm2835.h" // pi 0 & A & B/B+
 
 //RPI.GPIO includes here, 0.6.5 used
 #include "RPI.GPIO/source/i2c.h"
@@ -215,7 +216,7 @@ using namespace std;
 #include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
-//preproccessor definitions
+// preproccessor definitions
 #ifdef __LINUX__
   printf ("\nProgram runs under UNIX/LINUX\n");
 	#pragma GCC dependency "pifunk.h"
@@ -253,7 +254,7 @@ using namespace std;
 //#define _USE_MATH_DEFINES // for math lm lib
 
 //------------------------------------------------------------------------------
-// Definitions & Makros
+// definitions & Makros
 #define VERSION 						 "0.1.7.7" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
@@ -267,11 +268,13 @@ using namespace std;
 #define FALSE                 (0) //
 #define TRUE                  (1) //
 
-//predefine if needed when not using bcm header
+// predefine if needed when not using bcm header
 //#define HIGH 									0x1 // 1
 //#define LOW 									0x0 // 0
+//#define sleep 					     	[1000] // for waiting between functions & tasks
+//#define usleep 								[1000] //
 
-//mathematical stuff
+// mathematical stuff
 #define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
 #define PI                              (3.14159265358979323846) // radial constant
 #define PHASE                           (2*PI) // 6.28318530718
@@ -283,8 +286,6 @@ using namespace std;
 #define BLOCK_SIZE                      (4*1024) //4096
 #define BUFFER_LEN                      (8*1024) //8192
 #define BUFFERINSTRUCTIONS              (65536) //[1024]
-//#define sleep 							         	[1000] // for waiting between functions & tasks
-//#define usleep 								        [1000] //
 
 // I-O access via GPIO
 volatile unsigned 										*gpio; //
@@ -292,8 +293,6 @@ volatile unsigned 										*allof7e; //
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7ED											(*allof7e - SUB_BASE)
-#define PIN_GND                       (9) // which is the GPIO pin 17 for led
-#define PIN17                         RPI_GPIO_P17 // which is the GPIO pin 17 for led
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
@@ -302,7 +301,7 @@ volatile unsigned 										*allof7e; //
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 
-//----- specific pi adresses & definitions
+// specific pi adresses & definitions
 #ifdef  RPI || RASPBERRY // alternative BCM2711B0
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
@@ -357,6 +356,7 @@ volatile unsigned 										*allof7e; //
 #ifdef  RASPI == 4 //pi4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define PAGE_SIZE 										 (4096) //
@@ -364,46 +364,54 @@ volatile unsigned 										*allof7e; //
 #define XTAL_CLOCK                     (54.0E6) //
 #define DMA_CHANNEL                    (6) //
 #define BUFFER_TIME 									 (1000000) //
+
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
 #define PLLD_FREQ 										 (750000000.) // has higher freq than pi0-3
 #endif
 
 // standard & general definitions
-#define GPIO_BASE (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define LENGTH                         (0x01000000) // dec: 1
-#define SUB_BASE                       (0x7E000000) // dec: 2113929216 phys base
-#define CM_GP0CTL                      (0x7E101070) // p.107 dec: 2114982000
-#define CM_GP0DIV                      (0x7E101074) // p.108 dec: 2114982004
-#define DMABASE                        (0x7E007000) // dec: 2113957888
-#define CLKBASE                        (0x7E101000) // dec: 2114981888
-#define GPFSEL3                        (0x7E200000) // p.90 dec: 2116026368
-#define PWMBASE                        (0x7E20C000) // controller dec: 2116075520
-#define FIFO                           (0x18)   // dec: 24
-#define CARRIER                        (0x5A)   // dec: 90
-#define DMAREF                         (0x7F)   // dec: 127 dma base reference
-#define MODULATE                       (0x4D72) // dec: 19826
-#define DMAC                           (0x0707) // dec: 1799
-#define PWMCLK_CNTL0                   (0x5A000016) // dec: 1509949462
-#define PWMCLK_DIV0                    (0x5A002800) // dec: 1509959680
+#define GPIO_BASE                       (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define LENGTH                          (0x01000000) // dec: 1
+#define SUB_BASE                        (0x7E000000) // dec: 2113929216 phys base
 
-// possibility to give argv 0-4 a specific address or pointer
-// addresses
-#define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640
+#define CM_GP0CTL                       (0x7E101070) // p.107 dec: 2114982000
+#define CM_GP0DIV                       (0x7E101074) // p.108 dec: 2114982004
+
+#define CLKBASE                         (0x7E101000) // dec: 2114981888
+
+#define PWMBASE                         (0x7E20C000) // controller dec: 2116075520
+#define MODULATE                        (0x4D72) // dec: 19826
+#define FIFO                            (0x18)   // dec: 24
+#define CARRIER                         (0x5A)   // dec: 90
+
+#define DMABASE                         (0x7E007000) // dec: 2113957888
+#define DMAREF                          (0x7F)   // dec: 127 dma base reference
+#define DMAC                            (0x0707) // dec: 1799
+
+#define PWMCLK_CNTL0                    (0x5A000016) // dec: 1509949462
+#define PWMCLK_DIV0                     (0x5A002800) // dec: 1509959680
+
+// possibility to give argv 0-4 a specific addresses or pointers
+#define ARGC_ADR                        (0x7FFFFFFFEB0C) // dec: 140737488349964
+
 #define NAME_ADR                        (0x7FFFFFFEC08)  // dec: 8796093017096
 #define FILE_ADR                        (0x7FFFFFFFEC10) // dec: 140737488350224
-#define CALLSIGN3_ADR                   (0x7FFFFFFFEAE8) // dec: 140737488349928
-#define CALLSIGN2_ADR                   (0x7FFFFFFFEAEF) // dec: 140737488349935
 #define FREQ_ADR                        (0x7FFFFFFFEC18) // dec: 140737488350232
 #define SAMPLERATE_ADR                  (0x7FFFFFFFEC20) // dec: 140737488350240
-#define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 140737488350248
-#define ARGC_ADR                        (0x7FFFFFFFEB0C) // dec: 140737488349964
+#define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 1407374883502484
+
+#define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640
+#define CALLSIGN2_ADR                   (0x7FFFFFFFEAEF) // dec: 140737488349935
+#define CALLSIGN3_ADR                   (0x7FFFFFFFEAE8) // dec: 140737488349928
 
 // Pointers
 #define FLOOR                           (0x0) // dec: 0
+
 #define PWMADD1                         (0x4) // dec: 4
-#define ARGC_PTR                        (0x5) // dec: 5
 #define PWMADD2                         (0x8) // dec: 8
+
+#define ARGC_PTR                        (0x5) // dec: 5
 #define NAME_PTR                        (0x2F) // dec: 47
 #define FREQ_PTR                        (0x31) //$ means is in RDS data dec: 49
 #define SAMPLERATE_PTR                  (0x32) //$ in RDS data  dec: 50
@@ -411,27 +419,37 @@ volatile unsigned 										*allof7e; //
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 #define FILE_PTR                        (0x73) // dec: 115
 
-//---the normal fm-script didn't specified that
+// the normal fm-script didn't specified that
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
 #define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544
+
 #define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
+
 #define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
+
 #define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
 #define CLK0_BASE_OFFSET 							  (0x00101070) // dec: 1052784
 #define CLK_LEN                         (0x1300) // dec: 4864
+
 #define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
 #define GPIO_LEN                        (0x100) // dec: 256
+
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
 
 #define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET) //
+
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
 #define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
+
 #define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET) //
+
 #define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET) //
 #define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
+
 #define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
+
 #define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
 
@@ -439,17 +457,20 @@ volatile unsigned 										*allof7e; //
 #define GPFSEL0                         (0x00/4) //p.90 dec: 0
 #define GPFSEL1                         (0x04/4) //1
 #define GPFSEL2                         (0x08/4) //2
+#define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368
+
 #define GPPUD                           (0x94/4) //37
 #define GPPUDCLK0                       (0x98/4) //38
 #define GPPUDCLK1                       (0x9C/4) //39
 
 // PADS
-//Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
-//Drive Strength (power 7 standard): 0 = 2 mA, 7 = 16 mA.
+// Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
+// Drive Strength (power 7 standard): 0 = 2 mA, 7 = 16 mA.
 
 #define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
-#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  //0x64 = dec: 100
+#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  0x64 = dec: 100
 #define PADGPIO                         (0x5A000018) // dec: 1509949464
+
 #define GPIO_PAD_0_27                   (0x2C/4)  //11
 #define GPIO_PAD_28_45                  (0x30/4)  //12
 #define GPIO_PAD_46_52                  (0x34/4)  //13
@@ -481,6 +502,7 @@ volatile unsigned 										*allof7e; //
 #define A2W_PLLD_ANA0                   (0x1050/4) //1044
 #define A2W_PLLH_ANA0                   (0x1070/4) //1052
 #define A2W_PLLB_ANA0                   (0x10F0/4) //1084
+
 #define A2W_PLL_KA_SHIFT                (7) //
 #define A2W_PLL_KI_SHIFT                (19) //
 #define A2W_PLL_KP_SHIFT                (15) //
@@ -495,23 +517,28 @@ volatile unsigned 										*allof7e; //
 #define PLLB_CTRL                       (0x11E0/4) //1144
 #define PLLB_FRAC                       (0x12E0/4) //1208
 #define PLLB_ARM                        (0x13E0/4) //1272
+
 #define PLLB_SP0                        (0x14E0/4) //1336
 #define PLLB_SP1                        (0x15E0/4) //1400
 #define PLLB_SP2                        (0x16E0/4) //1464
 
 #define PLLC_CTRL                       (0x1120/4) //1196
 #define PLLC_FRAC                       (0x1220/4) //1160
+
+#define PLLC_CORE0                      (0x1620/4) //1416
 #define PLLC_CORE2                      (0x1320/4) //1224
 #define PLLC_CORE1                      (0x1420/4) //1288
+
 #define PLLC_PER                        (0x1520/4) //1352
-#define PLLC_CORE0                      (0x1620/4) //1416
 
 #define PLLD_CTRL                       (0x1140/4) //1104
 #define PLLD_FRAC                       (0x1240/4) //1168
+
 #define PLLD_DSI0                       (0x1340/4) //1232
+#define PLLD_DSI1                       (0x1640/4) //1424
+
 #define PLLD_CORE                       (0x1440/4) //1296
 #define PLLD_PER                        (0x1540/4) //1360
-#define PLLD_DSI1                       (0x1640/4) //1424
 
 #define PLLH_CTRL                       (0x1160/4) //1112
 #define PLLH_FRAC                       (0x1260/4) //1176
@@ -522,31 +549,41 @@ volatile unsigned 										*allof7e; //
 
 // PWM
 #define PWM_CTL                         (0x00/4) //0
-#define PWM_DMAC                        (0x08/4) //2
-#define PWM_RNG1                        (0x10/4) //4
-#define PWM_RNG2                        (0x20/4) //8
 #define PWM_FIFO                        (0x18/4) //6
-
-#define PWMCLK_CNTL                     (40) //
-#define PWMCLK_DIV                      (41) //
-
-#define PWMCTL_PWEN1                    (1<<0) //
-#define PWMCTL_MODE1                    (1<<1) //
-#define PWMCTL_RPTL1                    (1<<2) //
-#define PWMCTL_POLA1                    (1<<4) //
-#define PWMCTL_USEF1                    (1<<5) //
-#define PWMCTL_CLRF                     (1<<6) //
-#define PWMCTL_MSEN1                    (1<<7) //
-#define PWMCTL_PWEN2                    (1<<8) //
-#define PWMCTL_MODE2                    (1<<9) //
-#define PWMCTL_RPTL2                    (1<<10) //
-#define PWMCTL_USEF2                    (1<<13) //
-#define PWMCTL_MSEN2                    (1<<15) //
+#define PWM_DMAC                        (0x08/4) //2
 
 #define PWMDMAC_ENAB                    (1<<31)  //
 #define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) //
 
+#define PWM_RNG1                        (0x10/4) //4
+#define PWM_RNG2                        (0x20/4) //8
+
+#define PWMCLK_CNTL                     (40) //
+#define PWMCLK_DIV                      (41) //
+
+#define PWMCTL_CLRF                     (1<<6) //
+
+#define PWMCTL_PWEN1                    (1<<0) //
+#define PWMCTL_PWEN2                    (1<<8) //
+
+#define PWMCTL_MODE1                    (1<<1) //
+#define PWMCTL_MODE2                    (1<<9) //
+
+#define PWMCTL_RPTL1                    (1<<2) //
+#define PWMCTL_RPTL2                    (1<<10) //
+
+#define PWMCTL_POLA1                    (1<<4) //
+
+#define PWMCTL_USEF1                    (1<<5) //
+#define PWMCTL_USEF2                    (1<<13) //
+
+#define PWMCTL_MSEN1                    (1<<7) //
+#define PWMCTL_MSEN2                    (1<<15) //
+
 // PCM
+#define PCMCLK_CNTL                     (38) //
+#define PCMCLK_DIV                      (39) //
+
 #define PCM_CS_A                        (0x00/4) //0
 #define PCM_FIFO_A                      (0x04/4) //1
 #define PCM_MODE_A                      (0x08/4) //2
@@ -556,27 +593,29 @@ volatile unsigned 										*allof7e; //
 #define PCM_INTEN_A                     (0x18/4) //6
 #define PCM_INT_STC_A                   (0x1C/4) //7
 #define PCM_GRAY                        (0x20/4) //8
-#define PCMCLK_CNTL                     (38) //
-#define PCMCLK_DIV                      (39) //
 
 // DMA
-//Technically 2708 is the family, and 2835 is a specific implementation arm
+// Technically 2708 is the family, and 2835 is a specific implementation arm
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
 #define BCM2708_DMA_INT                 (1<<2) //
 #define BCM2708_DMA_WAIT_RESP           (1<<3) //
 #define BCM2708_DMA_D_DREQ              (1<<6) //
 #define BCM2708_DMA_DST_IGNOR           (1<<7) //
+
 #define BCM2708_DMA_SRC_INC             (1<<8) //
 #define BCM2708_DMA_SRC_IGNOR           (1<<11) //
+
 #define BCM2708_DMA_NO_WIDE_BURSTS      (1<<26) //
 #define BCM2708_DMA_DISDEBUG            (1<<28) //
 #define BCM2708_DMA_ABORT               (1<<30) //
 #define BCM2708_DMA_RESET               (1<<31) //
+
 #define BCM2708_DMA_PER_MAP(x)          ((x)<<16) //
 #define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16) //
 #define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20) //
 
+// more DMA stuff
 #define DMA_CHANNEL                     (14) //
 #define DMA_CHANNEL_MAX                 (14) //
 #define DMA_CHANNEL_SIZE                (0x100) //256
@@ -592,10 +631,11 @@ volatile unsigned 										*allof7e; //
 #define DMA_CS_INT			                (1<<2) //
 #define DMA_CS_ACTIVE			              (1<<0) //
 #define DMA_CS_END			                (1<<1) //
+
 #define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) //0xF=15
 #define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20) //
 
-//Request
+// Request
 #define DREQ_PCM_TX                     (2) //
 #define DREQ_PCM_RX                     (3) //
 
@@ -608,14 +648,16 @@ volatile unsigned 										*allof7e; //
 #define DREQ_SPI_SLAVE_RX               (9) //
 
 // memory
-#define MEM_FLAG_DISCARDABLE            (1 << 0) /* can be resized to 0 at any time. Use for cached data */
-#define MEM_FLAG_NORMAL                 (0 << 2) /* normal allocating alias. Don't use from ARM */
-#define MEM_FLAG_DIRECT                 (1 << 2) /* 0xC dec: 12 alias uncached */
-#define MEM_FLAG_COHERENT               (2 << 2) /* 0x8 dec: 8 alias. Non-allocating in L2 but coherent */
+#define MEM_FLAG_DISCARDABLE            (1<<0) /* can be resized to 0 at any time. Use for cached data */
+#define MEM_FLAG_NORMAL                 (0<<2) /* normal allocating alias. Don't use from ARM */
+
+#define MEM_FLAG_DIRECT                 (1<<2) /* 0xC dec: 12 alias uncached */
+#define MEM_FLAG_COHERENT               (2<<2) /* 0x8 dec: 8 alias. Non-allocating in L2 but coherent */
 #define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) /* Allocating in L2 */
-#define MEM_FLAG_ZERO                   (1 << 4)  /* initialise buffer to all zeros */
-#define MEM_FLAG_NO_INIT                (1 << 5) /* don't initialise (default is initialise to all ones */
-#define MEM_FLAG_HINT_PERMALOCK         (1 << 6) /* Likely to be locked for long periods of time. */
+
+#define MEM_FLAG_ZERO                   (1<<4)  /* initialise buffer to all zeros */
+#define MEM_FLAG_NO_INIT                (1<<5) /* don't initialise (default is initialise to all ones */
+#define MEM_FLAG_HINT_PERMALOCK         (1<<6) /* Likely to be locked for long periods of time. */
 
 #define PAGE_SHIFT                      (12) //
 #define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
@@ -626,30 +668,58 @@ volatile unsigned 										*allof7e; //
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
 
-#define BUS_TO_PHYS(x)                 ((x)&~0xC0000000) // dec: 3221225472
-#define ACCESS(PERIPH_VIRT_BASE)       (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit)  ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
+#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
+#define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-//RTC (DS3231/DS1307 driver as bcm)
-#define SLAVE_ADDR_WRITE                 b(11010000) //
-#define SLAVE_ADDR_READ                  b(11010001) //
+// RTC (DS3231/DS1307 driver as bcm)
+#define RTC_PWR                         (PIN_1) // +3.3 V
+#define RTC_GND                         (PIN_9) // RTC ground
+#define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
+#define DS3231_TEMPERATURE_MSB          (0x11) // dec: 17
+#define DS3231_TEMPERATURE_LSB          (0x12) // dec: 18
 
-#define RTC_I2C_ADDRESS                  (0x68) // dec: 104
-#define DS3231_TEMPERATURE_MSB           (0x11) // dec: 17
-#define DS3231_TEMPERATURE_LSB           (0x12) // dec: 18
+#define DS1307_I2C_INPUT_ADDR           (0xD0) // read dec: 208
+#define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 2019
 
-#define DS1307_I2C_INPUT_ADDR            (0xD0) // read dec: 208
-#define DS1307_I2C_OUTPUT_ADDR           (0xD1) // write dec: 2019
-#else
-//#error Unknown Raspberry Pi version (variable RASPI=X)
-#endif
+#define SLAVE_ADDR_WRITE                b(11010000) //
+#define SLAVE_ADDR_READ                 b(11010001) //
+
+// GPS ublox neo-7M pps
+#define GPS_MODULE                      "GPS UBLOX NEO 7 M PPS" // dec: 104
+#define GPS_MODULE_VERSION              (7) //
+
+// +5 V (PIN 4)
+#define RTC_PWR                         (PIN_4) // dec: 104
+
+// GND (PIN 6)
+#define GPS_GND                         (PIN_6) // ground pin
+
+// PPS to PCM_CLK (GPIO 18, PIN 12)
+#define GPS_PPS                         (PIN_12) // pulse per second
+
+// RX to UART0_TXD (GPIO 14 PIN 8) crosswired
+#define GPS_I2C_RX                      (UART0_TXD) // data in gps, receive
+
+// TX to UART0_RXD (GPIO 15, PIN 10) crosswired
+#define GPS_I2C_TX                      (UART0_RXD) // data out in gps, send
+
+// LED
+#define PIN_LED_GND                     (14) // which is the GND pin 27 for led
+#define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led
+
+//#else // exception handling
+//#error Unknown Raspberry Pi version! (RASPI=0-4)
+//#endif
 
 /* try a modprobe of i2C-BUS*/
 //if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
 //if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 
 //----------------------------------
+//declaring normal variables
+
 //program version status and default device
 const char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
@@ -663,7 +733,7 @@ char j;
 float x;
 
 //pi memory-map:
-int  mem_fd;
+int mem_fd;
 char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
@@ -759,8 +829,9 @@ int bufPtr 		= 0;
 int instrCnt 	= 0;
 int instrPage;
 int constPage;
-int reg 			= 0; //= gpio / 10;
-int shift 		= 0; //= (gpio % 10) * 3;
+
+int reg 	= 0; //= gpio / 10;
+int shift = 0; //= (gpio % 10) * 3;
 pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
 pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
 //GPIO needs to be ALT FUNC 0 to output the clock
@@ -771,7 +842,7 @@ pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
 socklen_t addressLength;
 char *localip = "127.0.0.1";
 char *host 		= "localhost";
-int 	port 		= 8080;
+int port 		= 8080;
 
 // GPS-coordinates
 //default Germany-Frankfurt(Main) in decimal °grad (centigrade)
@@ -1953,16 +2024,16 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 {
 	const char *short_opt = "n:f:s:m:c:p:g:d:b:ahu"; // program flags
 	int options = 0;
-	argv [0] = "pifunk";
+	argv [0] = "pifunk"; // actual program-name
 	char *filename = "sound.wav"; // = argv [1];
-	float freq = fabs (446.006250); // =strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate = abs (22050);// =atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-	char *mod = "fm";// =argv [4];
-	char *callsign = "callsign";// =argv [5];
-	int power = 7;// =argv [6];
-	int dmachannel = 0; // =argv [7];
-	float bandwidth = 15.00; // =argv [8];
-	int gpiopin = abs (4); // =argv [9];
+	float freq = fabs (446.006250); // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate = abs (22050);// = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char *mod = "fm";// = argv [4];
+	char *callsign = "callsign";// = argv [5];
+	int power = 7;// = argv [6];
+	int dmachannel = 14; // = argv [7];
+	float bandwidth = 15.00; // = argv [8];
+	int gpiopin = abs (4); // = argv [9];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int

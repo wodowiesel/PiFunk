@@ -53,7 +53,7 @@ endif
 
 ifeq ($(UNAME), armv7l)
 CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET= raspberry
+TARGET=raspberry
 endif
 
 #@echo Compiling PiFunk

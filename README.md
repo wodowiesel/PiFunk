@@ -114,15 +114,15 @@ b) GCC Compiler flags:
 
 `-std=c99` (as iso `-std=iso9899:1999` strict)
 
-`-std=gnu99` with additional gnu extention to c99
+`-std=gnu99` with additional gnu extension to c99
 
-(or `-std=gnu++17` or 11/14 as you like when using g++)
+(`-std=gnu++17` or 11/14 as you like when using g++)
 
-`-pedantic-errors` for error console messages if problem between c99 and gnu extentions
+`-pedantic-errors` for error console messages if problem between c99 and gnu extensions
 
-`-Iinclude ` for using include-directory with headerfiles
+`-Iinclude ` for using include-directory with header files
 
-`-I/opt/vc/include/` for loading bcm-header folder
+`-I/opt/vc/include/` for loading bcm header folder
 
 `-L/opt/vc/lib` for loading bcm folder
 
@@ -142,9 +142,15 @@ b) GCC Compiler flags:
 
 `-c` for compiling without linking for making object
 
-`-D_POSIX_C_SOURCE=200809L` for posix needed with bcm
+ -E tells to stop after preprocessing stage
 
-`-D_USE_MATH_DEFINES` for math lib
+`-D_USE_MATH_DEFINES` for mathematical lib definitions
+
+`-D_GNU_C_SOURCE` for loading GNU C Source Macros
+
+(combining lot of different ones: ISO C89, ISO C99, POSIX.1, POSIX.2, BSD, SVID, X/OPEN, LFS)
+
+`-D_POSIX_C_SOURCE=200809L` for POSIX2 Macros needed with bcm (or 199309L for POSIX1)
 
 `-DRASPI=1` defines the macro to be used by the preprocessor (here the Pi model or 0-4, else std-values 0-3)
 
@@ -154,15 +160,17 @@ b) GCC Compiler flags:
 
 `-fPIC` for generating position independent code (PIC) for bigger programs
 
-`-O3` for Optimization Stage 1-3 (memory, speed etc.) via compiler
+`-O3` for optimization stage 1-3 (memory, speed etc.) via compiler
 
-`-o` for output-filename flag
+`-o` for individual output-filename
 
 10. Generating libraries:
 
 a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-code, *.h=headerfile, *.i=assembled preprocessor C-code, *.S=assembler-code, *.s=preprocessed assembler-code,
+*.c=C-code, *.h=headerfile,
+
+*.i=assembled preprocessor C-code, *.S=assembler-code, *.s=preprocessed assembler-code,
 
 *.o=compiled object, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
 
@@ -170,11 +178,11 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -O3 -fPIC pifunk.c -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk bin/pifunk.out`
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
 
 d) optional Pi-Flags:
 
@@ -182,7 +190,7 @@ d) optional Pi-Flags:
 
  `-mtune=arm1176jzf-s` special architecture type tuning
 
- `-mfloat-abi=hard` floating-point ABI to use, Permissible values are: ‘soft’, ‘softfp’, ‘hard’
+ `-mfloat-abi=hard` floating-point ABI to use, permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
  `-mfpu=vfp` virtual floating point hardware module
 
@@ -192,13 +200,21 @@ d) optional Pi-Flags:
 
 e) Makefile commands:
 
- `sudo install` for installing pifunk files incl. build folder
+ `sudo make piversion` for checking your pi version
 
- `sudo uninstall` for uninstalling pifunk files
+ `sudo make install` for installing pifunk files incl. build folder
 
- `sudo make` with pre-configured flags for compilation for all Pi's
+ `sudo make uninstall` for uninstalling pifunk files
 
- `sudo clean` for removing pifunk.out and pifunk.o files in bin folder if necessary
+ `sudo make` for compilation with pre-configured flags for compilation for all Pi's
+
+ `sudo make run` for running with standard pifunk flags
+
+ `sudo make help` for starting help command of pifunk
+
+ `sudo make assistent` for starting step-assistent of pifunk
+
+ `sudo make clean` for removing pifunk.out and pifunk.o files in bin folder if necessary
 
 ___
 
@@ -206,11 +222,11 @@ ___
 
 11. Hardware-Setup:
 
-a) Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via miniUSB 2.0 or 5 V Pins possible)
+a) Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via mini-USB 2.0 or 5 V Pins possible)
 
 b) Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
--> SoC from Broadcom	depending on pi model: BCM2835,	BCM2836,	BCM2837,	BCM2837B0,	BCM2837,	BCM2837B0,	BCM2711
+-> SoC from Broadcom	depending on pi model: BCM2711, BCM2835,	BCM2836,	BCM2837,	BCM2837B0
 
 for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
@@ -238,7 +254,9 @@ e) For handling overheating of the Pi's processor use cooling-ribs with fan (5 V
 
 you can overclock the Pi if you want to on own risk but it's not recommended
 
-f) RTC: Module DS3231 uses 3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
+f) RTC: Module DS3231 uses
+
+3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 
 -> need to activate I2C in pi config!
 
