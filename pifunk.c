@@ -917,7 +917,7 @@ struct option long_opt [] =
 		{"dma",	  			required_argument, NULL, 'd'},
 		{"bandwidth",	  required_argument, NULL, 'b'},
     {"type",	  		required_argument, NULL, 't'},
-    {"assistent",		no_argument,       NULL, 'a'},
+    {"assistant",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
 };
@@ -928,9 +928,9 @@ void infos () //warnings and infos
 {
 		printf ("\n");
 		/*red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
-    printf ("\033[1;4;35mWelcome to the Pi-Funk! v%s %s for Raspian ARM!\033[0m", VERSION, description); //color escape command for resetting
+    printf ("\033[1;4;35m Welcome to the Pi-Funk! v%s %s for Raspian ARM! \033[0m", VERSION, description); //color escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
-    printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. 3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
+    printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7\n");
 		printf ("\nDevicename: %s \n", device);
     printf ("\nxtal_freq: %f \n", xtal_freq);
@@ -1974,9 +1974,9 @@ void cgimodule () //
  printf ("</html>\n");
 }
 
-void assistent () //assistent
+void assistant () //assistant
 {
-		printf ("\nStarting assistent for setting parameters! \n");
+		printf ("\nStarting assistant for setting parameters! \n");
 		filecheck (filename);
 		samplecheck (filename, samplerate);
 		modetype (freq);
@@ -2053,7 +2053,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	{
 		if (argc == 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		}
 		/*else
 		{ */
@@ -2126,8 +2126,8 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 			case 'a':
 							 if (argc == 1)
 							 {
-								printf ("\nAssistent activated! \n");
-								assistent ();
+								printf ("\nAssistant activated! \n");
+								assistant ();
 								break;
 							 }
 							 else
@@ -2140,7 +2140,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistent [-a] or menu [-u] \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistant [-a] or menu [-u] \n");
 								break;
 							 }
 							 else
@@ -2163,7 +2163,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 							 }
 
 			default:
-								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistent [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								return 1;
 		} // end of switch
 

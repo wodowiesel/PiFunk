@@ -142,7 +142,7 @@ b) GCC Compiler flags:
 
 `-c` for compiling without linking for making object
 
- -E tells to stop after preprocessing stage
+`-E` for stopping after preprocessing stage in compilation
 
 `-D_USE_MATH_DEFINES` for mathematical lib definitions
 
@@ -160,7 +160,7 @@ b) GCC Compiler flags:
 
 `-fPIC` for generating position independent code (PIC) for bigger programs
 
-`-O3` for optimization stage 1-3 (memory, speed etc.) via compiler
+`-O3` for optimization stage 0-3 (memory, speed etc.) via compiler
 
 `-o` for individual output-filename
 
@@ -196,7 +196,7 @@ d) optional Pi-Flags:
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
- `sudo piversion` for checking your piversion
+ `sudo piversion` for checking your pi version
 
 e) Makefile commands:
 
@@ -212,7 +212,7 @@ e) Makefile commands:
 
  `sudo make help` for starting help command of pifunk
 
- `sudo make assistent` for starting step-assistent of pifunk
+ `sudo make assistant` for starting step-assistant of pifunk
 
  `sudo make clean` for removing pifunk.out and pifunk.o files in bin folder if necessary
 

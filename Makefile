@@ -106,7 +106,7 @@ uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
 help:			cd $(PATH)/PiFunk/bin/
 					$(USER) ./pifunk -h
 
-.PHONY: 		assistent
+.PHONY: 		assistant
 assistent:	cd $(PATH)/PiFunk/bin/
 						$(USER) ./pifunk -a
 
