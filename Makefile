@@ -3,6 +3,8 @@
 USER=sudo
 CC=gcc
 CXX=g++
+CCN=gcc-9.2.0
+
 # use gnu c compiler -std=gnu99 is c99 -std=iso9899:1999 with gnu extentions
 STD_CFLAGS=-Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
 CXXFLAGS=-Wall -Werror -std=gnu++99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
@@ -10,17 +12,23 @@ ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
 LDLIBS=-Llib -L/opt/vc/lib
 
-PATH=/home/pi
+PATH=/home/pi #std path
+RM=rm -f #remove file or folder
+
 MAKEINFO=makeinfo
 EXECUTABLE=pifunk
 VERSION=0.1.7.7e
-#Determine the hardware platform.
-#Enable ARM-specific options only on ARM, and compilation of the app only on ARM
-RM=rm -f
-PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010 -> 1.2 B+
-UNAME:=$(shell uname -m) #linux
-RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]")
 
+#Determine the hardware platform.
+UNAME:=$(shell uname -m) #linux
+PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010 -> 1.2 B+
+RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]") #
+
+$(USER) $(UNAME)
+$(USER) $(PCPUI)
+$(USER) $(RPI_VERSION)
+
+#Enable ARM-specific options only
 ifeq ($(UNAME), armv5l)
 CFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=0
 TARGET=pi0
@@ -32,26 +40,27 @@ TARGET=pi1
 endif
 
 ifeq ($(UNAME), armv7l)
-CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=2
+CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI=2
 TARGET=pi2
 endif
 
 ifeq ($(UNAME), armv8l)
-CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=3
+CFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI=3
 TARGET=pi3
 endif
 
 ifeq ($(UNAME), armv8l && $(shell expr $(RPI_VERSION) \>= 4), 1)
-CFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=4
+CFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI=4
 TARGET=pi4
 endif
 
-ifeq ($(UNAME), armv7l)
+#old/special pi versions
+ifeq ($(UNAME), armv6l)
 CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
 TARGET=rpi
 endif
 
-ifeq ($(UNAME), armv7l)
+ifeq ($(UNAME), armv6l)
 CFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 TARGET=raspberry
 endif
@@ -59,7 +68,7 @@ endif
 #@echo Compiling PiFunk
 
 #pifunk.info: pifunk.texi
-#						 $(USER) $(MAKEINFO)
+#						  $(USER) $(MAKEINFO)
 all: pifunk
 
 pifunk.i:	pifunk.c
@@ -93,7 +102,9 @@ pifunk:	pifunk.c pifunk.h pifunk.o
 				$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
 
 .PHONY: 		piversion
-piversion:	$(USER) $(RPI_VERSION)
+piversion:	$(USER) $(UNAME)
+						$(USER) $(PCPUI)
+						$(USER) $(RPI_VERSION)
 
 .PHONY: 	install
 install:	cd $(PATH)/PiFunk
