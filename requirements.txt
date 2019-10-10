@@ -9,8 +9,8 @@
 # https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz 
 RPi.GPIO>=0.7.0
 
-# ALSA-lib https://packages.debian.org/de/sid/libsndfile1-dev
-libsndfile1-dev #>=1.0.28-6 std version 1.0.27-3
+# ALSA-lib #std version 1.0.27-3 or https://packages.debian.org/de/sid/libsndfile1-dev
+#libsndfile1-dev>=1.0.28-6 
 
 # usb-lib
 libusb>=1.0.22
