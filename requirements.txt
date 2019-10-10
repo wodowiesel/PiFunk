@@ -10,10 +10,10 @@
 RPi.GPIO>=0.7.0
 
 # ALSA-lib #std version 1.0.27-3 or https://packages.debian.org/de/sid/libsndfile1-dev
-#libsndfile1-dev>=1.0.28-6 
+# libsndfile1-dev>=1.0.28-6 
 
-# usb-lib
-libusb>=1.0.22
+# usb-lib not really necessary
+# libusb>=1.0.22
 
 # GNU Compiler
 gcc>=9.2.0
