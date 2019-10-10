@@ -4,17 +4,17 @@ OS: raspbian (stretch) incl. desktop & recommended software v4.14+ (8. April 201
 SHA-256:a3ced697ca0481bb0ab3b1bd42c93eb24de6264f4b70ea0f7b6ecd74b33d83eb
 -> get it here https://www.raspberrypi.org/downloads/raspbian/
 -> or direct link https://downloads.raspberrypi.org/raspbian_full_latest => 2019-04-08-raspbian-stretch-full.zip
-gcc 5.4.1 compiler or g++ 5.4.1 c++11/14
+gcc>=9.2.0 compiler or g++>=5.4.1 for 11/14/17
 gdb 7.11.1 debugger
 
 ->get project:
- git clone https://github.com/silicator/PiFunk
+git clone https://github.com/silicator/PiFunk
 ->instructions:
- You will need alsa library for this:
+You will need alsa library for this:
 sudo apt-get install libsndfile1-dev
 
 sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
- -lbcm_host //firmware v1.20190718 located in /opt/vc/include/
+-lbcm_host //firmware v1.20190718 located in /opt/vc/include/
 
 cd PiFunk // goto path
 
@@ -34,7 +34,7 @@ cd PiFunk // goto path
 virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
  wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g -lm -x c && ./pifunk.out sound.wav
 
-LICENSE: GPLv2/3 !!
+LICENSE: GPLv3 !!
 !!!!!!! program needs more testing on real pi !!!!!!!
 
 -----Disclaimer-----
@@ -44,8 +44,8 @@ you should ground your antenna, eventually diode or 10uF-caps
 at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
 do not shortout or do overstress it with more than 3.3V! it may cause damages
 more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
-Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me B+ rev.2)
-used python 3.7.x on original Raspbian
+Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi 1.2 B+ rev.2)
+used python 3.7.4 on original Raspbian
 -----------------------
 don't forget to apt-get upgrade and update
 
@@ -186,15 +186,15 @@ using namespace std;
 #include "opt/vc/include/interface/vcos/vcos.h"
 #include "bcm2835/src/bcm2835.h" // pi 0 & A & B/B+
 
-//RPI.GPIO includes here, 0.6.5 used
-#include "RPI.GPIO/source/i2c.h"
-//#include "RPI.GPIO/source/c_gpio.h"
-#include "RPI.GPIO/source/event_gpio.h"
-//#include "RPI.GPIO/source/py_pwm.h"
-#include "RPI.GPIO/source/soft_pwm.h"
-//#include "RPI.GPIO/source/constants.h"
-#include "RPI.GPIO/source/common.h"
-#include "RPI.GPIO/source/cpuinfo.h"
+//RPi.GPIO lib, 0.7.0 used for pi4 support
+#include "RPi.GPIO/source/i2c.h"
+//#include "RPi.GPIO/source/c_gpio.h"
+#include "RPi.GPIO/source/event_gpio.h"
+//#include "RPi.GPIO/source/py_pwm.h"
+#include "RPi.GPIO/source/soft_pwm.h"
+//#include "RPi.GPIO/source/constants.h"
+#include "RPi.GPIO/source/common.h"
+#include "RPi.GPIO/source/cpuinfo.h"
 
 //see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 //download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
