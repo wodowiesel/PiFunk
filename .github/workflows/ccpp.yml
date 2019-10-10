@@ -14,11 +14,11 @@ jobs:
     - uses: actions/checkout@v1
       
     - name: make piversion
-      run:  make piversion
+      run: make piversion
     
     - name: make
-      run:  make
+      run: make
       
     - name: pifunk
-      run:  ./bin/pifunk -h
+      run: ./bin/pifunk -h
 
