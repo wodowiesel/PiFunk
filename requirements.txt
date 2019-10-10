@@ -1,11 +1,17 @@
-# requirements:
-# gpio4 + gnd for antenna
-# raspbian>=4.14 image
+# package-requirements:
+# raspbian>=4.14
 
-# pip install -r requirements.txt
-# python>=3.7.2  #or 2.7.15
-RPi.GPIO>=0.6.5 #or at least 0.6.2
-libsndfile1-dev>=1.0.28-5 # https://packages.debian.org/de/sid/libsndfile1-dev
-libusb>=1.0.22
+python>=3.7.2
 #numpy>=1.8.0
-gcc>=8.3 #or g++
+
+# GPIO lib lastest 0.7.0
+RPi.GPIO>=0.6.5
+
+# ALSA-lib https://packages.debian.org/de/sid/libsndfile1-dev
+libsndfile1-dev>=1.0.28-6 
+
+# usb-lib
+libusb>=1.0.22
+
+# GNU Compiler
+gcc>=9.2.0
