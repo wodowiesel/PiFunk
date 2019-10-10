@@ -16,4 +16,4 @@ RPi.GPIO>=0.7.0
 # libusb>=1.0.22
 
 # GNU Compiler
-gcc>=9.2.0
+# gcc>=9.2.0
