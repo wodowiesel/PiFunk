@@ -1,6 +1,9 @@
 name: C/C++ CI
 
-on: [push]
+on: 
+  push:
+   branches: 
+   - master
 
 jobs:
   build:
@@ -9,11 +12,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      
+    - name: pifunk
+      run: ./pifunk -h
+    - name: make-piversion
+      run: make piversion
