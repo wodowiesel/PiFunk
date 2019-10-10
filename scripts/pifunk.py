@@ -1,19 +1,18 @@
 #!/usr/bin/python
-
-##PiFunk Radio transmitter for PMR446/CB on FM & AM also for ltp, 433, cb, pmr
+##PiFunk Radio Transmitter for PMR446/CB on FM & AM also for ltp, 433
 ##and maybe someday, beacon, gps, internet, relais, aprs, vhf, ts2/3, RDS, morse, echolink
 ##microphone (usb & jack) + playlist, mp3/wav-Files. (WIP)
-## dependency python 3.7.x needeed to run script
+##dependency python 3.7.x needeed to run script
 ##pifm GPIO's: 4 (pin 7 GP-CLK0) and GND (pin 9 = GND) or 14 (pin 8 TXD) & GND (pin 6) & 15 (pin 10 RDX) & 21 (pin 40 SCLK) --> 39 GND
-##ARM - Structure on Pi's !!! (can only be emulated on PC, so no real GPIO access!!) my Pi : rev. 2 B+
-##------------------------------------------------------------------------------
+##ARM - Structure on Pi's !!! (can only be emulated on PC, so no real GPIO access!!) my Pi: 1.2 rev. 2 B+
+##------------------------------------------------------------------------------------------------------------------------------------
 #Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels,
 #and the FCC takes a dim view of voice broadcasts on these frequencies. For that matter,
 #re-broadcast of copyrighted material (sports, news and weather programming) is a ##violation of the law,
 #and could result in fines, jail time, and confiscation of all radio equipment on your premises.
-#UK law is 4 W (4000 mW) / GER 100 mW ERP for PMR and 4 W for CB
-#-> sending on square-func means transmission on 3 other freqs so please use a low-pass-filter!
-#-------------------------------------------------------------------------------
+#UK law is 4 W (4000 mW) / GER 100 mW ERP for PMR 0.5 and 4 W for CB
+#->sending on square-func means transmission on 3 other freqs so please use a low-pass-filter!
+##-------------------------------------------------------------------------------------------------------------------------------------
 ## py is function-scope not lock-scope!!
 ## Imports
 import io

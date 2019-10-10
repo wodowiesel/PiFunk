@@ -16,11 +16,9 @@ import SDL_DS3231
 
 # Main Program
 
-print “”
-print “Test SDL_DS3231 Version 1.0 – SwitchDoc Labs”
-print “”
-print “”
-print “Program Started at:”+ time.strftime(“%Y-%m-%d %H:%M:%S”)
+#print “SwitchDoc Labs ”
+print “Test SDL_DS3231 Version 1.0 ”
+print “Program Started at: ”+ time.strftime(“%m-%d-%Y // %H:%M:%S”)
 
 filename = time.strftime(“%Y-%m-%d%H:%M:%SRTCTest”) + “.txt”
 starttime = datetime.datetime.utcnow()
@@ -36,9 +34,8 @@ currenttime = datetime.datetime.utcnow()
 
 deltatime = currenttime – starttime
 
-print “”
-print “Raspberry Pi=\t” + time.strftime(“%Y-%m-%d %H:%M:%S”)
+print “Raspberry Pi=\t ” + time.strftime(“%Y-%m-%d %H:%M:%S”)
 
-print “DS3231=\t\t%s” % ds3231.read_datetime()
+print “DS3231=\t\t%s ” % ds3231.read_datetime()
 
 time.sleep(10.0)

@@ -255,7 +255,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // definitions & Makros
-#define VERSION 						 "0.1.7.7" // my version
+#define VERSION 						 "0.1.7.7e" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
@@ -293,8 +293,8 @@ volatile unsigned 										*allof7e; //
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7ED											(*allof7e - SUB_BASE)
-#define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
-#define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
+#define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3)) // % means here Modulo-operation for remainder
+#define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3)) //
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
 #define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0

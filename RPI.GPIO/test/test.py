@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
-if hasattr(__builtins__, 'raw_input'):
-    input = raw_input
 """
 Copyright (c) 2013-2018 Ben Croston
 
@@ -32,7 +29,9 @@ LOOP_IN = 16 connected with 1K resistor to LOOP_OUT
 LOOP_OUT = 22
 NC_PIN = 24 not connected to anything
 """
-
+from __future__ import print_function
+if hasattr(__builtins__, 'raw_input'):
+    input = raw_input
 import os
 import subprocess
 import sys

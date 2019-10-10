@@ -14,7 +14,7 @@ def issue_154():
         GPIO.output(LED_PIN,0)
         time.sleep(0.05)
         count = count + 1
-        print count
+        #print count
 
 def issue_94(cycles):
     # led flickers.  Bug = LED stays off at around cycle 400

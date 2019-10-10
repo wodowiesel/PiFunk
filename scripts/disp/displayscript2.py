@@ -15,20 +15,20 @@ from PIL import Image, ImageDraw, ImageFont
 import Adafruit_DHT
 
 # DHT22 Sensor einrichten
-dhtSensorTyp = 22 # Typ 22 (weiß) - Typ 11 (blau)
+dhtSensorTyp = 22 # Typ 22 (weiss) - Typ 11 (blau)
 dhtSensorGpio = 21 # an Pin 40 - GPIO 21 angeschlossen
-dhtSensor_aktiv = True # angeschlossenen Sensor für Display aktivieren
+dhtSensor_aktiv = True # angeschlossenen Sensor fuer Display aktivieren
 dhtSensorTemperatur = "" # Temperaturwert
 dhtSensorLuftfeuchtigkeit = "" # Luftfeuchtigkeitwert
 
 
-# Global für Anzahl der Temperaturanzeigen auf Display
+# Global fuer Anzahl der Temperaturanzeigen auf Display
 displaySensorBezeichnung = ""
 displayTempWert = ""
-a=u"°" # damit Sonderzeichen korrekt dargestellt wird 
+a=u"ï¿½" # damit Sonderzeichen korrekt dargestellt wird
 
- 
-# Global für Aktivitätsstatus einzelner Threads/Programmteile
+
+# Global fuer Aktivitaetsstatus einzelner Threads/Programmteile
 Display_aktiv = True
 Thread_Sensoren_aktiv = True
 
@@ -57,21 +57,21 @@ def aktuelleZeit(werta, wertb):
 def sensorenAbfrage():
  # Thread zum Auslesen der Sensoren
  global dhtSensor_aktiv, dhtSensorGpio, dhtSensorTyp, dhtSensorTemperatur, dhtSensorLuftfeuchtigkeit
- print "Thread zur Sensorenabfrage gestartet."
+ print "Thread zur Sensorenabfrage gestartet"
  while dhtSensor_aktiv:
     # Abfrage Luftfeuchtigkeit und Temperatur
-    luftfeuchtigkeit, temperatur = Adafruit_DHT.read_retry(dhtSensorTyp, dhtSensorGpio) 
+    luftfeuchtigkeit, temperatur = Adafruit_DHT.read_retry(dhtSensorTyp, dhtSensorGpio)
     dhtSensorLuftfeuchtigkeit = '%6.2f' % luftfeuchtigkeit #Sensorwert auf 2 Dezimalstellen formatiert
     dhtSensorTemperatur = '%6.2f' % temperatur #Sensorwert auf 2 Dezimalstellen formatiert
-    print "Werte DHT22 - Luftfeuchtigkeit = ", dhtSensorLuftfeuchtigkeit, " Temperatur = ", dhtSensorTemperatur 
+    print "Werte DHT22 - Luftfeuchtigkeit = ", dhtSensorLuftfeuchtigkeit, " Temperatur = ", dhtSensorTemperatur
     displaySensorwertAusgabe()
     time.sleep(5) # notwendige Pause von mindestens 2 Sekunden - siehe Spezifikation des verwendeten Sensors
- 
+
 def displaySensorwertAusgabe():
  global displaySensorBezeichnung, displayTempWert, a, dhtSensorLuftfeuchtigkeit, dhtSensorTemperatur
  displaySensorBezeichnung = "DHT22 Sensor :"
  displayTempWert = dhtSensorLuftfeuchtigkeit + " % " + dhtSensorTemperatur + " " + a + "C"
- 
+
 
 # Display einrichten
 
@@ -110,8 +110,8 @@ bottom = height-padding
 x = padding
 
 # Load default font.
-# font = ImageFont.load_default() # Wenn keine eigene Schrift vorhanden ist!!!! 
-font = ImageFont.truetype("font/arial.ttf", 12) # Schriftart, Schriftgröße
+# font = ImageFont.load_default() # Wenn keine eigene Schrift vorhanden ist!!!!
+font = ImageFont.truetype("font/arial.ttf", 12) # Schriftart, Schriftgroesse
 font_b = ImageFont.truetype("font/arial.ttf", 18)
 font_c = ImageFont.truetype("font/arial.ttf", 14)
 
@@ -132,12 +132,12 @@ time.sleep(5) #damit alle Sensorwerte zum Start eingelesen sind
 
 while Display_aktiv:
  draw.rectangle((0,0,width,height), outline=0, fill=0) #Display leeren
- displayTime = aktuelleZeit("time", "date") # bei Abfrage "date","time" ändert die Reihenfolge der Ausgabe
+ displayTime = aktuelleZeit("time", "date") # bei Abfrage "date","time" aendert die Reihenfolge der Ausgabe
  draw.text((x, top), displaySensorBezeichnung , font=font, fill=255)
  draw.text((x, top+20), displayTempWert, font=font_c, fill=255)
  draw.line((x, top+45, x+width, top+45), fill=255)
  draw.text((x, top+50), displayTime, font=font, fill=255)
  disp.image(image)
  disp.display()
- 
-return 
+
+return
