@@ -30,6 +30,7 @@ LED_PIN = 12 (with resistor to 0v)
 SWITCH_PIN = 18 (with 0.1 uF capacitor around switch) to 0v
 LOOP_IN = 16 connected with 1K resistor to LOOP_OUT
 LOOP_OUT = 22
+NC_PIN = 24 not connected to anything
 """
 
 import os
@@ -52,6 +53,7 @@ SWITCH_PIN_BCM = 24
 LOOP_IN = 16
 LOOP_IN_BCM = 23
 LOOP_OUT = 22
+NC_PIN = 24
 
 non_interactive = False
 for i,val in enumerate(sys.argv):
@@ -129,6 +131,17 @@ class TestAAASetup(unittest.TestCase):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(LED_PIN, GPIO.OUT, initial=GPIO.LOW)
         self.assertEqual(GPIO.input(LED_PIN), GPIO.LOW)
+        GPIO.cleanup()
+
+        # test pull up/down works
+        GPIO.setmode(GPIO.BOARD)
+        for i in range(1000):
+            GPIO.setup(NC_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+            time.sleep(0.001)
+            self.assertEqual(GPIO.input(NC_PIN), GPIO.LOW)
+            GPIO.setup(NC_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            time.sleep(0.001)
+            self.assertEqual(GPIO.input(NC_PIN), GPIO.HIGH)
         GPIO.cleanup()
 
         # test setup of a list of channels

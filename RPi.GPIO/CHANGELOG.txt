@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+0.7.0
+-------
+- Updated RPI_INFO to include RPi 4B
+- Fixed pull up/down for Pi4 (issue 168)
+- Fix spelling mistake in docstrings
+- Tested and working on Raspbian Buster + Python 3.8.0b2
+- Fix board detection for aarch64 (Issues 161 / 165)
+- Fix checking mmap return value in c_gpio.c (issue 166)
+
 0.6.5
 -----
 - Fix exception on re-export of /sys/class/gpio/gpioNN

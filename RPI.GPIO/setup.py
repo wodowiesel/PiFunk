@@ -1,5 +1,5 @@
 """
-Copyright (c) 2012-2018 Ben Croston
+Copyright (c) 2012-2019 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -33,7 +33,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: System :: Hardware']
 
 setup(name             = 'RPi.GPIO',
-      version          = '0.6.5',
+      version          = '0.7.0',
       author           = 'Ben Croston',
       author_email     = 'ben@croston.org',
       description      = 'A module to control Raspberry Pi GPIO channels',

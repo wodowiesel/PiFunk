@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012-2015 Ben Croston
+Copyright (c) 2012-2019 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -43,6 +43,11 @@ SOFTWARE.
 #define PULLUPDN_OFFSET             37  // 0x0094 / 4
 #define PULLUPDNCLK_OFFSET          38  // 0x0098 / 4
 
+#define PULLUPDN_OFFSET_2711_0      57
+#define PULLUPDN_OFFSET_2711_1      58
+#define PULLUPDN_OFFSET_2711_2      59
+#define PULLUPDN_OFFSET_2711_3      60
+
 #define PAGE_SIZE  (4*1024)
 #define BLOCK_SIZE (4*1024)
 
@@ -72,8 +77,7 @@ int setup(void)
     // try /dev/gpiomem first - this does not require root privs
     if ((mem_fd = open("/dev/gpiomem", O_RDWR|O_SYNC)) > 0)
     {
-        gpio_map = (uint32_t *)mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, mem_fd, 0);
-        if ((uint32_t)gpio_map < 0) {
+        if ((gpio_map = (uint32_t *)mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, mem_fd, 0)) == MAP_FAILED) {
             return SETUP_MMAP_FAIL;
         } else {
             return SETUP_OK;
@@ -126,9 +130,7 @@ int setup(void)
     if ((uint32_t)gpio_mem % PAGE_SIZE)
         gpio_mem += PAGE_SIZE - ((uint32_t)gpio_mem % PAGE_SIZE);
 
-    gpio_map = (uint32_t *)mmap( (void *)gpio_mem, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FIXED, mem_fd, gpio_base);
-
-    if ((uint32_t)gpio_map < 0)
+    if ((gpio_map = (uint32_t *)mmap( (void *)gpio_mem, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FIXED, mem_fd, gpio_base)) == MAP_FAILED)
         return SETUP_MMAP_FAIL;
 
     return SETUP_OK;
@@ -208,21 +210,42 @@ void set_low_event(int gpio, int enable)
 
 void set_pullupdn(int gpio, int pud)
 {
-    int clk_offset = PULLUPDNCLK_OFFSET + (gpio/32);
-    int shift = (gpio%32);
+    // Check GPIO register
+    int is2711 = *(gpio_map+PULLUPDN_OFFSET_2711_3) != 0x6770696f;
+    if (is2711) {
+        // Pi 4 Pull-up/down method
+        int pullreg = PULLUPDN_OFFSET_2711_0 + (gpio >> 4);
+        int pullshift = (gpio & 0xf) << 1;
+        unsigned int pullbits;
+        unsigned int pull = 0;
+        switch (pud) {
+            case PUD_OFF:  pull = 0; break;
+            case PUD_UP:   pull = 1; break;
+            case PUD_DOWN: pull = 2; break;
+            default:       pull = 0; // switch PUD to OFF for other values
+        }
+        pullbits = *(gpio_map + pullreg);
+        pullbits &= ~(3 << pullshift);
+        pullbits |= (pull << pullshift);
+        *(gpio_map + pullreg) = pullbits;
+    } else {
+        // Legacy Pull-up/down method
+        int clk_offset = PULLUPDNCLK_OFFSET + (gpio/32);
+        int shift = (gpio%32);
 
-    if (pud == PUD_DOWN)
-        *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_DOWN;
-    else if (pud == PUD_UP)
-        *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_UP;
-    else  // pud == PUD_OFF
+        if (pud == PUD_DOWN) {
+            *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_DOWN;
+        } else if (pud == PUD_UP) {
+            *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_UP;
+        } else  { // pud == PUD_OFF
+            *(gpio_map+PULLUPDN_OFFSET) &= ~3;
+        }
+        short_wait();
+        *(gpio_map+clk_offset) = 1 << shift;
+        short_wait();
         *(gpio_map+PULLUPDN_OFFSET) &= ~3;
-
-    short_wait();
-    *(gpio_map+clk_offset) = 1 << shift;
-    short_wait();
-    *(gpio_map+PULLUPDN_OFFSET) &= ~3;
-    *(gpio_map+clk_offset) = 0;
+        *(gpio_map+clk_offset) = 0;
+    }
 }
 
 void setup_gpio(int gpio, int direction, int pud)
