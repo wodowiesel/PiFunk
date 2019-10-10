@@ -19,14 +19,14 @@ MAKEINFO=makeinfo
 EXECUTABLE=pifunk
 VERSION=0.1.7.7e
 
-#Determine the hardware platform.
+#Determine the hardware platform
 UNAME:=$(shell uname -m) #linux
 PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) #my rev: 0010 -> 1.2 B+
 RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]") #
 
-$(USER) $(UNAME)
-$(USER) $(PCPUI)
-$(USER) $(RPI_VERSION)
+$(UNAME)
+$(PCPUI)
+$(RPI_VERSION)
 
 #Enable ARM-specific options only
 ifeq ($(UNAME), armv5l)
@@ -87,43 +87,43 @@ pifunk.a:	pifunk.c
 					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.a
 
 pifunk.lib:	pifunk.c
-						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.lib
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.lib
 
 pifunk.so:	pifunk.c
-						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o lib/pifunk.so
 
 pifunk.out:	pifunk.c
-						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.out
 
 pifunk.bin: pifunk.c
-						$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
+					$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk.bin
 
 pifunk:	pifunk.c pifunk.h pifunk.o
-				$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
+	$(USER) $(CC) $(STD_CFLAGS) $(LDLIBS) $(LDFLAGS) $(CFLAGS)-o bin/pifunk
 
-.PHONY: 		piversion
+.PHONY: 	piversion
 piversion:	$(USER) $(UNAME)
-						$(USER) $(PCPUI)
-						$(USER) $(RPI_VERSION)
+		$(USER) $(PCPUI)
+		$(USER) $(RPI_VERSION)
 
 .PHONY: 	install
 install:	cd $(PATH)/PiFunk
-					$(USER) install -m 0755 pifunk $(PATH)/bin/
+		$(USER) install -m 0755 pifunk $(PATH)/bin/
 
 .PHONY: 	uninstall
 uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk.bin
 
 .PHONY: 	help
-help:			cd $(PATH)/PiFunk/bin/
-					$(USER) ./pifunk -h
+help:		cd $(PATH)/PiFunk/bin/
+		$(USER) ./pifunk -h
 
-.PHONY: 		assistant
+.PHONY: 	assistant
 assistent:	cd $(PATH)/PiFunk/bin/
-						$(USER) ./pifunk -a
+		$(USER) ./pifunk -a
 
 .PHONY: 	run
-run:			cd $(PATH)/PiFunk/bin/
-					$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
+run:		cd $(PATH)/PiFunk/bin/
+		$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
 .PHONY:	clean
 clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o bin/pifunk
