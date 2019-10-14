@@ -2,7 +2,7 @@
 
 ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
-## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands (PMR446 & CB)
+## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
 
 **Early Experimental! (WIP)**
 
@@ -12,7 +12,7 @@ ___
 
 0. Download Linux-Pi-Distro
 
-[Raspbian Buster >= v4.19.66](https://downloads.raspberrypi.org/raspbian_full_latest)
+[Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.66
 
 and extract and load bootable image on SD-card via Rufus
 
@@ -200,7 +200,7 @@ d) optional Pi-Flags:
 
  `-mfloat-abi=hard` floating-point ABI to use, permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
- `-mfpu=vfp` virtual floating point hardware module support, for pi2/3 use neon-vfpv4
+ `-mfpu=vfp` virtual floating point hardware module support, for pi2/3/4 use neon-vfpv4
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
