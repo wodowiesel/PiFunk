@@ -66,19 +66,21 @@ ___
 
 a) `sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers` for Kernel & Firmware
 
-b) `sudo apt-get install libsndfile1-dev` or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
+b) `sudo apt-get install libsndfile1-dev` for ALSA SND-lib
+
+or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
 
 c) `sudo apt-get install python-dev python3-dev` for py3
 
-d) [RPi.GPIO lib v0.7.0 for Py3(https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
+d) [RPi.GPIO lib v0.7.0 for Py3](https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
 
-[Project Site](https://pypi.org/project/RPi.GPIO/) 
+[RPi.GPIO Project Site](https://pypi.org/project/RPi.GPIO/) 
 
 [RPi.GPIO Sourceforge-Site](https://sourceforge.net/projects/raspberry-gpio-python/files/)
 
 or download via terminal: `sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.7.0.tar.gz`
 
-then extract `tar -xvf RPi.GPIO-0.7.0.tar.gz`
+then extract: `tar -xvf RPi.GPIO-0.7.0.tar.gz`
 
 and install it: `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
