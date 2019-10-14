@@ -70,23 +70,23 @@ b) `sudo apt-get install libsndfile1-dev` or download it directly [SND](https://
 
 c) `sudo apt-get install python-dev python3-dev` for py3
 
-d) [RPi-lib](https://pypi.org/project/RPi.GPIO/) (I use v0.6.5 from Nov 2018, also in repo)
+d) [RPi.GPIO lib v0.7.0 for Py3(https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
 
-`sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.6.5.tar.gz`
+[Project Site](https://pypi.org/project/RPi.GPIO/) 
 
-then extract `tar -xvf RPi.GPIO-0.6.5.tar.gz`
+[RPi.GPIO Sourceforge-Site](https://sourceforge.net/projects/raspberry-gpio-python/files/)
 
-and install it:
+or download via terminal: `sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.7.0.tar.gz`
 
-`sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
+then extract `tar -xvf RPi.GPIO-0.7.0.tar.gz`
 
-or `sudo pip install RPi.GPIO` for Py2
+and install it: `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
 or alternative way: `sudo apt-get -y install python3-rpi.gpio`
 
 7. Compiler installation:
 
-a) GNU C Compiler GCC `sudo apt-get install gcc-9.1` or g++
+a) GNU C Compiler GCC `sudo apt-get install gcc-9.2.0` or g++
 
 b) GNU Debugger GDB `sudo apt-get install gdbserver`
 
@@ -98,11 +98,11 @@ ___
 
 9. Navigate to directory:
 
-a) `cd PiFunk` with default path: `/home/pi/PiFunk`
+a) `cd PiFunk` with default path: `/home/pi/PiFunk/`
 
 b) GCC Compiler flags:
 
-`-g3` for normal GNU compiler debug informations (0-3 level, 2 is default)
+`-g3` for normal GNU compiler debug informations (1-3 level, 2 is default)
 
 `-ggdb3` for GNU debugger informations level 3
 
@@ -116,7 +116,7 @@ b) GCC Compiler flags:
 
 `-std=gnu99` with additional gnu extension to c99
 
-(`-std=gnu++17` or 11/14 as you like when using g++)
+(`-std=gnu++17` if you like when using g++)
 
 `-pedantic-errors` for error console messages if problem between c99 and gnu extensions
 
@@ -130,7 +130,7 @@ b) GCC Compiler flags:
 
 `-lm` for math-lib is obligatory!
 
-`-lbcm_host` for loading bcm firmware v1.20190718
+`-lbcm_host` for loading bcm firmware >= v1.20190718
 
 `-lpthread` lib for process threads
 
@@ -146,7 +146,7 @@ b) GCC Compiler flags:
 
 `-D_USE_MATH_DEFINES` for mathematical lib definitions
 
-`-D_GNU_C_SOURCE` for loading GNU C Source Macros
+`-D_GNU_C_SOURCE` for loading GNU C Source Macros for non-std setups
 
 (combining lot of different ones: ISO C89, ISO C99, POSIX.1, POSIX.2, BSD, SVID, X/OPEN, LFS)
 
@@ -160,9 +160,9 @@ b) GCC Compiler flags:
 
 `-fPIC` for generating position independent code (PIC) for bigger programs
 
-`-O3` for optimization stage 0-3 (memory, speed etc.) via compiler
+`-O3` for optimization stage 1-3 (memory, speed etc.) via compiler
 
-`-o` for individual output-filename
+`-o` for individual output-filename flag
 
 10. Generating libraries:
 
@@ -192,7 +192,7 @@ d) optional Pi-Flags:
 
  `-mfloat-abi=hard` floating-point ABI to use, permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
- `-mfpu=vfp` virtual floating point hardware module
+ `-mfpu=vfp` virtual floating point hardware module support, for pi2/3 use neon-vfpv4
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
@@ -200,7 +200,7 @@ d) optional Pi-Flags:
 
 e) Makefile commands:
 
- `sudo make piversion` for checking your pi version
+ `sudo make piversion` for checking your pi version via make
 
  `sudo make install` for installing pifunk files incl. build folder
 
@@ -262,9 +262,9 @@ f) RTC: Module DS3231 uses
 
 ![RTC](docs/RTC-top.jpg)
 
-g) GPS: Module Neo 7M uses
+g) GPS Module: Ublox Neo 7M 
 
-5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
+Pinout: 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
 it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
@@ -302,11 +302,13 @@ extra single menu-flags: -> no further argument needed
 
 default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
 
-Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi
+Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi.
 
-it's recommended not to transmit on frequencies higher than the processor speed (at the moment) but results would be interesting to know
+It's recommended not to transmit on frequencies higher than the processor speed at the moment to prevent stuttering/lags,
 
-explicit CTSS-Tones (38 included) for PMR can be found here: [CTSS](ctsspmr.csv)
+but results would be interesting to know with overclocking.
+
+Explicit CTSS-Tones (38 included) for PMR can be found here as a list: [CTSS](ctsspmr.csv)
 
 ___
 
@@ -360,4 +362,4 @@ Would appreciate being named in the source, Thank you.
 
  15. Credits
 
-based on pifm/am , pifmadv  scripts/snippets
+based on pifm/am, pifmadv scripts/snippets
