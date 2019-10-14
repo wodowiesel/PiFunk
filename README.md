@@ -2,13 +2,19 @@
 
 ![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
-## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
+## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands (PMR446 & CB)
 
 **Early Experimental! (WIP)**
 
 ___
 
 ### Configurations
+
+0. Download Linux-Pi-Distro
+
+[Raspbian Buster >= v4.19.66](https://downloads.raspberrypi.org/raspbian_full_latest)
+
+and extract and load bootable image on SD-card via Rufus
 
 1. Get this program:
 
@@ -50,7 +56,7 @@ Sync to GPS 1 PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK / PWM0) fo
 
 `pps-gpio` Add this line
 
-5. Save your changes with ctrl-o <return/enter> then exit with ctrl-x
+4. Save your changes with ctrl-o <return/enter> then exit with ctrl-x
 
 ___
 
@@ -96,7 +102,7 @@ b) GNU Debugger GDB `sudo apt-get install gdbserver`
 
 ___
 
-### Build
+### Builds
 
 9. Navigate to directory:
 
@@ -314,7 +320,7 @@ Explicit CTSS-Tones (38 included) for PMR can be found here as a list: [CTSS](ct
 
 ___
 
-### Disclaimer
+### Disclaimers
 
 13. Warnings/Caution:
 
@@ -340,7 +346,7 @@ ___
 
 ___
 
-### Links:
+### Links
 
 14. Additional Guidelines
 
