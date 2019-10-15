@@ -1,23 +1,24 @@
 name: C/C++ CI
 
-on:
+on: 
   push:
-   branches:
+   branches: 
    - master
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v1
-
-    # - name: make piversion
-    # run: make piversion
-
+      
+    - name: make piversion
+      run: make piversion
+    
     - name: make
-      run: sudo make
+      run: make
+      
+    - name: pifunk
+      run: ./bin/pifunk -h
 
-    - name: pifunkhelp
-      run: sudo ./bin/pifunk -h
