@@ -1,14 +1,18 @@
 /* PiFunk (C) 2018-2019 silicator a.k.a Wiesel
 version=0.1.7.7e
-OS: raspbian (stretch) incl. desktop & recommended software v4.14+ (8. April 2019) based on debian
-SHA-256:a3ced697ca0481bb0ab3b1bd42c93eb24de6264f4b70ea0f7b6ecd74b33d83eb
--> get it here https://www.raspberrypi.org/downloads/raspbian/
--> or direct link https://downloads.raspberrypi.org/raspbian_full_latest => 2019-04-08-raspbian-stretch-full.zip
+
+OS:  Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
+
+SHA-256: ac557f27eb8697912263a1de812dfc99fa8d69bd6acc73a0b7756a1083ba0176
+-> get 3 different versions here: https://www.raspberrypi.org/downloads/raspbian/
+-> or direct link: https://downloads.raspberrypi.org/raspbian_full_latest/
+
 gcc>=9.2.0 compiler or g++>=5.4.1 for 11/14/17
-gdb 7.11.1 debugger
+gdb>=7.11.1 debugger
 
 ->get project:
-git clone https://github.com/silicator/PiFunk
+git clone https://github.com/silicator/PiFunk/
+
 ->instructions:
 You will need alsa library for this:
 sudo apt-get install libsndfile1-dev
@@ -25,19 +29,20 @@ cd PiFunk // goto path
  or do make (compile flags in make included)
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
- or =gnu99 supports c99 + additional gnu extensions
- or -std=c17 (11/14 also)
+ or -std=gnu99 supports c99 + additional gnu extensions
+ or -std=c17 (11/14 also possible)
  -E tells to stop after preprocessing stage
  -v verbose
 
--> real gpio hardware can't be simulated by c or py code! must be executed and compiled on linux
+-> real gpio hardware can't be simulated by c or py code! must be executed and compiled on pi wtith linux
 virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
- wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g -lm -x c && ./pifunk.out sound.wav
+ sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav
 
+-------------------------------------------------------
 LICENSE: GPLv3 !!
 !!!!!!! program needs more testing on real pi !!!!!!!
 
------Disclaimer-----
+-----Disclaimer--------------
 Rewritten for own purposes!
 no guarantee, warranty for anything! Usage at own risk!
 you should ground your antenna, eventually diode or 10uF-caps
@@ -47,7 +52,7 @@ more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-C
 Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi 1.2 B+ rev.2)
 used python 3.7.4 on original Raspbian
 -----------------------
-don't forget to apt-get upgrade and update
+don't forget to sudo apt-get update && upgrade
 
 1) Pi-FM version - frequency modulation direction left/right ← , →
 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
@@ -73,7 +78,7 @@ tone generator for ctss (sin?)
 #include <unistd.h>
 
 // functionality includes
-#include <iso646.h> //c95 back-compatible  -std=iso9899:199409
+#include <iso646.h> //c95 back-compatible -std=iso9899:199409
 #include <argp.h>
 #include <string.h>
 #include <getopt.h>
@@ -137,8 +142,8 @@ tone generator for ctss (sin?)
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>		//Needed for I2C port
 #include <linux/spi/spidev.h>
-#include <linux/rtc.h>
 
+#include <linux/rtc.h>
 //#include <linux/rtc/ds1307.h>
 //#include <linux/rtc/ds3231.h>
 #include "rtc/ds3231.h" //
