@@ -13,12 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v1
       
-    - name: make piversion
+    #- name: make piversion
     #   run: sudo make piversion
     
-    - name: make
+    #- name: make
     #   run: sudo make
       
-    - name: pifunk help
+    #- name: pifunk help
     #   run: sudo ./bin/pifunk -h
 
