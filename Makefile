@@ -1,4 +1,4 @@
-# pifunk Makefile
+# pifunk++ Makefile
 # should run with sudo or root rights
 USER=sudo
 CXX=g++
@@ -24,7 +24,7 @@ RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0
 
 $(UNAME)
 $(PCPUI)
-#$(RPI_VERSION)
+$(RPI_VERSION)
 
 #Enable ARM-specific options only
 ifeq ($(UNAME), armv5l)
