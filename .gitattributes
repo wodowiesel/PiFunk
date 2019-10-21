@@ -5,18 +5,13 @@
 *.cs     diff=csharp
 
 # here c and py
-#*.c diff=astextplain
-#*.py diff=astextplain
+*.c diff=astextplain
+*.py diff=astextplain
 *.sh diff=astextplain
 
 # Standard to msysgit
 *.doc	 diff=astextplain
-*.DOC	 diff=astextplain
 *.docx diff=astextplain
-*.DOCX diff=astextplain
 *.dot  diff=astextplain
-*.DOT  diff=astextplain
 *.pdf  diff=astextplain
-*.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
-*.RTF	 diff=astextplain

@@ -221,9 +221,11 @@ using namespace std;
 #include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
+#ifndef _PIFUNK_C_
+#define _PIFUNK_C_
 // preproccessor definitions
 #ifdef __LINUX__
-  printf ("\nProgram runs under UNIX/LINUX\n");
+  printf ("\nProgram runs under LINUX\n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 

@@ -2,12 +2,10 @@
 # should run with sudo or root rights
 USER=sudo
 CC=gcc
-CXX=g++
 CCN=gcc-9.2.0
 
 # use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
 CFLAGS=-Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
-CXXFLAGS=-Wall -Werror -std=gnu++99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
 LDLIBS=-Llib -L/opt/vc/lib
@@ -105,10 +103,6 @@ pifunk:	pifunk.c pifunk.h
 piversion:	$(USER) $(UNAME)
 		$(USER) $(PCPUI)
 		$(USER) $(RPI_VERSION)
-
-.PHONY: 	pifunk++
-pifunk++:	pifunk.cpp pifunk.hpp pifunk.so
-				$(USER) $(CXX) $(CXXFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk++
 
 .PHONY: 	install
 install:	cd $(PATH)/PiFunk

@@ -3,7 +3,7 @@
 ##and maybe someday, beacon, gps, internet, relais, aprs, vhf, ts2/3, RDS, morse, echolink
 ##microphone (usb & jack) + playlist, mp3/wav-Files. (WIP)
 ##dependency python 3.7.x needeed to run script
-##pifm GPIO's: 4 (pin 7 GP-CLK0) and GND (pin 9 = GND) or 14 (pin 8 TXD) & GND (pin 6) & 15 (pin 10 RDX) & 21 (pin 40 SCLK) --> 39 GND
+##pifunk GPIO's: 4 (pin 7 GP-CLK0) and GND (pin 9 = GND) or 14 (pin 8 TXD) & GND (pin 6) & 15 (pin 10 RDX) & 21 (pin 40 SCLK) --> 39 GND
 ##ARM - Structure on Pi's !!! (can only be emulated on PC, so no real GPIO access!!) my Pi: 1.2 rev. 2 B+
 ##------------------------------------------------------------------------------------------------------------------------------------
 #Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels,
