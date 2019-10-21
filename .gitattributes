@@ -7,6 +7,8 @@
 # here c and py
 *.c diff=astextplain
 *.cpp diff=astextplain
+*.h diff=astextplain
+*.hpp diff=astextplain
 *.py diff=astextplain
 *.sh diff=astextplain
 

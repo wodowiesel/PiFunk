@@ -1,6 +1,6 @@
 
 import RPi.GPIO as GPIO
-# setmode ermöglicht die Einstellung welche GPIO-Bezeichnung verwendet werden soll, hier werden die Pinnummern der Stiftleiste benutzt
+# setmode ermoeglicht die Einstellung welche GPIO-Bezeichnung verwendet werden soll, hier werden die Pinnummern der Stiftleiste benutzt
 GPIO.setmode(GPIO.BOARD)
 # setup setzt die Funktion des Bezeichneten GPIO, hier 11 als Eingang und 12 als Ausgang
 GPIO.setup(11, GPIO.IN)
@@ -15,4 +15,3 @@ GPIO.setup(17, GPIO.IN)
 GPIO.setup(18, GPIO.OUT)
 input_value = GPIO.input(17)
 GPIO.output(18, GPIO.HIGH)
-

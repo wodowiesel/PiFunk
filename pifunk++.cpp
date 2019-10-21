@@ -1,4 +1,4 @@
-/* PiFunk (C) 2018-2019 silicator a.k.a Wiesel
+/* PiFunk++ (C) 2018-2019 silicator a.k.a Wiesel
 version=0.1.7.7e
 
 OS:  Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
@@ -24,13 +24,13 @@ cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
 =>compile with admin/root permissions!!
- Libs: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- program: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
+ Libs: sudo g++ -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ program: sudo g++ -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
- or -std=gnu99 supports c99 + additional gnu extensions
- or -std=c17 (11/14 also possible)
+ or -std=gnu++99 supports c++99 + additional gnu extensions
+ or -std=c++17 (11/14 also possible)
  -E tells to stop after preprocessing stage
  -v verbose
 
@@ -215,7 +215,7 @@ using namespace std;
 #include "libusb/libusb/os/poll_posix.h"
 #include "libusb/libusb/os/threads_posix.h"
 
-//custom header for pifunk (dummy for now)
+//custom header for pifunk++ (dummy for now)
 #include "include/pifunk.hpp"
 
 //------------------------------------------------------------------------------
@@ -241,12 +241,12 @@ using namespace std;
 #endif
 
 #ifdef __GNUC__
-   //printf ("\nUsing GNU C++ with ANSI C99!!\n");
+   //printf ("\nUsing GNU C++ with ANSI ISO C99 and flag -std=gnu++99\n");
    //#pragma GCC system_header
 #endif
 
 #ifdef __STDC_VERSION__ //>= 199901L
-   /*#warning "\nPlease compile with flag -std=c99\n" string */
+   /*#warning "\nPlease compile with flag -std=c++99\n" string */
    //printf ("\nUsing GNU C++ with C99 standard!!\n");
 #endif
 
@@ -261,6 +261,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // definitions & Makros
+#define NAME 						     "pifunk++" // my version
 #define VERSION 						 "0.1.7.7e" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
@@ -727,6 +728,7 @@ volatile unsigned 										*allof7e; //
 //declaring normal variables
 
 //program version status and default device
+const char *name = "pifunk++"; // version-stage
 const char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
