@@ -1,12 +1,10 @@
 # pifunk Makefile
 # should run with sudo or root rights
 USER=sudo
-CC=gcc
 CXX=g++
 CCN=gcc-9.2.0
 
 # use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
-CFLAGS=-Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
 CXXFLAGS=-Wall -Werror -std=gnu++99 -pedantic-errors -g3 -ggdb3 -v -Iinclude -I/opt/vc/include -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
 ASFLAGS=-s
 LDFLAGS=-lm -lpthread -lbcm_host -lsndfile -shared
@@ -16,7 +14,7 @@ PATH=/home/pi #std path
 RM=rm -f #remove file or folder
 
 MAKEINFO=makeinfo
-EXECUTABLE=pifunk
+EXECUTABLE=pifunk++
 VERSION=0.1.7.7e
 
 #Determine the hardware platform
@@ -65,41 +63,41 @@ PFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASP
 TARGET=raspberry
 endif
 
-#@echo Compiling PiFunk
+#@echo Compiling PiFunk++
 
-#pifunk.info: pifunk.texi
+#pifunk++.info: pifunk++.texi
 #						  $(USER) $(MAKEINFO)
-all: pifunk
+all: pifunk++
 
-pifunk.i:	pifunk.c
+pifunk++.i:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-E -C -o include/pifunk.i
 
-pifunk.S:	pifunk.c
+pifunk++.S:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
 
-pifunk.s:	pifunk.c
+pifunk++.s:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS)-o lib/pifunk.s
 
-pifunk.o:	pifunk.c
+pifunk++.o:	pifunk++.cpp
 					$(USER) $(CC)$(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.o
 
-pifunk.a:	pifunk.c
+pifunk++.a:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.a
 
-pifunk.lib:	pifunk.c
+pifunk++.lib:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.lib
 
-pifunk.so:	pifunk.c
+pifunk++.so:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.so
 
-pifunk.out:	pifunk.c
+pifunk++.out:	pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk.out
 
-pifunk.bin: pifunk.c
+pifunk++.bin: pifunk++.cpp
 					$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk.bin
 
-pifunk:	pifunk.c pifunk.h
-	$(USER) $(CC) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk
+pifunk++:	pifunk++.cpp pifunk.hpp
+	$(USER) $(CXX) $(CXXFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk
 
 .PHONY: 	piversion
 piversion:	$(USER) $(UNAME)
@@ -107,27 +105,27 @@ piversion:	$(USER) $(UNAME)
 		$(USER) $(RPI_VERSION)
 
 .PHONY: 	pifunk++
-pifunk++:	pifunk.cpp pifunk.hpp pifunk.so
+pifunk++:	pifunk++.cpp pifunk.hpp pifunk++.so
 				$(USER) $(CXX) $(CXXFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk++
 
 .PHONY: 	install
 install:	cd $(PATH)/PiFunk
-		$(USER) install -m 0755 pifunk $(PATH)/bin/
+		$(USER) install -m 0755 pifunk++ $(PATH)/bin/
 
 .PHONY: 	uninstall
-uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk $(PATH)/bin/pifunk
+uninstall:	$(USER) $(RM) $(PATH)/bin/pifunk++ $(PATH)/bin/pifunk++
 
 .PHONY: 	help
 help:		cd $(PATH)/PiFunk/bin/
-		$(USER) ./pifunk -h
+		$(USER) ./pifunk++ -h
 
 .PHONY: 	assistant
 assistent:	cd $(PATH)/PiFunk/bin/
-		$(USER) ./pifunk -a
+		$(USER) ./pifunk++ -a
 
 .PHONY: 	run
 run:		cd $(PATH)/PiFunk/bin/
-		$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
+		$(USER) ./pifunk++ -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
 .PHONY:	clean
-clean:	$(USER) $(RM) bin/pifunk.out lib/pifunk.o bin/pifunk
+clean:	$(USER) $(RM) bin/pifunk++.out lib/pifunk++.so bin/pifunk++

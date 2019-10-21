@@ -11,18 +11,18 @@ modprobe i2c_bcm2708
 modprobe i2c_dev
 chmod 666 /dev/i2c-1
 adduser pi i2c
-i2cdetect -l 
+i2cdetect -l
 #zeigt er liste der busse an
-i2cdetect -y 1 
-#(wenn bus 1 sonst bus 0) listet er geräte auf dem bus auf
+i2cdetect -y 1
+#(wenn bus 1 sonst bus 0) listet er gerï¿½te auf dem bus auf
 #adresse ist bei mir 0x3c (ich nutze wiringPi)
 
-#kompilieren mit: 
+#kompilieren mit:
 g++ wpi-i2c.c -o wpi-i2c -lwiringPi
-#zuerst wird das display initialisiert, dann gecleared. 
+#zuerst wird das display initialisiert, dann gecleared.
 #mit reset_pos() wird die schreibeposition wieder auf anfang gesetzt auf dem display,
-#dazu bitte die dokumentation lesen, insbesondere das kapitel über die verschiedenen schreibmodi (vertikal/horizontal) etc. 
-#Mit render() werden dann 8 Byte daten geschrieben, mit denen sich ein 8x8 px großes zeichen darstellen lässt,
+#dazu bitte die dokumentation lesen, insbesondere das kapitel ï¿½ber die verschiedenen schreibmodi (vertikal/horizontal) etc.
+#Mit render() werden dann 8 Byte daten geschrieben, mit denen sich ein 8x8 px groï¿½es zeichen darstellen lï¿½sst,
 #im beispiel ein kleines haus-symbol. im internet gibt es etliche 8x8 header only fonts, mit denen sich dann einfach texte darstellen lassen.
 */
 
@@ -64,7 +64,7 @@ char m[8], n[8] = {0};
 memcpy(&m,bitmap,8);
 
 for(int y = 0; y < 8; y++) {
-	
+
 for(int x = 0; x < 8; x++) {
 //choose one:
 n[y] |= (m[x] & (1<<(7-y))) >> (7-y) << x ; // 270 grad drehen
@@ -88,9 +88,9 @@ void clear(int display)
 {
 reset_pos(display);
 for (int x = 0; x < 128; x++) {
-	
+
 for (int y = 0; y < 8; y++) {
-	
+
 wiringPiI2CWriteReg8(display,0x40,0x00);
 }
 }
@@ -100,9 +100,9 @@ void clear2(int display)
 {
 reset_pos(display);
 for (int x = 0; x < 128; x++) {
-	
+
 for (int y = 0; y < 8; y++) {
-	
+
 wiringPiI2CWriteReg8(display,0x40,0xff);
 }
 }
@@ -110,7 +110,7 @@ wiringPiI2CWriteReg8(display,0x40,0xff);
 
 int main(int argc, char *argv[])
 {
-	
+
 char test[8] = {
 0b00011000,
 0b00111100,

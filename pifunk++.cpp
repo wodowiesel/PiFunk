@@ -157,7 +157,6 @@ tone generator for ctss (sin?)
 #include <ifaddrs.h>
 
 //for c++11/14/17
-/*
 #include <iostream.h>
 #include <sstream.h>
 #include <threads.h>
@@ -174,9 +173,8 @@ tone generator for ctss (sin?)
 #include <uchar.h>
 #include <cstring.h>
 using namespace std;
-*/
 
-// windows (10) if needed for maybe rpi3
+// windows (10) if needed for maybe rpi3/4
 /*
 #include <windows.h>
 #include <win.h>
@@ -218,18 +216,21 @@ using namespace std;
 #include "libusb/libusb/os/threads_posix.h"
 
 //custom header for pifunk (dummy for now)
-#include "include/pifunk.h"
+#include "include/pifunk.hpp"
 
 //------------------------------------------------------------------------------
+#ifndef _PIFUNK++_CPP_
+#define _PIFUNK++_CPP_
+
 // preproccessor definitions
 #ifdef __LINUX__
-  printf ("\nProgram runs under UNIX/LINUX\n");
-	#pragma GCC dependency "pifunk.h"
+  printf ("\nProgram runs under LINUX\n");
+	#pragma GCC dependency "pifunk.hpp"
 #endif
 
 #ifdef __UNIX__
   printf ("\nProgram runs under UNIX\n");
-	#pragma GCC dependency "pifunk.h"
+	#pragma GCC dependency "pifunk.hpp"
 #endif
 
 #ifdef __ARM__
@@ -240,13 +241,13 @@ using namespace std;
 #endif
 
 #ifdef __GNUC__
-   //printf ("\nUsing GNU C with ANSI C99!!\n");
+   //printf ("\nUsing GNU C++ with ANSI C99!!\n");
    //#pragma GCC system_header
 #endif
 
 #ifdef __STDC_VERSION__ //>= 199901L
    /*#warning "\nPlease compile with flag -std=c99\n" string */
-   //printf ("\nUsing GNU C with C99 standard!!\n");
+   //printf ("\nUsing GNU C++ with C99 standard!!\n");
 #endif
 
 /*

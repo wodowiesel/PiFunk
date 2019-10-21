@@ -1,2 +1,2 @@
 #!/usr/bin/python
-print ("Welcome to PiFunk!")
+print ("Welcome to PiFunk!++")

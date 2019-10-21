@@ -1,4 +1,4 @@
-project(pifunk)
+project(pifunk++)
 
 add_definitions(-D_USE_MATH_DEFINES)
 add_definitions(-D_POSIX_C_SOURCE=200809L)
@@ -12,27 +12,27 @@ include_directories(
   )
 
 set(pifunk_HEADERS
-  	include/pifunk.h
+  	include/pifunk++.hpp
   	include/sndfile.h
   	)
 
 set(pifunk_SOURCES
-  	PiFunk/pifunk.c
+  	PiFunk/pifunk++.cpp
   	)
 
-add_library(pifunk STATIC
-  	${pifunk_HEADERS}
-  	${pifunk_SOURCES}
+add_library(pifunk++ STATIC
+  	${pifunk++_HEADERS}
+  	${pifunk++_SOURCES}
   	)
 
-target_include_directories(pifunk
+target_include_directories(pifunk++
 	PUBLIC .
 	)
 
-target_link_libraries(pifunk
-  	${pifunk_LIBRARIES}
+target_link_libraries(pifunk++
+  	${pifunk++_LIBRARIES}
   	)
 
-add_executable(bin/pifunk
-							 bin/pifunk.bin
+add_executable(bin/pifunk++
+							 bin/pifunk++.bin
 							 )

@@ -75,7 +75,7 @@ try:
 except:
  from RPi._GPIO import GPIO4
 else:
- from RPi import GPIO4
+ from RPi_ import GPIO4
 
 import gps
 import pynmea2 # for gps devices e.g. Neo-7M
@@ -85,7 +85,7 @@ import pynmea2 # for gps devices e.g. Neo-7M
 #loading hardware on startup
 
 def __init__ (self):
-  print ("\nWelcome to PiFunk!\n")
+  print ("\nWelcome to PiFunk++!\n")
   self.data = []
   print (sys.argv)
 
@@ -185,33 +185,33 @@ def callname (callsign):
       return callsign
 
 def c_arg_parser ():
-  print ("\nParsing args to C ... \n")
+  print ("\nParsing args to C++ ... \n")
   return filename, freq, samplerate, mod, callsign, power
 
 def play_wav ():
   print ("\nPlaying wav ... \n")
   if (filename && freq && samplerate && mod != None):
-      call (["sudo ./pifunk ", filename, freq, samplerate, mod, callsign])
+      call (["sudo ./pifunk++ ", filename, freq, samplerate, mod, callsign])
   else:
-      call (["sudo ./pifunk sound.wav 100.00000 22050 fm callsign"])
+      call (["sudo ./pifunk++ sound.wav 100.00000 22050 fm callsign"])
 
 def play_mp3 ():
   print ("\nPiping mp3 to ffmpeg ... \n")
-  ffmpeg -i sounds/sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.00000 fm
+  ffmpeg -i sounds/sound.mp3 -f s16le -ar 22.0500 -ac 1 | sudo ./pifunk -100.00000 fm
 
 def play_mic ():
   ## Broadcast from a (usb) microphone, stereo
   print ("\nUsing mic and piping through aracord ... \n")
-  arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk 100.00000 fm
-  arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./pifunk -f 100.00000 fm
+  arecord -d0 -c2 -f S16_LE -r 22050 -twav -D copy | sudo ./pifunk++ 100.00000 fm
+  arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./pifunk++ -f 100.00000 fm
 
 def play_net ():
   $port = 80 #http web
-  card = 0 # microphone devices
+  card = 0 #microphone devices
   subdevice = 0
   print ("\nUsing network stream and piping through arecord ... \n")
-  arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0000 $port
-  arecord -D hw:${0},${0} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.00000 $port
+  arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk++ 100.0000 $port
+  arecord -D hw:${0},${0} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk++ 100.00000 $port
 
 def led_on (pin):
   GPIO.output (pin, GPIO.HIGH)
@@ -259,7 +259,7 @@ if __name__ == "__main__":
 ## run another py-script from shell-terminal (holds main script)
 ## selecting a individual band:
 
-#subprocess.run (["sudo", "python", "pi-gpio.py"])
+#subprocess.run (["sudo", "python", "pifunk-gpio.py"])
 
 #subprocess.run (["sudo", "python", "pifunk-pmr.py"])
 
@@ -269,7 +269,7 @@ if __name__ == "__main__":
 
 #subprocess.run (["sudo", "python", "pifunk-cpu-ram-disk.py"])
 
-#subprocess.run (["sudo", "python", "pi-minidisplay.py"])
+#subprocess.run (["sudo", "python", "pifunk-minidisplay.py"])
 
 ## run shell/bat-script if neccessary
 

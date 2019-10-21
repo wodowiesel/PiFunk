@@ -7,7 +7,7 @@ dist: trusty
 sudo: required
 compiler: gcc
 group: stable
-family: unix
+family: unix #linux
 env:
  #- ARCH=x86
  #- ARCH=x64
@@ -22,7 +22,7 @@ python:
   - 3.3
   - 3.4
   - 3.5
-  - 3.6-dev
+  - 3.7.4
   - nightly
   - pypy
   - pypy3
@@ -30,7 +30,7 @@ python:
 before_cache: -r -f $HOME/.cache/pip/log/debug.log
 
 language: c
- cache: - ccache -pip
+ cache: -ccache -pip
   pip: true
   #-timeout: 1
 
@@ -67,7 +67,7 @@ install:
  # - sudo python setup.py install
 
  # - sudo pip install RPi.GPIO
- - sudo apt-get install RPI.GPIO
+ - sudo apt-get install RPi.GPIO
  # - sudo apt-get install python-rpi.gpio
  # - sudo pip install python-rpi.gpio
 
@@ -103,12 +103,12 @@ script:
 
  #compiling with gcc here
 
- - sudo -g -Wall -std=c99 -O3 -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
+ - sudo gcc -std=gnu99 -g3 -Wall -Werror -O3 -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk++.cpp
  - sudo make clean
  - sudo make
  - sudo make install
  #run programm
- - sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
+ - sudo ./pifunk++ -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
  #- sudo python pifunk.py
 
@@ -133,7 +133,7 @@ deploy:
 
  after_failure:
  #
- 
+
  after_success:
  # - coveralls
  # - coverage combine
