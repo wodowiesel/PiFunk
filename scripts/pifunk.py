@@ -1,19 +1,20 @@
 #!/usr/bin/python
-##PiFunk Radio Transmitter for PMR446/CB on FM & AM also for ltp, 433
-##and maybe someday, beacon, gps, internet, relais, aprs, vhf, ts2/3, RDS, morse, echolink
-##microphone (usb & jack) + playlist, mp3/wav-Files. (WIP)
-##dependency python 3.7.x needeed to run script
-##pifunk GPIO's: 4 (pin 7 GP-CLK0) and GND (pin 9 = GND) or 14 (pin 8 TXD) & GND (pin 6) & 15 (pin 10 RDX) & 21 (pin 40 SCLK) --> 39 GND
-##ARM - Structure on Pi's !!! (can only be emulated on PC, so no real GPIO access!!) my Pi: 1.2 rev. 2 B+
+## PiFunk Radio Transmitter for PMR446/CB on FM & AM also for ltp, 433
+## and maybe someday, beacon, gps, internet, relais, aprs, vhf, ts2/3, RDS, morse, echolink
+## microphone (usb & jack) + playlist, mp3/wav-Files. (WIP)
+## dependency python 3.7.x needeed to run script
+## pifunk GPIO's: 4 (pin 7 GP-CLK0) and GND (pin 9 = GND) or 14 (pin 8 TXD) & GND (pin 6) & 15 (pin 10 RDX) & 21 (pin 40 SCLK) --> 39 GND
+## ARM - Structure on Pi's !!! (can only be emulated on PC, so no real GPIO access!!) my Pi: 1.2 rev. 2 B+
 ##------------------------------------------------------------------------------------------------------------------------------------
-#Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels,
-#and the FCC takes a dim view of voice broadcasts on these frequencies. For that matter,
-#re-broadcast of copyrighted material (sports, news and weather programming) is a ##violation of the law,
-#and could result in fines, jail time, and confiscation of all radio equipment on your premises.
-#UK law is 4 W (4000 mW) / GER 100 mW ERP for PMR 0.5 and 4 W for CB
-#->sending on square-func means transmission on 3 other freqs so please use a low-pass-filter!
+## Avoid transmitting on 26.995, 27.045, 27.095, 27.145 and 27.195 MHz, as these are Class C radio-control channels,
+## and the FCC takes a dim view of voice broadcasts on these frequencies. For that matter,
+## re-broadcast of copyrighted material (sports, news and weather programming) is a ##violation of the law,
+## and could result in fines, jail time, and confiscation of all radio equipment on your premises.
+## UK law is 4 W (4000 mW) / GER 100 mW ERP for PMR 0.5 and 4 W for CB
+## ->sending on square-func means transmission on 3 other freqs so please use a low-pass-filter!
 ##-------------------------------------------------------------------------------------------------------------------------------------
 ## py is function-scope not lock-scope!!
+
 ## Imports
 import io
 import os
@@ -31,24 +32,25 @@ import readline
 import rlcomplete
 import atexit
 import calendar
-import time #from time import time
+import time ## from time import time
 import timeit
 import datetime
 import site
 import re
-import math #from math import *
+import math ## from math import *
 import statistics
 import locale
 import distutils
 import serial
 import signal
 import asyncio
+import smbus
 import tracemalloc
 import threading
 import builtins
 import collections
 import queue
-import subprocess #from subprocess import run, call, pipe
+import subprocess ## from subprocess import run, call, pipe
 import multiprocessing
 import wave
 import random
@@ -58,8 +60,9 @@ import socket
 import ipaddress
 import mimetypes
 import urllib.request
+
 ## some other plugins
-import zipfile
+import tar
 import json
 import csv
 #import numpy as np
@@ -70,19 +73,21 @@ import csv
 ## RPi & GPIO lib obligatory for controlling gpios
 #sudo apt-get install python-rpi.gpio
 try:
- import RPi.GPIO as GPIO4
- import RPI.GPIO as GPIO4
+ import RPi.GPIO as GPIOLIB
+ import RPI.GPIO as GPIO
 except:
- from RPi._GPIO import GPIO4
+ from RPi._GPIO import GPIOLIB
 else:
- from RPi import GPIO4
+ from RPi import GPIOLIB
 
+## load navigations stuff
 import gps
-import pynmea2 # for gps devices e.g. Neo-7M
+import pynmea2 ## for gps devices e.g. Neo-7M
 #sudo python setup.py install
-#hex-code: 0x10A --> dec:26
+
+## hex-code: 0x10A --> dec: 26
 ##------------------------------------------------------------------------------
-#loading hardware on startup
+## loading hardware on startup
 
 def __init__ (self):
   print ("\nWelcome to PiFunk!\n")
@@ -90,9 +95,20 @@ def __init__ (self):
   print (sys.argv)
 
   try:
-          os.system ("sudo modprobe w1-gpio") #rpi 1-2
+      os.system ("sudo apt-get install i2c-tools")
+      os.system ("sudo apt-get install python-smbus")
+
+      os.system ("sudo adduser pi i2c")
+      os.system ("sudo i2cdetect -y 0")
+
   except:
-          os.system ("sudo rmmod w1-gpio") # rpi3
+          os.system ("sudo i2cdetect -y 1")
+
+  try:
+          os.system ("sudo modprobe w1-gpio") ## rpi 1-2
+
+  except:
+          os.system ("sudo rmmod w1-gpio") ## rpi 3/4
 
   base_dir = "/sys/bus/w1/devices/"
   device_folder = glob.glob (base_dir + "28*") [0]
@@ -111,7 +127,7 @@ def __init__ (self):
   GPIO.setwarnings (False)
   GPIO.setmode (GPIO.BCM)
   GPIO.setmode (GPIO.BOARD)
-  GPIO.setup (4, GPIO.OUT) #or 11 if used
+  GPIO.setup (4, GPIO.OUT) ## or 11 if used
   output = GPIO.output (4, TRUE)
   sensor_data = (gpio_pin, GPIO.PINS.GND, GPIO.PINS.RXD, GPIO.PINS.TXD)
   pi_pwm = GPIO.PWM (4, freq)
@@ -146,7 +162,7 @@ def frequency (freq):
 def sampler (samplerate):
   samplerate = int (input ("\nEnter samplerate (22050/44100/48000 kHz): "))
   if samplerate > 0:
-      print ("\nSamplerate is: " + samplerate + " \n")
+      print ("\nSamplerate is: " + samplerate + "\n")
       return samplerate
   else:
       samplerate = int (22050)
@@ -184,20 +200,21 @@ def callname (callsign):
       print ("\nNo callsign specified! Using standard *callsign* \n")
       return callsign
 
-def c_arg_parser ():
+def c_arg_parser (filename, freq, samplerate, mod, callsign, power):
   print ("\nParsing args to C ... \n")
+
   return filename, freq, samplerate, mod, callsign, power
 
-def play_wav ():
+def play_wav (filename, freq, samplerate, mod, callsign, power):
   print ("\nPlaying wav ... \n")
   if (filename && freq && samplerate && mod != None):
-      call (["sudo ./pifunk ", filename, freq, samplerate, mod, callsign])
+      call (["sudo ./pifunk ", filename, freq, samplerate, mod, callsign, power])
   else:
-      call (["sudo ./pifunk sound.wav 100.00000 22050 fm callsign"])
+      call (["sudo ./pifunk sound.wav 100.00000 22050 fm callsign 7"])
 
 def play_mp3 ():
   print ("\nPiping mp3 to ffmpeg ... \n")
-  ffmpeg -i sounds/sound.mp3 -f s16le -ar 22.05k -ac 1 | sudo ./pifunk -100.00000 fm
+  ffmpeg -i sounds/sound.mp3 -f s16le -ar 22050 -ac 1 | sudo ./pifunk -f 100.00000 fm
 
 def play_mic ():
   ## Broadcast from a (usb) microphone, stereo
@@ -206,8 +223,8 @@ def play_mic ():
   arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./pifunk -f 100.00000 fm
 
 def play_net ():
-  $port = 80 #http web
-  card = 0 # microphone devices
+  $port = 80 ## http web
+  card = 0 ## microphone devices
   subdevice = 0
   print ("\nUsing network stream and piping through arecord ... \n")
   arecord -D hw:${card},${subdevice} -f S16_LE -r 22050 -t wav | sudo nc -1 ./pifunk 100.0000 $port
@@ -242,7 +259,7 @@ def csv_reader ():
   with open ("docs/ctsspmr.csv", "rb") as f:
   reader = csv.reader (f, delimiter = ",", quotechar = "|")
   for row in reader: print (",".join (row))
-  # reading single infos of ctss tones later (wip)
+  ## reading single infos of ctss tones later (wip)
   print ("\nImporting completed \n")
   return reader
 
@@ -251,11 +268,11 @@ def logger ():
   call (["sudo python ", "./pifunk-log.py"], stdout = f)
   print ("\nLogging ... \n")
 
-
+##------------------------------------------------------------------------------
 if __name__ == "__main__":
   print ("\nStarting Program!\n")
   (int (sys.argv [1])
-##------------------------------------------------------------------------------
+
 ## run another py-script from shell-terminal (holds main script)
 ## selecting a individual band:
 
@@ -274,19 +291,19 @@ if __name__ == "__main__":
 ## run shell/bat-script if neccessary
 
 ##------------------------------------------------------------------------------
-# main program
+## main program
 __init__ ()
-datetime.now().strftime("%d-%m-%Y, %H:%M:%S \n")
+datetime.now().strftime("\n%d-%m-%Y, %H:%M:%S \n")
 #print (datetime.datetime.now ())
 #current_time = datetime.datetime.now ()
 #str (datetime.now ())
 #current_time.isoformat ()
 
-#here a menu with switchcase
+## here a menu with switchcase
 logger ()
 csv_reader ()
 
-#if args not specified, else so to play
+## if args not specified, else so to play
 soundfile ()
 frequency ()
 sampler ()
@@ -297,22 +314,24 @@ callsign ()
 c_arg_parser ()
 
 try:
-#if all args are parsed so to transmission mode
+## if all args are parsed so to transmission mode
  led_on ()
  led_blinking ()
  led_off ()
 
-#here a switchcase later
+## here a switchcase later
  play_wav ()
  play_mp3 ()
  play_net ()
  play_mic ()
 
 except KeyboardInterrupt:
-  GPIO.cleanup()       # clean up GPIO on CTRL+C exit
+ GPIO.cleanup()       ## clean up GPIO on CTRL+C exit
 
-GPIO.cleanup()           # clean up GPIO on normal exit
+GPIO.cleanup()           ## clean up GPIO on normal exit
 ##------------------------------------------------------------------------------
-##test-area
+
+## test-area
 #nosetests
+
 print ("\nEnd of script!\n")
