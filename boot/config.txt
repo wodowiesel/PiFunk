@@ -1,36 +1,54 @@
 # /boot/config.txt
-# For more options and information see
-# http://rpf.io/configtxt
-# normal settings for the pi
+## For more options and information see http://rpf.io/configtxt
 
-force_turbo=1 #needed if overclocking or setting specific values
-arm_freq=700 #or pi1/2, pi3/4 has 900
-gpu_freq=250 #for pi1/2, pi3/4 has 400
-core_freq=250 #for pi1/2, pi3/4 has 400
-sdram_freq=400 #standard
+## setting specific settings for the pi
+## exact values @ https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md
+force_turbo=1 ## needed if overclocking or custom values
+arm_freq=700 ## for pi1
+gpu_freq=250 ## for pi1
+core_freq=250 ## for pi1
+sdram_freq=400 ## for pi1
 
+## set i2c usage
 modprobe i2c_bcm2708
+modprobe i2c_bcm2835
 modprobe i2c_dev
-chmod 666 /dev/i2c-1
+
+chmod 666 /dev/i2c-1 ## permission
+
 adduser pi i2c
+adduser pi i2s
 
-# for UART RX & TX
+## for UART RX & TX
 enable_uart=1
-init_uart_baud=9600
+init_uart_baud=9600 ## baud
 
-# Enable audio (loads snd_bcm2835)
+## Enable audio (loads snd_bcm2835)
 dtparam=audio=on
+dtparam=spi=on
+dtparam=i2s=on
 
-# gpio settings
-dtoverlay=gpiopin=4,pullup=0
+## Enable I2C bus for gpios
+dtparam=i2c1=on
+dtparam=i2c_arm=on
+dtparam=i2c1_baudrate=100000 ## for 100 (default) or 400 kHz clock
+dtparam=i2c_arm_baudrate=100000
+
+## gpio settings
+## realtime-hw clock & gps sync-clock
 dtoverlay=i2c-rtc,ds3231
 dtoverlay=pps-gpio,gpiopin=18
-dtoverlay=w1-gpio
-dtparam=spi=on
 
-# Using w1-gpio needs a 4.7 kΩ pull-up resistor connected between
-# do open path of w1-device
+## radio pin
+dtoverlay=w1-gpio,gpiopin=4,pullup=0
+## Configures the w1-gpio 1-wire interface module. <param>=<val>
+## Use this overlay if you *don't* need a pin to drive an external pullup 4.7 kΩ.
+## Params: gpiopin -> GPIO pin for I/O (default "4")
+## pullup -> Non-zero, 1, "on", or "y" to enable the parasitic
+## power (2-wire, power-on-data) feature
+
+## list w1-devices
 ls /sys/bus/w1/devices/
 
-# temperature sensor
-#w1-therm
+## temperature sensor usage (optional)
+# w1-therm
