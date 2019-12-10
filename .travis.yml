@@ -1,38 +1,54 @@
-## travis
+## travis ci
 
-#matrix:
-#    include:
+#include:
 os: linux
+
 dist: trusty
+
 sudo: required
+
 compiler: gcc
+
 group: stable
+
 family: unix
-env:
- #- ARCH=x86
- #- ARCH=x64
- - ARCH=arm
 
 language: python
 
+env:
+   #- ARCH=x86
+   #- ARCH=x64
+   - ARCH=arm
+   - ARCH=aarm64
+
 python:
-  - 2.6
-  - 2.7
-  - 3.2
-  - 3.3
-  - 3.4
-  - 3.5
-  - 3.6-dev
+  #- 2.6
+  #- 2.7
+  #- 3.2
+  #- 3.3
+  #- 3.4
+  #- 3.5
+  #- 3.6
+  - 3.7
+  - 3.8
   - nightly
-  - pypy
+  #- pypy
   - pypy3
 
 before_cache: -r -f $HOME/.cache/pip/log/debug.log
 
 language: c
  cache: - ccache -pip
+
   pip: true
   #-timeout: 1
+
+  env:
+    matrix:
+    - DEFCONFIG=bcm2709_defconfig ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+    - DEFCONFIG=bcm2711_defconfig ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+    - DEFCONFIG=bcm2711_defconfig ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+    - DEFCONFIG=bcm2835_defconfig ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
 
   directories:
    - .autoconf
@@ -46,6 +62,7 @@ branches:
  only:
   - master
  # - alpha
+ # - c++
 
 ## command to install dependencies
 before_install:
@@ -66,13 +83,9 @@ install:
  # - sudo apt-get install gcc
  # - sudo python setup.py install
 
- # - sudo pip install RPi.GPIO
- - sudo apt-get install RPI.GPIO
+ - sudo pip install RPi.GPIO
  # - sudo apt-get install python-rpi.gpio
  # - sudo pip install python-rpi.gpio
-
- # -q Django==$DJANGO_VERSION
- # -q Flask==$Flask_VERSION
 
  # - git clone https://github.com/polaco1782/raspberry-qemu.git
  # - wget "https://super-secret-location.com/2015-11-21-raspbian-jessie-lite.img.xz"
@@ -86,33 +99,37 @@ install:
 
 notifications:
   email: false
+    #on_success: change
+    #on_failure: always
 
 # command to run tests +scripts
 before_script:
  - git clone git://github.com/silicator/PiFunk
  # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
  # - before-script-linux.sh
-
  # fast_finish: true
+
 script:
- # - key
+ #- key
  - nosetests
  - coveralls
  # - sshpass -p raspberry ssh localhost -o StrictHostKeyChecking=no -p 10022 -l pi "cat /etc/os-release"
- - cd PiFunk
+ - ./ci/travis/pifunk-shell.sh
+ - ./ci/travis/install-dep.sh
 
- #compiling with gcc here
-
- - sudo -g -Wall -std=c99 -O3 -Iinclude -Llib -lsndfile -lm -shared -fPIC pifunk.c
+#compiling with gcc here
  - sudo make clean
- - sudo make
+ - sudo gcc -std=gnu99 -ggdb3 -g3 -O3 -Wall -Werror -pedantic-errors -v -Iinclude -I/opt/vc/include -Llib -Llib -L/opt/vc/lib -lm -lpthread -lbcm_host -lsndfile -shared -D_USE_MATH_DEFINES -D_GNU_SOURCE -fPIC pifunk.c -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI=3
+ #- sudo make
  - sudo make install
- #run programm
+
+#run programm
+ #- cd PiFunk
  - sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
 
  #- sudo python pifunk.py
 
- ##script-plugins if needed
+##script-plugins if needed
  # - sudo python pifunk-temp.py
  # - sudo python pifunk-cpu-ram-disk.py
 
@@ -133,7 +150,7 @@ deploy:
 
  after_failure:
  #
- 
+
  after_success:
  # - coveralls
  # - coverage combine
