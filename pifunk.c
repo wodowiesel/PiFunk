@@ -1,7 +1,9 @@
-/* PiFunk (C) 2018-2019 silicator a.k.a Wiesel
-version=0.1.7.7e
+/* Program: PiFunk (C)
+Copyright: 2018 - 2020
+Author: D. W. / silicator a.k.a Wiesel
+version = 0.1.7.7e
 
-OS:  Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
+OS: Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
 
 SHA-256: ac557f27eb8697912263a1de812dfc99fa8d69bd6acc73a0b7756a1083ba0176
 -> get 3 different versions here: https://www.raspberrypi.org/downloads/raspbian/
@@ -14,7 +16,7 @@ gdb>=7.11.1 debugger
 git clone https://github.com/silicator/PiFunk/
 
 ->instructions:
-You will need alsa library for this:
+You will need "alsa" library for this:
 sudo apt-get install libsndfile1-dev
 
 sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
@@ -62,9 +64,10 @@ todo:
 memory-stuff
 pointer & address corrections
 make compatible arguments/funcs for py/shell scripts
-tone generator for ctss (sin?)
+tone generator for ctss (sin wave?)
 */
 
+#include <gnumake.h>
 //std includes
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,7 +81,7 @@ tone generator for ctss (sin?)
 #include <unistd.h>
 
 // functionality includes
-#include <iso646.h> //c95 back-compatible -std=iso9899:199409
+#include <iso646.h> // c95 back-compatible -std=iso9899:199409
 #include <argp.h>
 #include <string.h>
 #include <getopt.h>
@@ -127,26 +130,51 @@ tone generator for ctss (sin?)
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 
-//linux kernel headers
-//#include <linux/module.h>
+//linux kernel driver headers
 //#include <linux/init.h>
-//#include <linux/slab.h>
-//#include <linux/interrupt.h>
 //#include <linux/io.h>
 //#include <linux/clk.h>
-//#include <linux/completion.h>
+//#include <linux/cpu.h>
+//#include <linux/cpufreq.h>
+//#include <linux/cpumask.h>
+//#include <linux/cpu_cooling.h>
+//#include <linux/math64.h>
+//#include <linux/module.h>
+//#include <linux/slab.h>
+//#include <linux/errno.h>
 //#include <linux/err.h>
+//#include <linux/notifier.h>
 //#include <linux/bcd.h>
+//#include <linux/interrupt.h>
+//#include <linux/completion.h>
 //#include <linux/platform_device.h>
+//#include <linux/of_platform.h>
+//#include <linux/pm_opp.h>
+//#include <linux/export.h>
+#include <linux/sched/signal.h>
+#include <linux/device.h>
+#include <linux/reboot.h>
+#include <linux/types.h>
 #include <linux/string.h>
+#include <linux/pm_runtime.h>
+#include <linux/reset.h>
+#include <linux/dma-mapping.h>
+#include <linux/mailbox_client.h>
+#include <linux/pm_domain.h>
+#include <linux/regulator/consumer.h>
+//#include <soc/bcm2835/raspberrypi-firmware.h>
+//#include <drm/drm_fb_cma_helper.h>
+//#include <drm/drm_fb_helper.h>
+// I2C support need
 #include <linux/i2c.h>
-#include <linux/i2c-dev.h>		//Needed for I2C port
+#include <linux/i2c-dev.h>
 #include <linux/spi/spidev.h>
 
+// RTC support
 #include <linux/rtc.h>
 //#include <linux/rtc/ds1307.h>
 //#include <linux/rtc/ds3231.h>
-#include "rtc/ds3231.h" //
+#include "rtc/ds3231.h" // my rtc
 
 // ip host socket
 #include <arpa/inet.h>
@@ -156,27 +184,112 @@ tone generator for ctss (sin?)
 #include <netdb.h>
 #include <ifaddrs.h>
 
-//for c++11/14/17
+//for c++11/14/17/20
 /*
-#include <iostream.h>
-#include <sstream.h>
-#include <threads.h>
-#include <cstdlib.h>
-#include <csignal.h>
-#include <cmath.h>
-#include <cstdint.h>
-#include <iomanip.h>
-#include <algorithm.h>
-#include <vector.h>
-#include <stdalign.h>
-#include <stdnoreturn.h>
-#include <stdatomic.h>
-#include <uchar.h>
-#include <cstring.h>
-using namespace std;
+#include <iostream> //
+#include <iomanip> //
+#include <iosfwd> //
+#include <ios> //
+#include <istream> //
+
+#include <stdalign> //
+#include <stdnoreturn> //
+#include <stdatomic> //
+#include <cstdlib>	// General purpose utilities: program control, dynamic memory allocation, random numbers, sort and search
+#include <cstdio> //
+#include <cstdarg>	// Handling of variable length argument lists
+#include <cstdint> // (since C++11)	fixed-size types and limits of other types
+#include <csignal>	// Functions and macro constants for signal management
+#include <cstring> //
+#include <cmath>	// Common mathematics functions
+#include <ctime>	// C-style time/date utilites
+#include <climits>	// limits of integral types
+#include <cfloat>	// limits of float types
+
+#include <uchar> //
+#include <threads> //
+#include <algorithm> //
+#include <vector> //
+#include <fstream> //
+#include <sstream> //
+#include <ostream> //
+#include <streambuf> //
+#include <strstream> // depr c98
+#include <syncstream> // c++20
+#include <locale>	// Localization utilities
+#include <clocale>	// C localization utilities
+#include <codecvt> //
+#include <regex> //
+#include <atomic> //
+#include <complex>	// Complex number type
+#include <valarray>	// Class for representing and manipulating arrays of values
+#include <random> // (since C++11)	Random number generators and distributions
+#include <numeric>	// Numeric operations on values in containers
+#include <ratio> // (since C++11)	Compile-time rational arithmetic
+#include <cfenv> // (since C++11)	Floating-point environment access functions
+#include <bit> // (since C++20)	Bit manipulation functions
+#include <concepts> // (since C++20)	Fundamental library concepts
+#include <coroutine> // (since C++20)	Coroutine support library
+#include <csetjmp>	// Macro (and function) that saves (and jumps) to an execution context
+#include <typeinfo>	// Runtime type information utilities
+#include <typeindex> // (since C++11)	std::type_index
+#include <type_traits> // (since C++11)	Compile-time type information
+#include <bitset>	// std::bitset class template
+#include <functional>	// Function objects, Function invocations, Bind operations and Reference wrappers
+#include <utility>	// Various utility components
+#include <chrono> // (since C++11)	C++ time utilites
+#include <initializer_list> // (since C++11)	std::initializer_list class template
+#include <tuple> // (since C++11)	std::tuple class template
+#include <any> // (since C++17)	std::any class
+#include <optional> // (since C++17)	std::optional class template
+#include <variant> // (since C++17)	std::variant class template
+#include <compare> // (since C++20)	Three-way comparison operator support
+#include <version> // (since C++20)	supplies implementation-dependent library information
+#include <source_location> // (since C++20)	supplies means to obtain source code location
+#include <new>	// Low-level memory management utilities
+#include <memory>	//Higher level memory management utilities
+#include <scoped_allocator> // (since C++11)	Nested allocator class
+#include <memory_resource> // (since C++17)	Polymorphic allocators and memory resources
+#include <cinttypes> // (since C++11)	formatting macros , intmax_t and uintmax_t math and conversions
+#include <limits>	// standardized way to query properties of arithmetic types
+#include <exception>	// Exception handling utilities
+#include <stdexcept>	// Standard exception objects
+#include <cassert>	// Conditionally compiled macro that compares its argument to zero
+#include <system_error> // (since C++11)	defines std::error_code, a platform-dependent error code
+#include <cerrno>	// Macro containing the last error number
+#include <cctype>	// Functions to determine the type contained in character data
+#include <cwctype>	// Functions to determine the type contained in wide character data
+#include <cstring>	// various narrow character string handling functions
+#include <cwchar>	// various wide and multibyte string handling functions
+#include <cuchar> // (since C++11)	C-style Unicode character conversion functions
+#include <string>	// std::basic_string class template
+#include <string_view> // (since C++17)	std::basic_string_view class template
+#include <charconv> //(since C++17)	std::to_chars and std::from_chars
+#include <format> // (since C++20)	Formatting library including std::format
+#include <array> // (since C++11)	std::array container
+#include <vector>	// std::vector container
+#include <deque>	// std::deque container
+#include <list>	// std::list container
+#include <forward_list> // (since C++11)	std::forward_list container
+#include <set>	// std::set and std::multiset associative containers
+#include <map>	// std::map and std::multimap associative containers
+#include <unordered_set> // (since C++11)	std::unordered_set and std::unordered_multiset unordered associative containers
+#include <unordered_map> // (since C++11)	std::unordered_map and std::unordered_multimap unordered associative containers
+#include <stack>	// std::stack container adaptor
+#include <queue>	// std::queue and std::priority_queue container adaptors
+#include <span> // (since C++20)	std::span view
+#include <iterator> //
+#include <ranges> // (since C++20)	Range access, primitives, requirements, utilities and adaptors
+#include <execution> // (since C++17)	Predefined execution policies for parallel versions of the algorithms
+#include <filesystem> // (since C++17)	std::path class and supporting functions
+#include <forward_list> // (since C++11)	std::forward_list container
+#include <concepts> // (since C++20)	Fundamental library concepts
+#include <coroutine> // (since C++20)	Coroutine support library
+
+using namespace std; //
 */
 
-// windows (10) if needed for maybe rpi3
+// windows (10) if needed for maybe rpi3/4 aarch64
 /*
 #include <windows.h>
 #include <win.h>
@@ -186,12 +299,14 @@ using namespace std;
 #include <conio.h> // dos-header
 */
 
-//broadcom arm processor for mapping phys. addresses
+// broadcom arm processor for mapping phys. addresses
 #include "opt/vc/include/bcm_host.h" // firmware stuff
 #include "opt/vc/include/interface/vcos/vcos.h"
-#include "bcm2835/src/bcm2835.h" // pi 0 & A & B/B+
+#include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+
+#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B
+#include "bcm2835/src/bcm2835.h" // pi 0 ZERO & W A/+ & B/B+
 
-//RPi.GPIO lib, 0.7.0 used for pi4 support
+// RPi.GPIO lib, 0.7.0 used with pi4 support or higher
 #include "RPi.GPIO/source/i2c.h"
 //#include "RPi.GPIO/source/c_gpio.h"
 #include "RPi.GPIO/source/event_gpio.h"
@@ -201,12 +316,12 @@ using namespace std;
 #include "RPi.GPIO/source/common.h"
 #include "RPi.GPIO/source/cpuinfo.h"
 
-//see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
-//download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
+// see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
+// download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
 //#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
 
-//extra library https://github.com/libusb/libusb
-//for usb soundcards for mic and alsa usage
+// extra library https://github.com/libusb/libusb
+// for usb soundcards for mic and alsa usage
 #include "libusb/libusb/libusb.h"
 //#include "libusb/libusb.h"
 //#include "libusb/libusb/libusbi.h"
@@ -217,13 +332,15 @@ using namespace std;
 #include "libusb/libusb/os/poll_posix.h"
 #include "libusb/libusb/os/threads_posix.h"
 
-//custom header for pifunk (dummy for now)
+// custom header for pifunk (definitions)
 #include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
-#ifndef _PIFUNK_C_
-#define _PIFUNK_C_
 // preproccessor definitions
+#ifndef _PIFUNK_C_
+  #define _PIFUNK_C_
+#endif
+
 #ifdef __LINUX__
   printf ("\nProgram runs under LINUX\n");
 	#pragma GCC dependency "pifunk.h"
@@ -237,16 +354,28 @@ using namespace std;
 #ifdef __ARM__
   printf ("\nProgram runs under ARM-Architecture!\n");
   //#pragma ARM
-  //same as -CODE32
+  // same as -CODE32
+  //#error NOT ARM
+#endif
+
+#ifdef __ARM64__
+  printf ("\nProgram runs under ARM64-Architecture!\n");
+  //#pragma ARM
+  // same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __GNUC__
-   //printf ("\nUsing GNU C with ANSI C99!!\n");
+   //printf ("\nUsing GNU C with ANSI ISO C99 as GNU99!!\n");
    //#pragma GCC system_header
 #endif
 
-#ifdef __STDC_VERSION__ //>= 199901L
+#ifdef __CPLUSPLUS
+//printf ("\nUsing GNU C++ with ANSI ISO C++17/20!!\n");
+ extern "C" {
+#endif
+
+#ifdef __STDC_VERSION__ >= 199901L
    /*#warning "\nPlease compile with flag -std=c99\n" string */
    //printf ("\nUsing GNU C with C99 standard!!\n");
 #endif
@@ -254,15 +383,15 @@ using namespace std;
 /*
 #ifdef _GNU_SOURCE
 # define basename __basename_gnu
-
 #endif
 */
-#define _POSIX_C_SOURCE   		200809L //or 199309L
+
+#define _POSIX_C_SOURCE   		200809L // or 199309L
 //#define _USE_MATH_DEFINES // for math lm lib
 
 //------------------------------------------------------------------------------
 // definitions & Makros
-#define VERSION 						 "0.1.7.7e" // my version
+#define VERSION 						 "0.1.7.7" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
@@ -309,38 +438,38 @@ volatile unsigned 										*allof7e; //
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 
 // specific pi adresses & definitions
-#ifdef  RPI || RASPBERRY // alternative BCM2711B0
+#ifdef  RPI || RASPBERRY // alternative BCM2711 B0 old/different versions
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x04) //dec: 4
+#define CURBLOCK                       (0x04) // dec: 4
 #define PLLD_FREQ 										 (500000000.) //
 
-#ifdef 	RASPI == 0 // pi zero & w
+#ifdef 	RASPI || RASPI0 == 0 // pi 0 zero & w
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
-#define DRAM_PHYS_BASE                 (0x40000000) //dec: 1073741824
+#define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RASPI == 1 // pi 1 my version
+#ifdef  RASPI || RASPI1 == 1 // pi 1 my version
 #define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               0x7E000000 // dec: 2113929216
-#define DRAM_PHYS_BASE                 0x40000000 //dec: 1073741824
+#define DRAM_PHYS_BASE                 0x40000000 // dec: 1073741824
 #define MEM_FLAG                       0x0C // alternative
-#define CURBLOCK                       0x0C //dec: 12
+#define CURBLOCK                       0x0C // dec: 12
 #define CLOCK_BASE										 19.2E6 //
 #define DMA_CHANNEL										 14 //
 #define PLLD_FREQ											 500000000. //
 #endif
 
-#ifdef  RASPI == 2 // pi2
+#ifdef  RASPI || RASPI2 == 2 // pi 2
 #define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
-#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
+#define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
@@ -348,11 +477,11 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef 	RASPI == 3 // BCM2835
+#ifdef 	RASPI || RASPI3 == 3 //pi3 - BCM2835
 #define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
-#define DRAM_PHYS_BASE                 (0xC0000000) //dec: 3221225472
+#define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
@@ -360,7 +489,7 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef  RASPI == 4 //pi4 - BCM2838
+#ifdef  RASPI || RASPI4 == 4 // pi 4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 
@@ -420,9 +549,9 @@ volatile unsigned 										*allof7e; //
 
 #define ARGC_PTR                        (0x5) // dec: 5
 #define NAME_PTR                        (0x2F) // dec: 47
-#define FREQ_PTR                        (0x31) //$ means is in RDS data dec: 49
-#define SAMPLERATE_PTR                  (0x32) //$ in RDS data  dec: 50
-#define MODULATION_PTR                  (0x66) //$ means isin RDS data // dec: 102
+#define FREQ_PTR                        (0x31) // $ means is in RDS data dec: 49
+#define SAMPLERATE_PTR                  (0x32) // $ in RDS data  dec: 50
+#define MODULATION_PTR                  (0x66) //  $ means isin RDS data // dec: 102
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 #define FILE_PTR                        (0x73) // dec: 115
 
@@ -461,103 +590,103 @@ volatile unsigned 										*allof7e; //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
 
 // GPIO
-#define GPFSEL0                         (0x00/4) //p.90 dec: 0
-#define GPFSEL1                         (0x04/4) //1
-#define GPFSEL2                         (0x08/4) //2
+#define GPFSEL0                         (0x00/4) // p.90 dec: 0
+#define GPFSEL1                         (0x04/4) // 1
+#define GPFSEL2                         (0x08/4) // 2
 #define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368
 
-#define GPPUD                           (0x94/4) //37
-#define GPPUDCLK0                       (0x98/4) //38
-#define GPPUDCLK1                       (0x9C/4) //39
+#define GPPUD                           (0x94/4) // 37
+#define GPPUDCLK0                       (0x98/4) // 38
+#define GPPUDCLK1                       (0x9C/4) // 39
 
 // PADS
 // Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
 // Drive Strength (power 7 standard): 0 = 2 mA, 7 = 16 mA.
 
 #define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
-#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16  0x64 = dec: 100
+#define PAD_LEN                         (0x40/4) // 0x10 = dec: 16,  0x64 = dec: 100
 #define PADGPIO                         (0x5A000018) // dec: 1509949464
 
-#define GPIO_PAD_0_27                   (0x2C/4)  //11
-#define GPIO_PAD_28_45                  (0x30/4)  //12
-#define GPIO_PAD_46_52                  (0x34/4)  //13
+#define GPIO_PAD_0_27                   (0x2C/4)  // 11
+#define GPIO_PAD_28_45                  (0x30/4)  // 12
+#define GPIO_PAD_46_52                  (0x34/4)  // 13
 
-#define GPCLK_CNTL                      (0x70/4) //28
-#define GPCLK_DIV                       (0x74/4) //29
+#define GPCLK_CNTL                      (0x70/4) // 28
+#define GPCLK_DIV                       (0x74/4) // 29
 
-#define CORECLK_CNTL                    (0x08/4) //2
-#define CORECLK_DIV                     (0x0C/4) //3
+#define CORECLK_CNTL                    (0x08/4) // 2
+#define CORECLK_DIV                     (0x0C/4) // 3
 
-#define EMMCCLK_CNTL                    (0x1C0/4) //112
-#define EMMCCLK_DIV                     (0x1C4/4) //113
+#define EMMCCLK_CNTL                    (0x1C0/4) // 112
+#define EMMCCLK_DIV                     (0x1C4/4) // 113
 
-#define CM_LOCK                         (0x114/4) //69
+#define CM_LOCK                         (0x114/4) // 69
 #define CM_LOCK_FLOCKA                  (1<<8) //
 #define CM_LOCK_FLOCKB                  (1<<9) //
 #define CM_LOCK_FLOCKC                  (1<<10) //
 #define CM_LOCK_FLOCKD                  (1<<11) //
 #define CM_LOCK_FLOCKH                  (1<<12) //
 
-#define CM_PLLA                         (0x104/4) //65
-#define CM_PLLC                         (0x108/4) //66
-#define CM_PLLD                         (0x10C/4) //67
-#define CM_PLLH                         (0x110/4) //68
-#define CM_PLLB                         (0x170/4) //92
+#define CM_PLLA                         (0x104/4) // 65
+#define CM_PLLC                         (0x108/4) // 66
+#define CM_PLLD                         (0x10C/4) // 67
+#define CM_PLLH                         (0x110/4) // 68
+#define CM_PLLB                         (0x170/4) // 92
 
-#define A2W_PLLA_ANA0                   (0x1010/4) //1028
-#define A2W_PLLC_ANA0                   (0x1030/4) //1036
-#define A2W_PLLD_ANA0                   (0x1050/4) //1044
-#define A2W_PLLH_ANA0                   (0x1070/4) //1052
-#define A2W_PLLB_ANA0                   (0x10F0/4) //1084
+#define A2W_PLLA_ANA0                   (0x1010/4) // 1028
+#define A2W_PLLC_ANA0                   (0x1030/4) // 1036
+#define A2W_PLLD_ANA0                   (0x1050/4) // 1044
+#define A2W_PLLH_ANA0                   (0x1070/4) // 1052
+#define A2W_PLLB_ANA0                   (0x10F0/4) // 1084
 
 #define A2W_PLL_KA_SHIFT                (7) //
 #define A2W_PLL_KI_SHIFT                (19) //
 #define A2W_PLL_KP_SHIFT                (15) //
 
-#define PLLA_CTRL                       (0x1100/4) //1088
-#define PLLA_FRAC                       (0x1200/4) //1152
-#define PLLA_DSI0                       (0x1300/4) //1216
-#define PLLA_CORE                       (0x1400/4) //1280
-#define PLLA_PER                        (0x1500/4) //1344
-#define PLLA_CCP2                       (0x1600/4) //1408
+#define PLLA_CTRL                       (0x1100/4) // 1088
+#define PLLA_FRAC                       (0x1200/4) // 1152
+#define PLLA_DSI0                       (0x1300/4) // 1216
+#define PLLA_CORE                       (0x1400/4) // 1280
+#define PLLA_PER                        (0x1500/4) // 1344
+#define PLLA_CCP2                       (0x1600/4) // 1408
 
-#define PLLB_CTRL                       (0x11E0/4) //1144
-#define PLLB_FRAC                       (0x12E0/4) //1208
-#define PLLB_ARM                        (0x13E0/4) //1272
+#define PLLB_CTRL                       (0x11E0/4) // 1144
+#define PLLB_FRAC                       (0x12E0/4) // 1208
+#define PLLB_ARM                        (0x13E0/4) // 1272
 
-#define PLLB_SP0                        (0x14E0/4) //1336
-#define PLLB_SP1                        (0x15E0/4) //1400
-#define PLLB_SP2                        (0x16E0/4) //1464
+#define PLLB_SP0                        (0x14E0/4) // 1336
+#define PLLB_SP1                        (0x15E0/4) // 1400
+#define PLLB_SP2                        (0x16E0/4) // 1464
 
-#define PLLC_CTRL                       (0x1120/4) //1196
-#define PLLC_FRAC                       (0x1220/4) //1160
+#define PLLC_CTRL                       (0x1120/4) // 1196
+#define PLLC_FRAC                       (0x1220/4) // 1160
 
-#define PLLC_CORE0                      (0x1620/4) //1416
-#define PLLC_CORE2                      (0x1320/4) //1224
-#define PLLC_CORE1                      (0x1420/4) //1288
+#define PLLC_CORE0                      (0x1620/4) // 1416
+#define PLLC_CORE2                      (0x1320/4) // 1224
+#define PLLC_CORE1                      (0x1420/4) // 1288
 
-#define PLLC_PER                        (0x1520/4) //1352
+#define PLLC_PER                        (0x1520/4) // 1352
 
-#define PLLD_CTRL                       (0x1140/4) //1104
-#define PLLD_FRAC                       (0x1240/4) //1168
+#define PLLD_CTRL                       (0x1140/4) // 1104
+#define PLLD_FRAC                       (0x1240/4) // 1168
 
-#define PLLD_DSI0                       (0x1340/4) //1232
-#define PLLD_DSI1                       (0x1640/4) //1424
+#define PLLD_DSI0                       (0x1340/4) // 1232
+#define PLLD_DSI1                       (0x1640/4) // 1424
 
-#define PLLD_CORE                       (0x1440/4) //1296
-#define PLLD_PER                        (0x1540/4) //1360
+#define PLLD_CORE                       (0x1440/4) // 1296
+#define PLLD_PER                        (0x1540/4) // 1360
 
-#define PLLH_CTRL                       (0x1160/4) //1112
-#define PLLH_FRAC                       (0x1260/4) //1176
-#define PLLH_AUX                        (0x1360/4) //1240
-#define PLLH_RCAL                       (0x1460/4) //1304
-#define PLLH_PIX                        (0x1560/4) //1368
-#define PLLH_STS                        (0x1660/4) //1432
+#define PLLH_CTRL                       (0x1160/4) // 1112
+#define PLLH_FRAC                       (0x1260/4) // 1176
+#define PLLH_AUX                        (0x1360/4) // 1240
+#define PLLH_RCAL                       (0x1460/4) // 1304
+#define PLLH_PIX                        (0x1560/4) // 1368
+#define PLLH_STS                        (0x1660/4) // 1432
 
 // PWM
-#define PWM_CTL                         (0x00/4) //0
-#define PWM_FIFO                        (0x18/4) //6
-#define PWM_DMAC                        (0x08/4) //2
+#define PWM_CTL                         (0x00/4) // 0
+#define PWM_FIFO                        (0x18/4) // 6
+#define PWM_DMAC                        (0x08/4) // 2
 
 #define PWMDMAC_ENAB                    (1<<31)  //
 #define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) //
@@ -591,15 +720,15 @@ volatile unsigned 										*allof7e; //
 #define PCMCLK_CNTL                     (38) //
 #define PCMCLK_DIV                      (39) //
 
-#define PCM_CS_A                        (0x00/4) //0
-#define PCM_FIFO_A                      (0x04/4) //1
-#define PCM_MODE_A                      (0x08/4) //2
-#define PCM_RXC_A                       (0x0C/4) //3
-#define PCM_TXC_A                       (0x10/4) //4
-#define PCM_DREQ_A                      (0x14/4) //5
-#define PCM_INTEN_A                     (0x18/4) //6
-#define PCM_INT_STC_A                   (0x1C/4) //7
-#define PCM_GRAY                        (0x20/4) //8
+#define PCM_CS_A                        (0x00/4) // 0
+#define PCM_FIFO_A                      (0x04/4) // 1
+#define PCM_MODE_A                      (0x08/4) // 2
+#define PCM_RXC_A                       (0x0C/4) // 3
+#define PCM_TXC_A                       (0x10/4) // 4
+#define PCM_DREQ_A                      (0x14/4) // 5
+#define PCM_INTEN_A                     (0x18/4) // 6
+#define PCM_INT_STC_A                   (0x1C/4) // 7
+#define PCM_GRAY                        (0x20/4) // 8
 
 // DMA
 // Technically 2708 is the family, and 2835 is a specific implementation arm
@@ -625,12 +754,12 @@ volatile unsigned 										*allof7e; //
 // more DMA stuff
 #define DMA_CHANNEL                     (14) //
 #define DMA_CHANNEL_MAX                 (14) //
-#define DMA_CHANNEL_SIZE                (0x100) //256
+#define DMA_CHANNEL_SIZE                (0x100) // 256
 
-#define DMA_CONBLK_AD                   (0x04/4) //1
-#define DMA_DEBUG                       (0x20/4) //8
+#define DMA_CONBLK_AD                   (0x04/4) // 1
+#define DMA_DEBUG                       (0x20/4) // 8
 
-#define DMA_CS                          (0x00/4) //0
+#define DMA_CS                          (0x00/4) // 0
 #define DMA_CS_RESET		                (1<<31) //
 #define DMA_CS_ABORT			              (1<<30) //
 #define DMA_CS_DISDEBUG		              (1<<29) //
@@ -639,10 +768,10 @@ volatile unsigned 										*allof7e; //
 #define DMA_CS_ACTIVE			              (1<<0) //
 #define DMA_CS_END			                (1<<1) //
 
-#define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) //0xF=15
+#define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) // 0xF=15
 #define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20) //
 
-// Request
+// Requests
 #define DREQ_PCM_TX                     (2) //
 #define DREQ_PCM_RX                     (3) //
 
@@ -662,7 +791,7 @@ volatile unsigned 										*allof7e; //
 #define MEM_FLAG_COHERENT               (2<<2) /* 0x8 dec: 8 alias. Non-allocating in L2 but coherent */
 #define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) /* Allocating in L2 */
 
-#define MEM_FLAG_ZERO                   (1<<4)  /* initialise buffer to all zeros */
+#define MEM_FLAG_ZERO                   (1<<4) /* initialise buffer to all zeros */
 #define MEM_FLAG_NO_INIT                (1<<5) /* don't initialise (default is initialise to all ones */
 #define MEM_FLAG_HINT_PERMALOCK         (1<<6) /* Likely to be locked for long periods of time. */
 
@@ -677,7 +806,7 @@ volatile unsigned 										*allof7e; //
 
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit// |=
+#define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 // RTC (DS3231/DS1307 driver as bcm)
@@ -693,12 +822,12 @@ volatile unsigned 										*allof7e; //
 #define SLAVE_ADDR_WRITE                b(11010000) //
 #define SLAVE_ADDR_READ                 b(11010001) //
 
-// GPS ublox neo-7M pps
-#define GPS_MODULE                      "GPS UBLOX NEO 7 M PPS" // dec: 104
-#define GPS_MODULE_VERSION              (7) //
-
 // +5 V (PIN 4)
 #define RTC_PWR                         (PIN_4) // dec: 104
+
+// GPS ublox neo-7M pps
+#define GPS_MODULE_NAME                  "GPS UBLOX NEO 7 M PPS" // dec: 104
+#define GPS_MODULE_VERSION              (7) //
 
 // GND (PIN 6)
 #define GPS_GND                         (PIN_6) // ground pin
@@ -720,18 +849,18 @@ volatile unsigned 										*allof7e; //
 //#error Unknown Raspberry Pi version! (RASPI=0-4)
 //#endif
 
-/* try a modprobe of i2C-BUS*/
-//if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
-//if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
+/* try a modprobe of i2C-BUS */
+// if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
+// if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
 
 //----------------------------------
-//declaring normal variables
+// declaring normal variables
 
-//program version status and default device
+// program version status and default device
 const char *description = "(experimental)"; // version-stage
 static char *device = "default"; // playback device
 
-//iterators for loops
+// iterators for loops
 int a;
 int i;
 int k;
@@ -746,10 +875,10 @@ char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
 
-float xtal_freq=1.0/19.2E6; //LOCK_BASE
+float xtal_freq=1.0/19.2E6; // LOCK_BASE
 
 //-----------------------------------------
-//arguments
+// arguments
 int opt;
 char *filename = "sound.wav";
 float freq = fabs (446.006250);
@@ -772,7 +901,7 @@ double shift_ppm = 0.0;
 //uint32_t idivider = (float) divider;
 //uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
-//menu variables
+// menu variables
 int menuoption;
 int channelnumbercb;
 int channelnumberpmr;
@@ -783,13 +912,13 @@ int modeselect;
 int callnameselect;
 time_t t;
 
-//IQ & carrier
+// IQ & carrier
 uint16_t pis = (0x1234); // dec: 4660
 //float I = sin ((PERIOD*freq) + shift_ppm);
 //float Q = cos ((PERIOD*freq) + shift_ppm);
 //float RF_SUM = (I+Q);
 
-//files
+// files
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
@@ -807,17 +936,17 @@ float data_filtered [2*BUFFER_LEN];
 char data_name [1024];
 char buffer [80];
 
-//audio & sample control
-//logarithmic modulation
-//volume in dB 0db = unity gain, no attenuation, full amplitude signal
-//-20db = 10x attenuation, significantly more quiet
+// audio & sample control
+// logarithmic modulation
+// volume in dB 0db = unity gain, no attenuation, full amplitude signal
+// -20db = 10x attenuation, significantly more quiet
 float volume = 1.1f;
-const int volume_reference =	1;
+const float volume_reference =	1.1f;
 float volbuffer [512];
 float volumeLevelDb = -6.f; //cut amplitude in half
-float volumeMultiplier = 10E-1; //volumeLevelDb
+float volumeMultiplier = 10E-1; //
 
-//samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
+// samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
 //SF_INFO sfinfo;
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
@@ -829,7 +958,7 @@ float ampf2;
 float factorizer;
 float sampler;
 
-//instructor for access
+// instructor for access
 unsigned long frameinfo;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
 int bufPtr 		= 0;
@@ -841,21 +970,23 @@ int reg 	= 0; //= gpio / 10;
 int shift = 0; //= (gpio % 10) * 3;
 pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
 pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
-//GPIO needs to be ALT FUNC 0 to output the clock
+// GPIO needs to be ALT FUNC 0 to output the clock
 //gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
 
-//network sockets
-//custom port via tcp/ip or udp
+// network sockets
+// custom port via tcp/ip or udp
 socklen_t addressLength;
 char *localip = "127.0.0.1";
 char *host 		= "localhost";
 int port 		= 8080;
 
 // GPS-coordinates
-//default Germany-Frankfurt(Main) in decimal °grad (centigrade)
-float longitude = 8.682127; // E
-float latitude 	= 50.110924; // N
-float altitude	= fabs (100.00); // elevation in meter above see level (u.N.N.)
+// default Germany-Frankfurt(Main) in decimal °grad (centigrade)
+
+float longitude; // = 8.682127; // E
+float latitude; // = 50.110924; // N
+float elevation; // 100.00
+float altitude	= fabs (float elevation); // elevation in meter above see level (u.N.N.)
 
 //--------------------------------------------------
 // Structs
@@ -878,11 +1009,11 @@ struct GPCTL
 		char SRC         : 4;
 		char ENAB        : 1;
 		char KILL        : 1;
-		char IDKW        : 1; // what is the blank char? gave it a dummyname for now
+		char IDK1        : 1; // what is the blank char? gave it a dummyname (IDK) for now
 		char BUSY        : 1;
 		char FLIP        : 1;
 		char MASH        : 2;
-		unsigned int IDK : 13; // what is the blank int?
+		unsigned int IDK2 : 13; // what is the blank int?
 		char PASSWD      : 8;
 };
 
@@ -911,7 +1042,7 @@ struct DMAREGS
 		volatile unsigned int DEBUG;
 };
 
-//program flag options
+// program flag options
 struct option long_opt [] =
 {
 		{"filename",		required_argument, NULL, 'n'},
@@ -924,17 +1055,20 @@ struct option long_opt [] =
 		{"dma",	  			required_argument, NULL, 'd'},
 		{"bandwidth",	  required_argument, NULL, 'b'},
     {"type",	  		required_argument, NULL, 't'},
+    {"gps",	  		  required_argument, NULL, 'x'},
     {"assistant",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
+
 };
 
 
-//--------basic functions specified one after another
-void infos () //warnings and infos
+//----------------------------------------------------
+// basic functions specified one after another
+void infos () // warnings and infos
 {
 		printf ("\n");
-		/*red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
+		/* red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
     printf ("\033[1;4;35m Welcome to the Pi-Funk! v%s %s for Raspian ARM! \033[0m", VERSION, description); //color escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
@@ -946,14 +1080,15 @@ void infos () //warnings and infos
 
 int timer (time_t t)
 {
-
 	 time (&t);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
    printf ("\nCurrent formated date & time : %s \n", ctime (&t));
    return 0;
 }
-//----- programm functions
+
+//-----------------------------------------
+// program functions
 int gpioselect (int gpiopin)
 {
 	printf ("\nPlease choose GPIO-Pin (GPIO4=Pin7 default) or 20, 32, 34 \n");
@@ -985,7 +1120,7 @@ int filecheck (char *filename)  // expected int?
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory... \n");
-	filename = (char *) malloc (128);// allocating memory for filename
+	filename = (char *) malloc (128); // allocating memory for filename
 	sprintf (filename, "\n%s\n", "file.ft");
 	char *stdfile = "sound.wav";
   if (filename != stdfile)
@@ -1007,7 +1142,9 @@ float freqselect () // gets freq by typing in
 	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
 }
+
 //--------------------------------------------------
+// audio & freq stuff
 float step ()
 {
 	float steps;
@@ -1079,7 +1216,7 @@ float channelmodepmr () //PMR
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	 {
-   //FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
+   // FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
 	 case 1:	freq=446.003125; break;
 	 case 2:	freq=446.009375; break;
 	 case 3:	freq=446.015625; break;
@@ -1112,7 +1249,7 @@ float channelmodepmr () //PMR
 	 case 30:	freq=446.184375; break;
 	 case 31:	freq=446.190625; break;
 	 case 32:	freq=446.196875; break;
-	 //normaly up to 32 chan in dpmr
+	 // normally up to 32 chan in dpmr
 	 case 33: 		exit (0);
 	 default:			freq=446.003125;
 	 							printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
@@ -1134,10 +1271,10 @@ float subchannelmodepmr () //Pilot-tone
 	scanf ("%d", &subchannelnumberpmr);
 	switch (subchannelnumberpmr)
 	{
-		// FYI 19 (38)-kHz-Pilottone on UKW
-	 //---- Analog & digital
+	 // FYI 19 (38)-kHz-Pilottone on UKW
+	 // Analog & digital
 	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 on %f \n", subfreq); break;	// Scan all Chan till active , now chan1
-	 case 1:  subfreq=67.900; break;	//4.9 Hz step
+	 case 1:  subfreq=67.900; break;	// 4.9 Hz steps
 	 case 2: 	subfreq=71.900; break;
 	 case 3: 	subfreq=74.400; break;
 	 case 4: 	subfreq=77.000; break; // at 3-chan-PMR-devices it's ch. 2
@@ -1190,62 +1327,62 @@ float channelmodecb () // CB
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
-			// --> translation of infos in english in future updates!
-       case 0:   freq=27.0450; break; //first digital channel
-			 case 1:   freq=26.9650; break; //empfohlener Anrufkanal (FM)
-			 case 2:   freq=26.9750; break; //inoffizieller Berg-DX-Kanal (FM)
-			 case 3:   freq=26.9850; break;
-			 case 4:   freq=27.0050; break; //empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
-			 case 5:   freq=27.0150; break; //Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
-			 case 6:   freq=27.0250; break; //Datenkanal (D)
-		   case 7:   freq=27.0350; break; //Datenkanal (D)
+			// translation of german infos in english in future updates!
+       case 0:   freq=27.0450; break; // first digital channel
+			 case 1:   freq=26.9650; break; // empfohlener Anrufkanal (FM)
+			 case 2:   freq=26.9750; break; // inoffizieller Berg-DX-Kanal (FM)
+			 case 3:   freq=26.9850; break; //
+			 case 4:   freq=27.0050; break; // empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
+			 case 5:   freq=27.0150; break; // Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
+			 case 6:   freq=27.0250; break; // Datenkanal (D)
+		   case 7:   freq=27.0350; break; // Datenkanal (D)
 			 case 8:   freq=27.0550; break;
-			 case 9:   freq=27.0650; break; //Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
-			 case 10:  freq=27.0750; break; //Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
+			 case 9:   freq=27.0650; break; // Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
+			 case 10:  freq=27.0750; break; // Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
 			 /*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
 			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
 			 Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet */
-			 case 11:   freq=27.0850; break;  //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 1111: freq=27.0950; break; //Eurobalise-Energieversorgung
-			 case 12:   freq=27.1050; break;
-			 case 13:   freq=27.1150; break;
-			 case 14:   freq=27.1250; break; //oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
-			 case 15:   freq=27.1350; break; //inoffizieller Anrufkanal SSB (USB)
-			 case 1515: freq=27.1450; break;
-			 case 16:   freq=27.1550; break; //Funkverkehr mit und zwischen Wasserfahrzeugen
-			 case 17:   freq=27.1650; break; //Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
-			 case 18:   freq=27.1750; break;
-			 case 19:   freq=27.1850; break; //empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt
-			 case 1919: freq=27.1950; break;
-			 case 20:   freq=27.2050; break; //zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
+			 case 11:   freq=27.0850; break; // freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 1111: freq=27.0950; break; // Eurobalise-Energieversorgung
+			 case 12:   freq=27.1050; break; //
+			 case 13:   freq=27.1150; break; //
+			 case 14:   freq=27.1250; break; // oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
+			 case 15:   freq=27.1350; break; // inoffizieller Anrufkanal SSB (USB)
+			 case 1515: freq=27.1450; break; //
+			 case 16:   freq=27.1550; break; // Funkverkehr mit und zwischen Wasserfahrzeugen
+			 case 17:   freq=27.1650; break; // Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
+			 case 18:   freq=27.1750; break; //
+			 case 19:   freq=27.1850; break; // empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt
+			 case 1919: freq=27.1950; break; //
+			 case 20:   freq=27.2050; break; // zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
 
 		 	 // 40 chan devices
-			 case 21:   freq=27.2150; break; //tuerkischer Anrufkanal in Deutschland und Europa (FM)
-			 case 22:   freq=27.2250; break; //oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
-			 case 23:   freq=27.2550; break; //Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
-			 case 24:   freq=27.2350; break; //Datenkanal (D)
-			 case 25:   freq=27.2450; break; //Datenkanal (D), USB ROS Intern
-			 case 26:   freq=27.2650; break;
-			 case 27:   freq=27.2750; break;
-			 case 28:   freq=27.2850; break; //Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
-			 case 29:   freq=27.2950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland
-			 case 30:   freq=27.3050; break; //inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
-			 case 31:   freq=27.3150; break; //inoffizieller DX-Kanal (FM)
-			 case 32:   freq=27.3250; break;
-			 case 33:   freq=27.3350; break;
-			 case 34:   freq=27.3450; break; //freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 35:   freq=27.3550; break; //oeffentlicher Kanal
-			 case 36:   freq=27.3650; break; //Datenkanal USB ROS international
-			 case 37:   freq=27.3750; break; //Gateway-Kanal oesterreich, FM
-			 case 38:   freq=27.3850; break; //inoffizieller internationaler DX-Kanal (LSB)
-			 case 39:   freq=27.3950; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 40:   freq=27.4050; break; //ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
-		  	//ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
+			 case 21:   freq=27.2150; break; // tuerkischer Anrufkanal in Deutschland und Europa (FM)
+			 case 22:   freq=27.2250; break; // oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
+			 case 23:   freq=27.2550; break; // Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
+			 case 24:   freq=27.2350; break; // Datenkanal (D)
+			 case 25:   freq=27.2450; break; // Datenkanal (D), USB ROS Intern
+			 case 26:   freq=27.2650; break; //
+			 case 27:   freq=27.2750; break; //
+			 case 28:   freq=27.2850; break; // Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
+			 case 29:   freq=27.2950; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland
+			 case 30:   freq=27.3050; break; // inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
+			 case 31:   freq=27.3150; break; // inoffizieller DX-Kanal (FM)
+			 case 32:   freq=27.3250; break; //
+			 case 33:   freq=27.3350; break; //
+			 case 34:   freq=27.3450; break; // freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 35:   freq=27.3550; break; // oeffentlicher Kanal
+			 case 36:   freq=27.3650; break; // Datenkanal USB ROS international
+			 case 37:   freq=27.3750; break; // Gateway-Kanal oesterreich, FM
+			 case 38:   freq=27.3850; break; // inoffizieller internationaler DX-Kanal (LSB)
+			 case 39:   freq=27.3950; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			 case 40:   freq=27.4050; break; // ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
+		   // ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
 			 /* 80 chan devices
 			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt
 			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: */
-			case 41:   freq=27.5650; break; //Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
-			case 42:   freq=27.5750; break; //inoffizieller DX-Kanal (FM)
+			case 41:   freq=27.5650; break; // Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
+			case 42:   freq=27.5750; break; // inoffizieller DX-Kanal (FM)
 			case 43:   freq=27.5850; break;
 			case 44:   freq=27.5950; break;
 			case 45:   freq=27.6050; break;
@@ -1255,8 +1392,8 @@ float channelmodecb () // CB
 			case 49:   freq=27.6450; break;
 			case 50:   freq=27.6550; break;
 			case 51:   freq=27.6650; break;
-			case 52:   freq=27.6750; break; //Datenkanal (D)(FM)
-			case 53:   freq=27.6850; break; //Datenkanal (D)(FM)
+			case 52:   freq=27.6750; break; // Datenkanal (D)(FM)
+			case 53:   freq=27.6850; break; // Datenkanal (D)(FM)
 			case 54:   freq=27.6950; break;
 			case 55:   freq=27.7050; break;
 			case 56:   freq=27.7150; break;
@@ -1265,7 +1402,7 @@ float channelmodecb () // CB
 			case 59:   freq=27.7450; break;
 			case 60:   freq=27.7550; break;
 
-      case 61:   freq=26.7650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+      case 61:   freq=26.7650; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			case 62:   freq=26.7750; break;
 			case 63:   freq=26.7850; break;
 			case 64:   freq=26.7950; break;
@@ -1275,16 +1412,16 @@ float channelmodecb () // CB
 			case 68:   freq=26.8350; break;
 			case 69:   freq=26.8450; break;
 			case 70:   freq=26.8550; break;
-			case 71:   freq=26.8650; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			case 71:   freq=26.8650; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			case 72:   freq=26.8750; break;
 			case 73:   freq=26.8850; break;
 			case 74:   freq=26.8950; break;
 			case 75:   freq=26.9050; break;
-			case 76:   freq=26.9150; break; //Datenkanal (D)(FM)
-			case 77:   freq=26.9250; break; //Datenkanal (D)(FM)
+			case 76:   freq=26.9150; break; // Datenkanal (D)(FM)
+			case 77:   freq=26.9250; break; // Datenkanal (D)(FM)
 			case 78:   freq=26.9350; break;
 			case 79:   freq=26.9450; break;
-			case 80:   freq=26.9550; break; //Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
+			case 80:   freq=26.9550; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 			case 81:   exit (0);
 
 			default:		freq=26.9650;
@@ -1364,12 +1501,13 @@ void channelselect () // make a void
 	return;
 }
 
-//--------------LED stuff
-//controlling via py possible but c stuff can be useful too by bcm funcs!
-//turn on LED (with 100 kOhm pullup resistor while transmitting
+//---------------------------------------------------
+// LED stuff
+// controlling via py possible but c stuff can be useful too by bcm funcs!
+// turn on LED (with 100 kOhm pullup resistor while transmitting
 int ledinactive (char *filename, float freq, int samplerate)
 {
-	//check if transmitting
+	// check if transmitting
   printf ("\nChecking Transmission status \n");
 	/*	while (!play_wav (char *filename, float freq, int samplerate))
 		{
@@ -1393,7 +1531,7 @@ int ledactive ()
 	else if (1)
 	{
     // Set the pin to be an outputannels
-    //bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
+    // bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
 		while (play_wav (char *filename, float freq, int samplerate))
@@ -1431,7 +1569,8 @@ float audiovol ()
 }
 */
 
-//--------------- Voids
+//---------------
+// Voids for modulation and memory handling
 void handSig () // exit func
 {
 		printf ("\nExiting... \n");
@@ -1462,7 +1601,7 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 
 		*vAddr = a; // we know the virtual address now
 
-		int fp = open ("/proc/self/pagemap", O_RDONLY); //"w"
+		int fp = open ("/proc/self/pagemap", O_RDONLY); // "w"
 		lseek (fp, ((int) a)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
 
@@ -1481,15 +1620,15 @@ void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
 /* Added functions to enable and disable carrier */
-// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) // 0x5A-> CARRIER dec: 90
-//struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};// set it to ! = LOW
+// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
+//struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = LOW
 //ACCESS (CM_GP0CTL) == *((int*) &setupword); //setting cm
 }
 
 void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
-//struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A};// set it to 0 = LOW
+//struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // set it to 0 = LOW
 //ACCESS (CM_GP0CTL) == *((int*) &setupword);
 }
 
@@ -1509,7 +1648,7 @@ void setupfm ()
 								PROT_READ|PROT_WRITE, //
 								MAP_SHARED, //
 								mem_fd, //
-								0x20000000); //  PERIPH_VIRT_BASE
+								0x20000000); // PERIPH_VIRT_BASE
 
   if ((int) allof7e == -1)
 	{
@@ -1523,8 +1662,8 @@ void setupfm ()
 	 carrierhigh ();
 }
 
-///------------------------------------
-//relevant for transmitting stuff
+//------------------------------------
+// relevant for transmitting stuff
 void play_list () // exit func
 {
 		printf ("\nOpening playlist-folder (dummy) \n"); // in sounds/playlist
@@ -1534,7 +1673,7 @@ void play_list () // exit func
 void play_wav (char *filename, float freq, int samplerate)
 {
 
-	/*wiki https://en.wikipedia.org/wiki/WAV
+	/* wiki https://en.wikipedia.org/wiki/WAV
 	  https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
     245 × 60 × 3 = 44100
@@ -1565,16 +1704,16 @@ void play_wav (char *filename, float freq, int samplerate)
 
   while (readBytes == read (fp, &data, 1024))
   {
-        float fmconstant = (samplerate*50.0E-6); //1.1025 for pre-emphisis filter, 50us time constant
+        float fmconstant = (samplerate*50.0E-6); // 1.1025 for pre-emphisis filter, 50us time constant
 				printf ("\nfmconstant: %f \n", fmconstant);
         int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
 				printf ("\nclocksPerSample: %d \n", clocksPerSample);
         // if samplerate > 15.75 then clocks per sample is negetive !! not good
-        datanew = ((float) (*data)/excursion); //some constant for unsigned int excursion
+        datanew = ((float) (*data)/excursion); // some constant for unsigned int excursion
 				printf ("\ndatanew: %f \n", datanew);
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
 				printf ("\nsample: %f \n", sample);
-        float dval = sample*15.0; // actual transmitted sample, 15 hz is standard bandwidth (about 75 kHz) better 14.5
+        float dval = sample*15.0; // actual transmitted sample, 15 Hz is standard bandwidth (about 75 kHz) better 14.5
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
@@ -1584,31 +1723,31 @@ void play_wav (char *filename, float freq, int samplerate)
 				printf ("\nfracval: %d \n", fracval);
 
         bufPtr++;
-        //problem still with .v & .p endings for struct!!
+        // problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
         //usleep (1000);
 
-        //Create DMA command to set clock controller to output FM signal for PWM "LOW" time
+        // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
 
         bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
-        //Create DMA command to delay using serializer module for suitable time
+        // Create DMA command to delay using serializer module for suitable time
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
 
         bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
-        //Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
+        // Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
         //((struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4+4);
 
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
         //usleep (1000);
 
-        //Create DMA command for more delay.
+        // Create DMA command for more delay.
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = fracval;
 
         bufPtr = (bufPtr+1) % (BUFFERINSTRUCTIONS); // [1024] for buffer
@@ -1632,7 +1771,7 @@ void setupDMA ()
 	signal (SIGHUP,  handSig);
 	signal (SIGQUIT, handSig);
 
-	//allocate a few pages of ram
+	// allocate a few pages of ram
   //getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int) ((500.0/freq) * (float) (1<<12) + 0.5);
 	printf ("\ncenterFreqDivider %d \n", centerFreqDivider);
@@ -1643,7 +1782,7 @@ void setupDMA ()
 	   // ((int*) (constPage.v))[i] = (CARRIER << 24) + centerFreqDivider - 512 + i;
 	}
 
-	while (instrCnt < 1024) //BUFFERINSTRUCTIONS
+	while (instrCnt < 1024) // BUFFERINSTRUCTIONS
 	{
      //getRealMemPage (&instrPage.v, &instrPage.p);
 
@@ -1705,7 +1844,7 @@ void setupDMA ()
    // DMAC then DMA enable in 0x8 dec:8 / pwmbase+8 = 7E20C008 (dec:2116075528) /
    //ACCESS (PWMBASE + 0x8) == (1<<31) | (DMAC);
 
-   //activate dma
+   // activate dma
    //struct DMAREGS* DMA0 = (struct DMAREGS*)(ACCESS (DMABASE));
    //DMA0->CS = 1<<31; // reset
    //DMA0->CONBLK_AD = 0;
@@ -1725,14 +1864,15 @@ void unsetupDMA ()
 	exit (-1);
 }
 
-//------- main progs
+//----------------------------------------------------
+// sample funcs
 
 int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
 {
 	printf ("\nSamplerate/bit-checker starting \n");
 
 	/*
-  if (!(fp = open (filename, SFM_READ, &sfinfo))) //check wat SFM sfinfo does!?
+  if (!(fp = open (filename, SFM_READ, &sfinfo))) // check wat SFM sfinfo does!?
   {   // Open failed so print an error message.
         printf ("\nNot able to open input file for samplecheck %s \n", filename);
 				printf ("\nNot able to open filepointer for samplecheck %d \n", fp);
@@ -1741,9 +1881,9 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
   }
 
 	//sfinfo.samplerate = samplerate;
-	if (sfinfo.samplerate == 22050) //44 or 48 kHz needs testing
+	if (sfinfo.samplerate == 22050) // 44 or 48 kHz needs testing
 	{
-		printf ("\nSamplerate is 22050! (%d)\n", sfinfo.samplerate);
+		printf ("\nSamplerate is 22050! (%d) \n", sfinfo.samplerate);
 		return sfinfo.samplerate;
 	}
 	else if (sfinfo.samplerate == 14500)
@@ -1771,12 +1911,12 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 		return 0;
 	}
 
-	//While there are frames in the input file, read them,
-	//process them and write them to the output file
+	// While there are frames in the input file, read them,
+	// process them and write them to the output file
 	//----------------------
   while (readcount == read (fp, data, BUFFER_LEN))
   {
-	 // where to input the freq like in fm?
+	 // where to input the freq like in fm
 	  for (k = 0; k < nb_samples; k++)
 	  {
 		  char b = data [k*channels];
@@ -1788,14 +1928,14 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			else if (channels == 1)
 			{
 				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
-				// stereo file, avg left + right --> should be mono at 22.05kHz
+				// stereo file, avg left + right --> should be mono at 22.05 kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				printf ("\nb = %c \n", b);
 			}
 			else if (channels == 2)
 			{
-				printf ("\nFile has 2 Channels (STEREO)! \n");// >1 in stereo or dual mono with half samplerate
+				printf ("\nFile has 2 Channels (STEREO)! \n"); // >1 in stereo or dual mono with half samplerate
 			}
 			else
 			{
@@ -1805,7 +1945,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
  			// was defined as global var above
 			printf ("\nnb_samples: %d \n", nb_samples);
 			printf ("\nCompression prameter A: %f \n", A);
-			//maybe here am option for amplitude factor input!?
+			// maybe here am option for amplitude factor input!?
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
 			ampf = (x/32767.0f);
@@ -1820,7 +1960,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 		  factorizer = (x * 32767.0f * FactAmplitude);
 			printf ("\nfactorizer: %f \n", factorizer);
 
-			sampler = (1E9/samplerate); //44.000
+			sampler = (1E9/samplerate); // 44.000
 			printf ("\nsampler: %f \n", sampler);
 			printf ("\nNow writing tone in am ... \n");
 			void WriteTone (float freq); // somehow input freq here ?!?
@@ -1840,7 +1980,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
 // squelch/treshhold to build in maybe -> scan function till signal?
 
-//AM
+// AM
 void WriteTone (float freq)
 {
 	float Frequencies = freq;
@@ -1852,7 +1992,7 @@ void WriteTone (float freq)
 	} samplerf_t;
 	samplerf_t RfSample;
 	RfSample.Frequency = Frequencies;
-	RfSample.WaitForThisSample = Timing; //in 100 of nanoseconds
+	RfSample.WaitForThisSample = Timing; // in 100 of nanoseconds
 	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
@@ -1863,7 +2003,7 @@ void WriteTone (float freq)
 
 char callname ()
 {
-    //if (*callsign == NULL){
+    //if (*callsign == NULL) {
 		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
 		scanf ("%d", &callnameselect);
 		switch (callnameselect)
@@ -1873,11 +2013,11 @@ char callname ()
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
-		 case 2: callsign = "callsign"; //default callsign
+		 case 2: callsign = "callsign"; // default callsign
 						 printf ("\nUsing default callsign: %s \n", callsign);
 						 break;
 
-		 default: callsign = "callsign"; //default callsign
+		 default: callsign = "callsign"; // default callsign
 		 					printf ("\nError! Using default callsign: %s \n", callsign);
 							break;
     }
@@ -1892,7 +2032,7 @@ void modetype (float freq)
 	switch (modeselect)
 	{
 		case 1:	 	printf ("\n[1] Channelmode: \n");
-							channelselect (freq); //undefined reference
+							channelselect (freq); // undefined reference
 							break;
 
 		case 2:		printf ("\n[2] Frequencymode: \n");
@@ -1919,11 +2059,11 @@ char csvreader ()
     printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System) ... \n");
 		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone,\nrToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode,\nTStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
 
-    rfp = fopen ("ctsspmr.csv", "r"); //read-only!
-    wfp = fopen ("ctsswriter.csv", "w+"); //with + it updates, if exists overwrites
+    rfp = fopen ("ctsspmr.csv", "r"); // read-only!
+    wfp = fopen ("ctsswriter.csv", "w+"); // with + it updates, if exists overwrites
     while (!feof (rfp))
     {
-    	//here check for semicolon or comma delimiter (default)
+    	// here check for semicolon or comma delimiter (default)
     	j = fgetc (rfp);
     	fputc (j, wfp);
     }
@@ -1936,13 +2076,13 @@ char csvreader ()
 
 void modulationam (int argc, char **argv)
 {
-	/*{IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
+	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
 		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
 		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
 		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
 		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
-		void WriteTone (float freq);// actual modulation stuff here for am -> wrrite tone?
+		void WriteTone (float freq); // actual modulation stuff here for am -> wrrite tone?
 		ledactive ();
 	  return;
 }
@@ -1952,7 +2092,7 @@ void modulationfm (int argc, char **argv)//FM
   	printf ("\nPreparing for FM... \n");
     setupfm (); // gets filename & path or done by filecheck () func
 	  printf ("\nSetting up DMA... \n");
-		setupDMA (); //setupDMA (argc>2 ? atof (argv [2]):100.00000); // : default freq
+		setupDMA (); //(argc>2 ? atof (argv [2]):100.00000); // default freq
     //play_wav (char *filename, float freq, int samplerate); // atof (argv [3]):22050)
 		return;
 }
@@ -1981,7 +2121,7 @@ void cgimodule () //
  printf ("</html>\n");
 }
 
-void assistant () //assistant
+void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
 		filecheck (filename);
@@ -2006,7 +2146,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv);//, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR... \n");
@@ -2026,7 +2166,8 @@ void menu ()
 	return;
 }
 
-//--------- MAIN
+//---------------------------------------------
+// MAIN
 int main (int argc, char **argv) // arguments for global use must be in main!
 {
 	const char *short_opt = "n:f:s:m:c:p:g:d:b:ahu"; // program flags
@@ -2034,10 +2175,10 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	argv [0] = "pifunk"; // actual program-name
 	char *filename = "sound.wav"; // = argv [1];
 	float freq = fabs (446.006250); // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate = abs (22050);// = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-	char *mod = "fm";// = argv [4];
+	int samplerate = abs (22050); // = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char *mod = "fm"; // = argv [4];
 	char *callsign = "callsign";// = argv [5];
-	int power = 7;// = argv [6];
+	int power = 7; // = argv [6];
 	int dmachannel = 14; // = argv [7];
 	float bandwidth = 15.00; // = argv [8];
 	int gpiopin = abs (4); // = argv [9];
@@ -2053,7 +2194,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	printf ("\nshort_opt: %s \n", short_opt);
-	infos (); //information, disclaimer
+	infos (); // information, disclaimer
 	int timer (time_t t); // date and time print
 
 	while ((options = getopt (argc, argv, short_opt)) != -1) // short_opt must be constants
@@ -2062,10 +2203,11 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 		{
 				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		}
-		/*else
+		/* else
 		{ */
 		switch (options)
 		{
+
 			case 'n':
 							 filename = optarg;
 							 printf ("\nFilename is %s \n", filename);
@@ -2109,7 +2251,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 							 printf ("\nCallsign is %s \n", callsign);
 							 //break;
 
-			//power managment
+			// power managment
 			case 'p':
 							 power = atoi (optarg);
 							 printf ("\nPower is %d \n", power);
@@ -2176,7 +2318,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 
 		break;
 	} // end of while
- 	//}//end of else
+ 	//} //end of else
 
 	//-- for debugging or information
 	printf ("\n-----------------\n");
@@ -2190,17 +2332,17 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: is %f \n", bandwidth);
-  printf ("\nChecking Type 1/analog, 2/digital: is %d \n", type);
+  	printf ("\nChecking Type 1/analog, 2/digital: is %d \n", type);
 	printf ("\nChecking Hostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, localip, port);
-  printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
-  //printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+  	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
+  	//printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
 	//printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
 /*
 	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 */
 	// gathering and parsing all given arguments to parse it to player
-	int tx (int argc, char **argv); //transmission
+	int tx (int argc, char **argv); // transmission
 
 	printf ("\nEnd of Program! Closing... \n"); // EOF
 	return 0;
