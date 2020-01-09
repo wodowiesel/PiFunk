@@ -1,7 +1,7 @@
 /* Program: PiFunk (C)
 Copyright: 2018 - 2020
 Author: D. W. / silicator a.k.a Wiesel
-version = 0.1.7.7e
+version = 0.1.7.8e
 
 OS: Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
 
@@ -67,8 +67,7 @@ make compatible arguments/funcs for py/shell scripts
 tone generator for ctss (sin wave?)
 */
 
-#include <gnumake.h>
-//std includes
+// std includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h> // for c99
@@ -113,6 +112,7 @@ tone generator for ctss (sin wave?)
 #include <poll.h>
 #include <argp.h>
 #include <uchar.h>
+#include <gnumake.h>
 //#include <metrics.h>
 //#include <config.h>
 //#include <missing.h>
@@ -130,27 +130,27 @@ tone generator for ctss (sin wave?)
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 
-//linux kernel driver headers
-//#include <linux/init.h>
-//#include <linux/io.h>
-//#include <linux/clk.h>
-//#include <linux/cpu.h>
-//#include <linux/cpufreq.h>
-//#include <linux/cpumask.h>
-//#include <linux/cpu_cooling.h>
-//#include <linux/math64.h>
-//#include <linux/module.h>
-//#include <linux/slab.h>
-//#include <linux/errno.h>
-//#include <linux/err.h>
-//#include <linux/notifier.h>
-//#include <linux/bcd.h>
-//#include <linux/interrupt.h>
-//#include <linux/completion.h>
-//#include <linux/platform_device.h>
-//#include <linux/of_platform.h>
-//#include <linux/pm_opp.h>
-//#include <linux/export.h>
+// linux kernel driver headers
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/clk.h>
+#include <linux/cpu.h>
+#include <linux/cpufreq.h>
+#include <linux/cpumask.h>
+#include <linux/cpu_cooling.h>
+#include <linux/math64.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/errno.h>
+#include <linux/err.h>
+#include <linux/notifier.h>
+#include <linux/bcd.h>
+#include <linux/interrupt.h>
+#include <linux/completion.h>
+#include <linux/platform_device.h>
+#include <linux/of_platform.h>
+#include <linux/pm_opp.h>
+#include <linux/export.h>
 #include <linux/sched/signal.h>
 #include <linux/device.h>
 #include <linux/reboot.h>
@@ -162,9 +162,9 @@ tone generator for ctss (sin wave?)
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
 #include <linux/regulator/consumer.h>
-//#include <soc/bcm2835/raspberrypi-firmware.h>
-//#include <drm/drm_fb_cma_helper.h>
-//#include <drm/drm_fb_helper.h>
+#include <soc/bcm2835/raspberrypi-firmware.h>
+#include <drm/drm_fb_cma_helper.h>
+#include <drm/drm_fb_helper.h>
 // I2C support need
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
@@ -173,7 +173,7 @@ tone generator for ctss (sin wave?)
 // RTC support
 #include <linux/rtc.h>
 //#include <linux/rtc/ds1307.h>
-//#include <linux/rtc/ds3231.h>
+#include <linux/rtc/ds3231.h>
 #include "rtc/ds3231.h" // my rtc
 
 // ip host socket
@@ -184,7 +184,7 @@ tone generator for ctss (sin wave?)
 #include <netdb.h>
 #include <ifaddrs.h>
 
-//for c++11/14/17/20
+// for c++11/14/17/20
 /*
 #include <iostream> //
 #include <iomanip> //
@@ -366,36 +366,37 @@ using namespace std; //
 #endif
 
 #ifdef __GNUC__
-   //printf ("\nUsing GNU C with ANSI ISO C99 as GNU99!!\n");
+   printf ("\nUsing GNU C with ANSI ISO C99 as GNU99!!\n");
    //#pragma GCC system_header
 #endif
 
+#ifdef _GNU_SOURCE
+  //#define basename __basename_gnu
+   printf ("\nUsing GNU Source Macro!!\n");
+#endif
+
 #ifdef __CPLUSPLUS
-//printf ("\nUsing GNU C++ with ANSI ISO C++17/20!!\n");
- extern "C" {
+  printf ("\nUsing GNU C++ with ANSI ISO C++17/20!!\n");
+  extern "C" {}
+#endif
+
+#ifdef _POSIX
+#define _POSIX_C_SOURCE   		200809L // or 199309L
+//#define _USE_MATH_DEFINES // for math lm lib
 #endif
 
 #ifdef __STDC_VERSION__ >= 199901L
    /*#warning "\nPlease compile with flag -std=c99\n" string */
-   //printf ("\nUsing GNU C with C99 standard!!\n");
+   printf ("\nUsing GNU C with C99 standard!!\n");
 #endif
-
-/*
-#ifdef _GNU_SOURCE
-# define basename __basename_gnu
-#endif
-*/
-
-#define _POSIX_C_SOURCE   		200809L // or 199309L
-//#define _USE_MATH_DEFINES // for math lm lib
 
 //------------------------------------------------------------------------------
 // definitions & Makros
-#define VERSION 						 "0.1.7.7" // my version
+#define VERSION 						 "0.1.7.8" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
-#define VERSION_PATCHLEVEL   (7) //
+#define VERSION_PATCHLEVEL   (8) //
 #define VERSION_STATUS 			 "experimental" // WIP work in progress
 
 // simple operators
@@ -405,13 +406,16 @@ using namespace std; //
 #define TRUE                  (1) //
 
 // predefine if needed when not using bcm header
-//#define HIGH 									0x1 // 1
-//#define LOW 									0x0 // 0
+//#define HIGH 									(0x1) // 1
+//#define LOW 									(0x0) // 0
 //#define sleep 					     	[1000] // for waiting between functions & tasks
 //#define usleep 								[1000] //
 
 // mathematical stuff
-#define ln(x)                           (log (x)/log (2.718281828459045235f)) //log e(euler) = 0.4342944819
+#define EULER                           (2.718281828459045235360287471352f) // log e(euler) = 0.4342944819
+#define log(EULER)                      (0.4342944819)
+#define lg(EULER)                       (1.44269504089)
+#define ln(x)                           (log(x)/log(EULER))
 #define PI                              (3.14159265358979323846) // radial constant
 #define PHASE                           (2*PI) // 6.28318530718
 #define HALF_PERIOD                     (1/PI) // 0.31830988618
@@ -731,7 +735,7 @@ volatile unsigned 										*allof7e; //
 #define PCM_GRAY                        (0x20/4) // 8
 
 // DMA
-// Technically 2708 is the family, and 2835 is a specific implementation arm
+// Technically 2708 is the family-chipname, and 2835 is a specific implementation for arm
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
 #define BCM2708_DMA_INT                 (1<<2) //
@@ -796,7 +800,7 @@ volatile unsigned 										*allof7e; //
 #define MEM_FLAG_HINT_PERMALOCK         (1<<6) /* Likely to be locked for long periods of time. */
 
 #define PAGE_SHIFT                      (12) //
-#define NUM_PAGES                       ((sizeof (struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT)
+#define NUM_PAGES                       ((sizeof(struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT) //
 #define NUM_SAMPLES                     (64000) //
 #define NUM_CBS                         (NUM_SAMPLES * 2) //
 
@@ -826,7 +830,7 @@ volatile unsigned 										*allof7e; //
 #define RTC_PWR                         (PIN_4) // dec: 104
 
 // GPS ublox neo-7M pps
-#define GPS_MODULE_NAME                  "GPS UBLOX NEO 7 M PPS" // dec: 104
+#define GPS_MODULE_NAME                 "GPS UBLOX NEO 7 M PPS" // dec: 104
 #define GPS_MODULE_VERSION              (7) //
 
 // GND (PIN 6)
@@ -897,7 +901,7 @@ int samplerate = abs (22050);
 int channels = 1;
 double shift_ppm = 0.0;
 
-//float divider = (500000000/(2000*228*(1.+shift_ppm/1.E6) ) ); //PLLD_FREQ = 500000000.
+//float divider = (500000000/(2000*228*(1.+shift_ppm/1.E6) ) ); // PLLD_FREQ = 500000000.
 //uint32_t idivider = (float) divider;
 //uint32_t fdivider = (uint32_t) ((divider - idivider)*pow(2, 12));
 
@@ -943,7 +947,7 @@ char buffer [80];
 float volume = 1.1f;
 const float volume_reference =	1.1f;
 float volbuffer [512];
-float volumeLevelDb = -6.f; //cut amplitude in half
+float volumeLevelDb = -6.f; // cut amplitude in half
 float volumeMultiplier = 10E-1; //
 
 // samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
@@ -966,8 +970,8 @@ int instrCnt 	= 0;
 int instrPage;
 int constPage;
 
-int reg 	= 0; //= gpio / 10;
-int shift = 0; //= (gpio % 10) * 3;
+int reg 	= 0; // = gpio / 10;
+int shift = 0; // = (gpio % 10) * 3;
 pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
 pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
 // GPIO needs to be ALT FUNC 0 to output the clock
@@ -985,7 +989,7 @@ int port 		= 8080;
 
 float longitude; // = 8.682127; // E
 float latitude; // = 50.110924; // N
-float elevation; // 100.00
+float elevation; // = 100.00; // meter
 float altitude	= fabs (float elevation); // elevation in meter above see level (u.N.N.)
 
 //--------------------------------------------------
@@ -1059,17 +1063,15 @@ struct option long_opt [] =
     {"assistant",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
-
 };
-
 
 //----------------------------------------------------
 // basic functions specified one after another
 void infos () // warnings and infos
 {
 		printf ("\n");
-		/* red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode //35 for Magenta, 33 red */
-    printf ("\033[1;4;35m Welcome to the Pi-Funk! v%s %s for Raspian ARM! \033[0m", VERSION, description); //color escape command for resetting
+		/* red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode // 35 for Magenta, 33 red */
+    printf ("\033[1;4;35m Welcome to the Pi-Funk! v%s %s for Raspian ARM! \033[0m", VERSION, description); // color escape command for resetting
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7\n");
@@ -1113,7 +1115,7 @@ float bandwidthselect (float bandwidth)
 	return bandwidth;
 }
 
-int filecheck (char *filename)  // expected int?
+int filecheck (char *filename)  // expected int
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   //scanf ("%s", &filename);
@@ -1169,42 +1171,42 @@ float step ()
 // Channel-mode
 float channelmodepmr () //PMR
 {
-	int type; //= "1";
+	int type; // = "1";
 
 	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
 	scanf ("%d", &type);
 
 	if (type==1)
 	{
-	printf ("\nChoose %s PMR-Channel 1-16 (18 to exit): \n", analog);
+	printf ("\nChoose %s PMR-Channel 1-17 (18 to exit): \n", analog);
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	 {
-	 //---- Analog & DMR
-	 case 1: freq=446.00625; break;	// Standard
-	 case 2: freq=446.01875; break; // Geocaching
-	 case 3: freq=446.03125; break; // Standard
-	 case 4: freq=446.04375; break; // at 3-chan-PMR-devices its ch. 2
-	 case 5: freq=446.05625; break; // Contest
-	 case 6: freq=446.06875; break; // Events
-	 case 7: freq=446.08125; break; // at 3-channel-PMR-devices it's ch. 3
-	 case 8: freq=446.09375; break; // Standard
+	 // Analog & DMR
+	 case 1: freq=446.00625; printf ("\nPMR-Chan 1 on %f \n", freq); break;	// Standard
+	 case 2: freq=446.01875; printf ("\nPMR-Chan 2 on %f \n", freq); break; // Geocaching
+	 case 3: freq=446.03125; printf ("\nPMR-Chan 3 on %f \n", freq); break; // Standard
+	 case 4: freq=446.04375; printf ("\nPMR-Chan 4 on %f \n", freq); break; // at 3-chan-PMR-devices its ch. 2
+	 case 5: freq=446.05625; printf ("\nPMR-Chan 5 on %f \n", freq); break; // Contest
+	 case 6: freq=446.06875; printf ("\nPMR-Chan 6 on %f \n", freq); break; // Events
+	 case 7: freq=446.08125; printf ("\nPMR-Chan 7 on %f \n", freq); break; // at 3-channel-PMR-devices it's ch. 3
+	 case 8: freq=446.09375; printf ("\nPMR-Chan 8 on %f \n", freq); break; // Standard
 
-  //-----Digital only
+  // Digital only
 	// dmr (tier 1) digital new since 28.09.2016
 	// extra 8 chan
 	// 12.5 kHz steps
-	 case 9:  freq=446.10312; break;
-	 case 10: freq=446.10625; break;
-	 case 11: freq=446.11875; break;
-	 case 12: freq=446.13125; break;
-	 case 13: freq=446.14375; break;
-	 case 14: freq=446.15625; break;
-	 case 15: freq=446.16875; break;
-	 case 16: freq=446.18125; break;
-	 case 17: freq=446.19375; break;
+	 case 9:  freq=446.10312; printf ("\nDMR-Chan 9 on %f \n", freq); break;
+	 case 10: freq=446.10625; printf ("\nDMR-Chan 10 on %f \n", freq); break;
+	 case 11: freq=446.11875; printf ("\nDMR-Chan 11 on %f \n", freq); break;
+	 case 12: freq=446.13125; printf ("\nDMR-Chan 12 on %f \n", freq); break;
+	 case 13: freq=446.14375; printf ("\nDMR-Chan 13 on %f \n", freq); break;
+	 case 14: freq=446.15625; printf ("\nDMR-Chan 14 on %f \n", freq); break;
+	 case 15: freq=446.16875; printf ("\nDMR-Chan 15 on %f \n", freq); break;
+	 case 16: freq=446.18125; printf ("\nDMR-Chan 16 on %f \n", freq); break;
+	 case 17: freq=446.19375; printf ("\nDMR-Chan 17 on %f \n", freq); break;
 
-	 case 18: exit (0);
+	 case 18: printf ("\nExit... \n");exit (0);
 	 default:	freq=446.00625;
 	 					printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
 						break;
@@ -1216,41 +1218,41 @@ float channelmodepmr () //PMR
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	 {
-   // FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Kontakt, CC1 TG9112 TS1 = EmCOM
-	 case 1:	freq=446.003125; break;
-	 case 2:	freq=446.009375; break;
-	 case 3:	freq=446.015625; break;
-	 case 4:	freq=446.021875; break;
-	 case 5:	freq=446.028125; break;
-	 case 6:	freq=446.034375; break;
-	 case 7:	freq=446.040625; break;
-	 case 8:	freq=446.046875; break;
-	 case 9:	freq=446.053125; break;
-	 case 10:	freq=446.059375; break;
-	 case 11:	freq=446.065625; break;
-	 case 12:	freq=446.071875; break;
-	 case 13:	freq=446.078125; break;
-	 case 14:	freq=446.084375; break;
-	 case 15:	freq=446.090625; break;
-	 case 16:	freq=446.096875; break;
-	 case 17:	freq=446.103125; break;
-	 case 18:	freq=446.109375; break;
-	 case 19:	freq=446.115625; break;
-	 case 20:	freq=446.121875; break;
-	 case 21:	freq=446.128125; break;
-	 case 22:	freq=446.134375; break;
-	 case 23:	freq=446.140625; break;
-	 case 24:	freq=446.146875; break;
-	 case 25:	freq=446.153125; break;
-	 case 26:	freq=446.159375; break;
-	 case 27:	freq=446.165625; break;
-	 case 28:	freq=446.171875; break;
-	 case 29:	freq=446.178125; break;
-	 case 30:	freq=446.184375; break;
-	 case 31:	freq=446.190625; break;
-	 case 32:	freq=446.196875; break;
+   // FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Contact, CC1 TG9112 TS1 = EmCOM
+	 case 1:	freq=446.003125; printf ("\ndPMR-Chan 1 on %f \n", freq); break;
+	 case 2:	freq=446.009375; printf ("\ndPMR-Chan 2 on %f \n", freq); break;
+	 case 3:	freq=446.015625; printf ("\ndPMR-Chan 3 on %f \n", freq); break;
+	 case 4:	freq=446.021875; printf ("\ndPMR-Chan 4 on %f \n", freq); break;
+	 case 5:	freq=446.028125; printf ("\ndPMR-Chan 5 on %f \n", freq); break;
+	 case 6:	freq=446.034375; printf ("\ndPMR-Chan 6 on %f \n", freq); break;
+	 case 7:	freq=446.040625; printf ("\ndPMR-Chan 7 on %f \n", freq); break;
+	 case 8:	freq=446.046875; printf ("\ndPMR-Chan 8 on %f \n", freq); break;
+	 case 9:	freq=446.053125; printf ("\ndPMR-Chan 9 on %f \n", freq); break;
+	 case 10:	freq=446.059375; printf ("\ndPMR-Chan 10 on %f \n", freq); break;
+	 case 11:	freq=446.065625; printf ("\ndPMR-Chan 11 on %f \n", freq); break;
+	 case 12:	freq=446.071875; printf ("\ndPMR-Chan 12 on %f \n", freq); break;
+	 case 13:	freq=446.078125; printf ("\ndPMR-Chan 13 on %f \n", freq); break;
+	 case 14:	freq=446.084375; printf ("\ndPMR-Chan 14 on %f \n", freq); break;
+	 case 15:	freq=446.090625; printf ("\ndPMR-Chan 15 on %f \n", freq); break;
+	 case 16:	freq=446.096875; printf ("\ndPMR-Chan 16 on %f \n", freq); break;
+	 case 17:	freq=446.103125; printf ("\ndPMR-Chan 17 on %f \n", freq); break;
+	 case 18:	freq=446.109375; printf ("\ndPMR-Chan 18 on %f \n", freq); break;
+	 case 19:	freq=446.115625; printf ("\ndPMR-Chan 19 on %f \n", freq); break;
+	 case 20:	freq=446.121875; printf ("\ndPMR-Chan 20 on %f \n", freq); break;
+	 case 21:	freq=446.128125; printf ("\ndPMR-Chan 21 on %f \n", freq); break;
+	 case 22:	freq=446.134375; printf ("\ndPMR-Chan 22 on %f \n", freq); break;
+	 case 23:	freq=446.140625; printf ("\ndPMR-Chan 23 on %f \n", freq); break;
+	 case 24:	freq=446.146875; printf ("\ndPMR-Chan 24 on %f \n", freq); break;
+	 case 25:	freq=446.153125; printf ("\ndPMR-Chan 25 on %f \n", freq); break;
+	 case 26:	freq=446.159375; printf ("\ndPMR-Chan 26 on %f \n", freq); break;
+	 case 27:	freq=446.165625; printf ("\ndPMR-Chan 27 on %f \n", freq); break;
+	 case 28:	freq=446.171875; printf ("\ndPMR-Chan 28 on %f \n", freq); break;
+	 case 29:	freq=446.178125; printf ("\ndPMR-Chan 29 on %f \n", freq); break;
+	 case 30:	freq=446.184375; printf ("\ndPMR-Chan 30 on %f \n", freq); break;
+	 case 31:	freq=446.190625; printf ("\ndPMR-Chan 31 on %f \n", freq); break;
+	 case 32:	freq=446.196875; printf ("\ndPMR-Chan 32 on %f \n", freq); break;
 	 // normally up to 32 chan in dpmr
-	 case 33: 		exit (0);
+	 case 33: 		printf ("\nExit... \n"); exit (0);
 	 default:			freq=446.003125;
 	 							printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
 								break;
@@ -1265,7 +1267,7 @@ float channelmodepmr () //PMR
 	return freq;
 }
 
-float subchannelmodepmr () //Pilot-tone
+float subchannelmodepmr () // Pilot-tone
 {
 	printf ("\nChoose Sub-Channel 0-38 (39 to exit): \n");
 	scanf ("%d", &subchannelnumberpmr);
@@ -1274,45 +1276,46 @@ float subchannelmodepmr () //Pilot-tone
 	 // FYI 19 (38)-kHz-Pilottone on UKW
 	 // Analog & digital
 	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 on %f \n", subfreq); break;	// Scan all Chan till active , now chan1
-	 case 1:  subfreq=67.900; break;	// 4.9 Hz steps
-	 case 2: 	subfreq=71.900; break;
-	 case 3: 	subfreq=74.400; break;
-	 case 4: 	subfreq=77.000; break; // at 3-chan-PMR-devices it's ch. 2
-	 case 5: 	subfreq=79.700; break; // Contest
-	 case 6: 	subfreq=82.500; break; // Events
-	 case 7: 	subfreq=85.400; break; // at 3-channel-PMR-devices it's ch. 3
-	 case 8: 	subfreq=88.500; break; // Standard
-	 case 9:  subfreq=91.500; break;
-	 case 10: subfreq=94.800; break;
-	 case 11: subfreq=97.400; break;
-	 case 12: subfreq=100.000; break;
-	 case 13: subfreq=103.500; break;
-	 case 14: subfreq=107.200; break;
-	 case 15: subfreq=110.900; break;
-	 case 16: subfreq=114.800; break;
-	 case 17: subfreq=118.800; break;
-	 case 18: subfreq=123.000; break;
-	 case 19: subfreq=127.300; break;
-	 case 20: subfreq=131.800; break;
-	 case 21: subfreq=136.500; break;
-	 case 22: subfreq=141.300; break;
-	 case 23: subfreq=146.200; break;
-	 case 24: subfreq=151.400; break;
-	 case 25: subfreq=156.700; break;
-	 case 26: subfreq=162.200; break;
-	 case 27: subfreq=167.900; break;
-	 case 28: subfreq=173.800; break;
-	 case 29: subfreq=179.900; break;
-	 case 30: subfreq=186.200; break;
-	 case 31: subfreq=192.800; break;
-	 case 32: subfreq=203.500; break;
-	 case 33: subfreq=210.700; break;
-	 case 34: subfreq=218.100; break;
-	 case 35: subfreq=225.700; break;
-	 case 36: subfreq=233.600; break;
-	 case 37: subfreq=241.800; break;
-	 case 38: subfreq=250.300; break;
-	 case 39: exit (0);
+	 case 1:  subfreq=67.900; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.9 Hz steps
+	 case 2: 	subfreq=71.900; printf ("\nCTSS-Chan 2 on %f \n", subfreq); break;
+	 case 3: 	subfreq=74.400; printf ("\nCTSS-Chan 3 on %f \n", subfreq); break;
+	 case 4: 	subfreq=77.000; printf ("\nCTSS-Chan 4 on %f \n", subfreq); break; // at 3-chan-PMR-devices it's ch. 2
+	 case 5: 	subfreq=79.700; printf ("\nCTSS-Chan 5 on %f \n", subfreq); break; // Contests
+	 case 6: 	subfreq=82.500; printf ("\nCTSS-Chan 6 on %f \n", subfreq); break; // Events
+	 case 7: 	subfreq=85.400; printf ("\nCTSS-Chan 7 on %f \n", subfreq); break; // at 3-channel-PMR-devices it's ch. 3
+	 case 8: 	subfreq=88.500; printf ("\nCTSS-Chan 8 on %f \n", subfreq); break; // Standard  opening chan
+	 case 9:  subfreq=91.500; printf ("\nCTSS-Chan 9 on %f \n", subfreq); break;
+	 case 10: subfreq=94.800; printf ("\nCTSS-Chan 10 on %f \n", subfreq); break;
+	 case 11: subfreq=97.400; printf ("\nCTSS-Chan 11 on %f \n", subfreq); break;
+	 case 12: subfreq=100.000; printf ("\nCTSS-Chan 12 on %f \n", subfreq); break;
+	 case 13: subfreq=103.500; printf ("\nCTSS-Chan 13 on %f \n", subfreq); break;
+	 case 14: subfreq=107.200; printf ("\nCTSS-Chan 14 on %f \n", subfreq); break;
+	 case 15: subfreq=110.900; printf ("\nCTSS-Chan 15 on %f \n", subfreq); break;
+	 case 16: subfreq=114.800; printf ("\nCTSS-Chan 16 on %f \n", subfreq); break;
+	 case 17: subfreq=118.800; printf ("\nCTSS-Chan 17 on %f \n", subfreq); break;
+	 case 18: subfreq=123.000; printf ("\nCTSS-Chan 18 on %f \n", subfreq); break;
+	 case 19: subfreq=127.300; printf ("\nCTSS-Chan 19 on %f \n", subfreq); break;
+	 case 20: subfreq=131.800; printf ("\nCTSS-Chan 20 on %f \n", subfreq); break;
+	 case 21: subfreq=136.500; printf ("\nCTSS-Chan 21 on %f \n", subfreq); break;
+	 case 22: subfreq=141.300; printf ("\nCTSS-Chan 22 on %f \n", subfreq); break;
+	 case 23: subfreq=146.200; printf ("\nCTSS-Chan 23 on %f \n", subfreq); break;
+	 case 24: subfreq=151.400; printf ("\nCTSS-Chan 24 on %f \n", subfreq); break;
+	 case 25: subfreq=156.700; printf ("\nCTSS-Chan 25 on %f \n", subfreq); break;
+	 case 26: subfreq=162.200; printf ("\nCTSS-Chan 26 on %f \n", subfreq); break;
+	 case 27: subfreq=167.900; printf ("\nCTSS-Chan 27 on %f \n", subfreq); break;
+	 case 28: subfreq=173.800; printf ("\nCTSS-Chan 28 on %f \n", subfreq); break;
+	 case 29: subfreq=179.900; printf ("\nCTSS-Chan 29 on %f \n", subfreq); break;
+	 case 30: subfreq=186.200; printf ("\nCTSS-Chan 30 on %f \n", subfreq); break;
+	 case 31: subfreq=192.800; printf ("\nCTSS-Chan 31 on %f \n", subfreq); break;
+	 case 32: subfreq=203.500; printf ("\nCTSS-Chan 32 on %f \n", subfreq); break;
+	 case 33: subfreq=210.700; printf ("\nCTSS-Chan 33 on %f \n", subfreq); break;
+	 case 34: subfreq=218.100; printf ("\nCTSS-Chan 34 on %f \n", subfreq); break;
+	 case 35: subfreq=225.700; printf ("\nCTSS-Chan 35 on %f \n", subfreq); break;
+	 case 36: subfreq=233.600; printf ("\nCTSS-Chan 36 on %f \n", subfreq); break;
+	 case 37: subfreq=241.800; printf ("\nCTSS-Chan 37 on %f \n", subfreq); break;
+	 case 38: subfreq=250.300; printf ("\nCTSS-Chan 38 on %f \n", subfreq); break;
+
+	 case 39: printf ("\nExit... \n"); exit (0);
 	 default: subfreq=67.000;
 						printf ("\nDefault subchannel = 1 on subfreq = %f \n", subfreq);
 						break;
@@ -1334,10 +1337,10 @@ float channelmodecb () // CB
 			 case 3:   freq=26.9850; break; //
 			 case 4:   freq=27.0050; break; // empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
 			 case 5:   freq=27.0150; break; // Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
-			 case 6:   freq=27.0250; break; // Datenkanal (D)
-		   case 7:   freq=27.0350; break; // Datenkanal (D)
+			 case 6:   freq=27.0250; break; // Data channel (D)
+		   case 7:   freq=27.0350; break; // Data channel (D)
 			 case 8:   freq=27.0550; break;
-			 case 9:   freq=27.0650; break; // Fernfahrerkanal (AM)/weltweiter Notrufkanal EMG
+			 case 9:   freq=27.0650; break; // Trucker channel (AM) / international emergency channel EMG
 			 case 10:  freq=27.0750; break; // Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
 			 /*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
 			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
@@ -1347,7 +1350,7 @@ float channelmodecb () // CB
 			 case 12:   freq=27.1050; break; //
 			 case 13:   freq=27.1150; break; //
 			 case 14:   freq=27.1250; break; // oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
-			 case 15:   freq=27.1350; break; // inoffizieller Anrufkanal SSB (USB)
+			 case 15:   freq=27.1350; break; // inofficial Anrufkanal SSB (USB)
 			 case 1515: freq=27.1450; break; //
 			 case 16:   freq=27.1550; break; // Funkverkehr mit und zwischen Wasserfahrzeugen
 			 case 17:   freq=27.1650; break; // Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
@@ -1360,8 +1363,8 @@ float channelmodecb () // CB
 			 case 21:   freq=27.2150; break; // tuerkischer Anrufkanal in Deutschland und Europa (FM)
 			 case 22:   freq=27.2250; break; // oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
 			 case 23:   freq=27.2550; break; // Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
-			 case 24:   freq=27.2350; break; // Datenkanal (D)
-			 case 25:   freq=27.2450; break; // Datenkanal (D), USB ROS Intern
+			 case 24:   freq=27.2350; break; // Data channel (D)
+			 case 25:   freq=27.2450; break; // Data channel (D), USB ROS Intern
 			 case 26:   freq=27.2650; break; //
 			 case 27:   freq=27.2750; break; //
 			 case 28:   freq=27.2850; break; // Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
@@ -1372,7 +1375,7 @@ float channelmodecb () // CB
 			 case 33:   freq=27.3350; break; //
 			 case 34:   freq=27.3450; break; // freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
 			 case 35:   freq=27.3550; break; // oeffentlicher Kanal
-			 case 36:   freq=27.3650; break; // Datenkanal USB ROS international
+			 case 36:   freq=27.3650; break; // Datachannel USB ROS international
 			 case 37:   freq=27.3750; break; // Gateway-Kanal oesterreich, FM
 			 case 38:   freq=27.3850; break; // inoffizieller internationaler DX-Kanal (LSB)
 			 case 39:   freq=27.3950; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
@@ -1392,8 +1395,8 @@ float channelmodecb () // CB
 			case 49:   freq=27.6450; break;
 			case 50:   freq=27.6550; break;
 			case 51:   freq=27.6650; break;
-			case 52:   freq=27.6750; break; // Datenkanal (D)(FM)
-			case 53:   freq=27.6850; break; // Datenkanal (D)(FM)
+			case 52:   freq=27.6750; break; // Datachannel (D)(FM)
+			case 53:   freq=27.6850; break; // Datachannel (D)(FM)
 			case 54:   freq=27.6950; break;
 			case 55:   freq=27.7050; break;
 			case 56:   freq=27.7150; break;
@@ -1417,12 +1420,13 @@ float channelmodecb () // CB
 			case 73:   freq=26.8850; break;
 			case 74:   freq=26.8950; break;
 			case 75:   freq=26.9050; break;
-			case 76:   freq=26.9150; break; // Datenkanal (D)(FM)
-			case 77:   freq=26.9250; break; // Datenkanal (D)(FM)
+			case 76:   freq=26.9150; break; // Datachannel (D)(FM)
+			case 77:   freq=26.9250; break; // Datachannel (D)(FM)
 			case 78:   freq=26.9350; break;
 			case 79:   freq=26.9450; break;
 			case 80:   freq=26.9550; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
-			case 81:   exit (0);
+
+      case 81:   printf ("\nExit... \n"); exit (0);
 
 			default:		freq=26.9650;
 									printf ("\nDefault CB chan = 1 %f \n", freq);
@@ -1603,7 +1607,7 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 
 		int fp = open ("/proc/self/pagemap", O_RDONLY); // "w"
 		lseek (fp, ((int) a)/4096*8, SEEK_SET);
-		read (fp, &frameinfo, sizeof (frameinfo));
+		read (fp, &frameinfo, sizeof(frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
 }
@@ -1673,17 +1677,17 @@ void play_list () // exit func
 void play_wav (char *filename, float freq, int samplerate)
 {
 
-	/* wiki https://en.wikipedia.org/wiki/WAV
+/*  wiki https://en.wikipedia.org/wiki/WAV
 	  https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
     245 × 60 × 3 = 44100
     245 active lines/field × 60 fields/second × 3 samples/line = 44100 samples/second
     (490 active lines per frame, out of 525 lines total)
 
-    PAL:294 × 50 × 3 = 44100
+    PAL: 294 × 50 × 3 = 44100
     294 active lines/field × 50 fields/second × 3 samples/line = 44100 samples/second
     (588 active lines per frame, out of 625 lines total)
-	*/
+*/
 
 	play_list ();
   // after getting filename insert then open
@@ -1704,7 +1708,7 @@ void play_wav (char *filename, float freq, int samplerate)
 
   while (readBytes == read (fp, &data, 1024))
   {
-        float fmconstant = (samplerate*50.0E-6); // 1.1025 for pre-emphisis filter, 50us time constant
+        float fmconstant = (samplerate*50.0E-6); // 1.1025 for pre-emphisis filter, 50 us time constant
 				printf ("\nfmconstant: %f \n", fmconstant);
         int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
 				printf ("\nclocksPerSample: %d \n", clocksPerSample);
@@ -1789,17 +1793,17 @@ void setupDMA ()
      // make copy instructions
   	 //struct CB* instr0 = (struct CB*)instrPage.v;
 
-     for (int i = 0; i<4096/sizeof (struct CB); i++)
+     for (int i = 0; i<4096/sizeof(struct CB); i++)
      {
          /*
-         instrs[instrCnt].v = (void*) ((int) instrPage.v + sizeof (struct CB)*i);
-         instrs[instrCnt].p = (void*) ((int) instrPage.p + sizeof (struct CB)*i);
+         instrs[instrCnt].v = (void*) ((int) instrPage.v + sizeof(struct CB)*i);
+         instrs[instrCnt].p = (void*) ((int) instrPage.p + sizeof(struct CB)*i);
          instr0->SOURCE_AD = (unsigned int) constPage.p + 2048;
 
          instr0->DEST_AD = PWMBASE + (FIFO); //fifo
          instr0->TXFR_LEN = 4;
          instr0->STRIDE = 0;
-         instr0->NEXTCONBK = (int) instrPage.p + sizeof (struct CB)*(i+1);
+         instr0->NEXTCONBK = (int) instrPage.p + sizeof(struct CB)*(i+1);
 
 	      // DREQ then PWM then no-wide
          instr0->TI = (1<<6) | (5<<16) |  (1<<26);
@@ -1960,7 +1964,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 		  factorizer = (x * 32767.0f * FactAmplitude);
 			printf ("\nfactorizer: %f \n", factorizer);
 
-			sampler = (1E9/samplerate); // 44.000
+			sampler = (1E9/samplerate); // 44.100
 			printf ("\nsampler: %f \n", sampler);
 			printf ("\nNow writing tone in am ... \n");
 			void WriteTone (float freq); // somehow input freq here ?!?
@@ -1994,7 +1998,7 @@ void WriteTone (float freq)
 	RfSample.Frequency = Frequencies;
 	RfSample.WaitForThisSample = Timing; // in 100 of nanoseconds
 	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
-	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
+	if (write (fp, &RfSample, sizeof(samplerf_t)) != sizeof(samplerf_t))
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
 	}
@@ -2009,7 +2013,7 @@ char callname ()
 		switch (callnameselect)
 	  {
 	   case 1: printf ("\nType in your callsign: \n");
-						 //scanf  ("%s", &callsign);
+						 scanf  ("%s", &callsign);
 						 printf ("\nYour callsign is: %s \n", callsign);
 						 break;
 
@@ -2160,7 +2164,7 @@ void menu ()
 		case 4: printf ("\nExiting... \n");
 						exit (0);
 
-		default: printf ("\nMenu: Error! \n");
+		default: printf ("\nMenu: Default \n");
 		 				 break;
 	}
 	return;
@@ -2318,9 +2322,9 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 
 		break;
 	} // end of while
- 	//} //end of else
+ 	//} // end of else
 
-	//-- for debugging or information
+	// for debugging or information
 	printf ("\n-----------------\n");
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	printf ("\nChecking File: %s \n", filename);
@@ -2332,10 +2336,10 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: is %f \n", bandwidth);
-  	printf ("\nChecking Type 1/analog, 2/digital: is %d \n", type);
+	printf ("\nChecking Type 1/analog, 2/digital: is %d \n", type);
 	printf ("\nChecking Hostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, localip, port);
-  	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
-  	//printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
+  //printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
 	//printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
 /*
 	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
