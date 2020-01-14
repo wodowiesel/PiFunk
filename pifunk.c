@@ -445,16 +445,23 @@ volatile unsigned 										*allof7e; //
 #ifdef  RPI || RASPBERRY // alternative BCM2711 B0 old/different versions
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) // dec: 4
+
+#define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
+#endif
 
 #ifdef 	RASPI || RASPI0 == 0 // pi 0 zero & w
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
+
+#define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
@@ -462,9 +469,11 @@ volatile unsigned 										*allof7e; //
 #define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               0x7E000000 // dec: 2113929216
 #define DRAM_PHYS_BASE                 0x40000000 // dec: 1073741824
+
 #define MEM_FLAG                       0x0C // alternative
 #define CURBLOCK                       0x0C // dec: 12
 #define CLOCK_BASE										 19.2E6 //
+
 #define DMA_CHANNEL										 14 //
 #define PLLD_FREQ											 500000000. //
 #endif
@@ -474,9 +483,11 @@ volatile unsigned 										*allof7e; //
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
+
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
@@ -486,9 +497,11 @@ volatile unsigned 										*allof7e; //
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
+
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
@@ -496,18 +509,20 @@ volatile unsigned 										*allof7e; //
 #ifdef  RASPI || RASPI4 == 4 // pi 4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
-
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+
 #define MEM_FLAG                       (0x04) // dec: 4
 #define PAGE_SIZE 										 (4096) //
 #define CLOCK_BASE									   (19.2E6) //
 #define XTAL_CLOCK                     (54.0E6) //
-#define DMA_CHANNEL                    (6) //
-#define BUFFER_TIME 									 (1000000) //
 
+#define DMA_CHANNEL                    (14) //
+#define DMA_CHANNELB                   (7) // BCM2711 (Pi4 B only)  chan=
+#define PLLD_FREQ 										 (750000000.) // has higher freq than pi0-3
+
+#define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
-#define PLLD_FREQ 										 (750000000.) // has higher freq than pi0-3
 #endif
 
 // standard & general definitions
@@ -816,6 +831,7 @@ volatile unsigned 										*allof7e; //
 // RTC (DS3231/DS1307 driver as bcm)
 #define RTC_PWR                         (PIN_1) // +3.3 V
 #define RTC_GND                         (PIN_9) // RTC ground
+
 #define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
 #define DS3231_TEMPERATURE_MSB          (0x11) // dec: 17
 #define DS3231_TEMPERATURE_LSB          (0x12) // dec: 18
@@ -827,7 +843,7 @@ volatile unsigned 										*allof7e; //
 #define SLAVE_ADDR_READ                 b(11010001) //
 
 // +5 V (PIN 4)
-#define RTC_PWR                         (PIN_4) // dec: 104
+#define RTC_PWR2                         (PIN_4) // dec: 104
 
 // GPS ublox neo-7M pps
 #define GPS_MODULE_NAME                 "GPS UBLOX NEO 7 M PPS" // dec: 104
