@@ -1141,7 +1141,7 @@ int gpioselect (int gpiopin)
 {
   // how to change pin-config on boot
   // https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
-	printf ("\nPlease choose GPIO-Pin (GPIO4=Pin7 default) or 20, 32, 34 \n");
+	printf ("\nPlease choose GPIO-Pin (GPIO 4 = Pin 7 -> default) or 20, 29, 32, 34, 38 \n");
   scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for Transmission is %d ... \n", gpiopin);
 	return gpiopin;
