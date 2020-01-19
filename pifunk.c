@@ -376,7 +376,7 @@ using namespace std; //
 #endif
 
 #ifdef __CPLUSPLUS
-  printf ("\nUsing GNU C++ with ANSI ISO C++17/20!!\n");
+  printf ("\nUsing GNU C++ with ANSI ISO C++ 17/20!!\n");
   extern "C" {}
 #endif
 
@@ -530,9 +530,6 @@ volatile unsigned 										*allof7e; //
 #define LENGTH                          (0x01000000) // dec: 1
 #define SUB_BASE                        (0x7E000000) // dec: 2113929216 phys base
 
-#define CM_GP0CTL                       (0x7E101070) // p.107 dec: 2114982000
-#define CM_GP0DIV                       (0x7E101074) // p.108 dec: 2114982004
-
 #define CLKBASE                         (0x7E101000) // dec: 2114981888
 
 #define PWMBASE                         (0x7E20C000) // controller dec: 2116075520
@@ -609,10 +606,24 @@ volatile unsigned 										*allof7e; //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
 
 // GPIO
+// https://elinux.org/RPi_BCM2835_GPIOs
+// https://books.google.de/books?id=gks1CgAAQBAJ&pg=PA407&lpg=PA407&dq=GPCLK2+address&source=bl&ots=OQkStH20YL&sig=ACfU3U2tp104Z3TTsrmU67Ai4L54JhF1uA&hl=de&sa=X&ved=2ahUKEwjw-uKyhZDnAhUCU1AKHcuRDMgQ6AEwAXoECBQQAQ#v=onepage&q=GPCLK2%20address
 #define GPFSEL0                         (0x00/4) // p.90 dec: 0
 #define GPFSEL1                         (0x04/4) // 1
 #define GPFSEL2                         (0x08/4) // 2
 #define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368
+
+#define CM_GP0CTL                       (0x7E101070) // p.107 dec: 2114982000
+#define CM_GP0DIV                       (0x7E101074) // p.108 dec: 2114982004
+
+#define CM_GP1CTL                       (0x7E101078) //
+#define CM_GP1DIV                       (0x7E10107C) //
+
+#define CM_GP2CTL                       (0x7E101080) //
+#define CM_GP2DIV                       (0x7E101084) //
+
+#define CM_UART_CTL                     (0x7E1010F0)
+#define CM_UART_DIV                     (0x7E1010F4)
 
 #define GPPUD                           (0x94/4) // 37
 #define GPPUDCLK0                       (0x98/4) // 38
@@ -651,6 +662,26 @@ volatile unsigned 										*allof7e; //
 #define CM_PLLD                         (0x10C/4) // 67
 #define CM_PLLH                         (0x110/4) // 68
 #define CM_PLLB                         (0x170/4) // 92
+
+/*
+https://pinout.xyz/pinout/gpclk
+SOURCES:
+0     0 Hz     Ground
+1     19.2 MHz oscillator
+2     0 Hz     testdebug0
+3     0 Hz     testdebug1
+4     0 Hz     PLLA
+5     1000 MHz PLLC (changes with overclock settings)
+6     500 MHz  PLLD
+7     216 MHz  HDMI auxiliary // not needed here in the program
+8-15  0 Hz     Ground
+
+clock-divider in the form of SOURCE/(DIV_I + DIV_F/4096)
+
+https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf
+Note, that the BCM2835 ARM Peripherals document contains an error and states that the denominator of the divider is 1024 instead of 4096.
+Uses 3 GPIO pins
+*/
 
 #define A2W_PLLA_ANA0                   (0x1010/4) // 1028
 #define A2W_PLLC_ANA0                   (0x1030/4) // 1036
@@ -706,15 +737,14 @@ volatile unsigned 										*allof7e; //
 #define PWM_CTL                         (0x00/4) // 0
 #define PWM_FIFO                        (0x18/4) // 6
 #define PWM_DMAC                        (0x08/4) // 2
-
-#define PWMDMAC_ENAB                    (1<<31)  //
-#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) //
-
 #define PWM_RNG1                        (0x10/4) //4
 #define PWM_RNG2                        (0x20/4) //8
 
-#define PWMCLK_CNTL                     (40) //
-#define PWMCLK_DIV                      (41) //
+#define PWMDMAC_ENAB                    (1<<31)  // shift bit to left
+#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) //
+
+#define PWMCLK_CNTL                     (40) // offset 0A0
+#define PWMCLK_DIV                      (41) // 0A4
 
 #define PWMCTL_CLRF                     (1<<6) //
 
@@ -736,8 +766,8 @@ volatile unsigned 										*allof7e; //
 #define PWMCTL_MSEN2                    (1<<15) //
 
 // PCM
-#define PCMCLK_CNTL                     (38) //
-#define PCMCLK_DIV                      (39) //
+#define PCMCLK_CNTL                     (38) // 098
+#define PCMCLK_DIV                      (39) // 09C
 
 #define PCM_CS_A                        (0x00/4) // 0
 #define PCM_FIFO_A                      (0x04/4) // 1
@@ -803,16 +833,16 @@ volatile unsigned 										*allof7e; //
 #define DREQ_SPI_SLAVE_RX               (9) //
 
 // memory
-#define MEM_FLAG_DISCARDABLE            (1<<0) /* can be resized to 0 at any time. Use for cached data */
-#define MEM_FLAG_NORMAL                 (0<<2) /* normal allocating alias. Don't use from ARM */
+#define MEM_FLAG_DISCARDABLE            (1<<0) // can be resized to 0 at any time. Use for cached data
+#define MEM_FLAG_NORMAL                 (0<<2) // normal allocating alias. Don't use from ARM
 
-#define MEM_FLAG_DIRECT                 (1<<2) /* 0xC dec: 12 alias uncached */
-#define MEM_FLAG_COHERENT               (2<<2) /* 0x8 dec: 8 alias. Non-allocating in L2 but coherent */
-#define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) /* Allocating in L2 */
+#define MEM_FLAG_DIRECT                 (1<<2) // 0xC dec: 12 alias uncached
+#define MEM_FLAG_COHERENT               (2<<2) // 0x8 dec: 8 alias. Non-allocating in L2 but coherent
+#define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) // Allocating in L2
 
-#define MEM_FLAG_ZERO                   (1<<4) /* initialise buffer to all zeros */
-#define MEM_FLAG_NO_INIT                (1<<5) /* don't initialise (default is initialise to all ones */
-#define MEM_FLAG_HINT_PERMALOCK         (1<<6) /* Likely to be locked for long periods of time. */
+#define MEM_FLAG_ZERO                   (1<<4) // initialise buffer to all zeros
+#define MEM_FLAG_NO_INIT                (1<<5) // don't initialise (default is initialise to all ones
+#define MEM_FLAG_HINT_PERMALOCK         (1<<6) // Likely to be locked for long periods of time.
 
 #define PAGE_SHIFT                      (12) //
 #define NUM_PAGES                       ((sizeof(struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT) //
@@ -824,7 +854,7 @@ volatile unsigned 										*allof7e; //
 #define SAMPLES_PER_BUFFER 							(512) //
 
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
-#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE + ALLOF7ED) //volatile + int* volatile unsigned*
+#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE + ALLOF7ED) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
@@ -839,7 +869,7 @@ volatile unsigned 										*allof7e; //
 #define DS1307_I2C_INPUT_ADDR           (0xD0) // read dec: 208
 #define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 2019
 
-#define SLAVE_ADDR_WRITE                b(11010000) //
+#define SLAVE_ADDR_WRITE                b(11010000) // binary
 #define SLAVE_ADDR_READ                 b(11010001) //
 
 // +5 V (PIN 4)
@@ -958,8 +988,8 @@ char buffer [80];
 
 // audio & sample control
 // logarithmic modulation
-// volume in dB 0db = unity gain, no attenuation, full amplitude signal
-// -20db = 10x attenuation, significantly more quiet
+// volume in dB -> 0db = unity gain, no attenuation, full amplitude signal
+// -20 db = 10x attenuation, significantly more quiet
 float volume = 1.1f;
 const float volume_reference =	1.1f;
 float volbuffer [512];
@@ -971,8 +1001,8 @@ float volumeMultiplier = 10E-1; //
 int nb_samples;
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
 float A = 87.6f; // compression parameter
-uint32_t carrier_freq = 87600000; // -> this might be the carrier too, why this value?
-float FactAmplitude = 2.0; //maybe here amp-modulator input?
+uint32_t carrier_freq = 87600000; // this might be the carrier too, why this value?
+float FactAmplitude = 2.0; // maybe here amp-modulator input?
 float ampf;
 float ampf2;
 float factorizer;
@@ -1086,8 +1116,8 @@ struct option long_opt [] =
 void infos () // warnings and infos
 {
 		printf ("\n");
-		/* red-yellow -> color:1 for "bright" / 4 for "underlined" and \0XX ansi colorcode // 35 for Magenta, 33 red */
-    printf ("\033[1;4;35m Welcome to the Pi-Funk! v%s %s for Raspian ARM! \033[0m", VERSION, description); // color escape command for resetting
+		/* red-yellow -> color: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode: 35 for Magenta, 33 red -> \033[14;35m   escape command for resetting \033[0m */
+    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM!\n", VERSION, description);
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7\n");
@@ -1109,6 +1139,8 @@ int timer (time_t t)
 // program functions
 int gpioselect (int gpiopin)
 {
+  // how to change pin-config on boot
+  // https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
 	printf ("\nPlease choose GPIO-Pin (GPIO4=Pin7 default) or 20, 32, 34 \n");
   scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for Transmission is %d ... \n", gpiopin);
@@ -1161,7 +1193,6 @@ float freqselect () // gets freq by typing in
   return freq;
 }
 
-//--------------------------------------------------
 // audio & freq stuff
 float step ()
 {
@@ -1299,7 +1330,7 @@ float subchannelmodepmr () // Pilot-tone
 	 case 5: 	subfreq=79.700; printf ("\nCTSS-Chan 5 on %f \n", subfreq); break; // Contests
 	 case 6: 	subfreq=82.500; printf ("\nCTSS-Chan 6 on %f \n", subfreq); break; // Events
 	 case 7: 	subfreq=85.400; printf ("\nCTSS-Chan 7 on %f \n", subfreq); break; // at 3-channel-PMR-devices it's ch. 3
-	 case 8: 	subfreq=88.500; printf ("\nCTSS-Chan 8 on %f \n", subfreq); break; // Standard  opening chan
+	 case 8: 	subfreq=88.500; printf ("\nCTSS-Chan 8 on %f \n", subfreq); break; // Standard opening chan
 	 case 9:  subfreq=91.500; printf ("\nCTSS-Chan 9 on %f \n", subfreq); break;
 	 case 10: subfreq=94.800; printf ("\nCTSS-Chan 10 on %f \n", subfreq); break;
 	 case 11: subfreq=97.400; printf ("\nCTSS-Chan 11 on %f \n", subfreq); break;
@@ -1337,7 +1368,7 @@ float subchannelmodepmr () // Pilot-tone
 						break;
 	}
   printf ("\nSubchannelnumber = %d on subfreq = %f \n", subchannelnumberpmr, subfreq);
-	return freq;
+	return subfreq;
 }
 
 float channelmodecb () // CB
@@ -1626,23 +1657,25 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 		read (fp, &frameinfo, sizeof(frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
+
+    fatal("Could not map memory.\n");
 }
 
 void freeRealMemPage (void **vAddr)
 {
 		printf ("\nFreeing vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
-		free    (vAddr); // free the ram#
+		free    (vAddr); // free the ram
 
 }
 
 void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
-/* Added functions to enable and disable carrier */
+// Added functions to enable and disable carrier
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
 //struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = LOW
-//ACCESS (CM_GP0CTL) == *((int*) &setupword); //setting cm
+//ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
 }
 
 void carrierlow () // disables it
@@ -1682,8 +1715,7 @@ void setupfm ()
 	 carrierhigh ();
 }
 
-//------------------------------------
-// relevant for transmitting stuff
+// relevant features for transmitting stuff
 void play_list () // exit func
 {
 		printf ("\nOpening playlist-folder (dummy) \n"); // in sounds/playlist
@@ -1724,21 +1756,27 @@ void play_wav (char *filename, float freq, int samplerate)
 
   while (readBytes == read (fp, &data, 1024))
   {
-        float fmconstant = (samplerate*50.0E-6); // 1.1025 for pre-emphisis filter, 50 us time constant
+        float fmconstant = (samplerate*50.0E-6); // 1.1025 for pre-emphisis filter, 50 us (microsecons) time constant
 				printf ("\nfmconstant: %f \n", fmconstant);
+
         int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
 				printf ("\nclocksPerSample: %d \n", clocksPerSample);
         // if samplerate > 15.75 then clocks per sample is negetive !! not good
+
         datanew = ((float) (*data)/excursion); // some constant for unsigned int excursion
 				printf ("\ndatanew: %f \n", datanew);
+
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
 				printf ("\nsample: %f \n", sample);
+
         float dval = sample*15.0; // actual transmitted sample, 15 Hz is standard bandwidth (about 75 kHz) better 14.5
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
+
         float frac = ((dval - intval)/2 + 0.5);
 				printf ("\nfrac: %f \n", frac);
+
         int fracval = (frac*clocksPerSample);
 				printf ("\nfracval: %d \n", fracval);
 
@@ -1795,8 +1833,8 @@ void setupDMA ()
   //getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int) ((500.0/freq) * (float) (1<<12) + 0.5);
 	printf ("\ncenterFreqDivider %d \n", centerFreqDivider);
-	// make data page contents - it s essientially 1024 different commands for the
-	// DMA controller to send to the clock module at the correct time
+	// make data page contents - its essientially 1024
+	// different commands for the DMA controller to send to the clock module at the correct time
 	for (int i = 0; i<1024; i++)
 	{
 	   // ((int*) (constPage.v))[i] = (CARRIER << 24) + centerFreqDivider - 512 + i;
