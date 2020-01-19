@@ -192,13 +192,14 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 b) manually compiling/linking libraries:
 
 `sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/
--lbcm_host -lm -lsndfile -lpthread -lgnu -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
--DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+ -lbcm_host -lm -lsndfile -lpthread -lgnu -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1
+ -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
 `sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/
--lbcm_host -lm -lsndfile -lpthread -lgnu -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
+ -lbcm_host -lm -lsndfile -lpthread -lgnu -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
+ -DRASPI=1 -o bin/pifunk`
 
 d) optional Pi-Flags:
 
@@ -308,7 +309,7 @@ Arguments: would be best to input in this specific order to prevent problems
 
 Use '. dot' as decimal-comma separator!
 
-`[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-p <power 0-7)>] [-c <callsign>]`
+`[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <mod (fm/am)>] [-p <power 0-7)>] [-c <callsign>]`
 
 additional/optional flags:
 
