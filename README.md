@@ -80,7 +80,7 @@ c) `sudo apt-get install python-dev python3-dev` for py3
 
 d) [RPi.GPIO lib v0.7.0 for Py3](https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
 
-[RPi.GPIO Project Site](https://pypi.org/project/RPi.GPIO/) 
+[RPi.GPIO Project Site](https://pypi.org/project/RPi.GPIO/)
 
 [RPi.GPIO Sourceforge-Site](https://sourceforge.net/projects/raspberry-gpio-python/files/)
 
@@ -109,6 +109,7 @@ ___
 a) `cd PiFunk` with default path: `/home/pi/PiFunk/`
 
 b) GCC Compiler flags:
+You can use this flags in your makefile or directly in your terminal if you prefer it manually
 
 `-g3` for normal GNU compiler debug informations (1-3 level, 2 is default)
 
@@ -122,19 +123,21 @@ b) GCC Compiler flags:
 
 `-std=c99` (as iso `-std=iso9899:1999` strict)
 
-`-std=gnu99` with additional gnu extension to c99
+`-std=gnu99` with additional gnu extension with c99 (what i use)
 
-(`-std=gnu++17` if you like when using g++)
+(`-std=gnu++17` if you like with version 11/14/17 or later)
 
 `-pedantic-errors` for error console messages if problem between c99 and gnu extensions
 
 `-Iinclude ` for using include-directory with header files
 
-`-I/opt/vc/include/` for loading bcm header folder
-
-`-L/opt/vc/lib` for loading bcm folder
+`-I/opt/vc/include/` for loading bcm headers folder-path
 
 `-Llib` for using library-directory
+
+`-L/opt/vc/lib` for loading bcm lib folder-path
+
+`-lgnu` for extra gnu-lib
 
 `-lm` for math-lib is obligatory!
 
@@ -142,9 +145,11 @@ b) GCC Compiler flags:
 
 `-lpthread` lib for process threads
 
-`-lgthread` lib for graphic threads
+`-lgthread` lib for graphic threads (not needed right now)
 
 `-lsndfile` -l links library name for ALSA "snd"-lib
+
+`-lpifunk` for using own pifunk lib if needed or self-made beforehand see under b)
 
 `-shared` for generating shared object libraries
 
@@ -186,11 +191,14 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/
+-lbcm_host -lm -lsndfile -lpthread -lgnu -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE
+-DRASPI=1 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -Llib -I/opt/vc/include -lbcm_host -lm -lsndfile -lpthread -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/
+-lbcm_host -lm -lsndfile -lpthread -lgnu -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
 
 d) optional Pi-Flags:
 
@@ -254,7 +262,9 @@ c) Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-d) You can try to smooth the Resistence R out with a 1:X (2-43)-balun if using long HF antenna
+d) You can try to smooth the Resistance R out with a 1:X (2-43)-balun if using long HF antenna for adapting Resistance
+
+or use a 1:1 choke with a ferrite-ring FT-240-xx(21) for CB
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
@@ -270,7 +280,7 @@ f) RTC: Module DS3231 uses
 
 ![RTC](docs/RTC-top.jpg)
 
-g) GPS Module: Ublox Neo 7M 
+g) GPS Module: Ublox Neo 7M
 
 Pinout: 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
@@ -298,7 +308,11 @@ Arguments: would be best to input in this specific order to prevent problems
 
 Use '. dot' as decimal-comma separator!
 
-`[-n <filename (.wav)>] [ -f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-c <callsign (optional)>] [-p <power 0-7)>]`
+`[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <modulation (fm/am)>] [-p <power 0-7)>] [-c <callsign>]`
+
+additional/optional flags:
+
+[-g <GPIO-pin 7 (default) 29,32,34,38>] [-d <DMA-channels 0-2>] [-b <bandwidth 1-15>]
 
 extra single menu-flags: -> no further argument needed
 
@@ -308,7 +322,7 @@ extra single menu-flags: -> no further argument needed
 
 `[-u]` for extra menu (csv, commandline)
 
-default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7`
+default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign`
 
 Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi.
 
@@ -370,4 +384,4 @@ Would appreciate being named in the source, Thank you.
 
  15. Credits
 
-based on pifm/am, pifmadv scripts/snippets
+based on pifm/am, pifmadv, pifmrds scripts/snippets

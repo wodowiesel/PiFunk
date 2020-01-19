@@ -10,7 +10,7 @@ CCN=gcc-9.2.0 ## newest version
 $(CCN)
 MAKEINFO=pifunk
 $(MAKEINFO)
-VERSION=0.1.7.7
+VERSION=0.1.7.8
 $(VERSION)
 STATUS=experimental
 $(STATUS)
@@ -154,4 +154,4 @@ menu:	cd $(HOME)/PiFunk/bin/
 
 .PHONY: 	run
 run:	cd $(HOME)/PiFunk/bin/
-			$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -c callsign -p 7
+			$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign

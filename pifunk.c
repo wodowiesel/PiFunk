@@ -9,8 +9,8 @@ SHA-256: ac557f27eb8697912263a1de812dfc99fa8d69bd6acc73a0b7756a1083ba0176
 -> get 3 different versions here: https://www.raspberrypi.org/downloads/raspbian/
 -> or direct link: https://downloads.raspberrypi.org/raspbian_full_latest/
 
-gcc>=9.2.0 compiler or g++>=5.4.1 for 11/14/17
-gdb>=7.11.1 debugger
+gcc >=9.2.0 compiler or g++>=5.4.1 for 11/14/17
+gdb >=7.11.1 debugger
 
 ->get project:
 git clone https://github.com/silicator/PiFunk/
@@ -26,8 +26,8 @@ cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
 =>compile with admin/root permissions!!
- Libs: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- program: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -D_USE_MATH_DEFINES -D_GNU_SOURCE -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared  -O3 -o bin/pifunk bin/pifunk.out
+ Libs: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -lgnu -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -Llib -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ program: sudo gcc -g3 -std=gnu99 -lm -Iinclude -lsndfile -lgnu -D_USE_MATH_DEFINES -D_GNU_SOURCE -Llib -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
@@ -37,8 +37,11 @@ cd PiFunk // goto path
  -v verbose
 
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on pi wtith linux
-virtual maschine possible with qemu or alternative with everpad: nor sure about this, rather not using it
- sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav
+virtual machine possible with qemu or alternative with everpad: nor sure about this, rather not using it
+ sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav // old
+
+Usage:
+default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
 
 -------------------------------------------------------
 LICENSE: GPLv3 !!
@@ -1099,8 +1102,8 @@ struct option long_opt [] =
 		{"freqency",   	required_argument, NULL, 'f'},
     {"samplerate", 	required_argument, NULL, 's'},
     {"modulation",	required_argument, NULL, 'm'},
-    {"callsign",	  required_argument, NULL, 'c'},
     {"power", 			required_argument, NULL, 'p'},
+    {"callsign",	  required_argument, NULL, 'c'},
     {"gpio",	  		required_argument, NULL, 'g'},
 		{"dma",	  			required_argument, NULL, 'd'},
 		{"bandwidth",	  required_argument, NULL, 'b'},
@@ -2259,7 +2262,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	{
 		if (argc == 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b a h\n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		}
 		/* else
 		{ */
@@ -2304,15 +2307,15 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 								//return 1;
 							 }
 
+      // power managment
+      case 'p':
+         							 power = atoi (optarg);
+         							 printf ("\nPower is %d \n", power);
+         							 //break;
+
 			case 'c':
 							 callsign = optarg;
 							 printf ("\nCallsign is %s \n", callsign);
-							 //break;
-
-			// power managment
-			case 'p':
-							 power = atoi (optarg);
-							 printf ("\nPower is %d \n", power);
 							 //break;
 
 			case 'g':
@@ -2347,7 +2350,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\nThere is also an assistant [-a] or menu [-u] \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] \nThere is also an assistant [-a], or menu [-u] or for help [-h]  \n");
 								break;
 							 }
 							 else
@@ -2370,7 +2373,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 							 }
 
 			default:
-								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] \n[-c <callsign (optional)>] [-p <power (0-7>]\n There is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] \n There is also an assistant [-a], menu [-u] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								return 1;
 		} // end of switch
 
