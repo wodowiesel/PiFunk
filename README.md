@@ -192,13 +192,17 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 b) manually compiling/linking libraries:
 
 `sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/
--lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 
+
+-lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1
+
 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
 `sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include 
+
 -Llib -L/opt/vc/lib/ -lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c 
+
 -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
 
 d) optional Pi-Flags:
@@ -263,9 +267,15 @@ c) Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
 ![Pinout](docs/pinout-gpio-pib+.jpg)
 
-d) You can try to smooth the Resistance R out with a 1:X (2-43)-balun if using long HF antenna for adapting Resistance
+d) You can try to smooth the Resistance R out with a 1:X (1-43)
 
-or use a 1:1 choke with a ferrite-ring FT-240-xx(21) for CB
+if using long HF antenna for adapting Resistance
+
+or use a 1:1 balun choke with a ferrite-ringcore e.g.: FT-23-43 with 2x 4 turns for CB (2 7MHz)
+
+You can comparethe different materials for specific frequencies:
+
+[Datasheet](https://www.funkamateur.de/tl_files/downloads/hefte/2008/FA-BE-Info_Amidon-FT.pdf)
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
@@ -275,7 +285,7 @@ you can overclock the Pi if you want to on own risk but it's not recommended
 
 f) RTC: Module DS3231 uses
 
-3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
++3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
 
 -> need to activate I2C in pi config!
 
@@ -283,7 +293,7 @@ f) RTC: Module DS3231 uses
 
 g) GPS Module: Ublox Neo 7M
 
-Pinout: 5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
+Pinout: +5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
 it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
@@ -310,11 +320,16 @@ Arguments: would be best to input in this specific order to prevent problems
 Use '. dot' as decimal-comma separator!
 
 `[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <mod (fm/am)>] 
+
 [-p <power 0-7)>] [-c <callsign>]`
 
 additional/optional flags:
 
-`[-g <GPIO-pin 7 (default) 29,32,34,38>] [-d <DMA-channels 0-2>] [-b <bandwidth 1-15>]`
+`[-g <GPIO-pin 7 (default) 29,32,34,38>]`
+
+`[-d <DMA-channels 0-2>]`
+
+`[-b <bandwidth 1-15>]`
 
 extra single menu-flags: -> no further argument needed
 
