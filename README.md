@@ -4,7 +4,9 @@
 
 ## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
 
-**Early Experimental! (WIP)**
+**Early Experimental!** 
+
+(WIP - Work in Progress)
 
 ___
 
@@ -191,19 +193,19 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/`
 
--lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1
+`-lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1`
 
--o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`-o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include 
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include` 
 
--Llib -L/opt/vc/lib/ -lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c 
+`-Llib -L/opt/vc/lib/ -lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c` 
 
--D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
+`-D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
 
 d) optional Pi-Flags:
 
@@ -213,7 +215,7 @@ d) optional Pi-Flags:
 
  `-mfloat-abi=hard` floating-point ABI to use, permissible values are: ‘soft’, ‘softfp’, ‘hard’
 
- `-mfpu=vfp` virtual floating point hardware module support, for pi2/3/4 use neon-vfpv4
+ `-mfpu=vfp` virtual floating point hardware module support pi1-4, for pi2/3/4 use ‘neon-vfpv4’
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
@@ -243,7 +245,7 @@ ___
 
 11. Hardware-Setup:
 
-a) Use (original) power supply 10 W, 5 V @ ~2 A or ~5 V/500 mA via mini-USB 2.0 or 5 V Pins possible)
+a) Use (original) power supply 10 W, +5 V @ ~2 A or ~ +5 V / 500 mA via mini-USB 2.0 or 5 V Pins possible)
 
 b) Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
@@ -279,7 +281,7 @@ You can comparethe different materials for specific frequencies:
 
 - Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
-e) For handling overheating of the Pi's processor use cooling-ribs with fan (5 V DC/0.2 A - 20x20 mm)
+e) For handling overheating of the Pi's processor use cooling-ribs with fan (+5 V DC/0.2 A - 20x20 mm)
 
 you can overclock the Pi if you want to on own risk but it's not recommended
 
