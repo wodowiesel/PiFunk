@@ -1107,8 +1107,8 @@ struct option long_opt [] =
     {"gpio",	  		required_argument, NULL, 'g'},
 		{"dma",	  			required_argument, NULL, 'd'},
 		{"bandwidth",	  required_argument, NULL, 'b'},
-    {"type",	  		required_argument, NULL, 't'},
-    {"gps",	  		  required_argument, NULL, 'x'},
+  //  {"type",	  		required_argument, NULL, 't'},
+  //  {"gps",	  		  required_argument, NULL, 'x'},
     {"assistant",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
@@ -2231,18 +2231,21 @@ void menu ()
 // MAIN
 int main (int argc, char **argv) // arguments for global use must be in main!
 {
-	const char *short_opt = "n:f:s:m:c:p:g:d:b:ahu"; // program flags
+	const char *short_opt = "n:f:s:m:p:c:g:d:b:ahu"; // program flags
 	int options = 0;
-	argv [0] = "pifunk"; // actual program-name
-	char *filename = "sound.wav"; // = argv [1];
-	float freq = fabs (446.006250); // = strtof (argv [2], NULL); //float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate = abs (22050); // = atof (argv [3]); //maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char argv [0] = "pifunk"; // actual program-name
+	char *filename = "sound.wav"; // = argv [1]; n=name
+	float freq = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate = abs (22050); // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm"; // = argv [4];
-	char *callsign = "callsign";// = argv [5];
-	int power = 7; // = argv [6];
-	int dmachannel = 14; // = argv [7];
-	float bandwidth = 15.00; // = argv [8];
-	int gpiopin = abs (4); // = argv [9];
+  int power = 7; // = argv [5];
+	char *callsign = "callsign"; // = argv [6];
+  int gpiopin = abs (4); // = argv [7];
+	int dmachannel = 14; // = argv [8];
+	float bandwidth = 15.00; // = argv [9];
+  char a;
+  char h;
+  char u;
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
@@ -2255,17 +2258,22 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nProgram name is %s \n", __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	printf ("\nshort_opt: %s \n", short_opt);
+  printf ("\nlong_opt: %s \n", long_opt);
 	infos (); // information, disclaimer
 	int timer (time_t t); // date and time print
 
-	while ((options = getopt (argc, argv, short_opt)) != -1) // short_opt must be constants
+  int option_index = 0;
+  flags = getopt_long (argc, argv[], "n:f:s:m:p:c:g:d:b:ahu"", long_opt, &option_index);
+
+  int options = getopt (argc, argv[], short_opt); // short_opt must be constant
+	while (options != -1) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
 				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b a h\n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		}
-		/* else
-		{ */
+		else
+		{
 		switch (options)
 		{
 
@@ -2307,8 +2315,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 								//return 1;
 							 }
 
-      // power managment
-      case 'p':
+      case 'p': // power managment
          							 power = atoi (optarg);
          							 printf ("\nPower is %d \n", power);
          							 //break;
@@ -2350,7 +2357,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] \nThere is also an assistant [-a], or menu [-u] or for help [-h]  \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] \nThere is also an assistant [-a], or menu [-u] or for help [-h]  \n");
 								break;
 							 }
 							 else
@@ -2371,6 +2378,9 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 									printf ("\nError in -u (menu) \n");
 									break;
 							 }
+      case '?':
+                  printf("Unknown option: %c \n", optopt);
+                  break;
 
 			default:
 								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] \n There is also an assistant [-a], menu [-u] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
@@ -2379,7 +2389,8 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 
 		break;
 	} // end of while
- 	//} // end of else
+
+  } // end of else
 
 	// for debugging or information
 	printf ("\n-----------------\n");
