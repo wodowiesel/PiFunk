@@ -307,7 +307,7 @@ using namespace std; //
 #include "opt/vc/include/interface/vcos/vcos.h"
 #include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+
 #include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B
-#include "bcm2835/src/bcm2835.h" // pi 0 ZERO & W A/+ & B/B+
+#include "bcm2835/src/bcm2835.h" // pi 0 ZERO & W & A/A+ & B/B+
 
 // RPi.GPIO lib, 0.7.0 used with pi4 support or higher
 #include "RPi.GPIO/source/i2c.h"
@@ -425,10 +425,10 @@ using namespace std; //
 #define PERIOD                          (1/PHASE) // 0.15915494309
 
 // buffers
-#define PAGE_SIZE                       (4*1024) //4096
-#define BLOCK_SIZE                      (4*1024) //4096
-#define BUFFER_LEN                      (8*1024) //8192
-#define BUFFERINSTRUCTIONS              (65536) //[1024]
+#define PAGE_SIZE                       (4*1024) // 4096
+#define BLOCK_SIZE                      (4*1024) // 4096
+#define BUFFER_LEN                      (8*1024) // 8192
+#define BUFFERINSTRUCTIONS              (65536) // [1024]
 
 // I-O access via GPIO
 volatile unsigned 										*gpio; //
@@ -454,6 +454,8 @@ volatile unsigned 										*allof7e; //
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
+#else
+#error Unknown Raspberry Pi Revision
 #endif
 
 #ifdef 	RASPI || RASPI0 == 0 // pi 0 zero & w
@@ -644,7 +646,7 @@ volatile unsigned 										*allof7e; //
 #define GPIO_PAD_28_45                  (0x30/4)  // 12
 #define GPIO_PAD_46_52                  (0x34/4)  // 13
 
-#define GPCLK_CNTL                      (0x70/4) // 28
+#define GPCLK_CNTL                      (0x70/4) // 112 / 4 = 28 -> 0x5A = decimal(90)
 #define GPCLK_DIV                       (0x74/4) // 29
 
 #define CORECLK_CNTL                    (0x08/4) // 2
@@ -850,7 +852,7 @@ Uses 3 GPIO pins
 #define PAGE_SHIFT                      (12) //
 #define NUM_PAGES                       ((sizeof(struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT) //
 #define NUM_SAMPLES                     (64000) //
-#define NUM_CBS                         (NUM_SAMPLES * 2) //
+#define NUM_CBS                         (NUM_SAMPLES * 2) // 128000
 
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
@@ -862,7 +864,9 @@ Uses 3 GPIO pins
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 // RTC (DS3231/DS1307 driver as bcm)
+
 #define RTC_PWR                         (PIN_1) // +3.3 V
+#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V (PIN 4)
 #define RTC_GND                         (PIN_9) // RTC ground
 
 #define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
@@ -870,13 +874,10 @@ Uses 3 GPIO pins
 #define DS3231_TEMPERATURE_LSB          (0x12) // dec: 18
 
 #define DS1307_I2C_INPUT_ADDR           (0xD0) // read dec: 208
-#define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 2019
-
-#define SLAVE_ADDR_WRITE                b(11010000) // binary
-#define SLAVE_ADDR_READ                 b(11010001) //
-
-// +5 V (PIN 4)
-#define RTC_PWR2                         (PIN_4) // dec: 104
+#define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 209
+// nearly the same
+#define SLAVE_ADDR_WRITE                b(11010000) // binary -> dec:208, hex: 0xD0
+#define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
 
 // GPS ublox neo-7M pps
 #define GPS_MODULE_NAME                 "GPS UBLOX NEO 7 M PPS" // dec: 104
@@ -898,13 +899,8 @@ Uses 3 GPIO pins
 #define PIN_LED_GND                     (14) // which is the GND pin 27 for led
 #define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led
 
-//#else // exception handling
-//#error Unknown Raspberry Pi version! (RASPI=0-4)
-//#endif
-
-/* try a modprobe of i2C-BUS */
-// if (system ("/sbin/modprobe i2c_dev") == -1) {/* ignore errors */}
-// if (system ("/sbin/modprobe i2c_bcm2835") == -1) {/* ignore errors */}
+// try a modprobe of i2C-BUS
+// if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == -1) {printf ("modprobe test"); /*ignore errors*/}
 
 //----------------------------------
 // declaring normal variables
@@ -928,27 +924,28 @@ char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
 
-float xtal_freq=1.0/19.2E6; // LOCK_BASE
-
 //-----------------------------------------
 // arguments
 int opt;
 char *filename = "sound.wav";
 float freq = fabs (446.006250);
 float subfreq = 67.0;
+double shift_ppm = 0.0;
+float xtal_freq = (1.0/19.2E6); // LOCK_BASE
 float ctss_freq = 67.0;
+int samplerate = abs (22050);
+int channels = 1;
 uint32_t Timing;
 char *mod;
 char *fm = "fm";
 char *am = "am";
-char *analog = "a";
-char *digital = "d";
-char *callsign = "callsign";
 int power = abs (7);
 int powerlevel = abs (7);
-int samplerate = abs (22050);
-int channels = 1;
-double shift_ppm = 0.0;
+char *callsign = "callsign";
+int type; // analog or digital
+char *mod_type;
+char *analog = "a"; // type= 1
+char *digital = "d"; // type= 2
 
 //float divider = (500000000/(2000*228*(1.+shift_ppm/1.E6) ) ); // PLLD_FREQ = 500000000.
 //uint32_t idivider = (float) divider;
@@ -1019,12 +1016,25 @@ int instrCnt 	= 0;
 int instrPage;
 int constPage;
 
-int reg 	= 0; // = gpio / 10;
-int shift = 0; // = (gpio % 10) * 3;
-pad_reg [GPIO_PAD_0_27]  = PADGPIO + power;
-pad_reg [GPIO_PAD_28_45] = PADGPIO + power;
-// GPIO needs to be ALT FUNC 0 to output the clock
-//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift));
+static volatile uint32_t *pad_reg;
+static volatile uint32_t *pad_reg1;
+static volatile uint32_t *pad_reg2;
+static volatile uint32_t *pad_val;
+
+pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1 ->
+pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
+pad_val = PADGPIO + power;
+if (pad_reg1 || pad_reg2 == pad_val) // is it ?
+{printf ("\npad_reg = pad_val -> %u \n", pad_reg1);}
+else {printf ("\npad_reg NOT same\n"}
+
+static volatile uint32_t *pwm_reg;
+static volatile uint32_t *clk_reg;
+static volatile uint32_t *gpio_reg;
+static volatile uint32_t *dma_reg;
+int reg 	= 0; // = (gpio / 10)
+int shift = 0; // = (gpio % 10) * 3
+//gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
 
 // network sockets
 // custom port via tcp/ip or udp
@@ -1034,12 +1044,12 @@ char *host 		= "localhost";
 int port 		= 8080;
 
 // GPS-coordinates
-// default Germany-Frankfurt(Main) in decimal °grad (centigrade)
-
-float longitude; // = 8.682127; // E
-float latitude; // = 50.110924; // N
-float elevation; // = 100.00; // meter
-float altitude	= fabs (float elevation); // elevation in meter above see level (u.N.N.)
+// default Germany-Frankfurt (Main) in decimal °grad (centigrade)
+char gps;
+float longitude = 8.682127; // E
+float latitude = 50.110924; // N
+float elevation = 100.00; // meter
+float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
 
 //--------------------------------------------------
 // Structs
@@ -1107,8 +1117,8 @@ struct option long_opt [] =
     {"gpio",	  		required_argument, NULL, 'g'},
 		{"dma",	  			required_argument, NULL, 'd'},
 		{"bandwidth",	  required_argument, NULL, 'b'},
-  //  {"type",	  		required_argument, NULL, 't'},
-  //  {"gps",	  		  required_argument, NULL, 'x'},
+    {"type",	  		required_argument, NULL, 't'},
+    {"gps",	  		  required_argument, NULL, 'x'},
     {"assistant",		no_argument,       NULL, 'a'},
     {"help",	  		no_argument,       NULL, 'h'},
 		{"menu",	  		no_argument,       NULL, 'u'}
@@ -1212,60 +1222,61 @@ float step ()
 	}
   else
   {
-  printf ("\nNO steps could be determined, wrong input! Using Standard 12.5 \n");
+  printf ("\nNO steps could be determined, wrong input! Using Standard 12.5 kHz \n");
   steps = 12.5;
   }
   return steps;
 }
 
-// Channel-mode
-float channelmodepmr () //PMR
+float channelmodepmranalog ()
 {
-	int type; // = "1";
+  printf ("\nChoose analog PMR-Channel 1-17 (18 to exit): \n");
 
-	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
-	scanf ("%d", &type);
+  scanf ("%d", &channelnumberpmr);
 
-	if (type==1)
-	{
-	printf ("\nChoose %s PMR-Channel 1-17 (18 to exit): \n", analog);
-	scanf ("%d", &channelnumberpmr);
-	switch (channelnumberpmr)
-	 {
-	 // Analog & DMR
-	 case 1: freq=446.00625; printf ("\nPMR-Chan 1 on %f \n", freq); break;	// Standard
-	 case 2: freq=446.01875; printf ("\nPMR-Chan 2 on %f \n", freq); break; // Geocaching
-	 case 3: freq=446.03125; printf ("\nPMR-Chan 3 on %f \n", freq); break; // Standard
-	 case 4: freq=446.04375; printf ("\nPMR-Chan 4 on %f \n", freq); break; // at 3-chan-PMR-devices its ch. 2
-	 case 5: freq=446.05625; printf ("\nPMR-Chan 5 on %f \n", freq); break; // Contest
-	 case 6: freq=446.06875; printf ("\nPMR-Chan 6 on %f \n", freq); break; // Events
-	 case 7: freq=446.08125; printf ("\nPMR-Chan 7 on %f \n", freq); break; // at 3-channel-PMR-devices it's ch. 3
-	 case 8: freq=446.09375; printf ("\nPMR-Chan 8 on %f \n", freq); break; // Standard
+  switch (channelnumberpmr)
+   {
+   // Analog & DMR
+   case 1: freq=446.00625; printf ("\nPMR-Chan 1 on %f \n", freq); break;	// Standard
+   case 2: freq=446.01875; printf ("\nPMR-Chan 2 on %f \n", freq); break; // Geocaching
+   case 3: freq=446.03125; printf ("\nPMR-Chan 3 on %f \n", freq); break; // Standard
+   case 4: freq=446.04375; printf ("\nPMR-Chan 4 on %f \n", freq); break; // at 3-chan-PMR-devices its ch. 2
+   case 5: freq=446.05625; printf ("\nPMR-Chan 5 on %f \n", freq); break; // Contest
+   case 6: freq=446.06875; printf ("\nPMR-Chan 6 on %f \n", freq); break; // Events
+   case 7: freq=446.08125; printf ("\nPMR-Chan 7 on %f \n", freq); break; // at 3-channel-PMR-devices it's ch. 3
+   case 8: freq=446.09375; printf ("\nPMR-Chan 8 on %f \n", freq); break; // Standard
 
   // Digital only
-	// dmr (tier 1) digital new since 28.09.2016
-	// extra 8 chan
-	// 12.5 kHz steps
-	 case 9:  freq=446.10312; printf ("\nDMR-Chan 9 on %f \n", freq); break;
-	 case 10: freq=446.10625; printf ("\nDMR-Chan 10 on %f \n", freq); break;
-	 case 11: freq=446.11875; printf ("\nDMR-Chan 11 on %f \n", freq); break;
-	 case 12: freq=446.13125; printf ("\nDMR-Chan 12 on %f \n", freq); break;
-	 case 13: freq=446.14375; printf ("\nDMR-Chan 13 on %f \n", freq); break;
-	 case 14: freq=446.15625; printf ("\nDMR-Chan 14 on %f \n", freq); break;
-	 case 15: freq=446.16875; printf ("\nDMR-Chan 15 on %f \n", freq); break;
-	 case 16: freq=446.18125; printf ("\nDMR-Chan 16 on %f \n", freq); break;
-	 case 17: freq=446.19375; printf ("\nDMR-Chan 17 on %f \n", freq); break;
+  // dmr (tier 1) digital new since 28.09.2016
+  // extra 8 chan
+  // 12.5 kHz steps
+   case 9:  freq=446.10312; printf ("\nDMR-Chan 9 on %f \n", freq); break;
+   case 10: freq=446.10625; printf ("\nDMR-Chan 10 on %f \n", freq); break;
+   case 11: freq=446.11875; printf ("\nDMR-Chan 11 on %f \n", freq); break;
+   case 12: freq=446.13125; printf ("\nDMR-Chan 12 on %f \n", freq); break;
+   case 13: freq=446.14375; printf ("\nDMR-Chan 13 on %f \n", freq); break;
+   case 14: freq=446.15625; printf ("\nDMR-Chan 14 on %f \n", freq); break;
+   case 15: freq=446.16875; printf ("\nDMR-Chan 15 on %f \n", freq); break;
+   case 16: freq=446.18125; printf ("\nDMR-Chan 16 on %f \n", freq); break;
+   case 17: freq=446.19375; printf ("\nDMR-Chan 17 on %f \n", freq); break;
 
-	 case 18: printf ("\nExit... \n");exit (0);
-	 default:	freq=446.00625;
-	 					printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
-						break;
+   case 18: printf ("\nExit... \n"); exit (0);
+
+   default:	freq=446.00625;
+            printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
+            break;
    }
-  }
-	else if (type==2)
-	{
-	printf ("\nChoose %s PMR-Channel 1-32 (33 to exit): \n", digital);
+
+ printf ("analog-freq is %f", freq);
+ return freq;
+}
+
+float channelmodepmrdigital ()
+{
+  printf ("\nChoose ditigal PMR-Channel 1-32 (33 to exit): \n");
+
 	scanf ("%d", &channelnumberpmr);
+
 	switch (channelnumberpmr)
 	 {
    // FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Contact, CC1 TG9112 TS1 = EmCOM
@@ -1303,17 +1314,38 @@ float channelmodepmr () //PMR
 	 case 32:	freq=446.196875; printf ("\ndPMR-Chan 32 on %f \n", freq); break;
 	 // normally up to 32 chan in dpmr
 	 case 33: 		printf ("\nExit... \n"); exit (0);
+
 	 default:			freq=446.003125;
 	 							printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
 								break;
 	 }
-	}
+
+ printf ("digital-freq is %f", freq);
+ return freq;
+}
+
+// Channel-mode
+float channelmodepmr () //PMR
+{
+
+	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
+	scanf ("%d", &type);
+
+  if (type==1)
+  {
+    channelmodepmranalog ();
+  }
+  else if (type==2)
+	{
+    channelmodepmrdigital ();
+  }
   else
 	{
     type=1;
+
 		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", analog);
 	}
-  printf ("\nChannelnumber = %d on freq = %f on type %d \n", channelnumberpmr, freq, type);
+  printf ("\n On type = %d with Channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
 	return freq;
 }
 
@@ -1366,7 +1398,7 @@ float subchannelmodepmr () // Pilot-tone
 	 case 38: subfreq=250.300; printf ("\nCTSS-Chan 38 on %f \n", subfreq); break;
 
 	 case 39: printf ("\nExit... \n"); exit (0);
-	 default: subfreq=67.000;
+	 default: subfreq=67.900;
 						printf ("\nDefault subchannel = 1 on subfreq = %f \n", subfreq);
 						break;
 	}
@@ -1484,25 +1516,7 @@ float channelmodecb () // CB
 
 	}
   printf ("\nUsing channel = %d on freq =  %f \n", channelnumbercb, freq);
-	return  freq;
-}
-
-void modselect (int argc, char **argv, char *mod)
-{
-	printf ("\nOpening Modulator... \n");
-	if (mod == fm)
-	{
-		void modulationfm (int argc, char **argv);
-	}
-	else if (mod == am)
-	{
-		void modulationam (int argc, char **argv);
-	}
-	else
-	{
-		printf ("\nError selecting modulation! \n");
-	}
- 	return;
+	return freq;
 }
 
 char modulationselect ()
@@ -1513,12 +1527,10 @@ char modulationselect ()
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
 						mod = "fm";
-						void modselect (int argc, char **argv, char *mod);
 		        break;
 
 		case 2: printf ("\nYou selected 2 for AM! \n");
 						mod = "am";
-						void modselect (int argc, char **argv, char *mod);
 		        break;
 
 		case 3: printf ("\nExiting... \n");
@@ -1529,6 +1541,26 @@ char modulationselect ()
 						  break;
 	}
 	return *mod;
+}
+
+void modselect (int argc, char **argv, char *mod)
+{
+	printf ("\nOpening Modulator-Selection ... \n");
+	if (mod == fm)
+	{
+    printf ("\nYou selected 1 for FM! \n");
+		void modulationfm (int argc, char **argv);
+	}
+	else if (mod == am)
+	{
+    printf ("\nYou selected 2 for AM! \n");
+		void modulationam (int argc, char **argv);
+	}
+	else
+	{
+		printf ("\nError selecting modulation! \n");
+	}
+ 	return;
 }
 
 void channelselect () // make a void
@@ -1555,6 +1587,12 @@ void channelselect () // make a void
 	return;
 }
 
+void gpscoord ()
+{
+  printf ("gps is %s", gps)
+  print ("\nlongitude %f / latitude %f / elevation %f / altitude %f\n", longitude, latitude, elevation, altitude);
+  return;
+}
 //---------------------------------------------------
 // LED stuff
 // controlling via py possible but c stuff can be useful too by bcm funcs!
@@ -1625,12 +1663,6 @@ float audiovol ()
 
 //---------------
 // Voids for modulation and memory handling
-void handSig () // exit func
-{
-		printf ("\nExiting... \n");
-		exit (0);
-}
-
 void clearscreen ()
 {
   printf ("\n\033[H\033[J\n");
@@ -1639,10 +1671,16 @@ void clearscreen ()
   //system ("clear");
 }
 
+void handSig () // exit func
+{
+		printf ("\nExiting... \n");
+		exit (0);
+}
+
 void modulate (int l)
 {
 	printf ("\nModulate carrier... \n");
-	//	ACCESS (CM_GP0DIV) == (CARRIER << 24) + MODULATE + l;  //
+	ACCESS (CM_GP0DIV) == (CARRIER << 24) + (MODULATE + l);  //
 }
 
 void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm header!
@@ -1657,35 +1695,69 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 
 		int fp = open ("/proc/self/pagemap", O_RDONLY); // "w"
 		lseek (fp, ((int) a)/4096*8, SEEK_SET);
-		read (fp, &frameinfo, sizeof(frameinfo));
+		read (fp, &frameinfo, sizeof (frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
 
-    fatal("Could not map memory.\n");
+    //fatal ("\nCould not map memory.\n");
 }
 
 void freeRealMemPage (void **vAddr)
 {
-		printf ("\nFreeing vAddr ... \n");
+		printf ("\nTry to Freeing vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
 		free    (vAddr); // free the ram
-
+    printf ("\nvAddr is free NOW... \n");
 }
-
 void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
 // Added functions to enable and disable carrier
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
-//struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = LOW
-//ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
+struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = HIGH
+ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
 }
 
 void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
-//struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // set it to 0 = LOW
-//ACCESS (CM_GP0CTL) == *((int*) &setupword);
+  struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // set it (clock) to 0 = LOW
+  ACCESS (CM_GP0CTL) == *((int*) &setupword);
+}
+
+static void terminate (int num)
+{
+    // Stop outputting and generating the clock
+    if (clk_reg && gpio_reg && vAddr)
+    {
+        // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
+        gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
+        printf ("\ngpio_reg is %u \n", gpio_reg);
+        // Disable the clock generator
+        clk_reg [GPCLK_CNTL] = 0x5A;
+        printf ("\nclk_reg is %u \n", clk_reg);
+    }
+
+    if (dma_reg && vAddr)
+    {
+        dma_reg [DMA_CS] = BCM2708_DMA_RESET;
+        printf ("\ndma_reg is %u \n", dma_reg);
+        //udelay (10);
+    }
+
+     //fm_mpx_close ();
+     //close_control_pipe ();
+
+    if (vAddr != NULL)
+    {
+        unmapmem (vAaddr, NUM_PAGES * 4096);
+      //  mem_unlock (mbox.handle, mbox.mem_ref);
+      //  mem_free (mbox.handle, mbox.mem_ref);
+    }
+
+    printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exit \n");
+
+    exit (num);
 }
 
 void setupfm ()
@@ -1711,9 +1783,9 @@ void setupfm ()
 		exit (-1);
 	}
 
-   //SETBIT (GPFSEL0, 14);
-   //CLRBIT (GPFSEL0, 13);
-   //CLRBIT (GPFSEL0, 12);
+   SETBIT (GPFSEL0, 14);
+   CLRBIT (GPFSEL0, 13);
+   CLRBIT (GPFSEL0, 12);
 
 	 carrierhigh ();
 }
@@ -1826,6 +1898,7 @@ void play_wav (char *filename, float freq, int samplerate)
 void setupDMA ()
 {
 	printf ("\nSetup of DMA starting... \n");
+  printf ("\ndma_reg is %u \n", dma_reg);
 	//atexit (unsetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
@@ -2231,7 +2304,8 @@ void menu ()
 // MAIN
 int main (int argc, char **argv) // arguments for global use must be in main!
 {
-	const char *short_opt = "n:f:s:m:p:c:g:d:b:ahu"; // program flags
+  printf ("\nStarting Main-PiFunk");
+	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:g:ahu"; // program flags
 	int options = 0;
 	char argv [0] = "pifunk"; // actual program-name
 	char *filename = "sound.wav"; // = argv [1]; n=name
@@ -2243,6 +2317,8 @@ int main (int argc, char **argv) // arguments for global use must be in main!
   int gpiopin = abs (4); // = argv [7];
 	int dmachannel = 14; // = argv [8];
 	float bandwidth = 15.00; // = argv [9];
+  int type;
+  char gps;
   char a;
   char h;
   char u;
@@ -2263,14 +2339,14 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	int timer (time_t t); // date and time print
 
   int option_index = 0;
-  flags = getopt_long (argc, argv[], "n:f:s:m:p:c:g:d:b:ahu"", long_opt, &option_index);
+  int flags = getopt_long (argc, argv[], "n:f:s:m:p:c:g:d:b:t:g:ahu"", long_opt, &option_index);
 
   int options = getopt (argc, argv[], short_opt); // short_opt must be constant
 	while (options != -1) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b a h\n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 		}
 		else
 		{
@@ -2297,7 +2373,6 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 							 mod = optarg;
 							 if (!strcmp (mod, "fm"))
 							 {
-								mod = optarg;
 								printf ("\nPushing args to fm Modulator... \n");
 							  //void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
 								//break;
@@ -2315,15 +2390,15 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 								//return 1;
 							 }
 
-      case 'p': // power managment
-         							 power = atoi (optarg);
-         							 printf ("\nPower is %d \n", power);
-         							 //break;
+      case 'p':
+         				power = atoi (optarg);
+         				printf ("\nPower is %d \n", power);
+         				//break;
 
 			case 'c':
-							 callsign = optarg;
-							 printf ("\nCallsign is %s \n", callsign);
-							 //break;
+							  callsign = optarg;
+							  printf ("\nCallsign is %s \n", callsign);
+							  //break;
 
 			case 'g':
 								gpiopin = atof (optarg);
@@ -2339,6 +2414,34 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 								bandwidth = atoi (optarg);
 								printf ("\nBandwidth is %f \n", bandwidth);
 								//break;
+
+      case 't':
+                type = atof (optarg);
+
+                printf ("\nType is %d \n", type);
+                if (!strcmp (type, "1"))
+ 							 {
+ 						    printf ("\nUsing analog mode \n");
+ 							  float channelmodepmranalog ();
+ 								//break;
+ 							 }
+ 							 else if (!strcmp (type, "2"))
+ 							 {
+ 								printf ("\nUsing digital mode \n");
+ 								float channelmodepmrdigital ();
+ 								//break;
+ 							 }
+ 							 else
+ 							 {
+ 								printf ("\nError in -t \n");
+ 								break;
+ 								//return 1;
+ 							 }
+
+      case 'x':
+               gps = optarg;
+               printf ("\nGPS-Position is %s \n", gps);
+               void gpscoord ();
 
 			case 'a':
 							 if (argc == 1)
@@ -2379,7 +2482,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 									break;
 							 }
       case '?':
-                  printf("Unknown option: %c \n", optopt);
+                  printf ("Unknown option: %c \n", optopt);
                   break;
 
 			default:
