@@ -134,6 +134,7 @@ tone generator for ctss (sin wave?)
 #include <sys/ioctl.h>
 
 // linux kernel driver headers
+
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -158,6 +159,7 @@ tone generator for ctss (sin wave?)
 #include <linux/device.h>
 #include <linux/reboot.h>
 #include <linux/types.h>
+#include <linux/ctype.h>
 #include <linux/string.h>
 #include <linux/pm_runtime.h>
 #include <linux/reset.h>
@@ -165,6 +167,7 @@ tone generator for ctss (sin wave?)
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
 #include <linux/regulator/consumer.h>
+#include <linux/textsearch.h>
 #include <soc/bcm2835/raspberrypi-firmware.h>
 #include <drm/drm_fb_cma_helper.h>
 #include <drm/drm_fb_helper.h>
