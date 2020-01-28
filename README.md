@@ -4,7 +4,7 @@
 
 ## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
 
-**Early Experimental!** 
+**Early Experimental!**
 
 (WIP - Work in Progress)
 
@@ -26,17 +26,19 @@ and extract and load bootable image on SD-card via Rufus
 
 2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
 
+Not recommending to use w1-protocol at the beginning (i dont need it in my setup)
+
 Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO Pin
 
-(if you have problems deactivate 1-wire config!)
+1-Wire by default BCM4 setting needs to be activated in boot-config for autostart additionally
 
-1-Wire by default BCM4 setting needs to be activated in boot-config for autostart
+(if you have problems deactivate 1-wire config!)
 
 3. Manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
 
 check/add lines:
 
-`dtoverlay=w1-gpio,gpiopin=4,pullup=0` add pullup=1 if needed
+`dtoverlay=gpiopin=4,pullup=0` add pullup=1 or w1-gpio if needed
 
 `dtoverlay=audio=on` for bcm audio
 
@@ -50,15 +52,31 @@ optional:
 
 `init_uart_baud=9600` data transmission rate
 
-`dtoverlay=pps-gpio,gpiopin=18` for GPS-device pps(puls-pro-second)-support
+`dtoverlay=pps-gpio,gpiopin=18` for GPS-device pps (puls-per-second)-support
 
-Sync to GPS 1 PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK / PWM0) for accuracy
+Add PPS to autostart boot process:
 
-`sudo nano /etc/modules` opens modules.conf with text editor (provide one too)
+`sudo nano /boot/cmdline.txt`
 
-`pps-gpio` Add this line
+`bcm2708.pps_gpio_pin=18` It must be on the same line, not on a new line
 
-4. Save your changes with ctrl-o <return/enter> then exit with ctrl-x
+Sync to GPS 1 PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK / PWM0) or RTC for accuracy
+
+`sudo nano /etc/modules` opens `modules.conf` with text editor (provide one too)
+
+`pps-gpio` Add this line at end of the list
+
+4. Save your changes with ctrl-o <return/enter> then exit with ctrl-x and reboot
+
+`sudo lsmod | grep pps` to check the loaded modules
+
+output be like:
+
+`pps_gpio 2529 1` and `pps_core 7943 2 pps_gpio`
+
+To run the pps command:
+
+`sudo ppstest /dev/pps0` it should fetch the data and print it
 
 ___
 
@@ -88,7 +106,7 @@ d) [RPi.GPIO lib v0.7.0 for Py3](https://files.pythonhosted.org/packages/cb/88/d
 
 or download via terminal: `sudo wget https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-0.7.0.tar.gz`
 
-then extract: `tar -xvf RPi.GPIO-0.7.0.tar.gz`
+then extract: `tar -xvf RPi.GPIO-0.7.0.tar.gz` or a later version
 
 and install it: `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
@@ -201,9 +219,9 @@ b) manually compiling/linking libraries:
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include` 
+`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include`
 
-`-Llib -L/opt/vc/lib/ -lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c` 
+`-Llib -L/opt/vc/lib/ -lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c`
 
 `-D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
 
@@ -273,9 +291,11 @@ d) You can try to smooth the Resistance R out with a 1:X (1-43)
 
 if using long HF antenna for adapting Resistance
 
-or use a 1:1 balun choke with a ferrite-ringcore e.g.: FT-23-43 with 2x 4 turns for CB (2 7MHz)
+or use a 1:1 balun choke with a ferrite-ringcore or 1:1.5 from 75 Ohm to 50 Ohm
 
-You can comparethe different materials for specific frequencies:
+e.g.: FT23-43 with 2x 4 turns for CB (27 MHz)
+
+You can compare the different materials for specific frequencies:
 
 [Datasheet](https://www.funkamateur.de/tl_files/downloads/hefte/2008/FA-BE-Info_Amidon-FT.pdf)
 
@@ -321,17 +341,21 @@ Arguments: would be best to input in this specific order to prevent problems
 
 Use '. dot' as decimal-comma separator!
 
-`[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <mod (fm/am)>] 
+`[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <mod (fm/am)>]
 
 [-p <power 0-7)>] [-c <callsign>]`
 
 additional/optional flags:
 
-`[-g <GPIO-pin 7 (default) 29,32,34,38>]`
+`[-g <gpio-pin 7 (default) 29,32,34,38>]`
 
-`[-d <DMA-channels 0-2>]`
+`[-d <dma-channels 0-14>]`
 
 `[-b <bandwidth 1-15>]`
+
+`[-t <type 1=(a)nalog, 2=(d)igital>]`
+
+`[-x <gps on/off>]`
 
 extra single menu-flags: -> no further argument needed
 
