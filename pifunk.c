@@ -869,7 +869,7 @@ Uses 3 GPIO pins
 // RTC (DS3231/DS1307 driver as bcm)
 
 #define RTC_PWR                         (PIN_1) // +3.3 V
-#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V (PIN 4)
+#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V (PIN_4)
 #define RTC_GND                         (PIN_9) // RTC ground
 
 #define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
@@ -878,19 +878,19 @@ Uses 3 GPIO pins
 
 #define DS1307_I2C_INPUT_ADDR           (0xD0) // read dec: 208
 #define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 209
-// nearly the same
+// the same address
 #define SLAVE_ADDR_WRITE                b(11010000) // binary -> dec:208, hex: 0xD0
 #define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
 
 // GPS ublox neo-7M pps
 #define GPS_MODULE_NAME                 "GPS UBLOX NEO 7 M PPS" // dec: 104
-#define GPS_MODULE_VERSION              (7) //
+#define GPS_MODULE_VERSION              (7) // revision of the ublox model from 6-8+
 
 // GND (PIN 6)
 #define GPS_GND                         (PIN_6) // ground pin
 
-// PPS to PCM_CLK (GPIO 18, PIN 12)
-#define GPS_PPS                         (PIN_12) // pulse per second
+// PPS to PCM_CLK (GPIO 18, PIN 12) or alternative PIN_24 and ESP32 on PIN_19
+#define GPS_PPS                         (PIN_12) // pulse per second for locking GPS-timing
 
 // RX to UART0_TXD (GPIO 14 PIN 8) crosswired
 #define GPS_I2C_RX                      (UART0_TXD) // data in gps, receive
