@@ -17,11 +17,16 @@ $(STATUS)
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
 CFLAGS=-std=gnu99 -Iinclude -I/opt/vc/include/ -D_USE_MATH_DEFINES -D_GNU_SOURCE -fPIC pifunk.c -O3
-DEBUG=-Wall -Werror --print-directory -pedantic-errors -d -v -g3 -ggdb3
+$(CFLAGS)
 ASFLAGS=-s
+$(ASFLAGS)
+DEBUG=-Wall -Werror --print-directory -pedantic-errors -d -v -g3 -ggdb3
+$(DEBUG)
 
-LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lsndfile -lpifunk -shared
 LDLIBS=-Llib -L/opt/vc/lib/
+$(LDLIBS)
+LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lsndfile -lpifunk -shared
+$(LDFLAGS)
 
 ## default paths
 SHELL=/bin/sh/
@@ -33,10 +38,16 @@ RM=rm -f ## remove files or folder
 ## Determine the hardware platform
 UNAME:=$(shell uname -m) ## linux
 $(UNAME)
+KERNEL:= $(shell uname -a) ##
+$(KERNEL)
+FWVERSION:= $(shell version) ##
+$(FWVERSION)
+OSVERSION:= $(shell cat /etc/rpi-issue) ##
+$(OSVERSION)
 PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) ## my rev: 0010 -> 1.2 B+
 $(PCPUI)
-RPI_VERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]") ## grab revision
-#$(RPI_VERSION)
+RPIVERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]") ## grab revision | grep -o "[0-9]"
+$(RPIVERSION)
 
 ## Enable ARM-specific options only
 ifeq ($(UNAME), armv5l)
@@ -59,7 +70,7 @@ PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffa
 TARGET=RASPI3
 endif
 
-ifeq ($(UNAME), armv8l && $(shell expr $(RPI_VERSION) \>= 4), 1)
+ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) >= 4), 1)
 PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI=4
 TARGET=RASPI4
 endif
@@ -74,6 +85,9 @@ ifeq ($(UNAME), armv5l)
 PFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 TARGET=RASPBERRY
 endif
+
+$(PFLAGS)
+$(TARGET)
 
 @echo "Compiling PiFunk"
 
@@ -100,7 +114,7 @@ pifunk.lib:	pifunk.c
 pifunk.so:	pifunk.c
 						$(USER) $(CC)  $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.so
 
-## lib list
+## lib object list
 OBJECTS	= pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so
 $(OBJECTS)
 
@@ -128,7 +142,7 @@ pifunk.info: pifunk.texi
 .PHONY: 	piversion
 piversion:	$(USER) $(UNAME)
 						$(USER) $(PCPUI)
-						$(USER) $(RPI_VERSION)
+						$(USER) $(RPIVERSION)
 
 .PHONY: 	install
 install:	cd $(HOME)/PiFunk/

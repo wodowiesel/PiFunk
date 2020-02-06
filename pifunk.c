@@ -88,6 +88,7 @@ tone generator for ctss (sin wave?)
 #include <string.h>
 #include <getopt.h>
 #include <time.h>
+#include <utime.h>
 #include <sched.h>
 #include <float.h>
 #include <locale.h>
@@ -117,13 +118,13 @@ tone generator for ctss (sin wave?)
 #include <uchar.h>
 #include <gnumake.h>
 //#include <metrics.h>
-//#include <config.h>
 //#include <missing.h>
 
 // on posix linux
 #include <sys/cdefs.h>
 #include <sys/time.h>
 #include <sys/timex.h>
+#include <sys/times.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -132,6 +133,8 @@ tone generator for ctss (sin wave?)
 #include <sys/sysmacros.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/utsname.h>
+#include <sys/wait.h>
 
 // linux kernel driver headers
 
@@ -168,13 +171,17 @@ tone generator for ctss (sin wave?)
 #include <linux/pm_domain.h>
 #include <linux/regulator/consumer.h>
 #include <linux/textsearch.h>
-#include <soc/bcm2835/raspberrypi-firmware.h>
-#include <drm/drm_fb_cma_helper.h>
-#include <drm/drm_fb_helper.h>
-// I2C support need
+#include <linux/config.h>
+
+// I2C & SPI support need
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 #include <linux/spi/spidev.h>
+
+// FW
+#include <soc/bcm2835/raspberrypi-firmware.h>
+#include <drm/drm_fb_cma_helper.h>
+#include <drm/drm_fb_helper.h>
 
 // RTC support
 #include <linux/rtc.h>
