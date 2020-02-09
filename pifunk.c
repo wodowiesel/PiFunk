@@ -38,7 +38,7 @@ cd PiFunk // goto path
 
 -> real gpio hardware can't be simulated by c or py code! must be executed and compiled on pi wtith linux
 virtual machine possible with qemu or alternative with everpad: nor sure about this, rather not using it
- sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav // old
+sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav // old
 
 Usage:
 default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
@@ -50,11 +50,11 @@ LICENSE: GPLv3 !!
 -----Disclaimer--------------
 Rewritten for own purposes!
 no guarantee, warranty for anything! Usage at own risk!
-you should ground your antenna, eventually diode or 10uF-caps
+you should ground your antenna, eventually diode or 10 uF-caps
 at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
 do not shortout or do overstress it with more than 3.3V! it may cause damages
 more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
-Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi 1.2 B+ rev.2)
+Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi1 1.2 B+ rev.2 2014)
 used python 3.7.4 on original Raspbian
 -----------------------
 don't forget to sudo apt-get update && upgrade
@@ -137,7 +137,6 @@ tone generator for ctss (sin wave?)
 #include <sys/wait.h>
 
 // linux kernel driver headers
-
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -314,7 +313,7 @@ using namespace std; //
 
 // broadcom arm processor for mapping phys. addresses
 #include "opt/vc/include/bcm_host.h" // firmware stuff
-#include "opt/vc/include/interface/vcos/vcos.h"
+#include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 #include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+
 #include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B
 #include "bcm2835/src/bcm2835.h" // pi 0 ZERO & W & A/A+ & B/B+
@@ -331,7 +330,8 @@ using namespace std; //
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-//#include "include/sndfile.h" // has problems with @typedef sf_count somehow -> set as int
+
+//#include "include/sndfile.h" // has problems!!! with @typedef sf_count somehow -> set as int
 
 // extra library https://github.com/libusb/libusb
 // for usb soundcards for mic and alsa usage
@@ -2327,11 +2327,11 @@ int main (int argc, char **argv) // arguments for global use must be in main!
   int gpiopin = abs (4); // = argv [7];
 	int dmachannel = 14; // = argv [8];
 	float bandwidth = 15.00; // = argv [9];
-  int type;
-  char gps;
-  char a;
-  char h;
-  char u;
+  int type; // = argv [10];
+  char gps; // = argv [11];
+  char a; // = argv [12];
+  char h; // = argv [13];
+  char u; // = argv [14];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int

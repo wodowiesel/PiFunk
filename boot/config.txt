@@ -10,7 +10,10 @@ core_freq=250 ## for pi1
 sdram_freq=400 ## for pi1
 
 ## set i2c usage
-modprobe i2c_bcm2708
+#modprobe i2c_bcm2708
+#modprobe i2c_bcm2709
+#modprobe i2c_bcm2710
+#modprobe i2c_bcm2711
 modprobe i2c_bcm2835
 modprobe i2c_dev
 
@@ -30,8 +33,8 @@ dtparam=i2s=on
 
 ## Enable I2C bus for gpios
 dtparam=i2c1=on
-dtparam=i2c_arm=on
 dtparam=i2c1_baudrate=100000 ## for 100 (default) or 400 kHz clock
+dtparam=i2c_arm=on
 dtparam=i2c_arm_baudrate=100000
 
 ## gpio settings
