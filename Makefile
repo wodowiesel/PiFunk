@@ -29,8 +29,8 @@ LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lsndfile -lpifunk -shared
 $(LDFLAGS)
 
 ## default paths
-SHELL=/bin/sh/
-$(SHELL)
+INIT=/bin/sh/ ## init-shell
+$(INIT)
 HOME=/home/pi ## std-path
 $(HOME)
 RM=rm -f ## remove files or folder
@@ -44,9 +44,9 @@ FWVERSION:= $(shell version) ##
 $(FWVERSION)
 OSVERSION:= $(shell cat /etc/rpi-issue) ##
 $(OSVERSION)
-PCPUI:=$(shell cat /proc/cpuinfo | grep Revision | cut -c16-) ## my rev: 0010 -> 1.2 B+
+PCPUI:=$(shell cat /proc/cpuinfo) ## my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
 $(PCPUI)
-RPIVERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]") ## grab revision | grep -o "[0-9]"
+RPIVERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]") ## grab revision: | grep -o "[0-9]"
 $(RPIVERSION)
 
 ## Enable ARM-specific options only
