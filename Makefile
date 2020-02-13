@@ -38,15 +38,15 @@ RM=rm -f ## remove files or folder
 ## Determine the hardware platform
 UNAME:=$(shell uname -m) ## linux
 $(UNAME)
-KERNEL:= $(shell uname -a) ##
+KERNEL:= $(shell uname -a) ## kernel
 $(KERNEL)
-FWVERSION:= $(shell version) ##
+FWVERSION:= $(shell version) ## firmware
 $(FWVERSION)
-OSVERSION:= $(shell cat /etc/rpi-issue) ##
+OSVERSION:= $(shell cat /etc/rpi-issue) ## os
 $(OSVERSION)
 PCPUI:=$(shell cat /proc/cpuinfo) ## my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
 $(PCPUI)
-RPIVERSION:=$(shell cat /proc/device-tree/model | grep -a -o "Raspberry\sPi\s[0-9]") ## grab revision: | grep -o "[0-9]"
+RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]"
 $(RPIVERSION)
 
 ## Enable ARM-specific options only
