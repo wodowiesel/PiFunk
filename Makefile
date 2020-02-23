@@ -4,8 +4,6 @@ USER=sudo
 $(USER)
 CC=gcc
 $(CC)
-CPR=gcc -E ## c-preproccessor
-$(CPR)
 CCN=gcc-9.2.0 ## newest version
 $(CCN)
 CPP=g++
@@ -29,6 +27,10 @@ CFLAGS=-std=gnu99 -Iinclude -I/opt/vc/include/ -D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CFLAGS)
 ASFLAGS=-s
 $(ASFLAGS)
+PPFLAGS=-E ## c-preproccessor
+$(PPFLAGS)
+LIFLAGS=-c ## no linker
+$(LIFLAGS)
 DEBUG=-Wall -Werror --print-directory -pedantic-errors -d -v -g3 -ggdb3
 $(DEBUG)
 
@@ -102,10 +104,10 @@ $(TARGET)
 ## Generating objects in gcc specific order
 ## assembler code
 pifunk.S:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS) $(LIFLAGS)-o lib/pifunk.S
 ## precompiled/processor c-code
 pifunk.i:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-E -C -o lib/pifunk.i
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(PPFLAGS)-C -o lib/pifunk.i
 ## precompiled assemblercode
 pifunk.s:	pifunk.c
 					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS)-o lib/pifunk.s
