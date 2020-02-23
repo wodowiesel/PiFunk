@@ -4,16 +4,25 @@ USER=sudo
 $(USER)
 CC=gcc
 $(CC)
-CPP=gcc -E ## c-preproccessor
-$(CPP)
+CPR=gcc -E ## c-preproccessor
+$(CPR)
 CCN=gcc-9.2.0 ## newest version
 $(CCN)
+CPP=g++
+$(CPP)
 MAKEINFO=pifunk
 $(MAKEINFO)
 VERSION=0.1.7.8
 $(VERSION)
 STATUS=experimental
 $(STATUS)
+
+## default paths
+INIT=/bin/sh/ ## init-shell
+$(INIT)
+HOME=/home/pi ## std-path
+$(HOME)
+RM=rm -f ## remove files or folder
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
 CFLAGS=-std=gnu99 -Iinclude -I/opt/vc/include/ -D_USE_MATH_DEFINES -D_GNU_SOURCE -fPIC pifunk.c -O3
@@ -25,29 +34,28 @@ $(DEBUG)
 
 LDLIBS=-Llib -L/opt/vc/lib/
 $(LDLIBS)
-LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lsndfile -lpifunk -shared
+PFLIBS=-L$(HOME)/Pifunk/lib/
+$(PFLIBS)
+LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lsndfile -shared
 $(LDFLAGS)
-
-## default paths
-INIT=/bin/sh/ ## init-shell
-$(INIT)
-HOME=/home/pi ## std-path
-$(HOME)
-RM=rm -f ## remove files or folder
+PFFLAGGS=-lpifunk
+$(PFFLAGS)
 
 ## Determine the hardware platform
 UNAME:=$(shell uname -m) ## linux
 $(UNAME)
-KERNEL:= $(shell uname -a) ## kernel
+KERNEL:=$(shell uname -a) ## kernel
 $(KERNEL)
-FWVERSION:= $(shell version) ## firmware
+FWVERSION:=$(shell version) ## firmware
 $(FWVERSION)
-OSVERSION:= $(shell cat /etc/rpi-issue) ## os
+VCGVERSION:=$(shell vcgencmd version) ## vcg firmware
+$(VCGVERSION)
+OSVERSION:=$(shell cat /etc/rpi-issue) ## os
 $(OSVERSION)
-PCPUI:=$(shell cat /proc/cpuinfo) ## my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
-$(PCPUI)
 RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]"
 $(RPIVERSION)
+PCPUI:=$(shell cat /proc/cpuinfo) ## cpuinfos my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
+$(PCPUI)
 
 ## Enable ARM-specific options only
 ifeq ($(UNAME), armv5l)
@@ -95,9 +103,9 @@ $(TARGET)
 ## assembler code
 pifunk.S:	pifunk.c
 					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS)-c -o lib/pifunk.S
-## precompiled c-code
+## precompiled/processor c-code
 pifunk.i:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-E -C -o include/pifunk.i
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-E -C -o lib/pifunk.i
 ## precompiled assemblercode
 pifunk.s:	pifunk.c
 					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(ASFLAGS)-o lib/pifunk.s
@@ -106,66 +114,80 @@ pifunk.o:	pifunk.c
 					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.o
 ## archive
 pifunk.a:	pifunk.c
-					$(USER) $(CC)  $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.a
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.a
 ## library
 pifunk.lib:	pifunk.c
-						$(USER) $(CC)  $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.lib
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.lib
 ## shared object
 pifunk.so:	pifunk.c
-						$(USER) $(CC)  $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.so
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o lib/pifunk.so
 
 ## lib object list
-OBJECTS	= pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so
+OBJECTS=pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so
 $(OBJECTS)
 
 ## generating executable binaries
 pifunk.out:	pifunk.c $(OBJECTS)
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk.out
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk.out
 
 pifunk.bin: pifunk.c $(OBJECTS)
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk.bin
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk.bin
 
 pifunk:	pifunk.c $(OBJECTS)
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(LDFLAGS) $(PFLAGS)-o bin/pifunk
+				$(USER) $(CC) $(DEBUG) $(CFLAGS) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(PFLAGS)-o bin/pifunk
 
 all: pifunk
 
 EXECUTABLES=pifunk pifunk.out pifunk.bin
 $(EXECUTABLES)
 
+.PHONY:		pifunkplus
+pifunk+:	pifunk.cpp $(OBJECTS)
+					$(USER) $(CPP) $(DEBUG) $(CFLAGS) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(PFLAGS)-o bin/pifunk+
+
 ## generate info file
 .PHONY: 	info
-info: pifunk.info
+info: 		pifunk.info
 pifunk.info: pifunk.texi
 						 $(MAKEINFO)
 
-.PHONY: 	piversion
+.PHONY: 		piversion
 piversion:	$(USER) $(UNAME)
-						$(USER) $(PCPUI)
+						$(USER) $(KERNEL)
+						$(USER) $(FWVERSION)
+						$(USER) $(VCGVERSION)
+						$(USER) $(OSVERSION)
 						$(USER) $(RPIVERSION)
+						$(USER) $(PCPUI)
 
 .PHONY: 	install
 install:	cd $(HOME)/PiFunk/
 					$(USER) install -m 0755 pifunk $(HOME)/bin/
 
-.PHONY: 	uninstall
-uninstall:	$(USER) $(RM) $(HOME)/bin/pifunk $(HOME)/bin/pifunk
+.PHONY: 		uninstall
+uninstall:	$(USER) $(RM) $(HOME)/Pifunk/bin/pifunk
 
 .PHONY:	clean
-clean:	$(USER) $(RM) $(OBJECTS) $(EXECUTABLES)
+clean:	cd $(HOME)/PiFunk/
+				$(USER) $(RM) $(OBJECTS)
+				$(USER) $(RM) $(EXECUTABLES)
 
 .PHONY: 	help
-help:	cd $(HOME)/PiFunk/bin/
-			$(USER) ./pifunk -h
+help:			cd $(HOME)/PiFunk/bin/
+					$(USER) ./pifunk -h
 
-.PHONY: 	assistant
+.PHONY: 		assistant
 assistent:	cd $(HOME)/PiFunk/bin/
 						$(USER) ./pifunk -a
 
 .PHONY: 	menu
-menu:	cd $(HOME)/PiFunk/bin/
-			$(USER) ./pifunk -u
+menu:			cd $(HOME)/PiFunk/bin/
+					$(USER) ./pifunk -u
 
 .PHONY: 	run
-run:	cd $(HOME)/PiFunk/bin/
-			$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
+run:			cd $(HOME)/PiFunk/bin/
+					$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
+
+.PHONY: 	run+
+run+:			cd $(HOME)/PiFunk/bin/
+					$(USER) ./pifunk+ -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
