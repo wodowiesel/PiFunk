@@ -2295,7 +2295,7 @@ char csvreader ()
 		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone,\nrToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode,\nTStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
 
     rfp = fopen ("ctsspmr.csv", "r"); // read-only!
-    wfp = fopen ("ctsspmrwriter.csv", "w+"); // with + it updates, if exists overwrites
+    wfp = fopen ("ctsswriter.csv", "w+"); // with + it updates, if exists overwrites
     while (!feof (rfp))
     {
     	// here check for semicolon or comma delimiter (default)
