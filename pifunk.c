@@ -390,7 +390,10 @@ using namespace std; //
 
 #ifdef __CPLUSPLUS
   printf ("\nUsing GNU C++ with ANSI ISO C++ 17/20!!\n");
-  extern "C" {}
+  extern "C"
+  {
+
+  }
 #endif
 
 #ifdef _POSIX
@@ -445,14 +448,15 @@ volatile unsigned 										*gpio; //
 volatile unsigned 										*allof7e; //
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
-#define ALLOF7ED											(*allof7e - SUB_BASE)
+#define ALLOF7ED											(*allof7e-SUB_BASE)
+#define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
+#define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
+#define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
+
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3)) // % means here Modulo-operation for remainder
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3)) //
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
-#define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
-#define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
-#define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
 
 // specific pi adresses & definitions
 #ifdef  RPI || RASPBERRY // alternative BCM2711 B0 old/different versions
@@ -665,18 +669,18 @@ volatile unsigned 										*allof7e; //
 #define EMMCCLK_CNTL                    (0x1C0/4) // 112
 #define EMMCCLK_DIV                     (0x1C4/4) // 113
 
+#define CM_PLLA                         (0x104/4) // 65
+#define CM_PLLC                         (0x108/4) // 66
+#define CM_PLLD                         (0x10C/4) // 67
+#define CM_PLLH                         (0x110/4) // 68
+#define CM_PLLB                         (0x170/4) // 92
+
 #define CM_LOCK                         (0x114/4) // 69
 #define CM_LOCK_FLOCKA                  (1<<8) //
 #define CM_LOCK_FLOCKB                  (1<<9) //
 #define CM_LOCK_FLOCKC                  (1<<10) //
 #define CM_LOCK_FLOCKD                  (1<<11) //
 #define CM_LOCK_FLOCKH                  (1<<12) //
-
-#define CM_PLLA                         (0x104/4) // 65
-#define CM_PLLC                         (0x108/4) // 66
-#define CM_PLLD                         (0x10C/4) // 67
-#define CM_PLLH                         (0x110/4) // 68
-#define CM_PLLB                         (0x170/4) // 92
 
 /*
 https://pinout.xyz/pinout/gpclk
@@ -812,8 +816,8 @@ Uses 3 GPIO pins
 #define BCM2708_DMA_RESET               (1<<31) //
 
 #define BCM2708_DMA_PER_MAP(x)          ((x)<<16) //
-#define BCM2708_DMA_PRIORITY(x)         ((x)&0xF << 16) //
-#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF << 20) //
+#define BCM2708_DMA_PRIORITY(x)         ((x)&0xF<<16) //
+#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF<<20) //
 
 // more DMA stuff
 #define DMA_CHANNEL                     (14) //
@@ -832,8 +836,8 @@ Uses 3 GPIO pins
 #define DMA_CS_ACTIVE			              (1<<0) //
 #define DMA_CS_END			                (1<<1) //
 
-#define DMA_CS_PRIORITY(x)		          ((x)&0xF << 16) // 0xF=15
-#define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF << 20) //
+#define DMA_CS_PRIORITY(x)		          ((x)&0xF<<16) // 0xF=15
+#define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF<<20) //
 
 // Requests
 #define DREQ_PCM_TX                     (2) //
@@ -853,23 +857,23 @@ Uses 3 GPIO pins
 
 #define MEM_FLAG_DIRECT                 (1<<2) // 0xC dec: 12 alias uncached
 #define MEM_FLAG_COHERENT               (2<<2) // 0x8 dec: 8 alias. Non-allocating in L2 but coherent
-#define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT | MEM_FLAG_COHERENT) // Allocating in L2
+#define MEM_FLAG_L1_NONALLOCATING       (MEM_FLAG_DIRECT|MEM_FLAG_COHERENT) // Allocating in L2
 
 #define MEM_FLAG_ZERO                   (1<<4) // initialise buffer to all zeros
 #define MEM_FLAG_NO_INIT                (1<<5) // don't initialise (default is initialise to all ones
 #define MEM_FLAG_HINT_PERMALOCK         (1<<6) // Likely to be locked for long periods of time.
 
 #define PAGE_SHIFT                      (12) //
-#define NUM_PAGES                       ((sizeof(struct control_data_s) + PAGE_SIZE - 1) >> PAGE_SHIFT) //
+#define NUM_PAGES                       ((sizeof(struct control_data_s)+PAGE_SIZE-1)>>PAGE_SHIFT) //
 #define NUM_SAMPLES                     (64000) //
-#define NUM_CBS                         (NUM_SAMPLES * 2) // 128000
+#define NUM_CBS                         (NUM_SAMPLES*2) // 128000
 
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
 
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
-#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE + ALLOF7ED) // volatile + int* volatile unsigned*
+#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7ED) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
@@ -1035,8 +1039,13 @@ pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1 ->
 pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
 pad_val = PADGPIO + power;
 if (pad_reg1 || pad_reg2 == pad_val) // is it ?
-{printf ("\npad_reg = pad_val -> %u \n", pad_reg1);}
-else {printf ("\npad_reg NOT same\n"}
+{
+  printf ("\npad_reg = pad_val -> %u \n", pad_reg1);
+}
+else
+{
+  printf ("\npad_reg NOT same\n"
+}
 
 static volatile uint32_t *pwm_reg;
 static volatile uint32_t *clk_reg;
@@ -1046,20 +1055,20 @@ int reg 	= 0; // = (gpio / 10)
 int shift = 0; // = (gpio % 10) * 3
 //gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
 
+// GPS-coordinates
+// default Germany-Frankfurt (Main) in decimal °grad (centigrade)
+char *position;
+float longitude = 8.682127; // E
+float latitude = 50.110924; // N
+float elevation = 100.00; // meter
+float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
+
 // network sockets
 // custom port via tcp/ip or udp
 socklen_t addressLength;
 char *localip = "127.0.0.1";
 char *host 		= "localhost";
 int port 		= 8080;
-
-// GPS-coordinates
-// default Germany-Frankfurt (Main) in decimal °grad (centigrade)
-char gps;
-float longitude = 8.682127; // E
-float latitude = 50.110924; // N
-float elevation = 100.00; // meter
-float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
 
 //--------------------------------------------------
 // Structs
@@ -1118,20 +1127,20 @@ struct DMAREGS
 // program flag options
 struct option long_opt [] =
 {
-		{"filename",		required_argument, NULL, 'n'},
-		{"freqency",   	required_argument, NULL, 'f'},
-    {"samplerate", 	required_argument, NULL, 's'},
-    {"modulation",	required_argument, NULL, 'm'},
-    {"power", 			required_argument, NULL, 'p'},
-    {"callsign",	  required_argument, NULL, 'c'},
-    {"gpio",	  		required_argument, NULL, 'g'},
-		{"dma",	  			required_argument, NULL, 'd'},
-		{"bandwidth",	  required_argument, NULL, 'b'},
-    {"type",	  		required_argument, NULL, 't'},
-    {"gps",	  		  required_argument, NULL, 'x'},
-    {"assistant",		no_argument,       NULL, 'a'},
-    {"help",	  		no_argument,       NULL, 'h'},
-		{"menu",	  		no_argument,       NULL, 'u'}
+		{"filename",		required_argument, NULL, 'n'}, // 1
+		{"freqency",   	required_argument, NULL, 'f'}, // 2
+    {"samplerate", 	required_argument, NULL, 's'}, // 3
+    {"modulation",	required_argument, NULL, 'm'}, // 4
+    {"power", 			required_argument, NULL, 'p'}, // 5
+    {"callsign",	  required_argument, NULL, 'c'}, // 6
+    {"gpio",	  		required_argument, NULL, 'g'}, // 7
+		{"dma",	  			required_argument, NULL, 'd'}, // 8
+		{"bandwidth",	  required_argument, NULL, 'b'}, // 9
+    {"type",	  		required_argument, NULL, 't'}, // 10
+    {"gps",	  		  required_argument, NULL, 'x'}, // 11
+    {"assistant",		no_argument,       NULL, 'a'}, // 12
+    {"help",	  		no_argument,       NULL, 'h'}, // 13
+		{"menu",	  		no_argument,       NULL, 'u'} // 14
 };
 
 //----------------------------------------------------
@@ -1335,7 +1344,7 @@ float channelmodepmrdigital ()
 }
 
 // Channel-mode
-float channelmodepmr () //PMR
+int channelmodepmr () //PMR
 {
 
 	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
@@ -1553,23 +1562,35 @@ char modulationselect ()
 	return *mod;
 }
 
-void modselect (int argc, char **argv, char *mod)
+void modselect (int argc, char **argv [], char *mod)
 {
 	printf ("\nOpening Modulator-Selection ... \n");
-	if (mod == fm)
+	if (mod, "fm"))
 	{
-    printf ("\nYou selected 1 for FM! \n");
-		void modulationfm (int argc, char **argv);
+    printf ("\nYou selected 1 for fm! \n");
+    printf ("\nPushing args to fm Modulator... \n");
+		void modulationfm (int argc, char **argv []);
 	}
-	else if (mod == am)
+	else if (!strcmp (mod, "am"))
 	{
     printf ("\nYou selected 2 for AM! \n");
-		void modulationam (int argc, char **argv);
+    printf ("\nPushing args to am Modulator... \n");
+		void modulationam (int argc, char **argv []);
 	}
 	else
 	{
-		printf ("\nError selecting modulation! \n");
+		printf ("\nError selecting modulation! Using default fm!\n");
+    void modulationfm (int argc, char **argv []);
 	}
+/*
+
+else
+{
+ printf ("\nError in -m \n");
+ break;
+ //return 1;
+}
+*/
  	return;
 }
 
@@ -1581,7 +1602,7 @@ void channelselect () // make a void
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
   {
 					case 1: printf ("\nPMR CHAN-MODE \n");
-									step ();
+
 									channelmodepmr (); // gets freq from pmr list
 									break;
 
@@ -1589,34 +1610,42 @@ void channelselect () // make a void
 									channelmodecb ();
 									break;
 
-					default:  printf ("\nDefault: PMR\n");
-										step ();
+					default:  printf ("\nDefault: PMR \n");
+
 										channelmodepmr (); // gets freq from pmr list
 									  break;
 	}
 	return;
 }
 
-void gpscoord ()
+void gpscoord (char *gps)
 {
-  printf ("gps is %s", gps)
-  print ("\nlongitude %f / latitude %f / elevation %f / altitude %f\n", longitude, latitude, elevation, altitude);
+  printf ("\nGPS-Status is %s \n", gps);
+  if (char *gps == "on")
+  {
+  printf ("\nGPS-location is %s \n");
+  print ("\nPreset Position is: longitude %f / latitude %f / elevation %f / altitude %f\n", longitude, latitude, elevation, altitude);
+  }
+  else
+  {
+  printf ("\nGPS-Status is off! you can activate it with flag -x on \n");
+  }
   return;
 }
 //---------------------------------------------------
 // LED stuff
 // controlling via py possible but c stuff can be useful too by bcm funcs!
 // turn on LED (with 100 kOhm pullup resistor while transmitting
-int ledinactive (char *filename, float freq, int samplerate)
+int ledinactive ()
 {
 	// check if transmitting
   printf ("\nChecking Transmission status \n");
-	/*	while (!play_wav (char *filename, float freq, int samplerate))
+		while (!play_wav ())
 		{
 				//cm2835_gpio_write (PIN17, LOW);
 				printf ("\nLED OFF - No Transmission! \n");
 		}
-    */
+
     return 0;
 }
 
@@ -1679,6 +1708,7 @@ void clearscreen ()
   //fflush (stdin); // alterntives
   //clsscr ();
   //system ("clear");
+  return;
 }
 
 void handSig () // exit func
@@ -1691,6 +1721,7 @@ void modulate (int l)
 {
 	printf ("\nModulate carrier... \n");
 	ACCESS (CM_GP0DIV) == (CARRIER << 24) + (MODULATE + l);  //
+  return;
 }
 
 void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm header!
@@ -1708,9 +1739,10 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 		read (fp, &frameinfo, sizeof (frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
-
     //fatal ("\nCould not map memory.\n");
+    return;
 }
+
 
 void freeRealMemPage (void **vAddr)
 {
@@ -1718,14 +1750,17 @@ void freeRealMemPage (void **vAddr)
 		munlock (vAddr, 4096); // unlock ram
 		free    (vAddr); // free the ram
     printf ("\nvAddr is free NOW... \n");
+    return;
 }
+
 void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
 // Added functions to enable and disable carrier
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
-struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = HIGH
-ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
+  struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = HIGH
+  ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
+  return;
 }
 
 void carrierlow () // disables it
@@ -1733,6 +1768,7 @@ void carrierlow () // disables it
 	printf ("\nSetting carrier low ... \n");
   struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // set it (clock) to 0 = LOW
   ACCESS (CM_GP0CTL) == *((int*) &setupword);
+  return;
 }
 
 static void terminate (int num)
@@ -1798,13 +1834,14 @@ void setupfm ()
    CLRBIT (GPFSEL0, 12);
 
 	 carrierhigh ();
+   return;
 }
 
 // relevant features for transmitting stuff
 void play_list () // exit func
 {
 		printf ("\nOpening playlist-folder (dummy) \n"); // in sounds/playlist
-
+    return;
 }
 
 void play_wav (char *filename, float freq, int samplerate)
@@ -1903,6 +1940,7 @@ void play_wav (char *filename, float freq, int samplerate)
 
    close (fp);
    printf ("\nClosing file \n");
+   return;
 }
 
 void setupDMA ()
@@ -1997,11 +2035,12 @@ void setupDMA ()
    //DMA0->CONBLK_AD = (int) (instrPage.p);
    //DMA0->CS = (1<<0) | (255 <<16);  // enable bit = 0, clear end flag = 1, prio=19-16
    printf ("\nSetup DMA done! \n");
+   return;
 }
 
 void unsetupDMA ()
 {
-	//struct DMAREGS* DMA0 = (struct DMAREGS*) ACCESS(DMABASE);
+	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS (DMABASE));
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 
@@ -2010,6 +2049,32 @@ void unsetupDMA ()
 
 //----------------------------------------------------
 // sample funcs
+// AM
+void WriteTone ()
+{
+	float Frequencies = freq;
+	typedef struct
+	{
+		float Frequency;
+		uint32_t WaitForThisSample;
+	} samplerf_t;
+
+	samplerf_t RfSample;
+	RfSample.Frequency = Frequencies;
+	RfSample.WaitForThisSample = Timing; // in 100 of nanoseconds
+	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
+	{
+		fprintf (stderr, "\nUnable to write sample! \n");
+    return -1;
+	}
+	printf ("\nWriting tone \n");
+  return;
+}
+
+// all subch. -> base/default case 0 -> channel 0
+// if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
+// squelch/treshhold to build in maybe -> scan function till signal?
 
 int samplecheck (char *filename, int samplerate) // better name function: sample/bitchecker
 {
@@ -2068,6 +2133,7 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			if (channels == 0)
 			{
 				printf ("\nSample Error! NO (0) channels \n"); // >1 in stereo or dual mono with half samplerate
+        return -1;
 			}
 			else if (channels == 1)
 			{
@@ -2079,12 +2145,16 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			}
 			else if (channels == 2)
 			{
-				printf ("\nFile has 2 Channels (STEREO)! \n"); // >1 in stereo or dual mono with half samplerate
+        printf ("\nFile has 2 Channels (STEREO)! maybe supported later! \n"); // >1 in stereo or dual mono with half samplerate
+        int halfsamplerate = (samplerate/2)
+        print ("\nUsing half the samplerate: %d \n", halfsamplerate);
 			}
 			else
 			{
-					printf ("\nError: File has %d Channels! (> 2 channels) \n", channels);
+					printf ("\nError: File has %d Channels! (> 2 channels), not supported! \n", channels);
+          return -1;
 			}
+
       nb_samples = (readcount/channels);
  			// was defined as global var above
 			printf ("\nnb_samples: %d \n", nb_samples);
@@ -2107,10 +2177,10 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			sampler = (1E9/samplerate); // 44.100
 			printf ("\nsampler: %f \n", sampler);
 			printf ("\nNow writing tone in am ... \n");
-			void WriteTone (float freq); // somehow input freq here ?!?
+			void WriteTone (); // somehow input freq here ?!?
 			//return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
-		printf ("\nwhile readcount ... \n");
+		printf ("\nending readcount ... \n");
   } // while loop
     // Close input and output files
     //fclose (FileFreqTiming);
@@ -2119,31 +2189,6 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 	return samplerate;
 }
 // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
-
-// all subch. -> base/default case 0 -> channel 0
-// if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
-// squelch/treshhold to build in maybe -> scan function till signal?
-
-// AM
-void WriteTone (float freq)
-{
-	float Frequencies = freq;
-	typedef struct
-	{
-
-		float Frequency;
-		uint32_t WaitForThisSample;
-	} samplerf_t;
-	samplerf_t RfSample;
-	RfSample.Frequency = Frequencies;
-	RfSample.WaitForThisSample = Timing; // in 100 of nanoseconds
-	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
-	if (write (fp, &RfSample, sizeof(samplerf_t)) != sizeof(samplerf_t))
-	{
-		fprintf (stderr, "\nUnable to write sample! \n");
-	}
-	printf ("\nWriting tone \n");
-}
 
 char callname ()
 {
@@ -2168,25 +2213,71 @@ char callname ()
   	return callsign;
 }
 
-void modetype (float freq)
+void modetype ()
 {
 	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
 	scanf ("%d", &modeselect);
-
 	switch (modeselect)
 	{
 		case 1:	 	printf ("\n[1] Channelmode: \n");
-							channelselect (freq); // undefined reference
+							channelselect (freq);
 							break;
 
 		case 2:		printf ("\n[2] Frequencymode: \n");
 							freqselect (freq);
 							break;
 
-		default: printf ("\nError! \n");
+		default: printf ("\nError! Using default \n");
+             channelselect (freq);
 						 break;
 	}
 	return;
+}
+
+void typeselect (type)
+{
+ if (!strcmp (type, "1" || "analog"))
+ {
+ printf ("\nUsing analog mode \n");
+ float channelmodepmranalog ();
+ //break;
+ }
+ else if (!strcmp (type, "2" || "digital"))
+ {
+ printf ("\nUsing digital mode \n");
+ float channelmodepmrdigital ();
+ //break;
+ }
+ else
+ {
+ printf ("\nError in -t \n");
+ break;
+ //return 1;
+ }
+ return;
+}
+
+void modulationam (int argc, char **argv[], char, *mod)
+{
+	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
+		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
+		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
+		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
+		{VFO (constant frequency)} */
+		printf ("\nam modulator starting \n");
+		void WriteTone (); // actual modulation stuff here for am -> write tone? maybe better name later
+	  return;
+}
+
+void modulationfm (int argc, char **argv [], char *mod)//FM
+{
+  	printf ("\nPreparing for fm... \n");
+    setupfm (); // gets filename & path or done by filecheck () func
+	  printf ("\nSetting up DMA... \n");
+		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
+    printf ("\nfm modulator starting... \n");
+    play_wav (); // atof (argv [3]):22050)
+		return;
 }
 
 int powerselect ()
@@ -2204,7 +2295,7 @@ char csvreader ()
 		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone,\nrToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode,\nTStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
 
     rfp = fopen ("ctsspmr.csv", "r"); // read-only!
-    wfp = fopen ("ctsswriter.csv", "w+"); // with + it updates, if exists overwrites
+    wfp = fopen ("ctsspmrwriter.csv", "w+"); // with + it updates, if exists overwrites
     while (!feof (rfp))
     {
     	// here check for semicolon or comma delimiter (default)
@@ -2218,40 +2309,6 @@ char csvreader ()
     return j;
 }
 
-void modulationam (int argc, char **argv)
-{
-	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
-		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
-		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
-		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
-		{VFO (constant frequency)} */
-		printf ("\nam modulator starting \n");
-		void WriteTone (float freq); // actual modulation stuff here for am -> wrrite tone?
-		ledactive ();
-	  return;
-}
-
-void modulationfm (int argc, char **argv)//FM
-{
-  	printf ("\nPreparing for FM... \n");
-    setupfm (); // gets filename & path or done by filecheck () func
-	  printf ("\nSetting up DMA... \n");
-		setupDMA (); //(argc>2 ? atof (argv [2]):100.00000); // default freq
-    //play_wav (char *filename, float freq, int samplerate); // atof (argv [3]):22050)
-		return;
-}
-
-int tx (int argc, char **argv)
-{
-
-	//play_wav (char *filename, float freq, int samplerate);
-	void modselect (int argc, char **argv, char *mod);
-	ledactive ();
-	printf ("\nBroadcasting now ...! \n");
-
-	return 0;
-}
-
 void cgimodule () //
 {
  printf ("\ncontext-type:text/html\n");
@@ -2263,6 +2320,7 @@ void cgimodule () //
  printf	("PiFunk - CGI\n");
  printf	("</body>\n");
  printf ("</html>\n");
+ return;
 }
 
 void assistant () // assistant
@@ -2270,16 +2328,17 @@ void assistant () // assistant
 		printf ("\nStarting assistant for setting parameters! \n");
 		filecheck (filename);
 		samplecheck (filename, samplerate);
-		modetype (freq);
-		callname ();
+		modetype ();
+    step ()
 		powerselect ();
-		int gpioselect (int gpiopin);
-		int dmaselect (int dmachannel);
-		float bandwidthselect (float bandwidth);
-
+    callname ();
+		gpioselect (gpiopin);
+		dmaselect (dmachannel);
+		bandwidthselect (bandwidth);
+    typeselect (type);
+    gpscoord (gps);
 		printf ("\nAll information gathered, going back to main \n");
-		//while (getchar () != '');
-
+		//while (getchar () != ''); // waiting for return/enter hit
 		return;
 }
 
@@ -2290,14 +2349,14 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv []); //, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR... \n");
 						csvreader ();
 						break;
 
-		case 3: printf ("\nReading cgi via text/html for homepage... \n");
+		case 3: printf ("\nReading cgi via text/html for homepage \n");
 						cgimodule ();
 						break;
 
@@ -2310,14 +2369,24 @@ void menu ()
 	return;
 }
 
+void tx (int argc, char **argv [])
+{
+  printf ("\nPreparing for transmission... \n");
+	play_wav () // or WriteTone ();
+	ledactive ();
+	printf ("\nBroadcasting now! ... \n");
+	return;
+}
+
 //---------------------------------------------
 // MAIN
-int main (int argc, char **argv) // arguments for global use must be in main!
+int main (int argc, char **argv [], const char *short_opt) // arguments for global use must be in main!
 {
-  printf ("\nStarting Main-PiFunk");
-	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:g:ahu"; // program flags
-	int options = 0;
+  printf ("\nStarting Main-PiFunk\n");
+	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
+	int options; // =0
 	char argv [0] = "pifunk"; // actual program-name
+  char *programname = argv [0]; //
 	char *filename = "sound.wav"; // = argv [1]; n=name
 	float freq = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate = abs (22050); // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
@@ -2327,8 +2396,9 @@ int main (int argc, char **argv) // arguments for global use must be in main!
   int gpiopin = abs (4); // = argv [7];
 	int dmachannel = 14; // = argv [8];
 	float bandwidth = 15.00; // = argv [9];
-  int type; // = argv [10];
-  char gps; // = argv [11];
+  int type = 1; // = argv [10]; analog -> default
+  char *gps = off; // = argv [11]; -> default: off
+  // menues
   char a; // = argv [12];
   char h; // = argv [13];
   char u; // = argv [14];
@@ -2338,7 +2408,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	fabs () for double must be constant
 	fabsf () for float
 	*/
-	// for custom programname, default is the filename itself
+	// for custom program-name, default is the filename itself
 	void title ();
 	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
 	printf ("\nProgram name is %s \n", __FILE__);
@@ -2349,15 +2419,16 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	int timer (time_t t); // date and time print
 
   int option_index = 0;
-  int flags = getopt_long (argc, argv[], "n:f:s:m:p:c:g:d:b:t:g:ahu"", long_opt, &option_index);
+  int flags = getopt_long (argc, argv [], "n:f:s:m:p:c:g:d:b:t:g:ahu", long_opt, &option_index);
 
-  int options = getopt (argc, argv[], short_opt); // short_opt must be constant
-	while (options != -1) // if -1 then all flags were read, if ? then unknown
+  int options = getopt (argc, argv [], short_opt); // short_opt must be constant
+	while (options != -1 || 0) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
 				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-		}
+        return -1;
+    }
 		else
 		{
 		switch (options)
@@ -2377,28 +2448,12 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 							 samplerate = atoi (optarg);
 							 printf ("\nSamplerate is %d \n", samplerate);
 							 samplecheck (filename, samplerate);
-							 break;
+							 //break;
 
 			case 'm':
 							 mod = optarg;
-							 if (!strcmp (mod, "fm"))
-							 {
-								printf ("\nPushing args to fm Modulator... \n");
-							  //void modulationfm (int argc, char **argv); // idk if here to jump to the modulator or just parse it?!
-								//break;
-							 }
-							 else if (!strcmp (mod, "am"))
-							 {
-								printf ("\nPushing args to am Modulator... \n");
-								//void modulationam (int argc, char **argv);
-								//break;
-							 }
-							 else
-							 {
-								printf ("\nError in -m \n");
-								break;
-								//return 1;
-							 }
+               void modselect (mod);
+               //break;
 
       case 'p':
          				power = atoi (optarg);
@@ -2427,32 +2482,17 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 
       case 't':
                 type = atof (optarg);
-
                 printf ("\nType is %d \n", type);
-                if (!strcmp (type, "1"))
- 							 {
- 						    printf ("\nUsing analog mode \n");
- 							  float channelmodepmranalog ();
- 								//break;
- 							 }
- 							 else if (!strcmp (type, "2"))
- 							 {
- 								printf ("\nUsing digital mode \n");
- 								float channelmodepmrdigital ();
- 								//break;
- 							 }
- 							 else
- 							 {
- 								printf ("\nError in -t \n");
- 								break;
- 								//return 1;
- 							 }
+                void typeselect (type);
+                //break;
 
       case 'x':
                gps = optarg;
                printf ("\nGPS-Position is %s \n", gps);
-               void gpscoord ();
+               void gpscoord (gps);
+               //break;
 
+// additional help functions
 			case 'a':
 							 if (argc == 1)
 							 {
@@ -2466,11 +2506,11 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 								break;
 								//return 1;
 							 }
-
+               break;
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] \nThere is also an assistant [-a], or menu [-u] or for help [-h]  \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type a/d>] [-x <GPS on/off>]\nThere is also an assistant [-a], or menu [-u] or for help [-h]  \n");
 								break;
 							 }
 							 else
@@ -2478,7 +2518,7 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 								printf ("\nError in -h \n");
 								break;
 							 }
-
+               //break;
 			case 'u':
 							 if (argc == 1)
 							 {
@@ -2491,12 +2531,13 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 									printf ("\nError in -u (menu) \n");
 									break;
 							 }
+               //break;
       case '?':
                   printf ("Unknown option: %c \n", optopt);
                   break;
 
 			default:
-								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] \n There is also an assistant [-a], menu [-u] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type a/d>] [-x <GPS on/off>]\n There is also an assistant [-a], menu [-u] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								return 1;
 		} // end of switch
 
@@ -2508,6 +2549,8 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	// for debugging or information
 	printf ("\n-----------------\n");
 	printf ("\nChecking short_opt: %s \n", short_opt);
+  printf ("\nChecking long_opt: %s \n", long_opt);
+	printf ("\n-----------------\n");
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
@@ -2516,19 +2559,24 @@ int main (int argc, char **argv) // arguments for global use must be in main!
 	printf ("\nChecking Output-Powerlevel: %d \n", power);
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
-	printf ("\nChecking Bandwidth: is %f \n", bandwidth);
-	printf ("\nChecking Type 1/analog, 2/digital: is %d \n", type);
+	printf ("\nChecking Bandwidth: %f [Hz]\n", bandwidth);
+	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
+  printf ("\nChecking GPS-Status %s \n", gps);
+  printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
+	printf ("\n-----------------\n");
 	printf ("\nChecking Hostname: %s, WAN+LAN-IP: %s, Port: %d \n", host, localip, port);
-	printf ("\nChecking GPS-coordinates long: %f / lat: %f / alt: %f  \n", longitude, latitude, altitude);
+
   //printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
 	//printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
-/*
-	printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-	printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
-*/
-	// gathering and parsing all given arguments to parse it to player
-	int tx (int argc, char **argv); // transmission
 
+	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
+	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+
+	// gathering and parsing all given arguments it to player
+	void tx (int argc, char **argv []); // transmission
+
+  printf ("\nTransmission ended! \n"); // EOF
 	printf ("\nEnd of Program! Closing... \n"); // EOF
+
 	return 0;
 }
