@@ -4,8 +4,6 @@ USER=sudo
 $(USER)
 CC=gcc
 $(CC)
-CCN=gcc-9.2.0 ## newest version
-$(CCN)
 CPP=g++
 $(CPP)
 MAKEINFO=pifunk
@@ -16,7 +14,7 @@ STATUS=experimental
 $(STATUS)
 
 ## default paths
-INIT=/bin/sh/ ## init-shell
+INIT=/bin/sh ## init-shell
 $(INIT)
 HOME=/home/pi ## std-path
 $(HOME)
@@ -60,9 +58,21 @@ PCPUI:=$(shell cat /proc/cpuinfo) ## cpuinfos my rev: 0010 -> 1.2 B+: | grep Rev
 $(PCPUI)
 
 ## Enable ARM-specific options only
+
+## old/special pi versions
 ifeq ($(UNAME), armv5l)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=0
-TARGET=RASPI0
+PFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+TARGET=RPI
+endif
+
+ifeq ($(UNAME), armv5l)
+PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
+TARGET=RASPBERRY
+endif
+
+ifeq ($(UNAME), armv6)
+PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI=0
+TARGET=RASPI0 # Pi W
 endif
 
 ifeq ($(UNAME), armv6l)
@@ -83,17 +93,6 @@ endif
 ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) >= 4), 1)
 PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI=4
 TARGET=RASPI4
-endif
-
-## old/special pi versions
-ifeq ($(UNAME), armv5l)
-PFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
-TARGET=RPI
-endif
-
-ifeq ($(UNAME), armv5l)
-PFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET=RASPBERRY
 endif
 
 $(PFLAGS)
