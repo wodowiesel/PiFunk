@@ -1579,18 +1579,9 @@ void modselect (int argc, char **argv [], char *mod)
 	}
 	else
 	{
-		printf ("\nError selecting modulation! Using default fm!\n");
-    void modulationfm (int argc, char **argv []);
+    printf ("\nError in -m selecting modulation! \n");
+    return -1;
 	}
-/*
-
-else
-{
- printf ("\nError in -m \n");
- break;
- //return 1;
-}
-*/
  	return;
 }
 
