@@ -18,18 +18,21 @@ INIT=/bin/sh ## init-shell
 $(INIT)
 HOME=/home/pi ## std-path
 $(HOME)
+
 RM=rm -f ## remove files or folder
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
 CFLAGS=-std=gnu99 -Iinclude -I/opt/vc/include/ -D_USE_MATH_DEFINES -D_GNU_SOURCE -fPIC pifunk.c -O3
 $(CFLAGS)
+CPPFLAGS=-std=gnu++17 -Iinclude -I/opt/vc/include/ -D_USE_MATH_DEFINES -D_GNU_SOURCE -fPIC pifunk.cpp -O3
+$(CPPFLAGS)
 ASFLAGS=-s
 $(ASFLAGS)
 PPFLAGS=-E ## c-preproccessor
 $(PPFLAGS)
 LIFLAGS=-c ## no linker
 $(LIFLAGS)
-DEBUG=-Wall -Werror --print-directory -pedantic-errors -d -v -g3 -ggdb3
+DEBUG=-Wall -Werror --print-directory -pedantic-errors -d -v -g3 # -ggdb3
 $(DEBUG)
 
 LDLIBS=-Llib -L/opt/vc/lib/
@@ -61,7 +64,7 @@ $(PCPUI)
 
 ## old/special pi versions
 ifeq ($(UNAME), armv5l)
-PFLAGS=-march=native -mtune=native -mfloat-abi=hard -mfpu=vfp -ffast-math -DRPI
+PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
 TARGET=RPI
 endif
 
@@ -72,7 +75,7 @@ endif
 
 ifeq ($(UNAME), armv6)
 PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI=0
-TARGET=RASPI0 # Pi W
+TARGET=RASPI0 # & Pi W
 endif
 
 ifeq ($(UNAME), armv6l)
@@ -142,9 +145,9 @@ all: pifunk
 EXECUTABLES=pifunk pifunk.out pifunk.bin
 $(EXECUTABLES)
 
-.PHONY:		pifunkplus
+.PHONY:		pifunk+
 pifunk+:	pifunk.cpp $(OBJECTS)
-					$(USER) $(CPP) $(DEBUG) $(CFLAGS) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(PFLAGS)-o bin/pifunk+
+					$(USER) $(CPP) $(DEBUG) $(CPPFLAGS) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(PFLAGS)-o bin/pifunk+
 
 ## generate info file
 .PHONY: 	info
