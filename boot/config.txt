@@ -8,6 +8,7 @@ arm_freq=700 ## for pi1
 gpu_freq=250 ## for pi1
 core_freq=250 ## for pi1
 sdram_freq=400 ## for pi1
+#dtparam=sd_overclock=100 ## sd-card 50 is default
 
 ## set i2c usage
 #modprobe i2c_bcm2708
@@ -17,7 +18,9 @@ sdram_freq=400 ## for pi1
 modprobe i2c_bcm2835
 modprobe i2c_dev
 
-chmod 666 /dev/i2c-1 ## permission
+#modprobe bcm2708_wdog
+
+chmod 666 /dev/i2c-1 ## permission and user
 
 adduser pi i2c
 adduser pi i2s
@@ -32,10 +35,12 @@ dtparam=spi=on
 dtparam=i2s=on
 
 ## Enable I2C bus for gpios
+dtparam=i2c0=on
 dtparam=i2c1=on
 dtparam=i2c1_baudrate=100000 ## for 100 (default) or 400 kHz clock
 dtparam=i2c_arm=on
 dtparam=i2c_arm_baudrate=100000
+#dtparam=watchdog=on ## hardware watchdog for pi3 for debug purpose
 
 ## gpio settings
 ## realtime-hw clock & gps sync-clock
