@@ -760,7 +760,14 @@ Uses 3 GPIO pins
 #define PWM_RNG2                        (0x20/4) //8
 
 #define PWMDMAC_ENAB                    (1<<31)  // shift bit to left
-#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) //
+#define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) // this means it requests as soon as there is one free slot in the FIFO
+// we want this as burst DMA would mess up our timing
+// The deviation specifies the bandwidth of the signal: ~20.0 for WBFM (broadcasts) and ~3.5 for NBFM (walkie-talkie)
+#define DEVIATION                       (12.50) // in kHz, a-pmr width normal analog
+#define DEVIATION2                      (6.25) // d-pmr width digital
+#define DEVIATION3                      (20.00) // dmr width
+#define DEVIATION4                      (25.00) // dmr mixed
+#define DEVIATION5                      (10.00) // CB width
 
 #define PWMCLK_CNTL                     (40) // offset 0A0
 #define PWMCLK_DIV                      (41) // 0A4
@@ -1013,6 +1020,7 @@ float volumeMultiplier = 10E-1; //
 // samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
 //SF_INFO sfinfo;
 int nb_samples;
+float timeconst = 50.0E-6; // 50 us (microsecons) time constant
 int excursion = 6000; // 32767 found another value but dont know on what this is based on
 float A = 87.6f; // compression parameter
 uint32_t carrier_freq = 87600000; // this might be the carrier too, why this value?
@@ -1057,7 +1065,7 @@ int shift = 0; // = (gpio % 10) * 3
 
 // GPS-coordinates
 // default Germany-Frankfurt (Main) in decimal °grad (centigrade)
-char *position;
+char *position; // for live gps-module input later
 float longitude = 8.682127; // E
 float latitude = 50.110924; // N
 float elevation = 100.00; // meter
@@ -1189,7 +1197,7 @@ int dmaselect (int dmachannel)
 
 float bandwidthselect (float bandwidth)
 {
-	printf ("\nPlease choose the bandwidth (default=15.00 kHz) \n");
+	printf ("\nPlease choose the bandwidth (default=12.50 kHz) \n");
   scanf ("%f", &bandwidth);
 	printf ("\nYour bandwidth is %f \n", bandwidth);
 	return bandwidth;
@@ -1602,7 +1610,6 @@ void channelselect () // make a void
 									break;
 
 					default:  printf ("\nDefault: PMR \n");
-
 										channelmodepmr (); // gets freq from pmr list
 									  break;
 	}
@@ -1612,10 +1619,10 @@ void channelselect () // make a void
 void gpscoord (char *gps)
 {
   printf ("\nGPS-Status is %s \n", gps);
-  if (char *gps == "on")
+  if ((char) *gps == "on")
   {
-  printf ("\nGPS-location is %s \n");
-  print ("\nPreset Position is: longitude %f / latitude %f / elevation %f / altitude %f\n", longitude, latitude, elevation, altitude);
+  printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
+  print ("\nPreset location is: longitude %f / latitude %f / elevation %f / altitude %f \n", longitude, latitude, elevation, altitude);
   }
   else
   {
@@ -1813,7 +1820,7 @@ void setupfm ()
 								PROT_READ|PROT_WRITE, //
 								MAP_SHARED, //
 								mem_fd, //
-								0x20000000); // PERIPH_VIRT_BASE
+								PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std= 0x20000000
 
   if ((int) allof7e == -1)
 	{
@@ -1869,7 +1876,7 @@ void play_wav (char *filename, float freq, int samplerate)
 
   while (readBytes == read (fp, &data, 1024))
   {
-        float fmconstant = (samplerate*50.0E-6); // 1.1025 for pre-emphisis filter, 50 us (microsecons) time constant
+        float fmconstant = (samplerate*timeconst); // 1.1025 for pre-emphisis filter
 				printf ("\nfmconstant: %f \n", fmconstant);
 
         int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
@@ -1882,7 +1889,8 @@ void play_wav (char *filename, float freq, int samplerate)
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
 				printf ("\nsample: %f \n", sample);
 
-        float dval = sample*15.0; // actual transmitted sample, 15 Hz is standard bandwidth (about 75 kHz) better 14.5
+        float dval = sample*12.50; // actual transmitted sample
+        // 15 Hz is standard bandwidth (about 75 kHz), maybe DEVIATION-input here later
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
@@ -1896,7 +1904,7 @@ void play_wav (char *filename, float freq, int samplerate)
         bufPtr++;
         // problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
-        //usleep (1000);
+        //usleep (1000); // leaving out sleep for faster process
 
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
@@ -2375,7 +2383,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 {
   printf ("\nStarting Main-PiFunk\n");
 	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
-	int options; // =0
+	int options; // = 0
 	char argv [0] = "pifunk"; // actual program-name
   char *programname = argv [0]; //
 	char *filename = "sound.wav"; // = argv [1]; n=name
@@ -2386,7 +2394,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	char *callsign = "callsign"; // = argv [6];
   int gpiopin = abs (4); // = argv [7];
 	int dmachannel = 14; // = argv [8];
-	float bandwidth = 15.00; // = argv [9];
+	float bandwidth = 12.50; // = argv [9];
   int type = 1; // = argv [10]; analog -> default
   char *gps = off; // = argv [11]; -> default: off
   // menues
