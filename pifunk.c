@@ -358,44 +358,44 @@ using namespace std; //
 #endif
 
 #ifdef __LINUX__
-  printf ("\nProgram runs under LINUX\n");
+  printf ("\nProgram runs under LINUX! \n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __UNIX__
-  printf ("\nProgram runs under UNIX\n");
+  printf ("\nProgram runs under UNIX \n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __ARM__
-  printf ("\nProgram runs under ARM-Architecture!\n");
+  printf ("\nProgram runs under ARM-Architecture! \n");
   //#pragma ARM
   // same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __ARM64__
-  printf ("\nProgram runs under ARM64-Architecture!\n");
+  printf ("\nProgram runs under ARM64-Architecture! \n");
   //#pragma ARM
   // same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __GNUC__
-   printf ("\nUsing GNU C with ANSI ISO C99 as GNU99!!\n");
+   printf ("\nUsing GNU C with ANSI ISO C99 as GNU99! \n");
    //#pragma GCC system_header
 #endif
 
 #ifdef _GNU_SOURCE
   //#define basename __basename_gnu
-   printf ("\nUsing GNU Source Macro!!\n");
+   printf ("\nUsing GNU Source Macro! \n");
 #endif
 
 #ifdef __CPLUSPLUS
-  printf ("\nUsing GNU C++ with ANSI ISO C++ 11/17/20!!\n");
+  printf ("\nUsing GNU C++ with ANSI ISO C++ 11/17/20! \n");
   extern "C"
   {
-
+   printf ("\n__CPLUSPLUS \n");
   }
 #endif
 
@@ -406,7 +406,7 @@ using namespace std; //
 
 #ifdef __STDC_VERSION__ >= (199901L)
    /*#warning "\nPlease compile with flag -std=c99\n" string */
-   printf ("\nUsing GNU C with C99 standard!!\n");
+   printf ("\nUsing GNU C with C99 standard! \n");
 #endif
 
 //------------------------------------------------------------------------------
@@ -539,7 +539,7 @@ volatile unsigned 										(*allof7e); //
 #ifdef  RASPI || RASPI4 == 4 // pi 4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
-#define BCM2838_PERI_BASE              (0x3F000000) // check value !!!
+#define BCM2838_PERI_BASE              (0x3F000000) // dec: 1056964608
 #define BCM2711_PERI_BASE              (0x3F000000) // coprocessor !!!
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 
@@ -824,6 +824,7 @@ Uses 3 GPIO pins
 
 // DMA
 // Technically 2708 is the family-chipname, and 2835 is a specific implementation for arm
+#define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000)
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
 #define BCM2708_DMA_INT                 (1<<2) //
@@ -956,11 +957,17 @@ char j;
 float x;
 
 //pi memory-map:
-int mem_fd;
+int MEM_FB;
 char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
+
+unsigned bcm_host_get_peripheral_address (); // // This returns the ARM-side physical address where peripherals are mapped.
+// This is 0x20000000 on the Pi Zero, Pi Zero W, and the first generation of the Raspberry Pi and Compute Module, and 0x3F000000 on the Pi 2, Pi 3, 4 and Compute Module 3.
+unsigned bcm_host_get_peripheral_size (); // This returns the size of the peripheral's space, which is 0x01000000 for all models.
+unsigned bcm_host_get_sdram_address (); // This returns the bus address of the SDRAM.
+// This is 0x40000000 on the Pi Zero, Pi Zero W, and the first generation of the Raspberry Pi and Compute Module (GPU L2 cached), sand 0xC0000000 on the Pi 2, Pi 3, 4 and Compute Module 3 (uncached).
 
 //-----------------------------------------
 // arguments
@@ -1002,8 +1009,8 @@ time_t t;
 
 // IQ & carrier
 uint16_t pis = (0x1234); // dec: 4660
-float I = sin((PERIOD*freq) + shift_ppm);
-float Q = cos((PERIOD*freq) + shift_ppm);
+float I = sin ((PERIOD*freq) + shift_ppm);
+float Q = cos ((PERIOD*freq) + shift_ppm);
 float RF_SUM = (I+Q);
 
 // files
@@ -1069,7 +1076,7 @@ if (pad_reg1 || pad_reg2 == pad_val) // is it ?
 }
 else
 {
-  printf ("\npad_reg NOT same \n"
+  printf ("\npad_reg NOT same \n");
 }
 
 static volatile uint32_t *pwm_reg;
@@ -1094,8 +1101,8 @@ float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.
 // custom port via tcp/ip or udp
 socklen_t addressLength;
 char *localip = "127.0.0.1";
-char *host 		= "localhost";
-int port 		= (8080);
+char *host 	= "localhost";
+int port 	= (8080);
 
 //--------------------------------------------------
 // Structs
@@ -1314,7 +1321,7 @@ float channelmodepmranalog ()
    case 16: freq=446.18125; printf ("\nDMR-Chan 16 on %f \n", freq); break;
    case 17: freq=446.19375; printf ("\nDMR-Chan 17 on %f \n", freq); break;
 
-   case 18: printf ("\nExit... \n"); exit (0);
+   case 18: printf ("\nExit ... \n"); exit (0);
 
    default:	freq=446.00625;
             printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
@@ -1367,7 +1374,7 @@ float channelmodepmrdigital ()
 	 case 31:	freq=446.190625; printf ("\ndPMR-Chan 31 on %f \n", freq); break;
 	 case 32:	freq=446.196875; printf ("\ndPMR-Chan 32 on %f \n", freq); break;
 	 // normally up to 32 chan in dpmr
-	 case 33: 		printf ("\nExit... \n"); exit (0);
+	 case 33: 		printf ("\nExit ... \n"); exit (0);
 
 	 default:			freq=446.003125;
 	 							printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
@@ -1562,7 +1569,7 @@ float channelmodecb () // CB
 			case 79:   freq=26.9450; break;
 			case 80:   freq=26.9550; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
 
-      case 81:   printf ("\nExit... \n"); exit (0);
+      case 81:   printf ("\nExit ... \n"); exit (0);
 
 			default:		freq=26.9650;
 									printf ("\nDefault CB chan = 1 %f \n", freq);
@@ -1603,13 +1610,13 @@ void modselect (int argc, char **argv [], char *mod)
 	if (mod, "fm"))
 	{
     printf ("\nYou selected 1 for fm! \n");
-    printf ("\nPushing args to fm Modulator... \n");
+    printf ("\nPushing args to fm Modulator ... \n");
 		void modulationfm (int argc, char **argv []);
 	}
 	else if (!strcmp (mod, "am"))
 	{
     printf ("\nYou selected 2 for AM! \n");
-    printf ("\nPushing args to am Modulator... \n");
+    printf ("\nPushing args to am Modulator ... \n");
 		void modulationam (int argc, char **argv []);
 	}
 	else
@@ -1738,13 +1745,13 @@ void clearscreen ()
 
 void handSig () // exit func
 {
-		printf ("\nExiting... \n");
+		printf ("\nExiting ... \n");
 		exit (0);
 }
 
 void modulate (int l)
 {
-	printf ("\nModulate carrier... \n");
+	printf ("\nModulate carrier ... \n");
 	ACCESS (CM_GP0DIV) == (CARRIER << 24) + (MODULATE + l);  //
   return;
 }
@@ -1774,7 +1781,7 @@ void freeRealMemPage (void **vAddr)
 		printf ("\nTry to Freeing vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
 		free    (vAddr); // free the ram
-    printf ("\nvAddr is free NOW... \n");
+    printf ("\nvAddr is free NOW ... \n");
     return;
 }
 
@@ -1835,7 +1842,7 @@ void setupfm ()
 {
   printf ("\nSetting up FM... \n");
     // open /dev/mem
-  if ((mem_fd = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
+  if (( MEM_FD = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
 	{
         printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
         return;
@@ -1846,8 +1853,8 @@ void setupfm ()
 								0x01000000, // LENGTH
 								PROT_READ|PROT_WRITE, //
 								MAP_SHARED, //
-								mem_fd, //
-								PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std= 0x20000000
+								MEM_FD, //
+								PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
 
   if ((int) allof7e == -1)
 	{
@@ -1971,7 +1978,7 @@ void play_wav (char *filename, float freq, int samplerate)
 
 void setupDMA ()
 {
-	printf ("\nSetup of DMA starting... \n");
+	printf ("\nSetup of DMA starting ... \n");
   printf ("\ndma_reg is %u \n", dma_reg);
 	//atexit (unsetupDMA);
 	signal (SIGINT,  handSig);
@@ -2297,11 +2304,11 @@ void modulationam (int argc, char **argv[], char, *mod)
 
 void modulationfm (int argc, char **argv [], char *mod)//FM
 {
-  	printf ("\nPreparing for fm... \n");
+  	printf ("\nPreparing for fm ... \n");
     setupfm (); // gets filename & path or done by filecheck () func
-	  printf ("\nSetting up DMA... \n");
+	  printf ("\nSetting up DMA ... \n");
 		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
-    printf ("\nfm modulator starting... \n");
+    printf ("\nfm modulator starting ... \n");
     play_wav (); // atof (argv [3]):22050)
 		return;
 }
@@ -2378,7 +2385,7 @@ void menu ()
 						int main (int argc, char **argv []); //, const char *short_opt); // go back to cmd if you want
 						break;
 
-		case 1: printf ("\nReading CSV for PMR... \n");
+		case 1: printf ("\nReading CSV for PMR ... \n");
 						csvreader ();
 						break;
 
@@ -2386,7 +2393,7 @@ void menu ()
 						cgimodule ();
 						break;
 
-		case 4: printf ("\nExiting... \n");
+		case 4: printf ("\nExiting ... \n");
 						exit (0);
 
 		default: printf ("\nMenu: Default \n");
@@ -2397,7 +2404,7 @@ void menu ()
 
 void tx (int argc, char **argv [])
 {
-  printf ("\nPreparing for transmission... \n");
+  printf ("\nPreparing for transmission ... \n");
 	play_wav () // or WriteTone ();
 	ledactive ();
 	printf ("\nBroadcasting now! ... \n");
@@ -2408,7 +2415,7 @@ void tx (int argc, char **argv [])
 // MAIN
 int main (int argc, char **argv [], const char *short_opt) // arguments for global use must be in main!
 {
-  printf ("\nStarting Main-PiFunk\n");
+  printf ("\nStarting Main-PiFunk \n");
 	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
 	int options; // = 0
 	char argv [0] = "pifunk"; // actual program-name
@@ -2417,11 +2424,11 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	float freq = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate = abs (22050); // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod = "fm"; // = argv [4];
-  int power = 7; // = argv [5];
+  int power = (7); // = argv [5];
 	char *callsign = "callsign"; // = argv [6];
   int gpiopin = abs (4); // = argv [7];
-	int dmachannel = 14; // = argv [8];
-	float bandwidth = 12.50; // = argv [9];
+	int dmachannel = (14); // = argv [8];
+	float bandwidth = (12.50); // = argv [9];
   int type = 1; // = argv [10]; analog -> default
   char *gps = off; // = argv [11]; -> default: off
   // menues
@@ -2443,6 +2450,10 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   printf ("\nlong_opt: %s \n", long_opt);
 	infos (); // information, disclaimer
 	int timer (time_t t); // date and time print
+
+  bcm_host_get_peripheral_address ();
+  bcm_host_get_peripheral_size ();
+  bcm_host_get_sdram_address ();
 
   int option_index = 0;
   int flags = getopt_long (argc, argv [], "n:f:s:m:p:c:g:d:b:t:g:ahu", long_opt, &option_index);
