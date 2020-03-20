@@ -312,11 +312,14 @@ using namespace std; //
 */
 
 // broadcom arm processor for mapping phys. addresses
+#include <bcm_host.h>
 #include "opt/vc/include/bcm_host.h" // firmware stuff
 #include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
-#include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+
-#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B
-#include "bcm2835/src/bcm2835.h" // pi 0 ZERO & W & A/A+ & B/B+
+#include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
+#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
+#include "bcm2835/src/bcm2835.h" // pi 1/2
+#include "bcm2836/src/bcm2836.h" // pi 3
+#include "bcm2837/src/bcm2837.h" // pi 4
 
 // RPi.GPIO lib, 0.7.0 used with pi4 support or higher
 #include "RPi.GPIO/source/i2c.h"
@@ -389,7 +392,7 @@ using namespace std; //
 #endif
 
 #ifdef __CPLUSPLUS
-  printf ("\nUsing GNU C++ with ANSI ISO C++ 17/20!!\n");
+  printf ("\nUsing GNU C++ with ANSI ISO C++ 11/17/20!!\n");
   extern "C"
   {
 
@@ -397,11 +400,11 @@ using namespace std; //
 #endif
 
 #ifdef _POSIX
-#define _POSIX_C_SOURCE   		200809L // or 199309L
-//#define _USE_MATH_DEFINES // for math lm lib
+#define _POSIX_C_SOURCE   		(200809L) // or 199309L
+//#define _USE_MATH_DEFINES 1 // for math lm lib
 #endif
 
-#ifdef __STDC_VERSION__ >= 199901L
+#ifdef __STDC_VERSION__ >= (199901L)
    /*#warning "\nPlease compile with flag -std=c99\n" string */
    printf ("\nUsing GNU C with C99 standard!!\n");
 #endif
@@ -412,7 +415,7 @@ using namespace std; //
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
-#define VERSION_PATCHLEVEL   (8) //
+#define VERSION_PATCH        (8) //
 #define VERSION_STATUS 			 "experimental" // WIP work in progress
 
 // simple operators
@@ -444,8 +447,8 @@ using namespace std; //
 #define BUFFERINSTRUCTIONS              (65536) // [1024]
 
 // I-O access via GPIO
-volatile unsigned 										*gpio; //
-volatile unsigned 										*allof7e; //
+volatile unsigned 										(*gpio); //
+volatile unsigned 										(*allof7e); //
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7ED											(*allof7e-SUB_BASE)
@@ -459,12 +462,29 @@ volatile unsigned 										*allof7e; //
 
 
 // specific pi adresses & definitions
-#ifdef  RPI || RASPBERRY // alternative BCM2711 B0 old/different versions
+#ifdef 	RASPI || RASPI0 == 0 // pi 0 zero & w
+#define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+#define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
+#define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x0C) // dec: 12
+#define CLOCK_BASE										 (19.2E6) // = 19200000
+
+#define DMA_CHANNEL										 (14) //
+#define PLLD_FREQ											 (500000000.) //
+#endif
+
+#ifdef  RPI || RASPBERRY == 1 // alternative old/different versions
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
+#define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
 
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) // dec: 4
+#define CLOCK_BASE									   (19.2E6) //
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
@@ -472,35 +492,25 @@ volatile unsigned 										*allof7e; //
 #error Unknown Raspberry Pi Revision
 #endif
 
-#ifdef 	RASPI || RASPI0 == 0 // pi 0 zero & w
+#ifdef  RASPI || RASPI1 == 1 // pi 1 - BCM2835 -> my version
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+#define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
 
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
+#define CLOCK_BASE										 (19.2E6) //
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RASPI || RASPI1 == 1 // pi 1 my version
-#define PERIPH_VIRT_BASE               0x20000000 // base=GPIO_offset dec: 2 virtual base
-#define PERIPH_PHYS_BASE               0x7E000000 // dec: 2113929216
-#define DRAM_PHYS_BASE                 0x40000000 // dec: 1073741824
-
-#define MEM_FLAG                       0x0C // alternative
-#define CURBLOCK                       0x0C // dec: 12
-#define CLOCK_BASE										 19.2E6 //
-
-#define DMA_CHANNEL										 14 //
-#define PLLD_FREQ											 500000000. //
-#endif
-
-#ifdef  RASPI || RASPI2 == 2 // pi 2
+#ifdef  RASPI || RASPI2 == 2 // pi 2 - BCM2836/7
 #define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
+#define BCM2837_PERI_BASE              (0x3F000000) // later version 2.1
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 
 #define MEM_FLAG                       (0x04) // dec: 4
@@ -511,10 +521,11 @@ volatile unsigned 										*allof7e; //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef 	RASPI || RASPI3 == 3 //pi3 - BCM2835
+#ifdef 	RASPI || RASPI3 == 3 // pi3 - BCM2837/B0
 #define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
-#define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
+#define BCM2837_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
+#define BCM2837B0_PERI_BASE            (0x3F000000) // 3B+ and 3A+
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 
 #define MEM_FLAG                       (0x04) // dec: 4
@@ -528,15 +539,17 @@ volatile unsigned 										*allof7e; //
 #ifdef  RASPI || RASPI4 == 4 // pi 4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+#define BCM2838_PERI_BASE              (0x3F000000) // check value !!!
+#define BCM2711_PERI_BASE              (0x3F000000) // coprocessor !!!
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 
 #define MEM_FLAG                       (0x04) // dec: 4
 #define PAGE_SIZE 										 (4096) //
 #define CLOCK_BASE									   (19.2E6) //
-#define XTAL_CLOCK                     (54.0E6) //
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 
 #define DMA_CHANNEL                    (14) //
-#define DMA_CHANNELB                   (7) // BCM2711 (Pi4 B only)  chan=
+#define DMA_CHANNELB                   (7) // BCM2711 (Pi4 B only)  chan=7
 #define PLLD_FREQ 										 (750000000.) // has higher freq than pi0-3
 
 #define BUFFER_TIME 									 (1000000) //
@@ -545,7 +558,12 @@ volatile unsigned 										*allof7e; //
 #endif
 
 // standard & general definitions
-#define GPIO_BASE                       (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE3                      (BCM2837B0_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE4                      (BCM2838_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+
 #define LENGTH                          (0x01000000) // dec: 1
 #define SUB_BASE                        (0x7E000000) // dec: 2113929216 phys base
 
@@ -565,13 +583,11 @@ volatile unsigned 										*allof7e; //
 
 // possibility to give argv 0-4 a specific addresses or pointers
 #define ARGC_ADR                        (0x7FFFFFFFEB0C) // dec: 140737488349964
-
 #define NAME_ADR                        (0x7FFFFFFEC08)  // dec: 8796093017096
 #define FILE_ADR                        (0x7FFFFFFFEC10) // dec: 140737488350224
 #define FREQ_ADR                        (0x7FFFFFFFEC18) // dec: 140737488350232
 #define SAMPLERATE_ADR                  (0x7FFFFFFFEC20) // dec: 140737488350240
 #define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 1407374883502484
-
 #define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640
 #define CALLSIGN2_ADR                   (0x7FFFFFFFEAEF) // dec: 140737488349935
 #define CALLSIGN3_ADR                   (0x7FFFFFFFEAE8) // dec: 140737488349928
@@ -584,11 +600,12 @@ volatile unsigned 										*allof7e; //
 
 #define ARGC_PTR                        (0x5) // dec: 5
 #define NAME_PTR                        (0x2F) // dec: 47
+#define FILE_PTR                        (0x73) // dec: 115
 #define FREQ_PTR                        (0x31) // $ means is in RDS data dec: 49
 #define SAMPLERATE_PTR                  (0x32) // $ in RDS data  dec: 50
 #define MODULATION_PTR                  (0x66) //  $ means isin RDS data // dec: 102
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
-#define FILE_PTR                        (0x73) // dec: 115
+
 
 // the normal fm-script didn't specified that
 #define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
@@ -901,8 +918,8 @@ Uses 3 GPIO pins
 #define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
 
 // GPS ublox neo-7M pps
-#define GPS_MODULE_NAME                 "GPS UBLOX NEO 7 M PPS" // dec: 104
-#define GPS_MODULE_VERSION              (7) // revision of the ublox model from 6-8+
+#define GPS_MODULE_NAME                 "GPS UBLOX NEO 8 M PPS" //
+#define GPS_MODULE_VERSION              (8) // revision of the ublox model from 6-8+
 
 // GND (PIN 6)
 #define GPS_GND                         (PIN_6) // ground pin
@@ -927,7 +944,7 @@ Uses 3 GPIO pins
 // declaring normal variables
 
 // program version status and default device
-const char *description = "(experimental)"; // version-stage
+const char *description = "experimental - WIP"; // version-stage
 static char *device = "default"; // playback device
 
 // iterators for loops
@@ -950,23 +967,23 @@ char *spi0_map;
 int opt;
 char *filename = "sound.wav";
 float freq = fabs (446.006250);
-float subfreq = 67.0;
-double shift_ppm = 0.0;
+double shift_ppm = (0.0);
 float xtal_freq = (1.0/19.2E6); // LOCK_BASE
-float ctss_freq = 67.0;
+float subfreq = (67.0);
+float ctss_freq = (67.0);
 int samplerate = abs (22050);
 int channels = 1;
 uint32_t Timing;
-char *mod;
+char *mod; // = "fm"
 char *fm = "fm";
 char *am = "am";
 int power = abs (7);
 int powerlevel = abs (7);
 char *callsign = "callsign";
 int type; // analog or digital
-char *mod_type;
-char *analog = "a"; // type= 1
-char *digital = "d"; // type= 2
+char *mod_type; // = "a"
+char *analog = "a"; // type = 1
+char *digital = "d"; // type = 2
 
 //float divider = (500000000/(2000*228*(1.+shift_ppm/1.E6) ) ); // PLLD_FREQ = 500000000.
 //uint32_t idivider = (float) divider;
@@ -985,9 +1002,9 @@ time_t t;
 
 // IQ & carrier
 uint16_t pis = (0x1234); // dec: 4660
-//float I = sin ((PERIOD*freq) + shift_ppm);
-//float Q = cos ((PERIOD*freq) + shift_ppm);
-//float RF_SUM = (I+Q);
+float I = sin((PERIOD*freq) + shift_ppm);
+float Q = cos((PERIOD*freq) + shift_ppm);
+float RF_SUM = (I+Q);
 
 // files
 FILE *rfp, *wfp;
@@ -1000,8 +1017,8 @@ int fp = STDIN_FILENO;
 int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
 int readBytes;
-float datanew = 0;
-float dataold = 0;
+float datanew = (0);
+float dataold = (0);
 float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
 char data_name [1024];
@@ -1011,20 +1028,20 @@ char buffer [80];
 // logarithmic modulation
 // volume in dB -> 0db = unity gain, no attenuation, full amplitude signal
 // -20 db = 10x attenuation, significantly more quiet
-float volume = 1.1f;
-const float volume_reference =	1.1f;
+const float volume_reference =	(1.1f);
+float volume = (1.1f);
 float volbuffer [512];
-float volumeLevelDb = -6.f; // cut amplitude in half
-float volumeMultiplier = 10E-1; //
+float volumeLevelDb = (-6.f); // cut amplitude in half
+float volumeMultiplier = (10E-1); // 10*10^-1 = 1
 
 // samples max. 15 kHz resolution for AM / 14.5 kHz FM radio can be recorded
 //SF_INFO sfinfo;
 int nb_samples;
-float timeconst = 50.0E-6; // 50 us (microsecons) time constant
-int excursion = 6000; // 32767 found another value but dont know on what this is based on
-float A = 87.6f; // compression parameter
-uint32_t carrier_freq = 87600000; // this might be the carrier too, why this value?
-float FactAmplitude = 2.0; // maybe here amp-modulator input?
+float timeconst = (50.0E-6); // 0.00005 = => 50 us (microsecons) time constant
+int excursion = (6000); // 32767 found another value but dont know on what this is based on
+float A = (87.6f); // compression parameter
+uint32_t carrier_freq = (87600000); // this might be the carrier too, why this value?
+float FactAmplitude = (2.0); // maybe here amp-modulator input?
 float ampf;
 float ampf2;
 float factorizer;
@@ -1052,7 +1069,7 @@ if (pad_reg1 || pad_reg2 == pad_val) // is it ?
 }
 else
 {
-  printf ("\npad_reg NOT same\n"
+  printf ("\npad_reg NOT same \n"
 }
 
 static volatile uint32_t *pwm_reg;
@@ -1064,11 +1081,13 @@ int shift = 0; // = (gpio % 10) * 3
 //gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
 
 // GPS-coordinates
-// default Germany-Frankfurt (Main) in decimal °grad (centigrade)
+// default Germany-Frankfurt (Main) in decimal °grad (centigrade) -> easier value to handle
 char *position; // for live gps-module input later
-float longitude = 8.682127; // E
-float latitude = 50.110924; // N
-float elevation = 100.00; // meter
+char *long_pos = "E";
+char *lat_pos = "N";
+float longitude = (8.682127); // E
+float latitude = (50.110924); // N
+float elevation = (100.00); // meter
 float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
 
 // network sockets
@@ -1076,7 +1095,7 @@ float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.
 socklen_t addressLength;
 char *localip = "127.0.0.1";
 char *host 		= "localhost";
-int port 		= 8080;
+int port 		= (8080);
 
 //--------------------------------------------------
 // Structs
@@ -1085,9 +1104,9 @@ struct sockaddr_in localAddress;
 //struct client_addr.sin_addr;
 //struct local.sin_addr;
 
-struct PAGEINFO // should use here bcm intern funcs-> repair p/v
+struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
-		void *p; // physical address BCM2836_PERI_BASE
+		void *p; // physical address BCMXXXX_PERI_BASE
 		void *v; // virtual address
 		int instrPage;
 		int constPage;
@@ -1157,10 +1176,10 @@ void infos () // warnings and infos
 {
 		printf ("\n");
 		/* red-yellow -> color: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode: 35 for Magenta, 33 red -> \033[14;35m   escape command for resetting \033[0m */
-    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM!\n", VERSION, description);
+    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM! \n", VERSION, description);
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi oparates with square-waves (²/^2) PWM on GPIO 4 (Pin 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators orresistors if needed! \nYou can smooth it out with 1:1 baloon. Do NOT shortcut if dummyload is used! \nCheck laws of your country! \n");
-    printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7\n");
+    printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7 \n");
 		printf ("\nDevicename: %s \n", device);
     printf ("\nxtal_freq: %f \n", xtal_freq);
  		return;
@@ -1197,7 +1216,7 @@ int dmaselect (int dmachannel)
 
 float bandwidthselect (float bandwidth)
 {
-	printf ("\nPlease choose the bandwidth (default=12.50 kHz) \n");
+	printf ("\nPlease choose the bandwidth/deviation (default=12.50 kHz) \n");
   scanf ("%f", &bandwidth);
 	printf ("\nYour bandwidth is %f \n", bandwidth);
 	return bandwidth;
@@ -1227,7 +1246,7 @@ int filecheck (char *filename)  // expected int
 float freqselect () // gets freq by typing in
 {
 	printf ("\nYou selected 1 for Frequency-Mode \n");
-	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1B+ for 700 MHz chip, pi3 1.2 GHz
+	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1B+ for 700 MHz chip, pi3 1.2 GHz pi4
 	scanf  ("%f", &freq);
 	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
@@ -1237,20 +1256,28 @@ float freqselect () // gets freq by typing in
 float step ()
 {
 	float steps;
-	printf ("\nChoose PMR-Steps 6.25 / 12.5 kHz: \n");
+	printf ("\nChoose PMR-Steps 6.25 / 10.00 / 12.50 / 20.00 / 25.00 kHz: \n");
 	scanf ("%f", &steps);
 	if (steps==6.25)
 	{
 	printf ("\nSteps are %f kHz \n", steps);
 	}
-	else if (steps==12.5)
+	else if (steps==10.00)
 	{
 	printf ("\nSteps are %f kHz \n", steps);
 	}
+  else if (steps==12.50)
+  {
+  printf ("\nSteps are %f kHz \n", steps);
+  }
+  else if (steps==25.00)
+  {
+  printf ("\nSteps are %f kHz \n", steps);
+  }
   else
   {
-  printf ("\nNO steps could be determined, wrong input! Using Standard 12.5 kHz \n");
-  steps = 12.5;
+  printf ("\nNO steps could be determined, wrong input! Using Standard 12.50 kHz \n");
+  steps = 12.50; //= DEVIATION
   }
   return steps;
 }
@@ -1385,7 +1412,7 @@ float subchannelmodepmr () // Pilot-tone
 	 // FYI 19 (38)-kHz-Pilottone on UKW
 	 // Analog & digital
 	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 on %f \n", subfreq); break;	// Scan all Chan till active , now chan1
-	 case 1:  subfreq=67.900; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.9 Hz steps
+	 case 1:  subfreq=67.900; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.90 Hz steps
 	 case 2: 	subfreq=71.900; printf ("\nCTSS-Chan 2 on %f \n", subfreq); break;
 	 case 3: 	subfreq=74.400; printf ("\nCTSS-Chan 3 on %f \n", subfreq); break;
 	 case 4: 	subfreq=77.000; printf ("\nCTSS-Chan 4 on %f \n", subfreq); break; // at 3-chan-PMR-devices it's ch. 2
@@ -1622,7 +1649,7 @@ void gpscoord (char *gps)
   if ((char) *gps == "on")
   {
   printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
-  print ("\nPreset location is: longitude %f / latitude %f / elevation %f / altitude %f \n", longitude, latitude, elevation, altitude);
+  print ("\nPreset location is: long_pos %s longitude %f / lat_pos %s latitude %f / elevation %f / altitude %f \n", long_pos, longitude, lat_pos, latitude, elevation, altitude);
   }
   else
   {
