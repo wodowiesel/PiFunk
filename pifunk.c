@@ -1,9 +1,25 @@
 /* Program: PiFunk (C)
 Copyright: 2018 - 2020
-Author: D. W. / silicator a.k.a Wiesel
+Author: D. W. a.k.a. WodoWiesel
 version = 0.1.7.8e
 
+----Licence----------------------------------------------------------------------------------------------
+    GPL v3 !!
+-----Disclaimer------------------------------------------------------------------------------------------
+Rewritten for own purposes!
+no guarantee, warranty for anything! Usage at own risk!
+you should ground your antenna, eventually diode or 10 uF-caps
+at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
+do not shortout or do overstress it with more than 3.3V! it may cause damages
+more infos about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
+Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi1 1.2 B+ rev.2 2014)
+used python 3.7.4 on original Raspbian
+
+!!!!!!! program needs more testing on real pi !!!!!!!
+--------------------------------------------------------------------------------------------------------
+Setups & dependencies:
 OS: Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
+don't forget to sudo apt-get update && upgrade
 
 SHA-256: ac557f27eb8697912263a1de812dfc99fa8d69bd6acc73a0b7756a1083ba0176
 -> get 3 different versions here: https://www.raspberrypi.org/downloads/raspbian/
@@ -20,15 +36,16 @@ You will need "alsa" library for this:
 sudo apt-get install libsndfile1-dev
 
 sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
--lbcm_host //firmware v1.20190718 located in /opt/vc/include/
+-lbcm_host // firmware v1.20190718 located in /opt/vc/include/
 
 cd PiFunk // goto path
 
 ->lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
-=>compile with admin/root permissions!!
+ =>compile with admin/root permissions!!
  Libs: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -lgnu -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -Llib -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
  program: sudo gcc -g3 -std=gnu99 -lm -Iinclude -lsndfile -lgnu -D_USE_MATH_DEFINES -D_GNU_SOURCE -Llib -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
+ -lpifunk own lib from this project
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
  or -std=gnu99 supports c99 + additional gnu extensions
@@ -36,28 +53,12 @@ cd PiFunk // goto path
  -E tells to stop after preprocessing stage
  -v verbose
 
--> real gpio hardware can't be simulated by c or py code! must be executed and compiled on pi wtith linux
+-> real gpio hardware can't be simulated by c/++ or py code! must be executed and compiled on pi wtith linux
 virtual machine possible with qemu or alternative with everpad: nor sure about this, rather not using it
 sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav // old
 
 Usage:
 default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
-
--------------------------------------------------------
-LICENSE: GPLv3 !!
-!!!!!!! program needs more testing on real pi !!!!!!!
-
------Disclaimer--------------
-Rewritten for own purposes!
-no guarantee, warranty for anything! Usage at own risk!
-you should ground your antenna, eventually diode or 10 uF-caps
-at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
-do not shortout or do overstress it with more than 3.3V! it may cause damages
-more infs about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
-Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi1 1.2 B+ rev.2 2014)
-used python 3.7.4 on original Raspbian
------------------------
-don't forget to sudo apt-get update && upgrade
 
 1) Pi-FM version - frequency modulation direction left/right ← , →
 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
@@ -1340,14 +1341,14 @@ float channelmodepmranalog ()
   switch (channelnumberpmr)
    {
    // Analog & DMR
-   case 1: freq=446.00625; printf ("\nPMR-Chan 1 on %f \n", freq); break;	// Standard
-   case 2: freq=446.01875; printf ("\nPMR-Chan 2 on %f \n", freq); break; // Geocaching
-   case 3: freq=446.03125; printf ("\nPMR-Chan 3 on %f \n", freq); break; // Standard
-   case 4: freq=446.04375; printf ("\nPMR-Chan 4 on %f \n", freq); break; // at 3-chan-PMR-devices its ch. 2
-   case 5: freq=446.05625; printf ("\nPMR-Chan 5 on %f \n", freq); break; // Contest
-   case 6: freq=446.06875; printf ("\nPMR-Chan 6 on %f \n", freq); break; // Events
-   case 7: freq=446.08125; printf ("\nPMR-Chan 7 on %f \n", freq); break; // at 3-channel-PMR-devices it's ch. 3
-   case 8: freq=446.09375; printf ("\nPMR-Chan 8 on %f \n", freq); break; // Standard
+   case 1: freq=446.00625; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// Standard
+   case 2: freq=446.01875; printf ("\naPMR-Chan 2 on %f \n", freq); break; // Geocaching
+   case 3: freq=446.03125; printf ("\naPMR-Chan 3 on %f \n", freq); break; // Standard
+   case 4: freq=446.04375; printf ("\naPMR-Chan 4 on %f \n", freq); break; // at 3-chan-PMR-devices its ch. 2
+   case 5: freq=446.05625; printf ("\naPMR-Chan 5 on %f \n", freq); break; // Contest
+   case 6: freq=446.06875; printf ("\naPMR-Chan 6 on %f \n", freq); break; // Events
+   case 7: freq=446.08125; printf ("\naPMR-Chan 7 on %f \n", freq); break; // at 3-channel-PMR-devices it's ch. 3
+   case 8: freq=446.09375; printf ("\naPMR-Chan 8 on %f \n", freq); break; // Standard
 
   // Digital only
   // dmr (tier 1) digital new since 28.09.2016
@@ -1423,8 +1424,8 @@ float channelmodepmrdigital ()
 								break;
 	 }
 
- printf ("digital-freq is %f", freq);
- return freq;
+   printf ("digital-freq is %f", freq);
+   return freq;
 }
 
 // Channel-mode
@@ -1460,7 +1461,7 @@ float subchannelmodepmr () // Pilot-tone
 	{
 	 // FYI 19 (38)-kHz-Pilottone on UKW
 	 // Analog & digital
-	 case 0:	subfreq=67.000; printf ("\nChannels (all) = 0, default CTSS-Chan 1 on %f \n", subfreq); break;	// Scan all Chan till active , now chan1
+	 case 0:	subfreq=67.000; printf ("\nCTSS-Chan 0, default CTSS-base on %f \n", subfreq); break;	// Scan all Chan till active , now chan0 base
 	 case 1:  subfreq=67.900; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.90 Hz steps
 	 case 2: 	subfreq=71.900; printf ("\nCTSS-Chan 2 on %f \n", subfreq); break;
 	 case 3: 	subfreq=74.400; printf ("\nCTSS-Chan 3 on %f \n", subfreq); break;
@@ -1500,7 +1501,7 @@ float subchannelmodepmr () // Pilot-tone
 	 case 37: subfreq=241.800; printf ("\nCTSS-Chan 37 on %f \n", subfreq); break;
 	 case 38: subfreq=250.300; printf ("\nCTSS-Chan 38 on %f \n", subfreq); break;
 
-	 case 39: printf ("\nExit... \n"); exit (0);
+	 case 39: printf ("\nExit ... \n"); exit (0);
 	 default: subfreq=67.900;
 						printf ("\nDefault subchannel = 1 on subfreq = %f \n", subfreq);
 						break;
@@ -1515,62 +1516,62 @@ float channelmodecb () // CB
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
-			// translation of german infos in english in future updates!
-       case 0:   freq=27.0450; break; // first digital channel
-			 case 1:   freq=26.9650; break; // empfohlener Anrufkanal (FM)
-			 case 2:   freq=26.9750; break; // inoffizieller Berg-DX-Kanal (FM)
+
+       case 0:   freq=27.0450; break; // first digital channel / normal opening chan
+			 case 1:   freq=26.9650; break; // recommended Startingchannel (FM)
+			 case 2:   freq=26.9750; break; // inofficial Mountain-DX-Chan (FM)
 			 case 3:   freq=26.9850; break; //
-			 case 4:   freq=27.0050; break; // empfohlener Anrufkanal (AM)/Anrufkanal Feststationen (AM)
-			 case 5:   freq=27.0150; break; // Kanal wird von italienischen Fernfahrern in Deutschland und Italien benutzt.
+			 case 4:   freq=27.0050; break; // recommended Startingchannel & fix stations (AM)
+			 case 5:   freq=27.0150; break; // italian/german truckers
 			 case 6:   freq=27.0250; break; // Data channel (D)
 		   case 7:   freq=27.0350; break; // Data channel (D)
 			 case 8:   freq=27.0550; break;
 			 case 9:   freq=27.0650; break; // Trucker channel (AM) / international emergency channel EMG
-			 case 10:  freq=27.0750; break; // Antennen-Abgleich - halbe Channel-Anzahl!! ansonsten Chan 20 oder 40
-			 /*		 Unterschied der Nachbarkanaele nicht um 10 kHz, sondern um 20 kHz
-			 Diese Kanaele sind in den meisten Laendern nicht fuer CB-Funk zugelassen.
-			 Zwecke wie z. B. Funkfernsteuerungen, Babyphones, kabellose Tastaturen und Maeuse verwendet */
-			 case 11:   freq=27.0850; break; // freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 1111: freq=27.0950; break; // Eurobalise-Energieversorgung
+			 case 10:  freq=27.0750; break; // for antenna calibration / middle for 20-chan-devices
+
+       /*		 difference for neighbourchannels not 10 kHz, but 20 kHz steps
+			 this channels for CB are in morst countries NOT permitted!!
+			 e.g. for purposes like remote controls, toys, Babyphones, wireless mouse, keyboards etc */
+			 case 11:   freq=27.0850; break; // free released chan for hook-up with multiple CB-devices over internet in germany
+			 case 1111: freq=27.0950; break; // Eurobalise-Energysuppliers
 			 case 12:   freq=27.1050; break; //
 			 case 13:   freq=27.1150; break; //
-			 case 14:   freq=27.1250; break; // oft verwendet fuer Spielzeug-Fernsteuerungen (mittels Selektivton)
-			 case 15:   freq=27.1350; break; // inofficial Anrufkanal SSB (USB)
+			 case 14:   freq=27.1250; break; // mostly for Toys-remotecontrol (through Selectivetone)
+			 case 15:   freq=27.1350; break; // recommended Startingchannel SSB (USB)
 			 case 1515: freq=27.1450; break; //
-			 case 16:   freq=27.1550; break; // Funkverkehr mit und zwischen Wasserfahrzeugen
-			 case 17:   freq=27.1650; break; // Kanal wird von daenischen Schwertransportfahrern in Deutschland und Daenemark benutzt
+			 case 16:   freq=27.1550; break; // mostly for Watertransport vehickes / ships & boats
+			 case 17:   freq=27.1650; break; // daenish/german heavy haulage transport
 			 case 18:   freq=27.1750; break; //
-			 case 19:   freq=27.1850; break; // empfohlener Fernfahrerkanal (FM)/oft von Walkie-Talkies genutzt/teilweise auch als Notrufkanal angegeben/auch von Babyfonen genutzt
+			 case 19:   freq=27.1850; break; // recommended Truckerchannel (FM) / Walkie-Talkies sometimes EMG or Babyphones
 			 case 1919: freq=27.1950; break; //
-			 case 20:   freq=27.2050; break; // zum Antennenabgleich genutzte Mitte bei 40-Kanal-Geraeten, wird in oesterreich sehr oft fuer Schwertransportfahrten benutzt
+			 case 20:   freq=27.2050; break; // for antenna calibration / middle for 40-chan-devices, or autrian heavy hauglage transport
 
 		 	 // 40 chan devices
-			 case 21:   freq=27.2150; break; // tuerkischer Anrufkanal in Deutschland und Europa (FM)
-			 case 22:   freq=27.2250; break; // oft von Walkie-Talkies genutzt, auch von Babyfonen genutzt, wird auch als Anrufkanal fuer rumaenische Fernlastfahrer verwendet
-			 case 23:   freq=27.2550; break; // Die Kanaele 23, 24, 25 sind sog. Dreher, sie folgen nicht dem aufsteigenden 10-kHz-Raster
+			 case 21:   freq=27.2150; break; // tuerkish starting chan (FM)
+			 case 22:   freq=27.2250; break; // Walkie-Talkies/mobile devises, Babyphones rumaenian truckers
+			 case 23:   freq=27.2550; break; // chan 23, 24, 25 socalled Turners, NOT following 10-kHz-Raster
 			 case 24:   freq=27.2350; break; // Data channel (D)
 			 case 25:   freq=27.2450; break; // Data channel (D), USB ROS Intern
 			 case 26:   freq=27.2650; break; //
 			 case 27:   freq=27.2750; break; //
-			 case 28:   freq=27.2850; break; // Kanal wird von polnischen Fernfahrern in Deutschland benutzt, Anrufkanal in Polen, wobei allgemein die CB-Kanalfrequenz in Polen um 5 kHz niedriger ist
-			 case 29:   freq=27.2950; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ber eine Internetverbindung in Deutschland
-			 case 30:   freq=27.3050; break; // inoffizieller DX-Kanal (FM), Anrufkanal fuer Funker aus dem ehemaligen Jugoslawien
-			 case 31:   freq=27.3150; break; // inoffizieller DX-Kanal (FM)
+			 case 28:   freq=27.2850; break; // polish truckers sometimes 5 kHz less
+			 case 29:   freq=27.2950; break; // free released chan for hook-up with multiple CB-devices over internet
+			 case 30:   freq=27.3050; break; // inofficial DX-chan (FM), jugoslawic truckers
+			 case 31:   freq=27.3150; break; // inofficial DX-chan (FM)
 			 case 32:   freq=27.3250; break; //
 			 case 33:   freq=27.3350; break; //
-			 case 34:   freq=27.3450; break; // freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 35:   freq=27.3550; break; // oeffentlicher Kanal
+			 case 34:   freq=27.3450; break; // free released chan for hook-up with multiple CB-devices over internet
+			 case 35:   freq=27.3550; break; // public Kanal
 			 case 36:   freq=27.3650; break; // Datachannel USB ROS international
-			 case 37:   freq=27.3750; break; // Gateway-Kanal oesterreich, FM
-			 case 38:   freq=27.3850; break; // inoffizieller internationaler DX-Kanal (LSB)
-			 case 39:   freq=27.3950; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
-			 case 40:   freq=27.4050; break; // ab Maerz 2016 freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete
-		   // ueber eine Internetverbindung in Deutschland (FM/AM/SSB in D)
-			 /* 80 chan devices
-			 Auf den nationalen Zusatzkanaelen 41 bis 80 ist nur die Modulationsart FM erlaubt
-			 Nachfolgend sind die Frequenzen der nationalen Zusatzkanaele, die im CB-Funk benutzt werden duerfen, aufgelistet: */
-			case 41:   freq=27.5650; break; // Ab Maerz 2016 Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland (FM), inoffizieller DX-Kanal (FM)
-			case 42:   freq=27.5750; break; // inoffizieller DX-Kanal (FM)
+			 case 37:   freq=27.3750; break; // Gateway-chan austria, FM
+			 case 38:   freq=27.3850; break; // inofficial internationaler DX-chan (LSB)
+			 case 39:   freq=27.3950; break; // free released chan for hook-up with multiple CB-devices over internet
+			 case 40:   freq=27.4050; break; // since march 2016 free released chan for hook-up with multiple CB-devices over internet (FM/AM/SSB in D)
+
+       // 80 chan devices
+			 // On national extra-chan 41 - 80 is only modulation-type FM permitted!
+			case 41:   freq=27.5650; break; // since march 2016 free released chan for hook-up with multiple CB-devices over internet (FM), inofficial DX-chan (FM)
+			case 42:   freq=27.5750; break; // inofficial DX-chan (FM)
 			case 43:   freq=27.5850; break;
 			case 44:   freq=27.5950; break;
 			case 45:   freq=27.6050; break;
@@ -1580,8 +1581,8 @@ float channelmodecb () // CB
 			case 49:   freq=27.6450; break;
 			case 50:   freq=27.6550; break;
 			case 51:   freq=27.6650; break;
-			case 52:   freq=27.6750; break; // Datachannel (D)(FM)
-			case 53:   freq=27.6850; break; // Datachannel (D)(FM)
+			case 52:   freq=27.6750; break; // Datachannel (D) (FM)
+			case 53:   freq=27.6850; break; // Datachannel (D) (FM)
 			case 54:   freq=27.6950; break;
 			case 55:   freq=27.7050; break;
 			case 56:   freq=27.7150; break;
@@ -1590,7 +1591,7 @@ float channelmodecb () // CB
 			case 59:   freq=27.7450; break;
 			case 60:   freq=27.7550; break;
 
-      case 61:   freq=26.7650; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+      case 61:   freq=26.7650; break; // free released chan for hook-up with multiple CB-devices over internet
 			case 62:   freq=26.7750; break;
 			case 63:   freq=26.7850; break;
 			case 64:   freq=26.7950; break;
@@ -1600,7 +1601,7 @@ float channelmodecb () // CB
 			case 68:   freq=26.8350; break;
 			case 69:   freq=26.8450; break;
 			case 70:   freq=26.8550; break;
-			case 71:   freq=26.8650; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland
+			case 71:   freq=26.8650; break; // free released chan for hook-up with multiple CB-devices over internet
 			case 72:   freq=26.8750; break;
 			case 73:   freq=26.8850; break;
 			case 74:   freq=26.8950; break;
@@ -1609,7 +1610,7 @@ float channelmodecb () // CB
 			case 77:   freq=26.9250; break; // Datachannel (D)(FM)
 			case 78:   freq=26.9350; break;
 			case 79:   freq=26.9450; break;
-			case 80:   freq=26.9550; break; // Freigegeben zur Zusammenschaltung mehrerer CB-Funkgeraete ueber eine Internetverbindung in Deutschland */
+			case 80:   freq=26.9550; break; // Ffree released chan for hook-up with multiple CB-devices over internet
 
       case 81:   printf ("\nExit ... \n"); exit (0);
 
