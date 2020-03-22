@@ -317,11 +317,13 @@ using namespace std; //
 #include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 #include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
 #include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
-#include "bcm2835/src/bcm2835.h" // pi 1/2
-#include "bcm2836/src/bcm2836.h" // pi 3
-#include "bcm2837/src/bcm2837.h" // pi 4
+#include "bcm2835/src/bcm2835.h" // pi 0/1
+#include "bcm2836/src/bcm2836.h" // pi 2
+#include "bcm2837/src/bcm2837.h" // pi 3
+#include "bcm2838/src/bcm2838.h" // pi 4
+#include "bcm2838B0/src/bcm2837B0.h" // pi 4 B
 
-// RPi.GPIO lib, 0.7.0 used with pi4 support or higher
+// RPi.GPIO lib, 0.7.0 used with pi4 support
 #include "RPi.GPIO/source/i2c.h"
 //#include "RPi.GPIO/source/c_gpio.h"
 #include "RPi.GPIO/source/event_gpio.h"
@@ -363,7 +365,7 @@ using namespace std; //
 #endif
 
 #ifdef __UNIX__
-  printf ("\nProgram runs under UNIX \n");
+  printf ("\nProgram runs under UNIX! \n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
@@ -549,8 +551,8 @@ volatile unsigned 										(*allof7e); //
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 
 #define DMA_CHANNEL                    (14) //
-#define DMA_CHANNELB                   (7) // BCM2711 (Pi4 B only)  chan=7
-#define PLLD_FREQ 										 (750000000.) // has higher freq than pi0-3
+#define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
+#define PLLD_FREQ 										 (750000000.) // has higher freq than pi 0-3
 
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -558,6 +560,11 @@ volatile unsigned 										(*allof7e); //
 #endif
 
 // standard & general definitions
+#define PIN_7                           (4) // pin 4
+#define PIN_40                          (40) // pin 40
+#define GPIO_4                          (PIN_7)
+#define GPIO_21                         (PIN_40)
+
 #define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
@@ -608,7 +615,7 @@ volatile unsigned 										(*allof7e); //
 
 
 // the normal fm-script didn't specified that
-#define DMA_BASE_OFFSET                 (0x00007000) // dec: 28672
+#define DMA0_BASE_OFFSET                 (0x00007000) // dec: 28672
 #define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544
 
 #define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
@@ -616,8 +623,10 @@ volatile unsigned 										(*allof7e); //
 #define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
 
+
 #define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
 #define CLK0_BASE_OFFSET 							  (0x00101070) // dec: 1052784
+#define CLK1_BASE_OFFSET                (0x00101078) // dec: 1052792
 #define CLK_LEN                         (0x1300) // dec: 4864
 
 #define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
@@ -626,8 +635,9 @@ volatile unsigned 										(*allof7e); //
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
 
-#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA_BASE_OFFSET) //
+#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA0_BASE_OFFSET) //
 
+#define PWMCLK_BASE_OFFSET              (0x001010A0) // dec: 1052832
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
 #define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
 
@@ -823,7 +833,7 @@ Uses 3 GPIO pins
 #define PCM_GRAY                        (0x20/4) // 8
 
 // DMA
-// Technically 2708 is the family-chipname, and 2835 is a specific implementation for arm
+// Technically 2708 is the family-chipname, and 2835/5/7 is a specific implementation for arm
 #define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000)
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
@@ -903,9 +913,8 @@ Uses 3 GPIO pins
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
 // RTC (DS3231/DS1307 driver as bcm)
-
 #define RTC_PWR                         (PIN_1) // +3.3 V
-#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V (PIN_4)
+#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V
 #define RTC_GND                         (PIN_9) // RTC ground
 
 #define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
@@ -1181,7 +1190,6 @@ struct option long_opt [] =
 // basic functions specified one after another
 void infos () // warnings and infos
 {
-		printf ("\n");
 		/* red-yellow -> color: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode: 35 for Magenta, 33 red -> \033[14;35m   escape command for resetting \033[0m */
     printf ("\nWelcome to the Pi-Funk! v%s %s for Raspian ARM! \n", VERSION, description);
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz Frequency \nUse '. dot' as decimal-comma seperator! \n");
@@ -1207,21 +1215,30 @@ int gpioselect (int gpiopin)
 {
   // how to change pin-config on boot
   // https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
-	printf ("\nPlease choose GPIO-Pin (GPIO 4 = Pin 7 -> default) or 20, 29, 32, 34, 38 \n");
+	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 -> default) or GPIO 21 = PIN X, alternatives: 20, 29, 32, 34, 38 \n");
   scanf ("%d", &gpiopin);
-	printf ("\nYour GPIO for Transmission is %d ... \n", gpiopin);
+	printf ("\nYour GPIO for transmission is %d ... \n", gpiopin);
 	return gpiopin;
 }
 
 int dmaselect (int dmachannel)
 {
-	printf ("\nPlease choose the DMA-Channel \n");
+	printf ("\nPlease choose the DMA-Channel: \n");
   scanf ("%d", &dmachannel);
-	printf ("\nYour DMA-Channel is %d ... \n", dmachannel);
+	printf ("\nThe DMA-Channel is %d ... \n", dmachannel);
+  if (dmachannel == 255)
+  {
+    printf ("\nThe DMA-Channel is deactivated! \n");
+    dmachannel == 255;
+  }
+  else
+  {
+    printf ("\nThe DMA-Channel is activated! \n");
+  }
 	return dmachannel;
 }
 
-float bandwidthselect (float bandwidth)
+float bandwidthselect ()
 {
 	printf ("\nPlease choose the bandwidth/deviation (default=12.50 kHz) \n");
   scanf ("%f", &bandwidth);
@@ -1235,7 +1252,7 @@ int filecheck (char *filename)  // expected int
   //scanf ("%s", &filename);
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
-	printf ("\nAllocating filename memory... \n");
+	printf ("\nAllocating filename memory ... \n");
 	filename = (char *) malloc (128); // allocating memory for filename
 	sprintf (filename, "\n%s\n", "file.ft");
 	char *stdfile = "sound.wav";
@@ -1274,6 +1291,10 @@ float step ()
 	printf ("\nSteps are %f kHz \n", steps);
 	}
   else if (steps==12.50)
+  {
+  printf ("\nSteps are %f kHz \n", steps);
+  }
+  else if (steps==20.00)
   {
   printf ("\nSteps are %f kHz \n", steps);
   }
@@ -1328,7 +1349,7 @@ float channelmodepmranalog ()
             break;
    }
 
- printf ("analog-freq is %f", freq);
+ printf ("\nanalog-freq is %f \n", freq);
  return freq;
 }
 
@@ -1386,7 +1407,7 @@ float channelmodepmrdigital ()
 }
 
 // Channel-mode
-int channelmodepmr () //PMR
+int channelmodepmr () // PMR
 {
 
 	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
@@ -1615,7 +1636,7 @@ void modselect (int argc, char **argv [], char *mod)
 	}
 	else if (!strcmp (mod, "am"))
 	{
-    printf ("\nYou selected 2 for AM! \n");
+    printf ("\nYou selected 2 for am! \n");
     printf ("\nPushing args to am Modulator ... \n");
 		void modulationam (int argc, char **argv []);
 	}
@@ -1643,7 +1664,7 @@ void channelselect () // make a void
 									channelmodecb ();
 									break;
 
-					default:  printf ("\nDefault: PMR \n");
+					default:  printf ("\nDefault: PMR CHAN-MODE \n");
 										channelmodepmr (); // gets freq from pmr list
 									  break;
 	}
@@ -1743,12 +1764,6 @@ void clearscreen ()
   return;
 }
 
-void handSig () // exit func
-{
-		printf ("\nExiting ... \n");
-		exit (0);
-}
-
 void modulate (int l)
 {
 	printf ("\nModulate carrier ... \n");
@@ -1775,12 +1790,11 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
     return;
 }
 
-
 void freeRealMemPage (void **vAddr)
 {
 		printf ("\nTry to Freeing vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
-		free    (vAddr); // free the ram
+		free (vAddr); // free the ram
     printf ("\nvAddr is free NOW ... \n");
     return;
 }
@@ -1803,6 +1817,11 @@ void carrierlow () // disables it
   return;
 }
 
+void handSig () // exit func
+{
+		printf ("\nExiting ... \n");
+		exit (0);
+}
 static void terminate (int num)
 {
     // Stop outputting and generating the clock
@@ -1840,7 +1859,7 @@ static void terminate (int num)
 
 void setupfm ()
 {
-  printf ("\nSetting up FM... \n");
+  printf ("\nSetting up FM ... \n");
     // open /dev/mem
   if (( MEM_FD = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
 	{
@@ -1873,6 +1892,7 @@ void setupfm ()
 void play_list () // exit func
 {
 		printf ("\nOpening playlist-folder (dummy) \n"); // in sounds/playlist
+    // searching for all soundfiles in folder and counting and making a list and order
     return;
 }
 
@@ -2184,14 +2204,14 @@ int samplecheck (char *filename, int samplerate) // better name function: sample
 			}
 			else
 			{
-					printf ("\nError: File has %d Channels! (> 2 channels), not supported! \n", channels);
+					printf ("\nError: File has %d Channels >2 channels not supported! \n", channels);
           return -1;
 			}
 
       nb_samples = (readcount/channels);
  			// was defined as global var above
 			printf ("\nnb_samples: %d \n", nb_samples);
-			printf ("\nCompression prameter A: %f \n", A);
+			printf ("\nCompression parameter A: %f \n", A);
 			// maybe here am option for amplitude factor input!?
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
@@ -2260,7 +2280,7 @@ void modetype ()
 							freqselect (freq);
 							break;
 
-		default: printf ("\nError! Using default \n");
+		default: printf ("\nError! Using default channelmode \n");
              channelselect (freq);
 						 break;
 	}
@@ -2290,7 +2310,7 @@ void typeselect (type)
  return;
 }
 
-void modulationam (int argc, char **argv[], char, *mod)
+void modulationam (int argc, char **argv [], char, *mod)
 {
 	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
 		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -2321,11 +2341,41 @@ int powerselect ()
 	return power;
 }
 
+/*
+// pi4 pin fix for under 93 MHz
+class ClockOutput : public ClockDevice
+{
+    public:
+        #ifndef GPIO21
+        ClockOutput (unsigned divisor) : ClockDevice (CLK0_BASE_OFFSET, divisor)
+        {
+            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET));
+            *output = (*output & 0xFFFF8FFF) | (0x04 << 12);
+        #else
+        ClockOutput(unsigned divisor) : ClockDevice (CLK1_BASE_OFFSET, divisor)
+        {
+            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + 0x08));
+            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
+        #endif
+        }
+
+        virtual ~ClockOutput ()
+        {
+        #ifndef GPIO21
+            *output = (*output & 0xFFFF8FFF) | (0x01 << 12);
+        #else
+            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
+        #endif
+        }
+}
+*/
+
+//--------------------
 // read / import csv for pmr
 char csvreader ()
 {
     printf ("\nChecking CSV-file for CTSS-Tones (Coded Tone Control Squelch System) ... \n");
-		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone,\nrToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode,\nTStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
+		printf ("\nOrder of the list: \nLocation, Name, Frequency, Duplex, Offset, Tone, rToneFreq, cToneFreq, DtcsCode, DtcsPolarity, Mode, TStep, Skip, Comment, URCALL, RPT1CALL, RPT2CALL\n");
 
     rfp = fopen ("ctsspmr.csv", "r"); // read-only!
     wfp = fopen ("ctsswriter.csv", "w+"); // with + it updates, if exists overwrites
@@ -2345,14 +2395,14 @@ char csvreader ()
 void cgimodule () //
 {
  printf ("\ncontext-type:text/html\n");
- printf ("<html>\n");
- printf ("<head>\n");
- printf	("PiFunk Project\n");
- printf	("</head>\n");
- printf ("<body>\n");
- printf	("PiFunk - CGI\n");
- printf	("</body>\n");
- printf ("</html>\n");
+ printf ("\n<html>\n");
+ printf ("\n<head>\n");
+ printf	("\nPiFunk Project\n");
+ printf	("\n\n</head>\n");
+ printf ("\n<body>\n");
+ printf	("\nPiFunk - CGI\n");
+ printf	("\n</body>\n");
+ printf ("\n</html>\n");
  return;
 }
 
@@ -2451,9 +2501,9 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	infos (); // information, disclaimer
 	int timer (time_t t); // date and time print
 
-  bcm_host_get_peripheral_address ();
-  bcm_host_get_peripheral_size ();
-  bcm_host_get_sdram_address ();
+  printf (bcm_host_get_peripheral_address ());
+  printf (bcm_host_get_peripheral_size ());
+  printf (bcm_host_get_sdram_address ());
 
   int option_index = 0;
   int flags = getopt_long (argc, argv [], "n:f:s:m:p:c:g:d:b:t:g:ahu", long_opt, &option_index);
