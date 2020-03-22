@@ -1211,13 +1211,34 @@ int timer (time_t t)
 
 //-----------------------------------------
 // program functions
-int gpioselect (int gpiopin)
+int gpioselect ()
 {
   // how to change pin-config on boot
   // https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
-	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 -> default) or GPIO 21 = PIN X, alternatives: 20, 29, 32, 34, 38 \n");
+	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 -> default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
   scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for transmission is %d ... \n", gpiopin);
+  if (gpiopin == 4)
+  {
+    printf ("\nUsing default GPIO 4 \n");
+    // set PIN value
+  }
+  else if (gpiopin == 21)
+  {
+    printf ("\nUsing GPIO 21, mostly used for pi4 \n");
+    //
+  }
+  else if (gpiopin == 20 ||29 || 32 || 34 || 38)
+  {
+    printf ("\nUsing alternative GPIO setup ... \n");
+    //
+  }
+  else
+  {
+    printf ("\nError: not recognized! Using default GPIO 4 \n");
+    gpiopin = 4;
+  }
+
 	return gpiopin;
 }
 
