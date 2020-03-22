@@ -324,14 +324,14 @@ using namespace std; //
 #include "bcm2838B0/src/bcm2837B0.h" // pi 4 B
 
 // RPi.GPIO lib, 0.7.0 used with pi4 support
-#include "RPi.GPIO/source/i2c.h"
-//#include "RPi.GPIO/source/c_gpio.h"
-#include "RPi.GPIO/source/event_gpio.h"
-//#include "RPi.GPIO/source/py_pwm.h"
-#include "RPi.GPIO/source/soft_pwm.h"
-//#include "RPi.GPIO/source/constants.h"
-#include "RPi.GPIO/source/common.h"
-#include "RPi.GPIO/source/cpuinfo.h"
+#include "RPI.GPIO/source/i2c.h"
+//#include "RPI.GPIO/source/c_gpio.h"
+#include "RPI.GPIO/source/event_gpio.h"
+//#include "RPI.GPIO/source/py_pwm.h"
+#include "RPI.GPIO/source/soft_pwm.h"
+//#include "RPI.GPIO/source/constants.h"
+#include "RPI.GPIO/source/common.h"
+#include "RPI.GPIO/source/cpuinfo.h"
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
@@ -923,7 +923,7 @@ Uses 3 GPIO pins
 
 #define DS1307_I2C_INPUT_ADDR           (0xD0) // read dec: 208
 #define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 209
-// the same address
+// the same addresses
 #define SLAVE_ADDR_WRITE                b(11010000) // binary -> dec:208, hex: 0xD0
 #define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
 
