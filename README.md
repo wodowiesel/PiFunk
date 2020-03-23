@@ -26,7 +26,7 @@ and extract and load bootable image on SD-card via Rufus
 
 2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
 
-Not recommending to use w1-protocol at the beginning (i dont need it in my setup)
+Not recommending to use w1-protocol at the beginning (i don't need it in my setup)
 
 Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO Pin
 
@@ -40,17 +40,17 @@ check/add lines:
 
 `dtoverlay=gpiopin=4,pullup=0` add pullup=1 or w1-gpio if needed
 
-`dtoverlay=audio=on` for bcm audio
+`dtoverlay=audio=on` for bcm audio required
 
 optional:
 
-`dtparam=spi=on` for SPI support
+`dtparam=spi=on` for SPI support optional
 
-`dtoverlay=i2c1-bcm2708` for I2C Bus
+`dtoverlay=i2c1-bcm2708` for pi 4 2711 for using I2C Bus
 
 `enable_uart=1` for UART RX & TX
 
-`init_uart_baud=9600` data transmission rate
+`init_uart_baud=9600` data transmission rate for serial data
 
 `dtoverlay=pps-gpio,gpiopin=18` for GPS-device pps (puls-per-second)-support
 
@@ -267,7 +267,7 @@ a) Use (original) power supply 10 W, +5 V @ ~2 A or ~ +5 V / 500 mA via mini-USB
 
 b) Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
--> SoC from Broadcom	depending on pi model: BCM2711, BCM2835,	BCM2836,	BCM2837,	BCM2837B0
+-> SoC from Broadcom	depending on pi model: BCM2709, BCM2711 // BCM2835,	BCM2836,	BCM2837, BCM2837B0
 
 for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
@@ -311,9 +311,11 @@ f) RTC: Module DS3231 uses
 
 -> need to activate I2C in pi config!
 
+![RTC](docs/RTC-bottom.jpg)
+
 ![RTC](docs/RTC-top.jpg)
 
-g) GPS Module: Ublox Neo 7M
+g) GPS Module: Ublox Neo 8M (best one so far)
 
 Pinout: +5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
@@ -323,7 +325,9 @@ it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
 -> need to activate UART (serial 0) in pi config! Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
-![GPS](docs/GPS-Neo7M.jpg)
+![GPS](docs/GPS-Neo8M-bottom.jpg)
+
+![GPS](docs/GPS-Neo8M-top.jpg)
 
 h) Morse-code-table:
 
@@ -341,21 +345,29 @@ Arguments: would be best to input in this specific order to prevent problems
 
 Use '. dot' as decimal-comma separator!
 
-`[-n <filename (.wav)>] [-f <freq (MHz)>] [-s <samplerate (kHz)>] [-m <mod (fm/am)>]
+`[-n <filename.wav>]` path & name of soundfile
 
-[-p <power 0-7)>] [-c <callsign>]`
+`[-f <MHz>]` freq
+
+`[-s <kHz>]` samplerate 2250 default
+
+`[-m <fm/am>]` mod, mode for modulation
+
+`[-p <0-7)>]` power (level) for transmission
+
+`[-c <callsign>]` your official callsign or individual nickname
 
 additional/optional flags:
 
-`[-g <gpio-pin 7 (default) 29,32,34,38>]`
+`[-g <7 (default) or 21>]` gpiopin, alternatives: 20,29,32,34,38 (not recommended)
 
-`[-d <dma-channels 0-14>]`
+`[-d <0/7/14/255>]` dmachannel, 255 means off
 
-`[-b <bandwidth 1-15>]`
+`[-b <6.25/10.00/12.50/20.00/25.00>]` bandwidth
 
-`[-t <type 1=(a)nalog, 2=(d)igital>]`
+`[-t <1=(a)nalog, 2=(d)igital>]` type of modulation
 
-`[-x <gps on/off>]`
+`[-x <on/off>]` gps
 
 extra single menu-flags: -> no further argument needed
 
@@ -387,7 +399,7 @@ ___
 
 - Usage at **your own risk** !!
 
-- Check laws of your country first! Some Frequencies & Powerlevels (Watt) are prohibited or need at least a HAM-License!
+- Check laws of your country first! Some Frequencies (MHz) & Powerlevels (Watt) are prohibited or need at least a HAM-License!
 
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
 
