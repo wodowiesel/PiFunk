@@ -311,7 +311,7 @@ f) RTC: Module DS3231 uses
 
 -> need to activate I2C in pi config!
 
-![RTC](docs/RTC-bottom.jpg)
+![RTC](docs/RTC-bottom.png)
 
 ![RTC](docs/RTC-top.jpg)
 
@@ -325,9 +325,9 @@ it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
 -> need to activate UART (serial 0) in pi config! Yes here crosswiring!! -> (RX of GPS receives what Pi TX'ed)
 
-![GPS](docs/GPS-Neo8M-bottom.jpg)
+![GPS](docs/GPS-Neo-8M-bottom.jpg)
 
-![GPS](docs/GPS-Neo8M-top.jpg)
+![GPS](docs/GPS-Neo-8M-top.jpg)
 
 h) Morse-code-table:
 
