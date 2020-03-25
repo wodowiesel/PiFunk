@@ -14,9 +14,9 @@ ___
 
 0. Download Linux-Pi-Distro
 
-[Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.66
+[Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.97
 
-and extract and load bootable image on SD-card via Rufus
+or use the extra provided imager and extract and load bootable image on SD-card via Rufus
 
 1. Get this program:
 
@@ -98,7 +98,7 @@ or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev
 
 c) `sudo apt-get install python-dev python3-dev` for py3
 
-d) [RPi.GPIO lib v0.7.0 for Py3](https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
+d) [RPi.GPIO lib v0.7.0+ for Py3](https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
 
 [RPi.GPIO Project Site](https://pypi.org/project/RPi.GPIO/)
 
@@ -307,7 +307,7 @@ you can overclock the Pi if you want to on own risk but it's not recommended
 
 f) RTC: Module DS3231 uses
 
-+3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO1 on I2C) & GND (PIN 9)
++3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO 1 on I2C) & GND (PIN 9)
 
 -> need to activate I2C in pi config!
 
@@ -317,7 +317,7 @@ f) RTC: Module DS3231 uses
 
 g) GPS Module: Ublox Neo 8M (best one so far)
 
-Pinout: +5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14 PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
+Pinout: +5 V (PIN 4), GND (PIN 6), RX to UART-TXD (GPIO 14, PIN 8), TX to UART-RXD (GPIO 15, PIN 10), PPS to PCM_CLK (GPIO 18, PIN 12)
 
 it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
@@ -353,7 +353,7 @@ Use '. dot' as decimal-comma separator!
 
 `[-m <fm/am>]` mod, mode for modulation
 
-`[-p <0-7)>]` power (level) for transmission
+`[-p <0-7)>]` power 2-16 mA (level 7 default) for transmission
 
 `[-c <callsign>]` your official callsign or individual nickname
 
@@ -361,13 +361,13 @@ additional/optional flags:
 
 `[-g <7 (default) or 21>]` gpiopin, alternatives: 20,29,32,34,38 (not recommended)
 
-`[-d <0/7/14/255>]` dmachannel, 255 means off
+`[-d <0/7/14(default)/255>]` dmachannel, 255 means off
 
-`[-b <6.25/10.00/12.50/20.00/25.00>]` bandwidth
+`[-b <6.25 (default)/10.00/12.50/20.00/25.00>]` bandwidth of the signal
 
 `[-t <1=(a)nalog, 2=(d)igital>]` type of modulation
 
-`[-x <on/off>]` gps
+`[-x <on/off>]` gps support
 
 extra single menu-flags: -> no further argument needed
 
@@ -377,7 +377,7 @@ extra single menu-flags: -> no further argument needed
 
 `[-u]` for extra menu (csv, commandline)
 
-default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign`
+default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign` -g 7 -d 14 -b 12.50 -t 1 -x off
 
 Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi.
 
