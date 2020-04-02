@@ -399,11 +399,11 @@ ___
 
 - Usage at **your own risk** !!
 
-- Check laws of your country first! Some Frequencies (MHz) & Powerlevels (Watt) are prohibited or need at least a HAM-License!
+- Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited or need at least a HAM-License!
 
 - Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
 
-  (C=10-100 pF) with solenoid (ring) toroid (ferrite) chokes (B=10-50 uH like the FT37-43)
+  (C=10-100 pF (Farad)) with solenoid (ring) toroid (ferrite) chokes (B=10-50 uH (Henry) like the FT37-43)
 
   or resistors (R=~10 kOhm), diodes to prevent backflow
 
@@ -419,9 +419,9 @@ ___
 
 14. Additional Guidelines
 
-[GitPage](https://silicator.github.io/PiFunk/)
+[GitPage](https://wodowiesel.github.io/PiFunk/)
 
-[Wiki](https://github.com/silicator/PiFunk/wiki)
+[Wiki](https://github.com/wodowiesel/PiFunk/wiki)
 
 [Readme Guideline](README.md)
 
@@ -431,7 +431,7 @@ ___
 
 [Copying Guideline](docs/COPYING.md)
 
-[License Guideline](LICENSE.md) under Open-Source GPLv3.0
+[License Guideline](LICENSE.md) under Open-Source GPL v3.0
 
 Would appreciate being named in the source, Thank you.
 
