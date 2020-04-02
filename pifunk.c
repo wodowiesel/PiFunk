@@ -137,8 +137,9 @@ tone generator for ctss (sin wave?)
 #include <sys/utsname.h>
 #include <sys/wait.h>
 
-// linux kernel driver headers
+// linux kernel driver headers: path /usr/src/linux-headers-4.19.97+/include/
 #include <linux/init.h>
+#include <linux/compiler.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -318,11 +319,12 @@ using namespace std; //
 #include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 #include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
 #include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
+
 #include "bcm2835/src/bcm2835.h" // pi 0/1
 #include "bcm2836/src/bcm2836.h" // pi 2
 #include "bcm2837/src/bcm2837.h" // pi 3
 #include "bcm2838/src/bcm2838.h" // pi 4
-#include "bcm2838B0/src/bcm2837B0.h" // pi 4 B
+#include "bcm2838B0/src/bcm2838B0.h" // pi 4 B
 
 // RPi.GPIO lib, 0.7.0 used with pi4 support
 #include "RPI.GPIO/source/i2c.h"
@@ -336,7 +338,7 @@ using namespace std; //
 
 // see http://www.mega-nerd.com/libsndfile/api.html for API needed for am -> ALSA sound
 // download from mainpage http://www.alsa-project.org/main/index.php/Main_Page
-
+//#include <sndfile.h>
 //#include "include/sndfile.h" // has problems!!! with @typedef sf_count somehow -> set as int
 
 // extra library https://github.com/libusb/libusb
@@ -454,7 +456,7 @@ volatile unsigned 										(*gpio); //
 volatile unsigned 										(*allof7e); //
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
-#define ALLOF7ED											(*allof7e-SUB_BASE)
+#define ALLOF7EB											(*allof7e-SUB_BASE)
 #define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
 #define GPIO_CLR 											*(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_GET 											*(gpio+13) // sets bits which are 1 ignores bits which are 0
@@ -909,7 +911,7 @@ Uses 3 GPIO pins
 #define SAMPLES_PER_BUFFER 							(512) //
 
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
-#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7ED) // volatile + int* volatile unsigned*
+#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
@@ -946,7 +948,9 @@ Uses 3 GPIO pins
 
 // LED
 #define PIN_LED_GND                     (14) // which is the GND pin 27 for led
-#define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led
+#define PIN_17                          (RPI_GPIO_P17) // which is the GPIO pin 17 for led1
+#define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led2
+
 
 // try a modprobe of i2C-BUS
 // if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == -1) {printf ("modprobe test"); /*ignore errors*/}
@@ -956,7 +960,7 @@ Uses 3 GPIO pins
 
 // program version status and default device
 const char *description = "experimental - WIP"; // version-stage
-static char *device = "default"; // playback device
+const char *device = "default"; // playback device
 
 // iterators for loops
 int a;
@@ -1055,7 +1059,8 @@ float volumeMultiplier = (10E-1); // 10*10^-1 = 1
 //SF_INFO sfinfo;
 int nb_samples;
 float timeconst = (50.0E-6); // 0.00005 = => 50 us (microsecons) time constant
-int excursion = (6000); // 32767 found another value but dont know on what this is based on
+int excursion = (6000);
+int excursion2 = (32767); // found another value but dont know on what this is based on
 float A = (87.6f); // compression parameter
 uint32_t carrier_freq = (87600000); // this might be the carrier too, why this value?
 float FactAmplitude = (2.0); // maybe here amp-modulator input?
@@ -1067,7 +1072,7 @@ float sampler;
 // instructor for access
 unsigned long frameinfo;
 int instrs [BUFFERINSTRUCTIONS]; // [1024];
-int bufPtr 		= 0;
+int bufPtr = 0;
 int instrCnt 	= 0;
 int instrPage;
 int constPage;
@@ -1077,16 +1082,16 @@ static volatile uint32_t *pad_reg1;
 static volatile uint32_t *pad_reg2;
 static volatile uint32_t *pad_val;
 
-pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1 ->
+pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
 pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
-pad_val = PADGPIO + power;
-if (pad_reg1 || pad_reg2 == pad_val) // is it ?
+pad_val = (PADGPIO + power);
+if ((pad_reg1 || pad_reg2) == pad_val) // check equality
 {
-  printf ("\npad_reg = pad_val -> %u \n", pad_reg1);
+  printf ("\npad_reg1 & pad_reg2 = pad_val -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
 }
 else
 {
-  printf ("\npad_reg NOT same \n");
+  printf ("\npad_reg NOT same -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
 }
 
 static volatile uint32_t *pwm_reg;
@@ -1130,17 +1135,17 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 		int instrs [BUFFERINSTRUCTIONS]; // [1024];
 };
 
-struct GPCTL
+struct GPCTL // 9 parameters
 {
-		char SRC         : 4;
-		char ENAB        : 1;
-		char KILL        : 1;
+		char SRC         : 4; //
+		char ENAB        : 1; //
+		char KILL        : 1; //
 		char IDK1        : 1; // what is the blank char? gave it a dummyname (IDK) for now
-		char BUSY        : 1;
-		char FLIP        : 1;
-		char MASH        : 2;
+		char BUSY        : 1; //
+		char FLIP        : 1; //
+		char MASH        : 2; //
 		unsigned int IDK2 : 13; // what is the blank int?
-		char PASSWD      : 8;
+		char PASSWD      : 8; //
 };
 
 struct CB
@@ -1206,7 +1211,7 @@ int timer (time_t t)
 	 time (&t);
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
-   printf ("\nCurrent formated date & time : %s \n", ctime (&t));
+   printf ("\nCurrent formated date & time: %s \n", ctime (&t));
    return 0;
 }
 
@@ -1226,7 +1231,7 @@ int gpioselect ()
   }
   else if (gpiopin == 21)
   {
-    printf ("\nUsing GPIO 21, mostly used for pi4 \n");
+    printf ("\nUsing GPIO 21, mostly used for pi 4 \n");
     //
   }
   else if (gpiopin == 20 ||29 || 32 || 34 || 38)
@@ -1244,7 +1249,7 @@ int gpioselect ()
 
 int dmaselect (int dmachannel)
 {
-	printf ("\nPlease choose the DMA-Channel: \n");
+	printf ("\nPlease choose the DMA-Channel: 7 (pi4) / 14 (default) / 255 (off): \n");
   scanf ("%d", &dmachannel);
 	printf ("\nThe DMA-Channel is %d ... \n", dmachannel);
   if (dmachannel == 255)
@@ -1253,10 +1258,15 @@ int dmaselect (int dmachannel)
     dmachannel = 255;
     DMA_CHANNEL = 255;
   }
-  else
+  else if (dmachannel == (7 || 14))
   {
     printf ("\nThe DMA-Channel is activated! \n");
     dmachannel = DMA_CHANNEL;
+  }
+  else
+  {
+    printf ("\nThe DMA-Channel not recognized, using default 14 ! \n");
+    dmachannel = 14;
   }
 	return dmachannel;
 }
@@ -1327,7 +1337,6 @@ float bandwidthselect ()
 float channelmodepmranalog ()
 {
   printf ("\nChoose analog PMR-Channel 1-17 (18 to exit): \n");
-
   scanf ("%d", &channelnumberpmr);
 
   switch (channelnumberpmr)
@@ -1429,19 +1438,20 @@ int channelmodepmr () // PMR
 
   if (type==1)
   {
+    printf ("\nYou chose type (1) analog  \n");
     channelmodepmranalog ();
   }
   else if (type==2)
 	{
+    printf ("\nYou chose type (2) digital \n");
     channelmodepmrdigital ();
   }
   else
 	{
     type=1;
-
 		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", analog);
 	}
-  printf ("\n On type = %d with Channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
+  printf ("\nOn type = %d with Channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
 	return freq;
 }
 
@@ -1449,11 +1459,12 @@ float subchannelmodepmr () // Pilot-tone
 {
 	printf ("\nChoose Sub-Channel 0-38 (39 to exit): \n");
 	scanf ("%d", &subchannelnumberpmr);
+
 	switch (subchannelnumberpmr)
 	{
 	 // FYI 19 (38)-kHz-Pilottone on UKW
 	 // Analog & digital
-	 case 0:	subfreq=67.000; printf ("\nCTSS-Chan 0, default CTSS-base on %f \n", subfreq); break;	// Scan all Chan till active , now chan0 base
+	 case 0:	subfreq=67.000; printf ("\nCTSS-Chan 0, default ase on %f \n", subfreq); break;	// Scan all Chan till active , now chan0 base
 	 case 1:  subfreq=67.900; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.90 Hz steps
 	 case 2: 	subfreq=71.900; printf ("\nCTSS-Chan 2 on %f \n", subfreq); break;
 	 case 3: 	subfreq=74.400; printf ("\nCTSS-Chan 3 on %f \n", subfreq); break;
@@ -1506,6 +1517,7 @@ float channelmodecb () // CB
 {
 	printf ("\nChoose CB-Channel 0-80 (81 to exit): \n");
 	scanf ("%d", &channelnumbercb);
+
 	switch (channelnumbercb)
 	{
 
@@ -1531,7 +1543,7 @@ float channelmodecb () // CB
 			 case 14:   freq=27.1250; break; // mostly for Toys-remotecontrol (through Selectivetone)
 			 case 15:   freq=27.1350; break; // recommended Startingchannel SSB (USB)
 			 case 1515: freq=27.1450; break; //
-			 case 16:   freq=27.1550; break; // mostly for Watertransport vehickes / ships & boats
+			 case 16:   freq=27.1550; break; // mostly for Watertransport vehicles / ships & boats
 			 case 17:   freq=27.1650; break; // daenish/german heavy haulage transport
 			 case 18:   freq=27.1750; break; //
 			 case 19:   freq=27.1850; break; // recommended Truckerchannel (FM) / Walkie-Talkies sometimes EMG or Babyphones
@@ -1539,7 +1551,7 @@ float channelmodecb () // CB
 			 case 20:   freq=27.2050; break; // for antenna calibration / middle for 40-chan-devices, or autrian heavy hauglage transport
 
 		 	 // 40 chan devices
-			 case 21:   freq=27.2150; break; // tuerkish starting chan (FM)
+			 case 21:   freq=27.2150; break; // turkish starting chan (FM)
 			 case 22:   freq=27.2250; break; // Walkie-Talkies/mobile devises, Babyphones rumaenian truckers
 			 case 23:   freq=27.2550; break; // chan 23, 24, 25 socalled Turners, NOT following 10-kHz-Raster
 			 case 24:   freq=27.2350; break; // Data channel (D)
@@ -1602,7 +1614,7 @@ float channelmodecb () // CB
 			case 77:   freq=26.9250; break; // Datachannel (D)(FM)
 			case 78:   freq=26.9350; break;
 			case 79:   freq=26.9450; break;
-			case 80:   freq=26.9550; break; // Ffree released chan for hook-up with multiple CB-devices over internet
+			case 80:   freq=26.9550; break; // free released chan for hook-up with multiple CB-devices over internet
 
       case 81:   printf ("\nExit ... \n"); exit (0);
 
@@ -1619,6 +1631,7 @@ char modulationselect ()
 {
 	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : \n");
 	scanf ("%d", &freqmode);
+
 	switch (freqmode)
 	{
 		case 1: printf ("\nYou selected 1 for FM! \n");
@@ -1636,7 +1649,7 @@ char modulationselect ()
 						  printf ("\n Default = 1 \n");
 						  break;
 	}
-	return *mod;
+	return mod;
 }
 
 void modselect (int argc, char **argv [], char *mod)
@@ -1667,10 +1680,10 @@ void channelselect () // make a void
 	printf ("\nYou selected 1 for Channel-Mode \n");
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
   scanf  ("%d", &channelmode);
+
   switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
   {
 					case 1: printf ("\nPMR CHAN-MODE \n");
-
 									channelmodepmr (); // gets freq from pmr list
 									break;
 
@@ -1693,9 +1706,14 @@ void gpsselect (char *gps)
   printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
   print ("\nPreset location is: long_pos %s longitude %f / lat_pos %s latitude %f / elevation %f / altitude %f \n", long_pos, longitude, lat_pos, latitude, elevation, altitude);
   }
+  else if ((char) *gps == "off")
+  {
+  printf ("\nGPS-Status is off! you can activate it with flag: -x on \n");
+  }
   else
   {
-  printf ("\nGPS-Status is off! you can activate it with flag -x on \n");
+    printf ("\nError: Input not recognized! NOT using GPS \n");
+    *gps == "off";
   }
   return;
 }
@@ -1705,14 +1723,13 @@ void gpsselect (char *gps)
 // turn on LED (with 100 kOhm pullup resistor while transmitting
 int ledinactive ()
 {
-	// check if transmitting
-  printf ("\nChecking Transmission status \n");
+	  // check if transmitting
+    printf ("\nChecking transmission status \n");
 		while (!play_wav ())
 		{
-				//cm2835_gpio_write (PIN17, LOW);
-				printf ("\nLED OFF - No Transmission! \n");
+				//cm2835_gpio_write (PIN_17, LOW);
+				printf ("\nLED off - No transmission! \n");
 		}
-
     return 0;
 }
 
@@ -1729,22 +1746,22 @@ int ledactive ()
 	else if (1)
 	{
     // Set the pin to be an outputannels
-    // bcm2835_gpio_fsel (PIN17, BCM2835_GPIO_FSEL_OUTP);
+    // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
 		while (play_wav (char *filename, float freq, int samplerate))
 		{
 			// Turn it on
-			bcm2835_gpio_write (PIN17, HIGH);
-			printf ("\nLED ON - Transmission...! \n");
+			bcm2835_gpio_write (PIN_17, HIGH);
+			printf ("\nLED on - transmission ... \n");
 			// wait a bit
 			bcm2835_delay (100);
 		}
 	}
 	else // if no transmission than turn it off // (ledactive != 0)
   {
-		cm2835_gpio_write (PIN17, LOW);
-		printf ("\nLED OFF - No Transmission \n");
+		cm2835_gpio_write (PIN_17, LOW);
+		printf ("\nLED off - No transmission \n");
 	}
    //bcm2835_close ();
 	 */
@@ -1752,20 +1769,21 @@ int ledactive ()
   return 0;
 }
 
-/*
-float audiovol ()
+
+float audiovolume ()
 {
-	float datavalue = data [i] * 4 * volume; // modulation index (AKA volume) logarithmic hearing of human
+	float datavalue = (data [i] * 4 * volume); // modulation index (AKA volume) logarithmic hearing of human
+  printf ("\ndatavalue: %f, SAMPLES_PER_BUFFER: %d \n", datavalue, SAMPLES_PER_BUFFER);
 	for (int i = 0; i < SAMPLES_PER_BUFFER; ++i)
 	{
      volbuffer [i] *= volumeMultiplier;
-     printf ("\nValues: i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
-		 printf ("\nAdresses: i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
+     printf ("\nValues-> i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+		 printf ("\nAdresses.> i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
      return volbuffer [i];
 	}
 	return volumeMultiplier;
 }
-*/
+
 
 //---------------
 // Voids for modulation and memory handling
@@ -1800,26 +1818,27 @@ void getRealMemPage (void **vAddr, void **pAddr) // should work through bcm head
 		read (fp, &frameinfo, sizeof (frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
-    //fatal ("\nCould not map memory.\n");
+    fatal ("\nCould not map memory! \n");
     return;
 }
 
 void freeRealMemPage (void **vAddr)
 {
-		printf ("\nTry to Freeing vAddr ... \n");
+		printf ("\nTrying to free vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
 		free (vAddr); // free the ram
-    printf ("\nvAddr is free NOW ... \n");
+    printf ("\nvAddr is free now ... \n");
     return;
 }
 
 void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
-// Added functions to enable and disable carrier
+// Added functions to enable and disable carrier GPCTL has 9 parameters but here 7 used ?
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
   struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = HIGH
   ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
+  printf ("\ncarrier is high ... \n");
   return;
 }
 
@@ -1828,6 +1847,7 @@ void carrierlow () // disables it
 	printf ("\nSetting carrier low ... \n");
   struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // set it (clock) to 0 = LOW
   ACCESS (CM_GP0CTL) == *((int*) &setupword);
+  printf ("\ncarrier is low ... \n");
   return;
 }
 
@@ -1845,7 +1865,7 @@ static void terminate (int num)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
         printf ("\ngpio_reg is %u \n", gpio_reg);
         // Disable the clock generator
-        clk_reg [GPCLK_CNTL] = 0x5A;
+        clk_reg [GPCLK_CNTL] = (0x5A);
         printf ("\nclk_reg is %u \n", clk_reg);
     }
 
@@ -1861,12 +1881,12 @@ static void terminate (int num)
 
     if (vAddr != NULL)
     {
-        unmapmem (vAaddr, NUM_PAGES * 4096);
+        unmapmem (vAaddr, (NUM_PAGES*4096));
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
     }
 
-    printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exit \n");
+    printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exiting \n");
 
     exit (num);
 }
@@ -1912,7 +1932,6 @@ void play_list () // exit func
 
 void play_wav (char *filename, float freq, int samplerate)
 {
-
 /*  wiki https://en.wikipedia.org/wiki/WAV
 	  https://en.wikipedia.org/wiki/44,100_Hz
     NTSC: 44056 Hz
@@ -1933,7 +1952,7 @@ void play_wav (char *filename, float freq, int samplerate)
 	/* lseek: repositions the file offset of the open file description
     associated with the file descriptor fd to the argument offset
     according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
-	SEEK_END: The file offset is set to the size of the file plus offset bytes. */
+	  SEEK_END: The file offset is set to the size of the file plus offset bytes. */
   short *data = (short*) malloc (sz);
 
   for (int i = 0; i < 22; i++) // why i less then 22?
@@ -1944,15 +1963,15 @@ void play_wav (char *filename, float freq, int samplerate)
 
   while (readBytes == read (fp, &data, 1024))
   {
-        float fmconstant = (samplerate*timeconst); // 1.1025 for pre-emphisis filter
-				printf ("\nfmconstant: %f \n", fmconstant);
-
         int clocksPerSample = (22050/samplerate*1400); // for timing if 22050 then 1400
 				printf ("\nclocksPerSample: %d \n", clocksPerSample);
-        // if samplerate > 15.75 then clocks per sample is negetive !! not good
+        // if samplerate > 15.75 then clocks per sample is < 1 !! not good
 
         datanew = ((float) (*data)/excursion); // some constant for unsigned int excursion
 				printf ("\ndatanew: %f \n", datanew);
+
+        float fmconstant = (samplerate*timeconst); // 1.1025 for pre-emphisis filter
+				printf ("\nfmconstant: %f \n", fmconstant);
 
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
 				printf ("\nsample: %f \n", sample);
@@ -2190,6 +2209,9 @@ int sampleselect (char *filename, int samplerate) // better name function: sampl
 	// While there are frames in the input file, read them,
 	// process them and write them to the output file
 	//----------------------
+  nb_samples = (readcount/channels);
+  printf ("\nnb_samples: %d \n", nb_samples);
+
   while (readcount == read (fp, data, BUFFER_LEN))
   {
 	 // where to input the freq like in fm
@@ -2199,13 +2221,13 @@ int sampleselect (char *filename, int samplerate) // better name function: sampl
 			printf ("\nChannel buffer b = %c \n", b);
 			if (channels == 0)
 			{
-				printf ("\nSample Error! NO (0) channels \n"); // >1 in stereo or dual mono with half samplerate
+				printf ("\nSample Error! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
         return -1;
 			}
 			else if (channels == 1)
 			{
 				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
-				// stereo file, avg left + right --> should be mono at 22.05 kHz
+				// stereo file, avg left + right --> should be mono at 22.050 kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				printf ("\nb = %c \n", b);
@@ -2218,33 +2240,34 @@ int sampleselect (char *filename, int samplerate) // better name function: sampl
 			}
 			else
 			{
-					printf ("\nError: File has %d Channels >2 channels not supported! \n", channels);
+					printf ("\nError: File has %d Channels! channels > 2 not supported yet! \n", channels);
           return -1;
 			}
 
-      nb_samples = (readcount/channels);
  			// was defined as global var above
-			printf ("\nnb_samples: %d \n", nb_samples);
 			printf ("\nCompression parameter A: %f \n", A);
+
 			// maybe here am option for amplitude factor input!?
 			printf ("\nFactamplitude: %f \n", FactAmplitude);
 
-			ampf = (x/32767.0f);
-			printf ("\nampf1: %f \n", ampf);
+			ampf = (x/excursion2);
+			printf ("\nampf: %f \n", ampf);
 
-  		ampf2 = (fabs (ampf) < 1.0f/A) ? A * fabs (ampf)/(1.0f+ln (A)) : (1.0f+ln (A * fabs (ampf)))/(1.0f + ln (A)); //compand
+  		ampf2 = (fabs (ampf) < 1.0f/A) ? A*fabs (ampf)/(1.0f+ln (A)):(1.0f+ln (A*fabs (ampf)))/(1.0f+ln (A)); //compand
 			printf ("\ncompand ampf2: %f \n", ampf2);
 
-			x = (int) (round (ampf2 * 32767.0f));
+			x = (int) (round (ampf2*excursion2));
 			printf ("\nnew x: %f \n", x);
 
-		  factorizer = (x * 32767.0f * FactAmplitude);
+		  factorizer = (x*excursion2*FactAmplitude);
 			printf ("\nfactorizer: %f \n", factorizer);
 
 			sampler = (1E9/samplerate); // 44.100
 			printf ("\nsampler: %f \n", sampler);
-			printf ("\nNow writing tone in am ... \n");
-			void WriteTone (); // somehow input freq here ?!?
+
+			//printf ("\nNow writing tone in am ... \n");
+			//void WriteTone (); // somehow input freq here ?!?
+
 			//return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
 		printf ("\nending readcount ... \n");
@@ -2252,7 +2275,7 @@ int sampleselect (char *filename, int samplerate) // better name function: sampl
     // Close input and output files
     //fclose (FileFreqTiming);
   close (fp);
-  printf ("\nFile saved! \n");
+  printf ("\nFile closed! \n");
 	return samplerate;
 }
 // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
@@ -2413,7 +2436,7 @@ void cgimodule () //
  printf ("\n<html>\n");
  printf ("\n<head>\n");
  printf	("\nPiFunk Project\n");
- printf	("\n\n</head>\n");
+ printf	("\n</head>\n");
  printf ("\n<body>\n");
  printf	("\nPiFunk - CGI\n");
  printf	("\n</body>\n");
@@ -2480,8 +2503,7 @@ void tx (int argc, char **argv [])
 int main (int argc, char **argv [], const char *short_opt) // arguments for global use must be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
-	const char *short_opt = "n:f:s:m:t:p:c:g:d:b:x:ahu"; // program flags
-	int options; // = 0
+
 	char argv [0] = "pifunk"; // actual program-name
   char *programname = argv [0]; //
 	char *filename = "sound.wav"; // = argv [1]; n=name
@@ -2519,15 +2541,18 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   printf (bcm_host_get_peripheral_size ());
   printf (bcm_host_get_sdram_address ());
 
+  int options; // = 0
   int option_index = 0;
-  int flags = getopt_long (argc, argv [], "n:f:s:m:p:c:g:d:b:t:g:ahu", long_opt, &option_index);
+  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
 
   int options = getopt (argc, argv [], short_opt); // short_opt must be constant
+  int flags = getopt_long (argc, **argv [], *short_opt, long_opt, &option_index);
+
 	while (options != -1 || 0) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-6 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
         return -1;
     }
 		else
@@ -2593,7 +2618,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
                void gpsselect (gps);
                //break;
 
-// additional help functions
+     // additional help functions
 			case 'a':
 							 if (argc == 1)
 							 {
@@ -2642,7 +2667,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 
 			default:
 								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type a/d>] [-x <GPS on/off>]\n There is also an assistant [-a], menu [-u] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-								return 1;
+								break;
 		} // end of switch
 
 		break;
