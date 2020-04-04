@@ -65,6 +65,8 @@ UNAME:=$(shell uname -m) ## linux
 $(UNAME)
 KERNEL:=$(shell uname -a) ## kernel
 $(KERNEL)
+RVERSION:=$(shell uname -r) ## vervion number
+$(RVERSION)
 VCGVERSION:=$(shell vcgencmd version) ## vcg firmware
 $(VCGVERSION)
 OSVERSION:=$(shell cat /etc/rpi-issue) ## os
@@ -171,6 +173,7 @@ pifunk.info: pifunk.texi
 .PHONY: 		piversion
 piversion:	$(USER) $(UNAME)
 						$(USER) $(KERNEL)
+						$(USER) $(RVERSION)
 						$(USER) $(VCGVERSION)
 						$(USER) $(OSVERSION)
 						$(USER) $(RPIVERSION)
