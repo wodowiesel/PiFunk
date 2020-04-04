@@ -170,9 +170,10 @@ tone generator for ctss (sin wave?)
 #include <linux/dma-mapping.h>
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
-#include <linux/regulator/consumer.h>
 #include <linux/textsearch.h>
 #include <linux/config.h>
+#include <linux/kd.h>
+#include <linux/regulator/consumer.h>
 
 // I2C & SPI support need
 #include <linux/i2c.h>
@@ -616,7 +617,6 @@ volatile unsigned 										(*allof7e); //
 #define MODULATION_PTR                  (0x66) //  $ means isin RDS data // dec: 102
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 
-
 // the normal fm-script didn't specified that
 #define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672
 #define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544
@@ -625,7 +625,6 @@ volatile unsigned 										(*allof7e); //
 
 #define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
-
 
 #define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
 #define CLK0_BASE_OFFSET 							  (0x00101070) // dec: 1052784
@@ -961,10 +960,8 @@ Uses 3 GPIO pins
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
 
-const char *short_cw = ".";  // morse-code short beep
-const char *long_cw = "-"; // morse-code long beep
-
 // iterators for loops
+int w = (0);
 int m;
 int i;
 int k;
@@ -1023,13 +1020,6 @@ int modeselect;
 int callnameselect;
 time_t t;
 
-// IQ & carrier
-uint16_t pis = (0x1234); // dec: 4660
-float angle = ((PERIOD*freq)+shift_ppm);
-float I = sin (angle);
-float Q = cos (angle);
-float RF_SUM = (I+Q);
-
 // files
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
@@ -1068,11 +1058,19 @@ int excursion = (6000);
 int excursion2 = (32767); // found another value but dont know on what this is based on
 float A = (87.6f); // compression parameter
 uint32_t carrier_freq = (87600000); // this might be the carrier too, why this value?
-float FactAmplitude = (2.0); // maybe here amp-modulator input?
+float FactAmplitude = (1.0); // maybe here amp-modulator input?
 float ampf;
 float ampf2;
 float factorizer;
 float sampler;
+
+// IQ & carrier http://whiteboard.ping.se/SDR/IQ
+uint16_t pis = (0x1234); // dec: 4660
+float angle = ((PHASE*freq)+shift_ppm); // A*cos(2pi*freq+phaseshift)
+float I = FactAmplitude*cosf(angle); // real! In-Phase signal component
+float Q = FactAmplitude*sinf(angle); // Quadrature signal component
+float RF_SUM = (I+Q);
+float ampl = sqrtf(((I*I)+(Q*Q)));
 
 // instructor for access
 unsigned long frameinfo;
@@ -1118,11 +1116,17 @@ float elevation = (100.00); // meter
 float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
 
 // network sockets
-// custom port via tcp/ip or udp
+// custom ip/port via tcp or udp
 socklen_t addressLength;
 char *localip = "127.0.0.1";
 char *host 	= "localhost";
 int port 	= (8080);
+char *udp;
+char *tcp;
+
+const char *short_cw = ".";  // morse-code short beep
+const char *long_cw = "-"; // morse-code long beep
+char *message;
 
 //--------------------------------------------------
 // Structs
@@ -1199,6 +1203,15 @@ struct option long_opt [] =
 
 //----------------------------------------------------
 // basic functions specified one after another
+void clearscreen ()
+{
+  printf ("\n\033[H\033[J\n");
+  //fflush (stdin); // alterntives
+  //clsscr ();
+  //system ("clear");
+  return;
+}
+
 void infos () // warnings and infos
 {
 		/* red-yellow -> color: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode: 35 for Magenta, 33 red -> \033[14;35m   escape command for resetting \033[0m */
@@ -1306,7 +1319,20 @@ float freqselect () // gets freq by typing in
   return freq;
 }
 
-// audio & freq stuff
+float audiovolume () // audio & freq stuff
+{
+	float datavalue = (data [i] * 4 * volume); // modulation index (AKA volume) logarithmic hearing of human
+  printf ("\ndatavalue: %f, SAMPLES_PER_BUFFER: %d \n", datavalue, SAMPLES_PER_BUFFER);
+	for (i = 0; i < SAMPLES_PER_BUFFER; ++i)
+	{
+     volbuffer [i] *= volumeMultiplier;
+     printf ("\nValues-> i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
+		 printf ("\nAdresses.> i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
+     return volbuffer [i];
+	}
+	return volumeMultiplier;
+}
+
 float bandwidthselect ()
 {
 	printf ("\nChoose Bandwidth-Steps: 6.25 / 10.00 / 12.50 (default) / 20.00 / 25.00 kHz: \n");
@@ -1384,7 +1410,6 @@ float channelmodepmranalog ()
 float channelmodepmrdigital ()
 {
   printf ("\nChoose ditigal PMR-Channel 1-32 (33 to exit): \n");
-
 	scanf ("%d", &channelnumberpmr);
 
 	switch (channelnumberpmr)
@@ -1437,7 +1462,6 @@ float channelmodepmrdigital ()
 // Channel-mode
 int channelmodepmr () // PMR
 {
-
 	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
 	scanf ("%d", &type);
 
@@ -1656,27 +1680,36 @@ char modulationselect ()
 	return mod;
 }
 
-void modselect (int argc, char **argv [], char *mod)
+char callsignselct ()
 {
-	printf ("\nOpening Modulator-Selection ... \n");
-	if (mod, "fm"))
-	{
-    printf ("\nYou selected 1 for fm! \n");
-    printf ("\nPushing args to fm Modulator ... \n");
-		void modulationfm (int argc, char **argv []);
-	}
-	else if (!strcmp (mod, "am"))
-	{
-    printf ("\nYou selected 2 for am! \n");
-    printf ("\nPushing args to am Modulator ... \n");
-		void modulationam (int argc, char **argv []);
-	}
-	else
-	{
-    printf ("\nError in -m selecting modulation! \n");
-    return -1;
-	}
- 	return;
+    //if (*callsign == NULL) {
+		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
+		scanf ("%d", &callnameselect);
+		switch (callnameselect)
+	  {
+	   case 1: printf ("\nType in your callsign: \n");
+						 scanf  ("%s", &callsign);
+						 printf ("\nYour callsign is: %s \n", callsign);
+						 break;
+
+		 case 2: callsign = "callsign"; // default callsign
+						 printf ("\nUsing default callsign: %s \n", callsign);
+						 break;
+
+		 default: callsign = "callsign"; // default callsign
+		 					printf ("\nError! Using default callsign: %s \n", callsign);
+							break;
+    }
+  	return callsign;
+}
+
+int powerselect ()
+{
+	printf ("\nType in powerlevel (0-7 from 2-16 mA): \n");
+	scanf ("%d", &powerlevel);
+	printf ("\nPowerlevel was set to: %d \n", powerlevel);
+  power = abs (powerlevel);
+	return power;
 }
 
 void channelselect () // make a void
@@ -1702,6 +1735,50 @@ void channelselect () // make a void
 	return;
 }
 
+void typeselect (type)
+{
+  if (!strcmp (type, "1" || "analog"))
+  {
+    printf ("\nUsing analog mode \n");
+    channelmodepmranalog ();
+    //break;
+  }
+  else if (!strcmp (type, "2" || "digital"))
+  {
+    printf ("\nUsing digital mode \n");
+    channelmodepmrdigital ();
+    //break;
+  }
+  else
+  {
+    printf ("\nError in -t \n");
+    break;
+    //return 1;
+  }
+ return;
+}
+
+void modetypeselect ()
+{
+	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
+	scanf ("%d", &modeselect);
+	switch (modeselect)
+	{
+		case 1:	 	printf ("\n[1] Channelmode: \n");
+							channelselect (freq);
+							break;
+
+		case 2:		printf ("\n[2] Frequencymode: \n");
+							freqselect (freq);
+							break;
+
+		default: printf ("\nError! Using [1] (default) Channelmode! \n");
+             channelselect (freq);
+						 break;
+	}
+	return;
+}
+
 void gpsselect (char *gps)
 {
   printf ("\nGPS-Status is %s \n", gps);
@@ -1721,84 +1798,9 @@ void gpsselect (char *gps)
   }
   return;
 }
-//---------------------------------------------------
-// LED stuff
-// controlling via py possible but c stuff can be useful too by bcm funcs!
-// turn on LED (with 100 kOhm pullup resistor while transmitting
-int ledinactive ()
-{
-	  // check if transmitting
-    printf ("\nChecking transmission status \n");
-		while (!play_wav ())
-		{
-				//cm2835_gpio_write (PIN_17, LOW);
-				printf ("\nLED off - No transmission! \n");
-		}
-    return 0;
-}
-
-int ledactive ()
-{
-// initialize bcm
-/*
-  bcm2835_set_debug (1);
-  if (!bcm2835_init ())
-	{
-		printf ("\nBCM 2835 init failed! \n");
-  	return 1;
-	}
-	else if (1)
-	{
-    // Set the pin to be an outputannels
-    // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
-  	printf ("\nBCM 2835 init done and PIN 4 activated \n");
-    // LED is active during transmission
-		while (play_wav (char *filename, float freq, int samplerate))
-		{
-			// Turn it on
-			bcm2835_gpio_write (PIN_17, HIGH);
-			printf ("\nLED on - transmission ... \n");
-			// wait a bit
-			bcm2835_delay (100);
-		}
-	}
-	else // if no transmission than turn it off // (ledactive != 0)
-  {
-		cm2835_gpio_write (PIN_17, LOW);
-		printf ("\nLED off - No transmission \n");
-	}
-   //bcm2835_close ();
-	 */
-	printf ("\nLED active \n");
-  return 0;
-}
-
-
-float audiovolume ()
-{
-	float datavalue = (data [i] * 4 * volume); // modulation index (AKA volume) logarithmic hearing of human
-  printf ("\ndatavalue: %f, SAMPLES_PER_BUFFER: %d \n", datavalue, SAMPLES_PER_BUFFER);
-	for (i = 0; i < SAMPLES_PER_BUFFER; ++i)
-	{
-     volbuffer [i] *= volumeMultiplier;
-     printf ("\nValues-> i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
-		 printf ("\nAdresses.> i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
-     return volbuffer [i];
-	}
-	return volumeMultiplier;
-}
-
 
 //---------------
 // Voids for modulation and memory handling
-void clearscreen ()
-{
-  printf ("\n\033[H\033[J\n");
-  //fflush (stdin); // alterntives
-  //clsscr ();
-  //system ("clear");
-  return;
-}
 
 void modulate (int l)
 {
@@ -1826,7 +1828,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
     return;
 }
 
-void freeRealMemPage (void **vAddr)
+void freeRealMemPage (void *vAddr)
 {
 		printf ("\nTrying to free vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
@@ -1949,7 +1951,6 @@ void play_wav (char *filename, float freq, int samplerate)
     (588 active lines per frame, out of 625 lines total)
 */
 
-	play_list ();
   // after getting filename insert then open
 	printf ("\nAllocating file to memory for wave-data ... \n");
 
@@ -2139,30 +2140,7 @@ void unsetupDMA ()
 	exit (-1);
 }
 
-//----------------------------------------------------
 // sample funcs
-// AM
-void WriteTone ()
-{
-	float Frequencies = freq;
-	typedef struct
-	{
-		float Frequency;
-		uint32_t WaitForThisSample;
-	} samplerf_t;
-
-	samplerf_t RfSample;
-	RfSample.Frequency = Frequencies;
-	RfSample.WaitForThisSample = Timing; // in 100 of nanoseconds
-	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
-	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
-	{
-		fprintf (stderr, "\nUnable to write sample! \n");
-    return -1;
-	}
-	printf ("\nWriting tone \n");
-  return;
-}
 
 // all subch. -> base/default case 0 -> channel 0
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
@@ -2286,83 +2264,27 @@ int sampleselect (char *filename, int samplerate) // better name function: sampl
 }
 // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 
-char callsignselct ()
+// AM
+void WriteTone ()
 {
-    //if (*callsign == NULL) {
-		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
-		scanf ("%d", &callnameselect);
-		switch (callnameselect)
-	  {
-	   case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign);
-						 printf ("\nYour callsign is: %s \n", callsign);
-						 break;
-
-		 case 2: callsign = "callsign"; // default callsign
-						 printf ("\nUsing default callsign: %s \n", callsign);
-						 break;
-
-		 default: callsign = "callsign"; // default callsign
-		 					printf ("\nError! Using default callsign: %s \n", callsign);
-							break;
-    }
-  	return callsign;
-}
-
-void modetypeselect ()
-{
-	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
-	scanf ("%d", &modeselect);
-	switch (modeselect)
+	float Frequencies = freq;
+	typedef struct
 	{
-		case 1:	 	printf ("\n[1] Channelmode: \n");
-							channelselect (freq);
-							break;
+		float Frequency;
+		uint32_t WaitForThisSample;
+	} samplerf_t;
 
-		case 2:		printf ("\n[2] Frequencymode: \n");
-							freqselect (freq);
-							break;
-
-		default: printf ("\nError! Using [1] (default) Channelmode! \n");
-             channelselect (freq);
-						 break;
+	samplerf_t RfSample;
+	RfSample.Frequency = Frequencies;
+	RfSample.WaitForThisSample = Timing; // in 100 of nanoseconds
+	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
+	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
+	{
+		fprintf (stderr, "\nUnable to write sample! \n");
+    return -1;
 	}
-	return;
-}
-
-void typeselect (type)
-{
-  if (!strcmp (type, "1" || "analog"))
-  {
-    printf ("\nUsing analog mode \n");
-    float channelmodepmranalog ();
-    //break;
-  }
-  else if (!strcmp (type, "2" || "digital"))
-  {
-    printf ("\nUsing digital mode \n");
-    float channelmodepmrdigital ();
-    //break;
-  }
-  else
-  {
-    printf ("\nError in -t \n");
-    break;
-    //return 1;
-  }
- return;
-}
-
-void modulationam (int argc, char **argv [], char, *mod)
-{
-	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
-		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
-		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
-		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
-		{VFO (constant frequency)} */
-		printf ("\nam modulator starting \n");
-		void WriteTone (); // actual modulation stuff here for am -> write tone? maybe better name later
-	  return;
+	printf ("\nWriting tone \n");
+  return;
 }
 
 void modulationfm (int argc, char **argv [], char *mod)//FM
@@ -2376,13 +2298,39 @@ void modulationfm (int argc, char **argv [], char *mod)//FM
 		return;
 }
 
-int powerselect ()
+void modulationam (int argc, char **argv [], char, *mod)
 {
-	printf ("\nType in powerlevel (0-7 from 2-16 mA): \n");
-	scanf ("%d", &power);
-	printf ("\nPowerlevel was set to: %d \n", power);
-  powerlevel = abs (power);
-	return power;
+	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
+		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
+		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
+		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
+		{VFO (constant frequency)} */
+		printf ("\nam modulator starting \n");
+		WriteTone (); // actual modulation stuff here for am -> write tone? maybe better name later
+	  return;
+}
+
+void modselect (int argc, char **argv [], char *mod)
+{
+	printf ("\nOpening Modulator-Selection ... \n");
+	if (strcmp (mod, "fm"))
+	{
+    printf ("\nYou selected 1 for fm! \n");
+    printf ("\nPushing args to fm Modulator ... \n");
+		void modulationfm (int argc, char **argv []);
+	}
+	else if (strcmp (mod, "am"))
+	{
+    printf ("\nYou selected 2 for am! \n");
+    printf ("\nPushing args to am Modulator ... \n");
+		void modulationam (int argc, char **argv []);
+	}
+	else
+	{
+    printf ("\nError in -m selecting modulation! \n");
+    return -1;
+	}
+ 	return;
 }
 
 /*
@@ -2413,6 +2361,86 @@ class ClockOutput : public ClockDevice
         }
 }
 */
+
+char cw ()
+{
+  printf ("\nStd-cw: short_cw: %s, long_cw: %s \n Type in your message: \n", long_cw, short_cw); // morse beeps
+  scanf ("%s", &message);
+  size_t length = strlen (message);
+  printf ("\nmessage: %s , length: %zu \n", message, length); // length unsigned int
+
+  while (message [w] != "\0") // Stop looping when we reach the NULL-character
+  {
+    if (message [w] == short_cw)
+    {
+      printf ("\a"); // system beep terminal, maybe beep-function later
+    }
+    else if (message [w] == long_cw)
+    {
+      printf ("\a\a");
+    }
+    else
+    {
+      printf ("\nmessage error \n");
+    }
+
+    printf ("%c", message [w]);    // Print each character of the string
+    w++;
+  }
+
+  return message;
+}
+
+// LED stuff
+// controlling via py possible but c stuff can be useful too by bcm funcs!
+// turn on LED (with 100 kOhm pullup resistor while transmitting
+void ledinactive ()
+{
+	  // check if transmitting
+    printf ("\nChecking transmission status \n");
+		while (!play_wav () || || WriteTone ())
+		{
+				//cm2835_gpio_write (PIN_17, LOW);
+				printf ("\nLED off - No transmission! \n");
+		}
+    return;
+}
+
+void ledactive ()
+{
+// initialize bcm
+/*
+  bcm2835_set_debug (1);
+  if (!bcm2835_init ())
+	{
+		printf ("\nBCM 2835 init failed! \n");
+  	return 1;
+	}
+	else if (1)
+	{
+    // Set the pin to be an outputannels
+    // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
+  	printf ("\nBCM 2835 init done and PIN 4 activated \n");
+    // LED is active during transmission
+		while (play_wav (char *filename, float freq, int samplerate))
+		{
+			// Turn it on
+			bcm2835_gpio_write (PIN_17, HIGH);
+			printf ("\nLED on - transmission ... \n");
+			// wait a bit
+			bcm2835_delay (100);
+		}
+	}
+	else // if no transmission than turn it off // (ledactive != 0)
+  {
+		cm2835_gpio_write (PIN_17, LOW);
+		printf ("\nLED off - No transmission \n");
+	}
+   //bcm2835_close ();
+	 */
+	printf ("\nLED active \n");
+  return;
+}
 
 //--------------------
 // read / import csv for pmr
@@ -2463,8 +2491,10 @@ void assistant () // assistant
 		dmaselect (dmachannel);
 		bandwidthselect (bandwidth);
     gpsselect (gps);
-		printf ("\nAll information gathered, parsing & going back to main \n");
-		//while (getchar () != ''); // waiting for return/enter hit
+		printf ("\nAll information gathered, parsing & going back to main! \n");
+    printf ("Press Enter/return to continue ... \n");
+		while (getchar () != "\n"); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
+
 		return;
 }
 
@@ -2482,7 +2512,11 @@ void menu ()
 						csvreader ();
 						break;
 
-		case 3: printf ("\nReading CGI via text/html for homepage \n");
+    case 2: printf ("\nStarting CW-Morsecode mode ... \n");
+        		cw ();
+        		break;
+
+		case 3: printf ("\nReading CGI via text/html for homepage ... \n");
 						cgimodule ();
 						break;
 
@@ -2490,6 +2524,7 @@ void menu ()
 						exit (0);
 
 		default: printf ("\nMenu: Default \n");
+             int main (int argc, char **argv []);
 		 				 break;
 	}
 	return;
@@ -2498,9 +2533,12 @@ void menu ()
 void tx (int argc, char **argv [])
 {
   printf ("\nPreparing for transmission ... \n");
-	play_wav (); // or WriteTone ();
-	ledactive ();
-	printf ("\nBroadcasting now! ... \n");
+	while (play_wav () || WriteTone ())
+  {
+  ledactive ();
+  printf ("\nBroadcasting now! ... \n");
+  }
+
 	return;
 }
 
@@ -2509,7 +2547,7 @@ void tx (int argc, char **argv [])
 int main (int argc, char **argv [], const char *short_opt) // arguments for global use must be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
-
+  // option parameters
 	char argv [0] = "pifunk"; // actual program-name
   char *programname = argv [0]; //
 	char *filename = "sound.wav"; // = argv [1]; n=name
@@ -2521,7 +2559,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   int gpiopin = abs (4); // = argv [7];
 	int dmachannel = (14); // = argv [8];
 	float bandwidth = (12.50); // = argv [9];
-  int type = 1; // = argv [10]; analog -> default
+  int type = (1); // = argv [10]; analog -> default
   char *gps = off; // = argv [11]; -> default: off
   // menues
   char a; // = argv [12];
@@ -2534,7 +2572,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	fabsf () for float
 	*/
 	// for custom program-name, default is the filename itself
-	void title ();
+	title ();
 	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
 	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
@@ -2548,7 +2586,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   printf (bcm_host_get_sdram_address ());
 
   int options; // = 0
-  int option_index = 0;
+  int option_index = (0);
   const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
 
   int options = getopt (argc, **argv [], short_opt); // short_opt must be constant
@@ -2699,7 +2737,8 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   printf ("\nangle %f \n", angle);
   printf ("\nI-value %f \n", I);
   printf ("\nQ-value %f \n", Q);
-  printf ("\nRF-sum (I+Q) %f \n", RF_SUM);
+  printf ("\nRF-SUM (I+Q) %f \n", RF_SUM);
+  printf ("\nAmplitude-value %f \n", ampl);
   printf ("\nChecking GPS-Status %s \n", gps);
   printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %f \n", longitude, latitude, altitude);
 	printf ("\n-----------------\n");
