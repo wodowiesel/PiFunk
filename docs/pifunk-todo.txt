@@ -34,7 +34,7 @@
 # 9 GPIO 1, 4 (8 TXD special) -> Watch-Monitoring (mVolt & mAmpere & mWatt) + core-temp
 #
 # Build: check and combine code
-# test "make" and make install command, im on it
+# test "make" and make install command
 #
 # 10 update readme:
 # add (own) infos mostly done
@@ -48,7 +48,7 @@
 # display (need one with buttons), temp (have one) + humidity, PCBs & Pins
 # gps-module ublox neo 7M / HAT to buy (amazon)
 #
-# NEED LOW-PASS-FILTER !!!!-> hardware (but look software-wise too)
+# NEED LOW/HIGH-PASS-FILTER !!!!-> hardware (but look software-wise too)
 # checkout buffer stuff
 #
 # warning: squarewave-output on: input and 3, 7, 14

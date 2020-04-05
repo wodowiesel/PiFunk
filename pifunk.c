@@ -18,7 +18,7 @@ used python 3.7.4 on original Raspbian
 !!!!!!! program needs more testing on real pi !!!!!!!
 --------------------------------------------------------------------------------------------------------
 Setups & dependencies:
-OS: Raspbian Buster - Kernel 4.19.66+ (30. Sept 2019) full incl. desktop & recommended software based on debian
+OS: Raspbian Buster - Kernel 4.19.97+ (01.04.2020) full incl. desktop & recommended software based on debian
 don't forget to sudo apt-get update && upgrade
 
 SHA-256: ac557f27eb8697912263a1de812dfc99fa8d69bd6acc73a0b7756a1083ba0176
@@ -29,7 +29,7 @@ gcc >=9.2.0 compiler or g++>=5.4.1 for 11/14/17
 gdb >=7.11.1 debugger
 
 ->get project:
-git clone https://github.com/silicator/PiFunk/
+git clone https://github.com/wodowiesel/PiFunk/
 
 ->instructions:
 You will need "alsa" library for this:
@@ -68,7 +68,6 @@ todo:
 memory-stuff
 pointer & address corrections
 make compatible arguments/funcs for py/shell scripts
-tone generator for ctss (sin wave?)
 */
 
 // std includes
@@ -1128,6 +1127,85 @@ const char *short_cw = ".";  // morse-code short beep
 const char *long_cw = "-"; // morse-code long beep
 char *message;
 
+static const char *alpha [] =
+{
+  ".-",   // A
+  "-...", // B
+  "-.-.", // C
+  "-..",  // D
+  ".",    // E
+  "..-.", // F
+  "--.",  // G
+  "....", // H
+  "..",   // I
+  ".---", // J
+  "-.-",  // K
+  ".-..", // L
+  "--",   // M
+  "-.",   // N
+  "---",  // O
+  ".--.", // P
+  "--.-", // Q
+  ".-.",  // R
+  "...",  // S
+  "-",    // T
+  "..-",  // U
+  "...-", // V
+  ".--",  // W
+  "-..-", // X
+  "-.--", // Y
+  "--..", // Z
+  "----",  // CH
+
+  // special chars
+  "..--",  // :Ü = ue
+  "---.",  // :Ö = oe
+  "..-..", // Ê
+  ".-.-",  // :A = ae
+  ".--.-", // Â
+  "..--.-", // ~N
+  "*--**", // ]p (thorn)
+  "**--*" // -D (eth)
+};
+
+static const char *num [] =
+{
+  "-----", // 0
+  ".----", // 1
+  "..---", // 2
+  "...--", // 3
+  "....-", // 4
+  ".....", // 5
+  "-....", // 6
+  "--...", // 7
+  "---..", // 8
+  "----.",  // 9
+
+  // special chars
+  ".-.-.-", // .
+  "..--.-",  // -
+  ".-.-.",  // +
+  "-....-",  // ~
+  "--..--", // ,
+  "----.",  // ;
+  "..--..", // ?
+  "..--.", // !
+  "---...", // :
+  ".-..-.", // "
+  ".----.", // '
+  "-...-", // =
+  "-..-.", // /
+  "...-..-", // $
+  ".-...",  // &
+  ".----.", // |
+  "-.--.", // (
+  "-.--.-", // )
+  "**--*-", // _
+  ".--.-."  // @
+};
+
+static const char **table [] = {alpha, num};
+
 //--------------------------------------------------
 // Structs
 struct tm *info;
@@ -1141,7 +1219,7 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 		void *v; // virtual address
 		int instrPage;
 		int constPage;
-		int instrs [BUFFERINSTRUCTIONS]; // [1024];
+		int instrs [BUFFERINSTRUCTIONS]; // [1024]
 };
 
 struct GPCTL // 9 parameters
@@ -1188,11 +1266,11 @@ struct option long_opt [] =
 		{"filename",		required_argument, NULL, 'n'}, // 1
 		{"freqency",   	required_argument, NULL, 'f'}, // 2
     {"samplerate", 	required_argument, NULL, 's'}, // 3
-    {"modulation",	required_argument, NULL, 'm'}, // 4
+    {"mod",       	required_argument, NULL, 'm'}, // 4
     {"power", 			required_argument, NULL, 'p'}, // 5
     {"callsign",	  required_argument, NULL, 'c'}, // 6
-    {"gpio",	  		required_argument, NULL, 'g'}, // 7
-		{"dma",	  			required_argument, NULL, 'd'}, // 8
+    {"gpiopin",	  	required_argument, NULL, 'g'}, // 7
+		{"dmachannel",	required_argument, NULL, 'd'}, // 8
 		{"bandwidth",	  required_argument, NULL, 'b'}, // 9
     {"type",	  		required_argument, NULL, 't'}, // 10
     {"gps",	  		  required_argument, NULL, 'x'}, // 11
@@ -2364,11 +2442,12 @@ class ClockOutput : public ClockDevice
 
 char cw ()
 {
-  printf ("\nStd-cw: short_cw: %s, long_cw: %s \n Type in your message: \n", long_cw, short_cw); // morse beeps
+  printf ("\nStd-cw: short_cw: %s, long_cw: %s \n Type in your CW-message: \n", long_cw, short_cw); // morse beeps
   scanf ("%s", &message);
   size_t length = strlen (message);
-  printf ("\nmessage: %s , length: %zu \n", message, length); // length unsigned int
+  printf ("\nmessage: %s, length: %zu \n", message, length); // length unsigned int
 
+  // tone translation
   while (message [w] != "\0") // Stop looping when we reach the NULL-character
   {
     if (message [w] == short_cw)
