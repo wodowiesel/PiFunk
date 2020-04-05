@@ -1,6 +1,6 @@
 # README
 
-![alt text](https://raw.githubusercontent.com/silicator/PiFunk/master/docs/favicon.ico "Logo PiFunk")
+![alt text](https://raw.githubusercontent.com/wodowiesel/PiFunk/master/docs/favicon.ico "Logo PiFunk")
 
 ## PiFunk Radio Transmitter - with FM/AM-Modulation for HAM-Bands
 
@@ -22,7 +22,7 @@ or use the extra provided imager and extract and load bootable image on SD-card 
 
 `sudo apt-get install git` via git or download it on the page as tar.gz/zip
 
-`git clone https://github.com/silicator/PiFunk`
+`git clone https://github.com/wodowiesel/PiFunk`
 
 2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
 

@@ -6,6 +6,10 @@
 
 # here c and py
 *.c diff=astextplain
+*.cpp diff=astextplain
+*.h diff=astextplain
+*.hpp diff=astextplain
+
 *.py diff=astextplain
 *.sh diff=astextplain
 
@@ -15,3 +19,4 @@
 *.dot  diff=astextplain
 *.pdf  diff=astextplain
 *.rtf	 diff=astextplain
+*.txt	 diff=astextplain

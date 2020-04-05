@@ -5,6 +5,6 @@ include requirements.txt
 include Makefile
 
 recursive-include docs/*.
-recursive-include *.c *.cpp *.h *.hpp *.o *.out *.i *.a *.s *.S *.so *.lib *.html *.txt *.py *.csv *.bin
+recursive-include *.c *.cpp *.h *.hpp *.o *.out *.i *.a *.s *.S *.so *.lib *.html *.txt *.py *.csv *.bin *.out
 
 prune logs
