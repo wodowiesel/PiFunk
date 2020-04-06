@@ -152,13 +152,17 @@ pifunk.out:	pifunk.c $(OBJECTS)
 pifunk.bin: pifunk.c $(OBJECTS)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk.bin
 
-pifunk:	pifunk.c $(OBJECTS)
-				$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk
+pifunk:			pifunk.c $(OBJECTS)
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk
 
-all: pifunk
+#all: pifunk.out pifunk.bin pifunk
 
 EXECUTABLES=pifunk.out pifunk.bin pifunk
 $(EXECUTABLES)
+
+.PHONY:		pifunklib
+pifunk.lib:	pifunk.c
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o lib/pifunk.lib
 
 .PHONY:		pifunk+
 pifunk+:	pifunk.cpp $(OBJECTS)
@@ -184,7 +188,9 @@ install:	cd $(HOME)/PiFunk/
 					$(USER) install -m 0755 pifunk $(HOME)/bin/
 
 .PHONY: 		uninstall
-uninstall:	$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk
+uninstall:	$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.out
+						$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.bin
+						$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk
 
 .PHONY:	clean
 clean:	cd $(HOME)/PiFunk/
