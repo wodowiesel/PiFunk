@@ -60,18 +60,18 @@ $(PFFLAGS)
 #-D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
 #-DMODULE: This symbol tells the header files to give the appropriate definitions for a kernel module.
 
-## Determine the hardware platform
-UNAME:=$(shell uname -m) ## linux
+## Determine the hardware/software platform
+UNAME:=$(shell uname -m) ## processor: armv6l
 $(UNAME)
-KERNEL:=$(shell uname -a) ## kernel
+KERNEL:=$(shell uname -a) ## kernel: Linux raspberrypi 4.19.97+ #1294 Thu Jan 30 13:10:54 GMT 2020 armv6l GNU/Linux
 $(KERNEL)
-RVERSION:=$(shell uname -r) ## vervion number
+RVERSION:=$(shell uname -r) ## vervion number: 4.19.97+
 $(RVERSION)
-VCGVERSION:=$(shell vcgencmd version) ## vcg firmware
+VCGVERSION:=$(shell vcgencmd version) ## vcg firmware: version 53a54c778c493957d99bf49762dfabc4eee80e45
 $(VCGVERSION)
-OSVERSION:=$(shell cat /etc/rpi-issue) ## os
+OSVERSION:=$(shell cat /etc/rpi-issue) ## os Date, http://github.com/RPi-Distro/pi-gen, MD5, stage5
 $(OSVERSION)
-RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]"
+RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\sModel\s[A-Z]\sPlus" | grep -a -o "Rev\s[0-9].[0-9]" : Raspberry Pi Model B Plus Rev 1.2
 $(RPIVERSION)
 PCPUI:=$(shell cat /proc/cpuinfo) ## cpuinfos my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
 $(PCPUI)
