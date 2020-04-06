@@ -2,7 +2,7 @@
 ## should run with sudo or root rights
 USER=sudo
 $(USER)
-CC=gcc
+CC=gcc # gcc 8.3.0-6
 $(CC)
 CXX=g++
 $(CXX)
@@ -24,8 +24,9 @@ $(KERNEL_DIR)
 RM=rm -f ## remove files or folder
 #$(RM)
 
-## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
-CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-$(shell uname -r)/include/linux/ ## kernel now 4.19.99
+## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
+## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
+CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-$(shell uname -r)/include/linux/ ## kernel now 4.19.97+
 $(CINC)
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
@@ -35,14 +36,14 @@ $(CFLAGS)
 CXXFLAGS=-std=gnu++17 -fPIC pifunk.cpp -O3
 $(CXXFLAGS)
 
-ASFLAGS=-s
+ASFLAGS=-S -CC ## upper case assembler code without linker
 $(ASFLAGS)
-PPFLAGS=-E ## c-preproccessor
+PPFLAGS=-E -CC ## c-preproccessor
 $(PPFLAGS)
 LIFLAGS=-c ## no linker
 $(LIFLAGS)
 
-DEBUG=-Wall -Werror --print-directory -pedantic-errors -d -v -g3 # -ggdb3
+DEBUG=-Wall -Werror  -pedantic-errors -dM -v -g3 # -ggdb3 --working-directory
 $(DEBUG)
 
 LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
@@ -56,9 +57,9 @@ PFFLAGGS=-lpifunk
 $(PFFLAGS)
 
 ## other optional macros if necessary
-#-isystem $(KERNEL_DIR) : You must use the kernel headers of the kernel you're compiling against. Using the default /usr/include/linux won't work.
-#-D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
-#-DMODULE: This symbol tells the header files to give the appropriate definitions for a kernel module.
+##-isystem $(KERNEL_DIR) : You must use the kernel headers of the kernel you're compiling against. Using the default /usr/include/linux won't work.
+##-D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
+##-DMODULE: This symbol tells the header files to give the appropriate definitions for a kernel module.
 
 ## Determine the hardware/software platform
 UNAME:=$(shell uname -m) ## processor: armv6l
@@ -124,7 +125,7 @@ pifunk.S:	pifunk.c
 					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o lib/pifunk.S
 ## precompiled/processor c-code
 pifunk.i:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -C -o lib/pifunk.i
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -CC -o lib/pifunk.i # -C or CC keeps the comments in preprocessor
 ## precompiled assemblercode
 pifunk.s:	pifunk.c
 					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) -o lib/pifunk.s

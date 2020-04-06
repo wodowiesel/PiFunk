@@ -129,7 +129,10 @@ ___
 a) `cd PiFunk` with default path: `/home/pi/PiFunk/`
 
 b) GCC Compiler flags:
+
 You can use this flags in your makefile or directly in your terminal if you prefer it manually
+
+[GCC Flags](https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index)
 
 `-g3` for normal GNU compiler debug informations (1-3 level, 2 is default)
 
@@ -143,7 +146,7 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 `-std=c99` (as iso `-std=iso9899:1999` strict)
 
-`-std=gnu99` with additional gnu extension with c99 (what i use)
+`-std=gnu99` with additional gnu extension for c99 (what i use)
 
 (`-std=gnu++17` if you like with version 11/14/17 or later)
 
@@ -173,9 +176,13 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 `-shared` for generating shared object libraries
 
-`-c` for compiling without linking for making object
+`-S` (uppercase) for compiling Assembler code without linking
+
+`-c` (lowercase) for compiling without linking for making object
 
 `-E` for stopping after preprocessing stage in compilation
+
+`-C` or CC (uppercase) for keeping the (all) comments in preprocessor
 
 `-D_USE_MATH_DEFINES` for mathematical lib definitions
 
