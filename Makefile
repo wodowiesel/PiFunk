@@ -22,7 +22,7 @@ KERNEL_DIR:=/lib/modules/$(shell uname -r)/build/
 $(KERNEL_DIR)
 
 RM=rm -f ## remove files or folder
-$(RM)
+#$(RM)
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions
 CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-$(shell uname -r)/include/linux/ ## kernel now 4.19.99
@@ -80,12 +80,12 @@ $(PCPUI)
 ## old/special pi versions
 ifeq ($(UNAME), armv5)
 PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
-TARGET=RPI
+TARGET=RPI # alternative1
 endif
 
 ifeq ($(UNAME), armv5l)
 PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET=RASPBERRY
+TARGET=RASPBERRY # alternative2
 endif
 
 ifeq ($(UNAME), armv6)
@@ -108,7 +108,7 @@ PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffa
 TARGET=RASPI3
 endif
 
-ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION)| grep -a -o "Raspberry\sPi\s[0-9]" | grep -o "[0-9]" >= 4), 1)
+ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
 PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI=4
 TARGET=RASPI4
 endif
@@ -121,25 +121,25 @@ $(TARGET)
 ## Generating objects in gcc specific order
 ## assembler code
 pifunk.S:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS)-o lib/pifunk.S
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o lib/pifunk.S
 ## precompiled/processor c-code
 pifunk.i:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS)-C -o lib/pifunk.i
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -C -o lib/pifunk.i
 ## precompiled assemblercode
 pifunk.s:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS)-o lib/pifunk.s
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) -o lib/pifunk.s
 ## static object
 pifunk.o:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o lib/pifunk.o
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o lib/pifunk.o
 ## archive
 pifunk.a:	pifunk.c
-					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o lib/pifunk.a
+					$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o lib/pifunk.a
 ## library
 pifunk.lib:	pifunk.c
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o lib/pifunk.lib
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o lib/pifunk.lib
 ## shared object
 pifunk.so:	pifunk.c
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o lib/pifunk.so
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o lib/pifunk.so
 
 ## lib object list
 OBJECTS=pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so
@@ -147,13 +147,13 @@ $(OBJECTS)
 
 ## generating executable binaries
 pifunk.out:	pifunk.c $(OBJECTS)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk.out
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk.out
 
 pifunk.bin: pifunk.c $(OBJECTS)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk.bin
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk.bin
 
 pifunk:			pifunk.c $(OBJECTS)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk
 
 #all: pifunk.out pifunk.bin pifunk
 
@@ -162,11 +162,11 @@ $(EXECUTABLES)
 
 .PHONY:		pifunklib
 pifunk.lib:	pifunk.c
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS)-o lib/pifunk.lib
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o lib/pifunk.lib
 
 .PHONY:		pifunk+
 pifunk+:	pifunk.cpp $(OBJECTS)
-					$(USER) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS)-o bin/pifunk+
+					$(USER) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk+
 
 ## generate info file
 .PHONY: 	info
