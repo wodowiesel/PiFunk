@@ -43,7 +43,9 @@ $(PPFLAGS)
 LIFLAGS=-c ## no linker
 $(LIFLAGS)
 
-DEBUG=-Wall -Werror  -pedantic-errors -dM -v -g3 # -ggdb3 --working-directory
+DEBUG=-Wall -Werror -v -g3 -ggdb3
+## --working-directory
+## -pedantic-errors, -dM (dumps preprocessor Macros)
 $(DEBUG)
 
 LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
@@ -51,7 +53,7 @@ $(LDLIBS)
 PFLIBS=-L$(HOME)/PiFunk/lib/
 $(PFLIBS)
 
-LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lsndfile -shared
+LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -shared
 $(LDFLAGS)
 PFFLAGGS=-lpifunk
 $(PFFLAGS)
@@ -90,27 +92,27 @@ TARGET=RASPBERRY # alternative2
 endif
 
 ifeq ($(UNAME), armv6)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI=0
+PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
 TARGET=RASPI0 # & Pi W
 endif
 
 ifeq ($(UNAME), armv6l)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=1
+PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 TARGET=RASPI1
 endif
 
 ifeq ($(UNAME), armv7l)
-PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI=2
+PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
 TARGET=RASPI2
 endif
 
 ifeq ($(UNAME), armv8l)
-PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI=3
+PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
 TARGET=RASPI3
 endif
 
 ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
-PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI=4
+PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
 TARGET=RASPI4
 endif
 

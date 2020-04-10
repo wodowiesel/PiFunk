@@ -39,11 +39,11 @@ sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 -lbcm_host // firmware v1.20190718 located in /opt/vc/include/
 
 cd PiFunk // goto path
-
-->lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
+// https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Preprocessor-Options.html
+->-lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
  =>compile with admin/root permissions!!
- Libs: sudo gcc -g3 -std=gnu99 -lm -Iinclude -Llib -lsndfile -lgnu -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -Llib -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- program: sudo gcc -g3 -std=gnu99 -lm -Iinclude -lsndfile -lgnu -D_USE_MATH_DEFINES -D_GNU_SOURCE -Llib -L/opt/vc/lib -lbcm_host -fPIC pifunk.c -shared -O3 -o bin/pifunk bin/pifunk.out
+ Libs: sudo gcc -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC pifunk.c -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
+ program: sudo gcc -g3 -std=gnu99 -Iinclude -D_USE_MATH_DEFINES -D_GNU_SOURCE -Llib -L/opt/vc/lib -lm -Llib -lbcm2835 -lsndfile -lgnu -lbcm_host -fPIC pifunk.c -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
  -lpifunk own lib from this project
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
@@ -70,7 +70,7 @@ pointer & address corrections
 make compatible arguments/funcs for py/shell scripts
 */
 
-// std includes
+// std C includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h> // for c99
@@ -119,84 +119,6 @@ make compatible arguments/funcs for py/shell scripts
 #include <gnumake.h>
 //#include <metrics.h>
 //#include <missing.h>
-
-// on posix linux
-#include <sys/cdefs.h>
-#include <sys/time.h>
-#include <sys/timex.h>
-#include <sys/times.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <sys/select.h>
-#include <sys/file.h>
-#include <sys/sysmacros.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <sys/utsname.h>
-#include <sys/wait.h>
-
-// linux kernel driver headers: path /usr/src/linux-headers-4.19.97+/include/
-#include <linux/init.h>
-#include <linux/compiler.h>
-#include <linux/io.h>
-#include <linux/clk.h>
-#include <linux/cpu.h>
-#include <linux/cpufreq.h>
-#include <linux/cpumask.h>
-#include <linux/cpu_cooling.h>
-#include <linux/math64.h>
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/errno.h>
-#include <linux/err.h>
-#include <linux/notifier.h>
-#include <linux/bcd.h>
-#include <linux/interrupt.h>
-#include <linux/completion.h>
-#include <linux/platform_device.h>
-#include <linux/of_platform.h>
-#include <linux/pm_opp.h>
-#include <linux/export.h>
-#include <linux/sched/signal.h>
-#include <linux/device.h>
-#include <linux/reboot.h>
-#include <linux/types.h>
-#include <linux/ctype.h>
-#include <linux/string.h>
-#include <linux/pm_runtime.h>
-#include <linux/reset.h>
-#include <linux/dma-mapping.h>
-#include <linux/mailbox_client.h>
-#include <linux/pm_domain.h>
-#include <linux/textsearch.h>
-#include <linux/config.h>
-#include <linux/kd.h>
-#include <linux/regulator/consumer.h>
-
-// I2C & SPI support need
-#include <linux/i2c.h>
-#include <linux/i2c-dev.h>
-#include <linux/spi/spidev.h>
-
-// FW
-#include <soc/bcm2835/raspberrypi-firmware.h>
-#include <drm/drm_fb_cma_helper.h>
-#include <drm/drm_fb_helper.h>
-
-// RTC support
-#include <linux/rtc.h>
-//#include <linux/rtc/ds1307.h>
-#include <linux/rtc/ds3231.h>
-#include "rtc/ds3231.h" // my rtc
-
-// ip host socket
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <net/if.h>
-#include <netdb.h>
-#include <ifaddrs.h>
 
 // for c++99/11/14/17/20
 /*
@@ -303,6 +225,86 @@ make compatible arguments/funcs for py/shell scripts
 using namespace std; //
 */
 
+// on posix linux
+#include <sys/cdefs.h>
+#include <sys/time.h>
+#include <sys/timex.h>
+#include <sys/times.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <sys/select.h>
+#include <sys/file.h>
+#include <sys/sysmacros.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/utsname.h>
+#include <sys/wait.h>
+
+// linux kernel driver headers: path /usr/src/linux-headers-4.19.97+/include/
+#include <linux/kd.h>
+#include <linux/errno.h>
+#include <linux/module.h>
+#include <linux/reboot.h>
+#include <linux/types.h>
+#include <linux/string.h>
+/*
+#include <linux/init.h>
+#include <linux/compiler.h>
+#include <linux/io.h>
+#include <linux/clk.h>
+#include <linux/cpu.h>
+#include <linux/cpufreq.h>
+#include <linux/cpumask.h>
+#include <linux/cpu_cooling.h>
+#include <linux/math64.h>
+#include <linux/slab.h>
+#include <linux/err.h>
+#include <linux/notifier.h>
+#include <linux/bcd.h>
+#include <linux/interrupt.h>
+#include <linux/completion.h>
+#include <linux/platform_device.h>
+#include <linux/of_platform.h>
+#include <linux/pm_opp.h>
+#include <linux/export.h>
+#include <linux/sched/signal.h>
+#include <linux/device.h>
+#include <linux/ctype.h>
+#include <linux/pm_runtime.h>
+#include <linux/reset.h>
+#include <linux/dma-mapping.h>
+#include <linux/mailbox_client.h>
+#include <linux/pm_domain.h>
+#include <linux/textsearch.h>
+#include <linux/config.h>
+#include <linux/regulator/consumer.h>
+*/
+
+// I2C & SPI support need
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
+#include <linux/spi/spidev.h>
+
+// FW
+#include <soc/bcm2835/raspberrypi-firmware.h>
+//#include <drm/drm_fb_cma_helper.h>
+//#include <drm/drm_fb_helper.h>
+
+// RTC support
+#include <linux/rtc.h>
+//#include <linux/rtc/ds1307.h>
+#include <linux/rtc/ds3231.h>
+#include "rtc/ds3231.h" // my rtc
+
+// ip host socket
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <net/if.h>
+#include <netdb.h>
+#include <ifaddrs.h>
+
 // windows (10) if needed for maybe rpi3/4 aarch64
 /*
 #include <windows.h>
@@ -315,20 +317,23 @@ using namespace std; //
 
 // broadcom arm processor for mapping phys. addresses
 #include <bcm_host.h>
+#include <bcm2835.h> // -lbcm2835
+
 #include "opt/vc/include/bcm_host.h" // firmware stuff
 #include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 #include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
-#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
+//#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
 
+// activate for your specific system
 #include "bcm2835/src/bcm2835.h" // pi 0/1
-#include "bcm2836/src/bcm2836.h" // pi 2
-#include "bcm2837/src/bcm2837.h" // pi 3
-#include "bcm2838/src/bcm2838.h" // pi 4
-#include "bcm2838B0/src/bcm2838B0.h" // pi 4 B
+//#include "bcm2836/src/bcm2836.h" // pi 2
+//#include "bcm2837/src/bcm2837.h" // pi 3
+//#include "bcm2838/src/bcm2838.h" // pi 4
+//#include "bcm2838B0/src/bcm2838B0.h" // pi 4 B
 
 // RPi.GPIO lib, 0.7.0 used with pi4 support
-#include "RPI.GPIO/source/i2c.h"
-//#include "RPI.GPIO/source/c_gpio.h"
+//#include "RPI.GPIO/source/i2c.h"
+#include "RPI.GPIO/source/c_gpio.h"
 #include "RPI.GPIO/source/event_gpio.h"
 //#include "RPI.GPIO/source/py_pwm.h"
 #include "RPI.GPIO/source/soft_pwm.h"
@@ -409,7 +414,7 @@ using namespace std; //
 //#define _USE_MATH_DEFINES 1 // for math lm lib
 #endif
 
-#ifdef __STDC_VERSION__ >= (199901L)
+#ifdef __STDC_VERSION__ = (199901L)
    /*#warning "\nPlease compile with flag -std=c99\n" string */
    printf ("\nUsing GNU C with C99 standard! \n");
 #endif
@@ -467,7 +472,7 @@ volatile unsigned 										(*allof7e); //
 
 
 // specific pi adresses & definitions
-#ifdef 	RASPI || RASPI0 == 0 // pi 0 zero & w
+#ifdef 	RASPI0 //== 0 // pi 0 zero & w
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -481,7 +486,7 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RPI || RASPBERRY == 1 // alternative old/different versions
+#ifdef  RASPBERRY // and RPI == 1 // alternative old/different versions
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -493,11 +498,11 @@ volatile unsigned 										(*allof7e); //
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
-#else
-#error Unknown Raspberry Pi Revision
+/*#else
+#error Unknown Raspberry Pi Revision */
 #endif
 
-#ifdef  RASPI || RASPI1 == 1 // pi 1 - BCM2835 -> my version
+#ifdef  RASPI1 // == 1 // pi 1 - BCM2835 -> my version
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -511,7 +516,7 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RASPI || RASPI2 == 2 // pi 2 - BCM2836/7
+#ifdef  RASPI2 //== 2 // pi 2 - BCM2836/7
 #define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -526,7 +531,7 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef 	RASPI || RASPI3 == 3 // pi3 - BCM2837/B0
+#ifdef 	RASPI3 //== 3 // pi3 - BCM2837/B0
 #define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2837_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -541,7 +546,7 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef  RASPI || RASPI4 == 4 // pi 4 - BCM2838
+#ifdef  RASPI4 //== 4 // pi 4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2838_PERI_BASE              (0x3F000000) // dec: 1056964608
@@ -564,8 +569,9 @@ volatile unsigned 										(*allof7e); //
 
 // standard & general definitions
 #define PIN_7                           (4) // pin 4
-#define PIN_40                          (40) // pin 40
 #define GPIO_4                          (PIN_7)
+
+#define PIN_40                          (40) // pin 40
 #define GPIO_21                         (PIN_40)
 
 #define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
@@ -998,11 +1004,15 @@ char *fm = "fm";
 char *am = "am";
 int power = (7);
 int powerlevel = abs (power);
-char *callsign = "callsign";
+char *callsign;
 int type; // analog or digital
 char *mod_type; // = "a"
 char *analog = "a"; // type = 1
 char *digital = "d"; // type = 2
+float bandwidth;
+int dmachannel;
+int gpiopin;
+char *gps;
 
 float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6))); // 2000*228=456000
 uint32_t idivider = (float) divider;
@@ -1026,7 +1036,7 @@ FILE wavefile;
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = NULL;
-int fp = STDIN_FILENO;
+int fp;// = STDIN_FILENO;
 int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
 int readBytes;
@@ -1066,8 +1076,8 @@ float sampler;
 // IQ & carrier http://whiteboard.ping.se/SDR/IQ
 uint16_t pis = (0x1234); // dec: 4660
 float angle = ((PHASE*freq)+shift_ppm); // A*cos(2pi*freq+phaseshift)
-float I = FactAmplitude*cosf(angle); // real! In-Phase signal component
-float Q = FactAmplitude*sinf(angle); // Quadrature signal component
+float I = FactAmplitude*cosf (angle); // real! In-Phase signal component
+float Q = FactAmplitude*sinf (angle); // Quadrature signal component
 float RF_SUM = (I+Q);
 float ampl = sqrtf(((I*I)+(Q*Q)));
 
@@ -1111,8 +1121,8 @@ char *long_pos = "E";
 char *lat_pos = "N";
 float longitude = (8.682127); // E
 float latitude = (50.110924); // N
-float elevation = (100.00); // meter
-float altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
+double elevation = (100.00); // meter
+int altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
 
 // network sockets
 // custom ip/port via tcp or udp
@@ -1286,14 +1296,14 @@ void clearscreen ()
   printf ("\n\033[H\033[J\n");
   //fflush (stdin); // alterntives
   //clsscr ();
-  //system ("clear");
+  //system ("clear"); // works for terminal
   return;
 }
 
 void infos () // warnings and infos
 {
 		/* red-yellow -> color: 1 for "bright" / 4 for "underlined" and \0XX ansi colorcode: 35 for Magenta, 33 red -> \033[14;35m   escape command for resetting \033[0m */
-    printf ("\nWelcome to the Pi-Funk! v%s %s for Raspbian ARM! \n", VERSION, description);
+    printf ("\nWelcome to the Pi-Funk! v %s %s for Raspbian ARM! \n", VERSION, description);
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi operates with square-waves (²/^2) PWM on GPIO 4 (PIN 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators or resistors if needed! \nYou can smooth it out with 1:1 balun. Do NOT shortcut, use a dummyload instead! \nCheck laws of your country! \n");
     printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7 \n");
@@ -1343,7 +1353,7 @@ int gpioselect ()
 	return gpiopin;
 }
 
-int dmaselect (int dmachannel)
+int dmaselect ()
 {
 	printf ("\nPlease choose the DMA-Channel: 7 (Pi 4) / 14 (default) / 255 (off): \n");
   scanf ("%d", &dmachannel);
@@ -1354,10 +1364,17 @@ int dmaselect (int dmachannel)
     dmachannel = 255;
     DMA_CHANNEL = 255;
   }
-  else if (dmachannel == (7 || 14))
+  else if (dmachannel == (7)
   {
     printf ("\nThe DMA-Channel is activated! \n");
-    dmachannel = DMA_CHANNEL;
+    dmachannel = 7;
+    DMA_CHANNEL = 7;
+  }
+  else if (dmachannel == (14)
+  {
+    printf ("\nThe DMA-Channel is activated! \n");
+    dmachannel = 14;
+    DMA_CHANNEL = 14;
   }
   else
   {
@@ -1723,7 +1740,8 @@ float channelmodecb () // CB
 			case 79:   freq=26.9450; break;
 			case 80:   freq=26.9550; break; // free released chan for hook-up with multiple CB-devices over internet
 
-      case 81:   printf ("\nExit ... \n"); exit (0);
+      case 81:   printf ("\nExit ... \n");
+                 exit (0);
 
 			default:		freq=26.9650;
 									printf ("\nDefault CB chan = 1 on %f MHz \n", freq);
@@ -1758,7 +1776,7 @@ char modulationselect ()
 	return mod;
 }
 
-char callsignselct ()
+char callsignselect ()
 {
     //if (*callsign == NULL) {
 		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
@@ -1813,7 +1831,7 @@ void channelselect () // make a void
 	return;
 }
 
-void typeselect (type)
+void typeselect ()
 {
   if (!strcmp (type, "1" || "analog"))
   {
@@ -1830,7 +1848,7 @@ void typeselect (type)
   else
   {
     printf ("\nError in -t \n");
-    break;
+    //break;
     //return 1;
   }
  return;
@@ -1843,36 +1861,36 @@ void modetypeselect ()
 	switch (modeselect)
 	{
 		case 1:	 	printf ("\n[1] Channelmode: \n");
-							channelselect (freq);
+							channelselect ();
 							break;
 
 		case 2:		printf ("\n[2] Frequencymode: \n");
-							freqselect (freq);
+							freqselect ();
 							break;
 
 		default: printf ("\nError! Using [1] (default) Channelmode! \n");
-             channelselect (freq);
+             channelselect ();
 						 break;
 	}
 	return;
 }
 
-void gpsselect (char *gps)
+void gpsselect () // char *gps
 {
   printf ("\nGPS-Status is %s \n", gps);
-  if ((char) *gps == "on")
+  if (gps == "on")
   {
   printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
-  print ("\nPreset location is: long_pos %s longitude %f / lat_pos %s latitude %f / elevation %f / altitude %f \n", long_pos, longitude, lat_pos, latitude, elevation, altitude);
+  print ("\nPreset location is: long_pos %s longitude %f / lat_pos %s latitude %f / elevation %lf / altitude %d \n", long_pos, longitude, lat_pos, latitude, elevation, altitude);
   }
-  else if ((char) *gps == "off")
+  else if (gps == "off")
   {
   printf ("\nGPS-Status is off! you can activate it with flag: -x on \n");
   }
   else
   {
     printf ("\nError: Input not recognized! NOT using GPS \n");
-    *gps == "off";
+    gps == "off";
   }
   return;
 }
@@ -2015,7 +2033,7 @@ void play_list () // exit func
     return;
 }
 
-void play_wav (char *filename, float freq, int samplerate)
+void play_wav () // char *filename, float freq, int samplerate
 {
 /*  wiki https://en.wikipedia.org/wiki/WAV
 	  https://en.wikipedia.org/wiki/44,100_Hz
@@ -2211,7 +2229,7 @@ void setupDMA ()
 
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS (DMABASE));
+	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 
@@ -2224,9 +2242,9 @@ void unsetupDMA ()
 // if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
 // squelch/treshhold to build in maybe -> scan function till signal?
 
-int sampleselect (char *filename, int samplerate) // better name function: sample/bitchecker
+int sampleselect () // char *filename, int samplerate
 {
-	printf ("\nSamplerate/bit-checker starting \n");
+	printf ("\nSamplerate/bit select starting \n");
 
 	/*
   if (!(fp = open (filename, SFM_READ, &sfinfo))) // check wat SFM sfinfo does!?
@@ -2297,8 +2315,8 @@ int sampleselect (char *filename, int samplerate) // better name function: sampl
 			else if (channels == 2)
 			{
         printf ("\nFile has 2 Channels (STEREO)! maybe supported later! \n"); // >1 in stereo or dual mono with half samplerate
-        int halfsamplerate = (samplerate/2)
-        print ("\nUsing half the samplerate: %d \n", halfsamplerate);
+        int halfsamplerate = (samplerate/2);
+        printf ("\nUsing half of the samplerate: %d \n", halfsamplerate);
 			}
 			else
 			{
@@ -2359,13 +2377,12 @@ void WriteTone ()
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
-    return -1;
 	}
 	printf ("\nWriting tone \n");
   return;
 }
 
-void modulationfm (int argc, char **argv [], char *mod)//FM
+void modulationfm () // int argc, char **argv [], char *mod
 {
   	printf ("\nPreparing for fm ... \n");
     setupfm (); // gets filename & path or done by filecheck () func
@@ -2376,7 +2393,7 @@ void modulationfm (int argc, char **argv [], char *mod)//FM
 		return;
 }
 
-void modulationam (int argc, char **argv [], char, *mod)
+void modulationam () // int argc, char **argv [], char, *mod
 {
 	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
 		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -2388,25 +2405,24 @@ void modulationam (int argc, char **argv [], char, *mod)
 	  return;
 }
 
-void modselect (int argc, char **argv [], char *mod)
+void modselect () // int argc, char **argv [], char *mod
 {
 	printf ("\nOpening Modulator-Selection ... \n");
 	if (strcmp (mod, "fm"))
 	{
     printf ("\nYou selected 1 for fm! \n");
     printf ("\nPushing args to fm Modulator ... \n");
-		void modulationfm (int argc, char **argv []);
+		modulationfm (); //int argc, char **argv []
 	}
 	else if (strcmp (mod, "am"))
 	{
     printf ("\nYou selected 2 for am! \n");
     printf ("\nPushing args to am Modulator ... \n");
-		void modulationam (int argc, char **argv []);
+		modulationam (); // int argc, char **argv []
 	}
 	else
 	{
     printf ("\nError in -m selecting modulation! \n");
-    return -1;
 	}
  	return;
 }
@@ -2444,11 +2460,13 @@ char cw ()
 {
   printf ("\nStd-cw: short_cw: %s, long_cw: %s \n Type in your CW-message: \n", long_cw, short_cw); // morse beeps
   scanf ("%s", &message);
-  size_t length = strlen (message);
-  printf ("\nmessage: %s, length: %zu \n", message, length); // length unsigned int
+  long int length_m = strlen (message); // size_t,  strlen -> long int
+
+  printf ("\nmessage: %s, length: %ld \n", message, length_m); // length unsigned int %zu
 
   // tone translation
-  while (message [w] != "\0") // Stop looping when we reach the NULL-character
+
+  while (message [w] != NULL) // Stop looping when we reach the NULL-character "\0"
   {
     if (message [w] == short_cw)
     {
@@ -2463,7 +2481,7 @@ char cw ()
       printf ("\nmessage error \n");
     }
 
-    printf ("%c", message [w]);    // Print each character of the string
+    printf ("%c", message [w]);  // Print each character of the string
     w++;
   }
 
@@ -2476,8 +2494,8 @@ char cw ()
 void ledinactive ()
 {
 	  // check if transmitting
-    printf ("\nChecking transmission status \n");
-		while (!play_wav () || || WriteTone ())
+    printf ("\nChecking transmission status ... \n");
+		while (!(play_wav () || WriteTone ()))
 		{
 				//cm2835_gpio_write (PIN_17, LOW);
 				printf ("\nLED off - No transmission! \n");
@@ -2501,7 +2519,7 @@ void ledactive ()
     // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav (char *filename, float freq, int samplerate))
+		while (play_wav ()) // char *filename, float freq, int samplerate
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN_17, HIGH);
@@ -2561,18 +2579,19 @@ void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
 		filecheck (filename);
-		sampleselect (filename, samplerate);
-		modetypeselect (mod);
-    typeselect (type);
-		powerselect (power);
-    callsignselect (callsign);
-		gpioselect (gpiopin);
-		dmaselect (dmachannel);
-		bandwidthselect (bandwidth);
-    gpsselect (gps);
+		sampleselect (); // filename, samplerate
+		modetypeselect ();
+    modselect ();
+    typeselect ();
+		powerselect ();
+    callsignselect ();
+		gpioselect ();
+		dmaselect ();
+		bandwidthselect ();
+    gpsselect ();
 		printf ("\nAll information gathered, parsing & going back to main! \n");
     printf ("Press Enter/return to continue ... \n");
-		while (getchar () != "\n"); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
+		//while (getchar () != ""); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
 
 		return;
 }
@@ -2584,7 +2603,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv []); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv [], const char *short_opt); //, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR ... \n");
@@ -2603,16 +2622,16 @@ void menu ()
 						exit (0);
 
 		default: printf ("\nMenu: Default \n");
-             int main (int argc, char **argv []);
+             int main (int argc, char **argv [], const char *short_opt);
 		 				 break;
 	}
 	return;
 }
 
-void tx (int argc, char **argv [])
+void tx () // int argc, char **argv []
 {
   printf ("\nPreparing for transmission ... \n");
-	while (play_wav () || WriteTone ())
+	while (play_wav () | WriteTone ())
   {
   ledactive ();
   printf ("\nBroadcasting now! ... \n");
@@ -2627,7 +2646,8 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 {
   printf ("\nStarting Main-PiFunk \n");
   // option parameters
-	char argv [0] = "pifunk"; // actual program-name
+  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
+	char **argv [0] = "pifunk"; // actual program-name
   char *programname = argv [0]; //
 	char *filename = "sound.wav"; // = argv [1]; n=name
 	float freq = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
@@ -2639,7 +2659,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	int dmachannel = (14); // = argv [8];
 	float bandwidth = (12.50); // = argv [9];
   int type = (1); // = argv [10]; analog -> default
-  char *gps = off; // = argv [11]; -> default: off
+  char *gps = "off"; // = argv [11]; -> default: off
   // menues
   char a; // = argv [12];
   char h; // = argv [13];
@@ -2660,16 +2680,15 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	infos (); // information, disclaimer
 	int timer (time_t t); // date and time print
 
-  printf (bcm_host_get_peripheral_address ());
-  printf (bcm_host_get_peripheral_size ());
-  printf (bcm_host_get_sdram_address ());
+  bcm_host_get_peripheral_address ();
+  //printf (bcm_host_get_peripheral_size ());
+  //printf (bcm_host_get_sdram_address ());
 
-  int options; // = 0
+  //int options; // = 0
   int option_index = (0);
-  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
 
   int options = getopt (argc, **argv [], short_opt); // short_opt must be constant
-  int flags = getopt_long (argc, **argv [], *short_opt, long_opt, &option_index);
+  int flags = getopt_long (argc, **argv [], short_opt, long_opt, &option_index);
 
 	while (options != -1 || 0) // if -1 then all flags were read, if ? then unknown
 	{
@@ -2696,12 +2715,13 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 			case 's':
 							 samplerate = atoi (optarg);
 							 printf ("\nSamplerate is %d \n", samplerate);
-							 //sampleselect (filename, samplerate);
+							 //sampleselect (); // filename, samplerate
 							 //break;
 
 			case 'm':
 							 mod = optarg;
-               //void modselect (mod);
+               printf ("\nMod is %s \n", mod);
+               //void powerselect ();
                //break;
 
       case 'p':
@@ -2732,13 +2752,13 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
       case 't':
                 type = atof (optarg);
                 printf ("\nType is %d \n", type);
-                //void typeselect (type);
+                //void typeselect ();
                 //break;
 
       case 'x':
                gps = optarg;
                printf ("\nGPS-Tracking-Status is %s \n", gps);
-               //void gpsselect (gps);
+               //void gpsselect ();
                //break;
 
      // additional help functions
@@ -2819,7 +2839,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   printf ("\nRF-SUM (I+Q) %f \n", RF_SUM);
   printf ("\nAmplitude-value %f \n", ampl);
   printf ("\nChecking GPS-Status %s \n", gps);
-  printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %f \n", longitude, latitude, altitude);
+  printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
 	printf ("\n-----------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
@@ -2832,7 +2852,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 
 	// gathering and parsing all given arguments it to player
   printf ("\nTransmission starting ... \n"); // EOF
-	void tx (int argc, char **argv []); // transmission
+	void tx (); // int argc, char **argv [] transmission
   printf ("\nTransmission ended! \n");
 
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
