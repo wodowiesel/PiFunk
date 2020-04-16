@@ -33,7 +33,7 @@ RM=rm -f ## remove files or folder
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
-CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-$(shell uname -r)/include/linux/ ## kernel now 4.19.97+
+CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/linux/ ## kernel now 4.19.97+
 $(CINC)
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
@@ -47,12 +47,15 @@ ASFLAGS=-S -CC ## upper case assembler code without linker
 $(ASFLAGS)
 PPFLAGS=-E -CC ## c-preproccessor, -C or CC keeps the comments in preprocessor
 $(PPFLAGS)
-LIFLAGS=-c ## no linker
+LIFLAGS=-c## no linker
 $(LIFLAGS)
 
-DEBUG=-Wall -Werror -v -g3 -ggdb3
+DEBUG=-Wall -v -g3 -ggdb3 -pg
+## -pg -> makes profiles for object code for analysis with gprof
+## -dM (dumps preprocessor Macros) not needed
+## -Werror makes -> all warnings into errors -w inhibits warnings
 ## --working-directory
-## -pedantic-errors, -dM (dumps preprocessor Macros)
+## -pedantic-errors
 $(DEBUG)
 
 LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
@@ -126,33 +129,40 @@ endif
 $(PFLAGS)
 $(TARGET)
 
-#@echo "Compiling PiFunk"
+#@echo Compiling PiFunk
 
 ## Generating objects in gcc specific order
-## assembler code
-pifunk.s:	$(SOURCE)
+## c-translated assembler-code
+pifunk.s:	$(SOURCE) pifunk.h
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm: arm-none-eabi-objdump
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal asm suffix
 ## precompiled/processor c-code
-pifunk.i:	$(SOURCE)
+pifunk.i:	$(SOURCE) pifunk.h
 					$(USER) $(SOURCE) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
-## precompiled object/machinecode
-pifunk.o:	$(SOURCE)
+## precompiled object/machine-code
+pifunk.o:	$(SOURCE) pifunk.h
 					$(USER) $(CC) $(DEBUG) $(SOURCE) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
-## archive
-pifunk.a:	$(SOURCE)
+## static archive
+libpifunk.a:	libpifunk.o
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.a
-## library
-pifunk.lib:	$(SOURCE)
+					$(USER) ar rcs -t $@ $^
+					$(USER) ranlib libpifunk.a
+## static library
+libpifunk.lib:	libpifunk.o libpifunk.a
 						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.lib
+						$(USER) ar rcs -t $@ $^
+						$(USER) ranlib libpifunk.lib
 ## shared object
-pifunk.so:	$(SOURCE)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -shared -o lib/libpifunk.so
+libpifunk.so:	libpifunk.o
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -shared -o lib/libpifunk.so lib/libpifunk.o
+						$(USER) ar rcs -t $@ $^
+						$(USER) ranlib libpifunk.so
 ## dynamic linked library
-pifunk.dll:	$(SOURCE)
+libpifunk.dll:	libpifunk.o
 						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.dll
+						$(USER) ar rcs -t $@ $^
+						$(USER) ranlib libpifunk.dll
 ## lib object list
-#alllibs: pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
 OBJECTS=pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
 $(OBJECTS)
 
@@ -172,7 +182,7 @@ $(EXECUTABLES)
 
 .PHONY:		pifunklib
 pifunk.so:	$(SOURCE)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -shared -o lib/libpifunk.so
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -shared -o lib/libpifunk.so libpifunk.o
 
 .PHONY:		pifunk+
 pifunk+:	$(SOURCECXX) $(OBJECTS)

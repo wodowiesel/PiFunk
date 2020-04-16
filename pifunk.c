@@ -40,6 +40,7 @@ sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 
 cd PiFunk // goto path
 // https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Preprocessor-Options.html
+// https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
 ->-lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
  =>compile with admin/root permissions!!
  Libs: sudo gcc -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC pifunk.c -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
@@ -53,12 +54,14 @@ cd PiFunk // goto path
  -E tells to stop after preprocessing stage
  -v verbose
 
--> real gpio hardware can't be simulated by c/++ or py code! must be executed and compiled on pi wtith linux
-virtual machine possible with qemu or alternative with everpad: nor sure about this, rather not using it
+-> real gpio hardware can't be simulated by VM! must be executed and compiled on pi wtith linux!
+As virtual machine best possible with Qemu.
+or alternative with everpad: not sure about this, rather not using it
 sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav // old
 
 Usage:
 default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
+possible freq-shift of ~0.005 MHz -> 5kHz!!
 
 1) Pi-FM version - frequency modulation direction left/right ← , →
 2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
@@ -242,15 +245,41 @@ using namespace std; //
 #include <sys/wait.h>
 
 // linux kernel driver headers: path /usr/src/linux-headers-4.19.97+/include/
-#include <linux/kd.h>
+#include <linux/types.h>
+#include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/reboot.h>
-#include <linux/types.h>
-#include <linux/string.h>
+#include <linux/kd.h>
+#include <linux/compiler.h>
+/* used for bcm from header to std include /usr/include/linux/
+#include "/usr/src/linux-headers-4.19.97+/include/linux/list.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/poison.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/kernel.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/const.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/preempt.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/linkage.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/compiler_types.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/stringify.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/export.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/asm/linkage.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/thread_info.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/bug.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/build_bug.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/restart_block.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/time64.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/math64.h"
+#include "/usr/src/linux-headers-4.19.97+/include/uapi/linux/time.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/bitops.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/bits.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/irqflags.h"
+#include "/usr/src/linux-headers-4.19.97+/include/asm-generic/bitops/_ffs.h"
+#include "/usr/src/linux-headers-4.19.97+/include/asm-generic/cmpxchg-local.h"
+#include "/usr/src/linux-headers-4.19.97+/include/linux/atomic.h"
+*/
+
 /*
 #include <linux/init.h>
-#include <linux/compiler.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -368,41 +397,41 @@ using namespace std; //
 #endif
 
 #ifdef __LINUX__
-  printf ("\nProgram runs under LINUX! \n");
+  //printf ("\nProgram runs under LINUX! \n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __UNIX__
-  printf ("\nProgram runs under UNIX! \n");
+  //printf ("\nProgram runs under UNIX! \n");
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __ARM__
-  printf ("\nProgram runs under ARM-Architecture! \n");
+  //printf ("\nProgram runs under ARM-Architecture! \n");
   //#pragma ARM
   // same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __ARM64__
-  printf ("\nProgram runs under ARM64-Architecture! \n");
+  //printf ("\nProgram runs under ARM64-Architecture! \n");
   //#pragma ARM
   // same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __GNUC__
-   printf ("\nUsing GNU C with ANSI ISO C99 as GNU99! \n");
+  // printf ("\nUsing GNU C with ANSI ISO C99 as GNU99! \n");
    //#pragma GCC system_header
 #endif
 
 #ifdef _GNU_SOURCE
   //#define basename __basename_gnu
-   printf ("\nUsing GNU Source Macro! \n");
+   //printf ("\nUsing GNU Source Macro! \n");
 #endif
 
 #ifdef __CPLUSPLUS
-  printf ("\nUsing GNU C++ with ANSI ISO C++ 11/17/20! \n");
+  //printf ("\nUsing GNU C++ with ANSI ISO C++ 11/17/20! \n");
   extern "C"
   {
    printf ("\n__CPLUSPLUS \n");
@@ -416,7 +445,7 @@ using namespace std; //
 
 #ifdef __STDC_VERSION__ = (199901L)
    /*#warning "\nPlease compile with flag -std=c99\n" string */
-   printf ("\nUsing GNU C with C99 standard! \n");
+   //printf ("\nUsing GNU C with C99 standard! \n");
 #endif
 
 //------------------------------------------------------------------------------
@@ -442,7 +471,7 @@ using namespace std; //
 
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(euler) = 0.4342944819
-#define log(EULER)                    (0.4342944819)
+//#define log(EULER)                    (0.4342944819)
 #define lg(EULER)                     (1.44269504089)
 #define ln(x)                         (log(x)/log(EULER))
 #define PI                            (3.14159265358979323846) // radial constant
@@ -1027,12 +1056,14 @@ int channelmode;
 int freqmode;
 int modeselect;
 int callnameselect;
+int num;
 time_t t;
 
 // files
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
+int MEM_FD = open ("/dev/mem", O_RDWR|O_SYNC);
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = NULL;
@@ -1096,6 +1127,7 @@ static volatile uint32_t *pad_val;
 
 pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
 pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
+/*
 pad_val = (PADGPIO + power);
 if ((pad_reg1 || pad_reg2) == pad_val) // check equality
 {
@@ -1105,7 +1137,7 @@ else
 {
   printf ("\npad_reg are NOT the same -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
 }
-
+*/
 static volatile uint32_t *pwm_reg;
 static volatile uint32_t *clk_reg;
 static volatile uint32_t *gpio_reg;
@@ -1178,7 +1210,7 @@ static const char *alpha [] =
   "**--*" // -D (eth)
 };
 
-static const char *num [] =
+static const char *numb [] =
 {
   "-----", // 0
   ".----", // 1
@@ -1214,14 +1246,14 @@ static const char *num [] =
   ".--.-."  // @
 };
 
-static const char **table [] = {alpha, num};
+static const char **table [] = {alpha, numb};
 
 //--------------------------------------------------
 // Structs
 struct tm *info;
 struct sockaddr_in localAddress;
-struct client_addr.sin_addr;
-struct local.sin_addr;
+struct client_addr sin_addr;
+struct local sin_addr; // local.sin_addr;
 
 struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
@@ -1362,19 +1394,19 @@ int dmaselect ()
   {
     printf ("\nThe DMA-Channel is deactivated! \n");
     dmachannel = 255;
-    DMA_CHANNEL = 255;
+    //DMA_CHANNEL = 255;
   }
   else if (dmachannel == (7)
   {
     printf ("\nThe DMA-Channel is activated! \n");
     dmachannel = 7;
-    DMA_CHANNEL = 7;
+    //DMA_CHANNEL = 7;
   }
   else if (dmachannel == (14)
   {
     printf ("\nThe DMA-Channel is activated! \n");
     dmachannel = 14;
-    DMA_CHANNEL = 14;
+    //DMA_CHANNEL = 14;
   }
   else
   {
@@ -1468,6 +1500,7 @@ float channelmodepmranalog ()
   switch (channelnumberpmr)
    {
    // Analog & DMR
+   case 0: freq=446.00000; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// base
    case 1: freq=446.00625; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// Standard
    case 2: freq=446.01875; printf ("\naPMR-Chan 2 on %f \n", freq); break; // Geocaching
    case 3: freq=446.03125; printf ("\naPMR-Chan 3 on %f \n", freq); break; // Standard
@@ -1510,6 +1543,7 @@ float channelmodepmrdigital ()
 	switch (channelnumberpmr)
 	 {
    // FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Contact, CC1 TG9112 TS1 = EmCOM
+   case 1:	freq=446.000000; printf ("\ndPMR-Chan 1 on %f \n", freq); break;
 	 case 1:	freq=446.003125; printf ("\ndPMR-Chan 1 on %f \n", freq); break;
 	 case 2:	freq=446.009375; printf ("\ndPMR-Chan 2 on %f \n", freq); break;
 	 case 3:	freq=446.015625; printf ("\ndPMR-Chan 3 on %f \n", freq); break;
@@ -1644,7 +1678,6 @@ float channelmodecb () // CB
 
 	switch (channelnumbercb)
 	{
-
        case 0:   freq=27.0450; break; // first digital channel / normal opening chan
 			 case 1:   freq=26.9650; break; // recommended Startingchannel (FM)
 			 case 2:   freq=26.9750; break; // inofficial Mountain-DX-Chan (FM)
@@ -1997,8 +2030,9 @@ static void terminate (int num)
 void setupfm ()
 {
   printf ("\nSetting up FM ... \n");
-    // open /dev/mem
-  if (( MEM_FD = open ("/dev/mem", O_RDWR|O_SYNC) ) < 0)
+
+  // open /dev/mem
+  if ( MEM_FD  < 0)
 	{
         printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
         return;
@@ -2033,7 +2067,7 @@ void play_list () // exit func
     return;
 }
 
-void play_wav () // char *filename, float freq, int samplerate
+void play_fm () // char *filename, float freq, int samplerate
 {
 /*  wiki https://en.wikipedia.org/wiki/WAV
 	  https://en.wikipedia.org/wiki/44,100_Hz
@@ -2389,7 +2423,7 @@ void modulationfm () // int argc, char **argv [], char *mod
 	  printf ("\nSetting up DMA ... \n");
 		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
-    play_wav (); // atof (argv [3]):22050)
+    play_fm (); // atof (argv [3]):22050)
 		return;
 }
 
@@ -2458,14 +2492,15 @@ class ClockOutput : public ClockDevice
 
 char cw ()
 {
+  sprintf ("\n%s\n", table);
   printf ("\nStd-cw: short_cw: %s, long_cw: %s \n Type in your CW-message: \n", long_cw, short_cw); // morse beeps
   scanf ("%s", &message);
   long int length_m = strlen (message); // size_t,  strlen -> long int
 
-  printf ("\nmessage: %s, length: %ld \n", message, length_m); // length unsigned int %zu
+  printf ("\nMessage: %s, length: %ld \n", message, length_m); // length unsigned int %zu
 
   // tone translation
-
+/*
   while (message [w] != NULL) // Stop looping when we reach the NULL-character "\0"
   {
     if (message [w] == short_cw)
@@ -2478,13 +2513,13 @@ char cw ()
     }
     else
     {
-      printf ("\nmessage error \n");
+      printf ("\nMessage error \n");
     }
 
     printf ("%c", message [w]);  // Print each character of the string
     w++;
   }
-
+*/
   return message;
 }
 
@@ -2495,7 +2530,7 @@ void ledinactive ()
 {
 	  // check if transmitting
     printf ("\nChecking transmission status ... \n");
-		while (!(play_wav () || WriteTone ()))
+		while (!(play_fm () )) // || play_am ()))
 		{
 				//cm2835_gpio_write (PIN_17, LOW);
 				printf ("\nLED off - No transmission! \n");
@@ -2519,7 +2554,7 @@ void ledactive ()
     // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_wav ()) // char *filename, float freq, int samplerate
+		while (play_fm ()) // char *filename, float freq, int samplerate
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN_17, HIGH);
@@ -2631,7 +2666,7 @@ void menu ()
 void tx () // int argc, char **argv []
 {
   printf ("\nPreparing for transmission ... \n");
-	while (play_wav () | WriteTone ())
+	while (play_fm ()) // | play_am ())
   {
   ledactive ();
   printf ("\nBroadcasting now! ... \n");
@@ -2661,9 +2696,9 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
   int type = (1); // = argv [10]; analog -> default
   char *gps = "off"; // = argv [11]; -> default: off
   // menues
-  char a; // = argv [12];
-  char h; // = argv [13];
-  char u; // = argv [14];
+  char *a; // = argv [12];
+  char *h; // = argv [13];
+  char *u; // = argv [14];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
@@ -2852,8 +2887,9 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 
 	// gathering and parsing all given arguments it to player
   printf ("\nTransmission starting ... \n"); // EOF
-	void tx (); // int argc, char **argv [] transmission
+	tx (); // int argc, char **argv [] transmission
   printf ("\nTransmission ended! \n");
+  static void terminate (int num);
 
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return 0;
