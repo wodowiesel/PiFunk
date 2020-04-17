@@ -467,7 +467,7 @@ using namespace std; //
 //#define HIGH 									(0x1) // 1
 //#define LOW 									(0x0) // 0
 //#define sleep 					     	[1000] // for waiting between functions & tasks
-//#define usleep 								[1000] //
+#define usleep 								[1000] //
 
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(euler) = 0.4342944819
@@ -948,6 +948,36 @@ Uses 3 GPIO pins
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
+//
+#define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
+#define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
+#define timercmp(a, b, CMP)                                                  \
+  (((a)->tv_sec == (b)->tv_sec) ?                                             \
+   ((a)->tv_usec CMP (b)->tv_usec) :                                          \
+   ((a)->tv_sec CMP (b)->tv_sec))
+
+#define timeradd(a, b, result)                                                \
+  do {                                                                        \
+    (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;                             \
+    (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;                          \
+    if ((result)->tv_usec >= 1000000)                                         \
+      {                                                                       \
+        ++(result)->tv_sec;                                                   \
+        (result)->tv_usec -= 1000000;                                         \
+      }                                                                       \
+  } while (0)
+
+#define timersub(a, b, result)                                               \
+  do {                                                                        \
+    (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;                             \
+    (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;                          \
+    if ((result)->tv_usec < 0)
+    {                                                                         \
+      --(result)->tv_sec;                                                     \
+      (result)->tv_usec += 1000000;                                           \
+    }                                                                         \
+  } while (0)
+
 // RTC (DS3231/DS1307 driver as bcm)
 #define RTC_PWR                         (PIN_1) // +3.3 V
 #define RTC_PWR2                        (PIN_4) // dec: 104 +5 V
@@ -1004,9 +1034,9 @@ char j;
 float x;
 
 //pi memory-map peripherials:
-int MEM_FB;
 char *gpio_mem;
 char *gpio_map;
+
 char *spi0_mem;
 char *spi0_map;
 
@@ -1043,9 +1073,9 @@ int dmachannel;
 int gpiopin;
 char *gps;
 
-float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6))); // 2000*228=456000
+float divider = (PLLD_FREQ / (2000 * 228 * (1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
 uint32_t idivider = (float) divider;
-uint32_t fdivider = (uint32_t) ((divider-idivider)*pow(2, 12));
+uint32_t fdivider = (uint32_t) ((divider-idivider) * pow (2, 12));
 
 // menu variables
 int menuoption;
@@ -1328,7 +1358,7 @@ void clearscreen ()
   printf ("\n\033[H\033[J\n");
   //fflush (stdin); // alterntives
   //clsscr ();
-  //system ("clear"); // works for terminal
+  system ("clear"); // works for terminal
   return;
 }
 
@@ -1372,7 +1402,7 @@ int gpioselect ()
     printf ("\nUsing GPIO 21, mostly used for Pi 4 \n");
     //
   }
-  else if (gpiopin == 20 ||29 || 32 || 34 || 38)
+  else if (gpiopin == 20 || 29 || 32 || 34 || 38)
   {
     printf ("\nUsing alternative GPIO setup ... \n");
     //
@@ -1423,7 +1453,7 @@ int filecheck (char *filename)  // expected int
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
-	filename = (char *) malloc (128); // allocating memory for filename
+	char *filename = (char *) malloc (128); // allocating memory for filename
 	sprintf (filename, "%s", "file.ft");
 	char *stdfile = "sound.wav";
   if (filename != stdfile)
@@ -1934,7 +1964,7 @@ void gpsselect () // char *gps
 void modulate (int l)
 {
 	printf ("\nModulate carrier ... \n");
-	ACCESS (CM_GP0DIV) == (CARRIER << 24) + (MODULATE + l);  //
+	ACCESS(CM_GP0DIV) == ((CARRIER << 24) + (MODULATE + l));  //
   return;
 }
 
@@ -1942,7 +1972,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 {
 		void *m = valloc (4096);
 
-		((int*) m) [0] = 1; // use page to force allocation
+		((int*) m) [0] = (1); // use page to force allocation
 
 		mlock (m, 4096); // lock into ram
 
@@ -1971,17 +2001,21 @@ void carrierhigh () // enables it
 	printf ("\nSetting carrier high ... \n");
 // Added functions to enable and disable carrier GPCTL has 9 parameters but here 7 used ?
 // Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
-  struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set it to 1 = HIGH
-  ACCESS (CM_GP0CTL) == *((int*) &setupword); // setting cm
-  printf ("\ncarrier is high ... \n");
+  struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
+  ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
+  while (!(ACCESS(CM_GP0CTL)&0x80)); // Wait for busy flag to turn on.
+
+  printf ("\nCarrier is high ... \n");
   return;
 }
 
 void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
-  struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // set it (clock) to 0 = LOW
-  ACCESS (CM_GP0CTL) == *((int*) &setupword);
+  struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
+  ACCESS (CM_GP0CTL) = *((int*) &setupword);
+  while (ACCESS(CM_GP0CTL)&0x80); //
+
   printf ("\ncarrier is low ... \n");
   return;
 }
@@ -2017,7 +2051,7 @@ static void terminate (int num)
 
     if (vAddr != NULL)
     {
-        unmapmem (vAaddr, (NUM_PAGES*4096));
+        unmapmem (vAaddr, (NUM_PAGES * 4096));
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
     }
@@ -2027,36 +2061,138 @@ static void terminate (int num)
     exit (num);
 }
 
-void setupfm ()
+void usleep2 (long us)
+{
+  nanosleep ((struct timespec []) { {0, us*1000} }, NULL); //
+  return;
+}
+
+void delayMicrosecondsHard (unsigned int howLong)
+{
+  struct timeval tNow, tLong, tEnd ;
+
+  gettimeofday (&tNow, NULL) ;
+  tLong.tv_sec  = howLong / 1000000 ;
+  tLong.tv_usec = howLong % 1000000 ;
+  timeradd (&tNow, &tLong, &tEnd) ;
+
+  while (timercmp (&tNow, &tEnd, <))
+  {
+    gettimeofday (&tNow, NULL) ;
+  }
+return;
+}
+
+void setupio ()
 {
   printf ("\nSetting up FM ... \n");
 
+  struct sched_param sp;
+  memset (&sp, 0, sizeof (sp));
+  sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
+  sched_setscheduler (0, SCHED_FIFO, &sp);
+  mlockall (MCL_CURRENT | MCL_FUTURE);
+
   // open /dev/mem
-  if ( MEM_FD  < 0)
+  if (MEM_FD < 0)
 	{
         printf ("\nCan't open /dev/mem ! \n"); // via bcm possible
         return;
   }
 
+  // Allocate MAP block
+	if ((gpio_mem = malloc (BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
+  {
+		printf ("\nAllocation error \n");
+		exit ();
+	}
+
+	// Make sure pointer is on 4K boundary
+	if ((unsigned long) gpio_mem % PAGE_SIZE)
+	    gpio_mem += PAGE_SIZE - ((unsigned long) gpio_mem % PAGE_SIZE);
+
+	// Now map it
+	  gpio_map = (unsigned char *) mmap (
+		gpio_mem,
+		BLOCK_SIZE,
+		PROT_READ | PROT_WRITE,
+		MAP_SHARED | MAP_FIXED,
+		MEM_FD,
+		GPIO_BASE);
+
+	if ((long) gpio_map < 0)
+  {
+	    printf ("\nmmap error %d \n", (int) gpio_map);
+	    exit ();
+  }
+
+   gpio = (volatile unsigned *) gpio_map;
+
+	 carrierhigh ();
+   return;
+}
+
+void setupfm ()
+{
   allof7e = (unsigned*) mmap (
-								NULL,
-								BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
-								PROT_READ|PROT_WRITE, //
-								MAP_SHARED, //
-								MEM_FD, //
-								PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
+                NULL,
+                BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
+                PROT_READ|PROT_WRITE, //
+                MAP_SHARED, //
+                MEM_FD, //
+                PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
 
   if ((int) allof7e == -1)
-	{
-		exit (-1);
-	}
+  {
+    exit ();
+  }
 
    SETBIT (GPFSEL0, 14);
    CLRBIT (GPFSEL0, 13);
    CLRBIT (GPFSEL0, 12);
 
-	 carrierhigh ();
-   return;
+  struct GPCTL setupword = {6, 1, 0, 0, 0, 1,0x5A};
+	ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
+	ACCESS (CM_GP0CTL) = *((int*) &setupword);
+
+  return;
+}
+
+void sendByteAsk (unsigned char byte, int sleep)
+{
+	for (j = 0; j < 8; j++)
+  {
+		if ((byte&(1 << j)) > 0)
+    {
+			carrierlow ();
+			delayMicrosecondsHard (sleep);
+			usleep2 (sleep);
+			carrierhigh ();
+			delayMicrosecondsHard (sleep);
+			//usleep2 (sleep);
+		}
+		else if ((byte&(1 << j)) == 0)
+    {
+			carrierhigh ();
+			delayMicrosecondsHard (sleep);
+			//usleep2 (sleep);
+			carrierlow ();
+			delayMicrosecondsHard (sleep);
+			//usleep2 (sleep);
+		}
+	}
+	carrierlow ();
+  return;
+}
+
+void sendStringAsk (char *string, int sleep)
+{
+	int length = strlen (string);
+	for (j = 0; j < length; j++)
+  {
+		sendByteAsk (string [j], sleep);
+	}
+  return;
 }
 
 // relevant features for transmitting stuff
@@ -2112,7 +2248,7 @@ void play_fm () // char *filename, float freq, int samplerate
         float sample = datanew + (dataold-datanew)/(1-fmconstant); // fir of 1 + s tau
 				printf ("\nsample: %f \n", sample);
 
-        float dval = sample*12.50; // actual transmitted sample
+        float dval = (sample*12.50); // actual transmitted sample
         // 15.75 Hz is standard bandwidth (about 75 kHz), maybe DEVIATION-input here later
 				printf ("\ndval: %f \n", dval);
 
@@ -2194,7 +2330,7 @@ void setupDMA ()
      // make copy instructions
   	 //struct CB* instr0 = (struct CB*)instrPage.v;
 
-     for (int i=0; i<4096/sizeof(struct CB); i++)
+     for (int i = 0; i < (4096/sizeof (struct CB)); i++)
      {
          /*
          instrs[instrCnt].v = (void*) ((int) instrPage.v + sizeof(struct CB)*i);
@@ -2267,7 +2403,7 @@ void unsetupDMA ()
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 
-	exit (-1);
+	exit ();
 }
 
 // sample funcs
@@ -2281,12 +2417,12 @@ int sampleselect () // char *filename, int samplerate
 	printf ("\nSamplerate/bit select starting \n");
 
 	/*
-  if (!(fp = open (filename, SFM_READ, &sfinfo))) // check wat SFM sfinfo does!?
+  if (!(fp = open (filename, SFM_READ, &sfinfo))) // check what SFM and  sfinfo do!?
   {   // Open failed so print an error message.
         printf ("\nNot able to open input file for sampleselect %s \n", filename);
 				printf ("\nNot able to open filepointer for sampleselct %d \n", fp);
         // Print the error message from libsndfile.
-        return 1;
+        return (1);
   }
 
 	//sfinfo.samplerate = samplerate;
@@ -2303,7 +2439,7 @@ int sampleselect () // char *filename, int samplerate
 	else
   {
 	printf ("\nInput samplerate must be at least 22.050 kHz for FM or 14.500 kHz for AM! \n");
-	return 1;
+	return (1);
 }
 */
 
@@ -2312,12 +2448,13 @@ int sampleselect () // char *filename, int samplerate
 	{
 
 		printf ("\nError: Input must be 16 bit! \n");
-		return 1;
+		return (1);
 	}
 	else
 	{
+
 		printf ("\nInput is 16 bit! \n");
-		return 0;
+		return (0);
 	}
 
 	// While there are frames in the input file, read them,
@@ -2331,12 +2468,12 @@ int sampleselect () // char *filename, int samplerate
 	 // where to input the freq like in fm
 	  for (k = 0; k < nb_samples; k++)
 	  {
-		  char b = data [k*channels];
+		  char *b = data [k*channels];
 			printf ("\nChannel buffer b = %c \n", b);
 			if (channels == 0)
 			{
 				printf ("\nSample Error! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
-        return -1;
+        return (-1);
 			}
 			else if (channels == 1)
 			{
@@ -2355,7 +2492,7 @@ int sampleselect () // char *filename, int samplerate
 			else
 			{
 					printf ("\nError: File has %d Channels! channels > 2 not supported yet! \n", channels);
-          return -1;
+          return (-1);
 			}
 
  			// was defined as global var above
@@ -2379,12 +2516,9 @@ int sampleselect () // char *filename, int samplerate
 			sampler = (1E9/samplerate); // 44.100
 			printf ("\nsampler: %f \n", sampler);
 
-			//printf ("\nNow writing tone in am ... \n");
-			//void WriteTone (); // somehow input freq here ?!?
-
 			//return channels, ampf, ampf2, x, factorizer, sampler;
 	  } // for loop
-		printf ("\nending readcount ... \n");
+		printf ("\nEnding readcount ... \n");
   } // while loop
     // Close input and output files
     //fclose (FileFreqTiming);
@@ -2395,7 +2529,7 @@ int sampleselect () // char *filename, int samplerate
 // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 
 // AM
-void WriteTone ()
+void play_am ()
 {
 	float Frequencies = freq;
 	typedef struct
@@ -2435,7 +2569,7 @@ void modulationam () // int argc, char **argv [], char, *mod
 		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
 		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
-		WriteTone (); // actual modulation stuff here for am -> write tone? maybe better name later
+		play_am (); // actual modulation stuff here for am -> write tone? maybe better name later
 	  return;
 }
 
