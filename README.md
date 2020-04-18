@@ -304,7 +304,7 @@ or use a 1:1 balun choke with a ring e.g.: FT23 (ferrite core) - 43 (diameter)
 
 with 2x 4 turns for CB (27 MHz) to smooth the HF out
 
-or 1:1.5 (e.g. 14:9) from 75 Ohm (TV-cable) to 50 Ohm conversion
+or 1:1.5 (e.g. 4:6 / 8:12) from 75 Ohm (TV-cable) to 50 Ohm conversion
 
 You can compare the different materials for specific frequencies:
 

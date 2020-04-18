@@ -169,14 +169,14 @@ OBJECTS=pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
 $(OBJECTS)
 
 ## generating standard binary
-pifunk.out:	$(SOURCE) $(OBJECTS)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk.out
+pifunk.out:	$(SOURCE) pifunk.h
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -lpifunk -save-temps -o bin/pifunk.out
 ## explicit binary
-pifunk.bin: $(SOURCE) $(OBJECTS)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk.bin
+pifunk.bin: $(SOURCE) pifunk.h
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk.bin
 ## normal binary
-pifunk:			$(SOURCE) $(OBJECTS)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk
+pifunk:			$(SOURCE) pifunk.h
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk
 ## executable list
 #allbin: pifunk.out pifunk.bin pifunk
 EXECUTABLES=pifunk.out pifunk.bin pifunk
