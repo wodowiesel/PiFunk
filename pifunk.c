@@ -16,11 +16,12 @@ version = 0.1.7.8e
 - Usage at **your own risk** !!
 
 - Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited or need at least a HAM-License!
-  transmissions in EU only 0.4 mW ERP "effective radiated power" allowed with out special licences
+
+  transmissions in EU only 0.4 mW ERP "effective radiated power" allowed
 
 - Pi operates with square-waves (²/^2)!!
 
--> "dirty" Transmissions (TX) simultaneously on permitted frequencies possible!
+-> "dirty" transmissions (TX) simultaneously on permitted frequencies possible!
 
   Use Low-/High-Band-Pass-Filters !!
 
@@ -67,8 +68,8 @@ sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 cd PiFunk // goto path
 // https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Preprocessor-Options.html
 // https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
-->-lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
- =>compile with admin/root permissions!!
+-> -lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
+ => compile with admin/root permissions!!
  Libs: sudo gcc -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC pifunk.c -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
  program: sudo gcc -g3 -std=gnu99 -Iinclude -D_USE_MATH_DEFINES -D_GNU_SOURCE -Llib -L/opt/vc/lib -lm -Llib -lbcm2835 -lsndfile -lgnu -lbcm_host -fPIC pifunk.c -O3 -o bin/pifunk bin/pifunk.out
  or do make (compile flags in make included)
@@ -79,11 +80,16 @@ cd PiFunk // goto path
  or -std=c17 (11/14 also possible)
  -E tells to stop after preprocessing stage
  -v verbose
+ `-a` keyword performs basic-block counting annotations for gdb & gprof
+This option is supported for HP/UX compatibility.
+The keyword argument must be one of the strings ‘archive’, ‘shared’, or ‘default’.
+ ‘-aarchive’ is functionally equivalent to ‘-Bstatic’, and the other two keywords are functionally equivalent to ‘-Bdynamic’.
+  This option may be used any number of times.
+ `-Q` Print function names. Show statistics about compilation passes.
 
 -> real gpio hardware can't be simulated by VM! must be executed and compiled on pi wtith linux!
-As virtual machine best possible with Qemu.
-or alternative with everpad: not sure about this, rather not using it
-sudo wget -o -http://beta.etherpad.org/p/pihackfm/export/txt >/dev/null | gcc -std=gnu99 -g3 -lm -x c && ./pifunk.out sound.wav // old
+As virtual machine best possible with Qemu
+or rather not using it http://beta.etherpad.org/p/pihackfm/export/txt (old)
 
 Usage:
 default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign

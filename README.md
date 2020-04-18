@@ -138,9 +138,15 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 `-ggdb3` for GNU debugger informations level 3
 
+`-pg` for GNU Profiler (gprof) informations
+
+`-Q` Prints function names & shows statistics about compilation passes
+
+`-O3` for optimization stage 1-3 (memory, speed etc.) via compiler
+
 `-Wall` for debug all warning informations
 
-`-Werror` for debug error informations
+`-pedantic-errors` for error console messages if problem between c99 and gnu extensions
 
 `-v` Print compilation verbose informations
 
@@ -150,8 +156,6 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 (`-std=gnu++17` if you like with version 11/14/17 or later)
 
-`-pedantic-errors` for error console messages if problem between c99 and gnu extensions
-
 `-Iinclude ` for using include-directory with header files
 
 `-I/opt/vc/include/` for loading bcm headers folder-path
@@ -160,21 +164,23 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 `-L/opt/vc/lib` for loading bcm lib folder-path
 
-`-lgnu` for extra gnu-lib
+`-lgnu` for loading extra gnu-lib extentions
 
-`-lm` for math-lib is obligatory!
+`-lm` for math-lib it's obligatory!
 
-`-lbcm_host` for loading bcm firmware >= v1.20190718
+`-lbcm_host & -lbcm2835` for loading bcm firmware >= v1.20190718
 
-`-lpthread` lib for process threads
+`-lpthread` for loading process threads
 
-`-lgthread` lib for graphic threads (not needed right now)
+`-lgthread` for loading graphic threads (not needed right now)
 
-`-lsndfile` -l links library name for ALSA "snd"-lib
+`-lsndfile` for loading ALSA "snd"-lib (sound)
 
-`-lpifunk` for using own pifunk lib if needed or self-made beforehand see under b)
+`-lpifunk` for loading own pifunk lib if needed rather self-made beforehand see under b)
 
-`-shared` for generating shared object libraries
+`-shared` for generating shared object (.so/.dll) libraries
+
+`-fPIC` for generating position independent code (PIC) for bigger shared objects
 
 `-S` (uppercase) for compiling Assembler code without linking
 
@@ -192,15 +198,11 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 `-D_POSIX_C_SOURCE=200809L` for POSIX2 Macros needed with bcm (or 199309L for POSIX1)
 
-`-DRASPI=1` defines the macro to be used by the preprocessor (here the Pi model or 0-4, else std-values 0-3)
+`-DRASPI1` defines the macro to be used by the preprocessor (here the Pi model or 0-4)
 
  -> will be detected by the Makefile via the type of the ARM-Processor
 
  (other macros possible if in the C-code implemented)
-
-`-fPIC` for generating position independent code (PIC) for bigger programs
-
-`-O3` for optimization stage 1-3 (memory, speed etc.) via compiler
 
 `-o` for individual output-filename flag
 
@@ -212,7 +214,7 @@ a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
 *.i=assembled preprocessor C-code, *.S=assembler-code, *.s=preprocessed assembler-code,
 
-*.o=compiled object, *.lib=library object, *.a=archive object, *.so=shared dynamic library object,
+*.o=compiled object, *.lib=static library, *.a=static archive, *.so=shared object, *.dll=dynamic linked library
 
 *.out=default binary, pifunk(.bin)=executable binary (program)
 
@@ -272,7 +274,7 @@ ___
 
 a) Use (original) power supply 10 W, +5 V @ ~2 A or ~ +5 V / 500 mA via mini-USB 2.0 or 5 V Pins possible)
 
-b) Check specifications: my Pi B+ v1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
+b) Check specifications: my Raspberry Pi B+ Rev. 1.2 @ 700 MHz / 512 MB RAM on ARM processor with driver bcm2835-v1.55
 
 -> SoC from Broadcom	depending on pi model: BCM2709, BCM2711 // BCM2835,	BCM2836,	BCM2837, BCM2837B0
 
@@ -298,9 +300,11 @@ d) You can try to smooth the Resistance R out with a 1:X (1-43)
 
 if using long HF antenna for adapting Resistance
 
-or use a 1:1 balun choke with a ferrite-ringcore or 1:1.5 from 75 Ohm to 50 Ohm
+or use a 1:1 balun choke with a ring e.g.: FT23 (ferrite core) - 43 (diameter)
 
-e.g.: FT23-43 with 2x 4 turns for CB (27 MHz)
+with 2x 4 turns for CB (27 MHz) to smooth the HF out
+
+or 1:1.5 (e.g. 14:9) from 75 Ohm (TV-cable) to 50 Ohm conversion
 
 You can compare the different materials for specific frequencies:
 
@@ -406,15 +410,18 @@ ___
 
 - Usage at **your own risk** !!
 
-- Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited or need at least a HAM-License!
+- Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited
 
-- Pi operates with square-waves (²/^2)!! Use Low-/High-Band-Pass-Filters with dry (not electrolytic) capacitors
+  or need at least a HAM-License! transmissions in EU only with 0.4 mW ERP "effective radiated power" allowed
 
-  (C=10-100 pF (Farad)) with solenoid (ring) toroid (ferrite) chokes (B=10-50 uH (Henry) like the FT37-43)
+- Pi operates with square-waves (²/^2)!! Always use Low-/High-Band-Pass-Filters
+
+  for transmissions (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
+
+  with dry (not electrolytic) capacitors (C=10-100 pF (Farad)) with solenoid (ring) toroid (ferrite material) chokes with an inductance (B=10-50 uH (Henry) like the FT37-43)
 
   or resistors (R=~10 kOhm), diodes to prevent backflow
 
-  transmission (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
 
 * Help / Testers and Feedback are always appreciated! :)
 

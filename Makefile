@@ -38,21 +38,23 @@ $(CINC)
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
 
-CFLAGS=-std=gnu99 -fPIC -O3 ## gnu extention & highest optimization level
+CFLAGS=-std=gnu99 -O3 ## gnu extention & highest optimization level
 $(CFLAGS)
-CXXFLAGS=-std=gnu++17 -fPIC -O3
+CXXFLAGS=-std=gnu++17 -O3 ## for c++
 $(CXXFLAGS)
 
 ASFLAGS=-S -CC ## upper case assembler code without linker
 $(ASFLAGS)
 PPFLAGS=-E -CC ## c-preproccessor, -C or CC keeps the comments in preprocessor
 $(PPFLAGS)
-LIFLAGS=-c## no linker
+LIFLAGS=-c ## no linker used
 $(LIFLAGS)
+SHFLAGS=-shared -fPIC ## make shared big libraries
+$(SHFLAGS)
 
-DEBUG=-Wall -v -g3 -ggdb3 -pg
-## -pg -> makes profiles for object code for analysis with gprof
-## -dM (dumps preprocessor Macros) not needed
+DEBUG=-Wall -v -g3 -ggdb3 -pg -Q
+## -pg makes profiles for object code for analysis with gprof
+## -dM dumps preprocessor Macros -> not needed
 ## -Werror makes -> all warnings into errors -w inhibits warnings
 ## --working-directory
 ## -pedantic-errors
@@ -103,7 +105,7 @@ endif
 
 ifeq ($(UNAME), armv6)
 PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
-TARGET=RASPI0 # & Pi W
+TARGET=RASPI0 ## & Pi W
 endif
 
 ifeq ($(UNAME), armv6l)
@@ -133,8 +135,8 @@ $(TARGET)
 
 ## Generating objects in gcc specific order
 ## c-translated assembler-code
-pifunk.s:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm: arm-none-eabi-objdump
+pifunk.S:	$(SOURCE) pifunk.h
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.S ## for arm: arm-none-eabi-objdump
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal asm suffix
 ## precompiled/processor c-code
 pifunk.i:	$(SOURCE) pifunk.h
@@ -154,7 +156,7 @@ libpifunk.lib:	libpifunk.o libpifunk.a
 						$(USER) ranlib libpifunk.lib
 ## shared object
 libpifunk.so:	libpifunk.o
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -shared -o lib/libpifunk.so lib/libpifunk.o
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so lib/libpifunk.o
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib libpifunk.so
 ## dynamic linked library
@@ -182,7 +184,7 @@ $(EXECUTABLES)
 
 .PHONY:		pifunklib
 pifunk.so:	$(SOURCE)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -shared -o lib/libpifunk.so libpifunk.o
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so libpifunk.o
 
 .PHONY:		pifunk+
 pifunk+:	$(SOURCECXX) $(OBJECTS)
