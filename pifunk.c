@@ -4,16 +4,42 @@ Author: D. W. a.k.a. WodoWiesel
 version = 0.1.7.8e
 
 ----Licence----------------------------------------------------------------------------------------------
-    GPL v3 !!
+                    GPL v3 !!
+
 -----Disclaimer------------------------------------------------------------------------------------------
-Rewritten for own purposes!
-no guarantee, warranty for anything! Usage at own risk!
-you should ground your antenna, eventually diode or 10 uF-caps
-at least use dummyloads 50 ohm @ max. 4 watts (S = 0-level) and compare signals with swr/pwr-meter!
-do not shortout or do overstress it with more than 3.3V! it may cause damages
-more infos about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
-Access on ARM-System !!! Running Linux, mostly on Raspberry Pi (me Pi1 1.2 B+ rev.2 2014)
-used python 3.7.4 on original Raspbian
+- Rewritten for own purposes!
+
+- Private Project! It's Early Access & Work in Progress (WIP)!
+
+- I'm not a professional, so **NO guarantees or warranty** for any damage etc.!!
+
+- Usage at **your own risk** !!
+
+- Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited or need at least a HAM-License!
+  transmissions in EU only 0.4 mW ERP "effective radiated power" allowed with out special licences
+
+- Pi operates with square-waves (²/^2)!!
+
+-> "dirty" Transmissions (TX) simultaneously on permitted frequencies possible!
+
+  Use Low-/High-Band-Pass-Filters !!
+
+  with dry (not electrolytic) capacitors (C=10-100 pF (Farad)) with solenoid (ring),
+
+  toroid (ferrite material) chokes with inductance (B=10-50 uH (Henry) like the FT37-43, depends on the Freq.)
+
+  or resistors (R=~10 kOhm), diodes to prevent backflow
+
+- You should always ground your antenna to prevent further damage!!
+
+- at least use dummyloads with 50 Ohm @ max. 4 Watt (S=0 level) and compare signals with swr/pwr-meter when no antenna is attached!
+
+- Do not shortout or do overstress it with more than 3.3V, it may cause damages!
+
+  more infos about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
+
+- Access on ARM-System and running Linux, normaly on Raspberry Pi (my Pi Model B+ Rev. 1.2 2014)
+  used python 3.7.4+ on original Raspbian
 
 !!!!!!! program needs more testing on real pi !!!!!!!
 --------------------------------------------------------------------------------------------------------
@@ -243,6 +269,7 @@ using namespace std; //
 #include <sys/ioctl.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
+#include <sys/poll.h>
 
 // linux kernel driver headers: path /usr/src/linux-headers-4.19.97+/include/
 #include <linux/types.h>
@@ -1093,7 +1120,7 @@ time_t t;
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
-int MEM_FD = open ("/dev/mem", O_RDWR|O_SYNC);
+int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_NONBLOCK);
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = NULL;
@@ -1458,11 +1485,11 @@ int filecheck (char *filename)  // expected int
 	char *stdfile = "sound.wav";
   if (filename != stdfile)
 	{
-     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // O_RDWR
+     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // O_RDWR
 	}
 	else
 	{
-	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644); // sounds/sound.wav directory should be tested
+	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // sounds/sound.wav directory should be tested
 	}
 	return fp;
 }
@@ -1978,7 +2005,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 
 		*vAddr = m; // we know the virtual address now
 
-		int fp = open ("/proc/self/pagemap", O_RDONLY); // "w"
+		int fp = open ("/proc/self/pagemap", O_RDONLY | O_NONBLOCK); // "w"
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
 
