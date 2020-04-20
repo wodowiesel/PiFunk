@@ -539,6 +539,7 @@ volatile unsigned 										(*allof7e); //
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
 
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
@@ -553,6 +554,7 @@ volatile unsigned 										(*allof7e); //
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
 
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) // dec: 4
@@ -560,8 +562,8 @@ volatile unsigned 										(*allof7e); //
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
-/*#else
-#error Unknown Raspberry Pi Revision */
+#else
+#warning  Unknown Raspberry Pi Revision
 #endif
 
 #ifdef  RASPI1 // == 1 // pi 1 - BCM2835 -> my version
@@ -569,6 +571,7 @@ volatile unsigned 										(*allof7e); //
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
 
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
@@ -584,6 +587,7 @@ volatile unsigned 										(*allof7e); //
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define BCM2837_PERI_BASE              (0x3F000000) // later version 2.1
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
 
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
@@ -599,6 +603,7 @@ volatile unsigned 										(*allof7e); //
 #define BCM2837_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
 #define BCM2837B0_PERI_BASE            (0x3F000000) // 3B+ and 3A+
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
 
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
@@ -611,6 +616,7 @@ volatile unsigned 										(*allof7e); //
 #ifdef  RASPI4 //== 4 // pi 4 - BCM2838
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+#define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
 #define BCM2838_PERI_BASE              (0x3F000000) // dec: 1056964608
 #define BCM2711_PERI_BASE              (0x3F000000) // coprocessor !!!
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
@@ -698,7 +704,6 @@ volatile unsigned 										(*allof7e); //
 #define CLK1_BASE_OFFSET                (0x00101078) // dec: 1052792
 #define CLK_LEN                         (0x1300) // dec: 4864
 
-#define GPIO_BASE_OFFSET                (0x00200000) // dec: 2097152
 #define GPIO_LEN                        (0x100) // dec: 256
 
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
@@ -791,13 +796,10 @@ SOURCES:
 7     216 MHz  HDMI auxiliary // not needed here in the program
 8-15  0 Hz     Ground
 
-clock-divider in the form of SOURCE/(DIV_I + DIV_F/4096)
-
+clock-divider in the form of (SOURCE/(DIV_I + DIV_F/4096))
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf
 Note, that the BCM2835 ARM Peripherals document contains an error and states that the denominator of the divider is 1024 instead of 4096.
-Uses 3 GPIO pins
-*/
-
+Uses 3 GPIO pins */
 #define A2W_PLLA_ANA0                   (0x1010/4) // 1028
 #define A2W_PLLC_ANA0                   (0x1030/4) // 1036
 #define A2W_PLLD_ANA0                   (0x1050/4) // 1044
