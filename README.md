@@ -397,7 +397,7 @@ extra single menu-flags: -> no further argument needed
 
 `[-h]` for help with more infos and arguments
 
-default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign` -g 7 -d 14 -b 12.50 -t 1 -x on
+default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 12.50 -t 1 -x on`
 
 Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi.
 
@@ -463,4 +463,4 @@ Would appreciate being named in the source, Thank you.
 
  15. Credits
 
-based onscripts/snippets from pifm/am, pifmadv, pifmrds
+based on scripts/snippets from pifm/am, pifmadv, pifmrds
