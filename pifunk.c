@@ -350,8 +350,8 @@ using namespace std; //
 
 // FW
 #include <soc/bcm2835/raspberrypi-firmware.h>
-//#include <drm/drm_fb_cma_helper.h>
-//#include <drm/drm_fb_helper.h>
+#include <drm/drm_fb_cma_helper.h>
+#include <drm/drm_fb_helper.h>
 
 // RTC support
 #include <linux/rtc.h>
