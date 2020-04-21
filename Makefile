@@ -135,8 +135,8 @@ $(TARGET)
 
 ## Generating objects in gcc specific order
 ## c-translated assembler-code
-pifunk.S:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.S ## for arm: arm-none-eabi-objdump
+pifunk.s:	$(SOURCE) pifunk.h
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm: arm-none-eabi-objdump
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal asm suffix
 ## precompiled/processor c-code
 pifunk.i:	$(SOURCE) pifunk.h
@@ -170,7 +170,7 @@ $(OBJECTS)
 
 ## generating standard binary
 pifunk.out:	$(SOURCE) pifunk.h
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -lpifunk -save-temps -o bin/pifunk.out
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFFLAGS) -save-temps -o bin/pifunk.out
 ## explicit binary
 pifunk.bin: $(SOURCE) pifunk.h
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk.bin

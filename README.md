@@ -14,7 +14,7 @@ ___
 
 0. Download Linux-Pi-Distro
 
-[Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.97
+[Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.97+
 
 or use the extra provided imager and extract and load bootable image on SD-card via Rufus
 
@@ -198,7 +198,7 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 `-D_POSIX_C_SOURCE=200809L` for POSIX2 Macros needed with bcm (or 199309L for POSIX1)
 
-`-DRASPI1` defines the macro to be used by the preprocessor (here the Pi model or 0-4)
+`-DRASPIX` defines the macro to be used by the preprocessor here the Pi model X=0-4
 
  -> will be detected by the Makefile via the type of the ARM-Processor
 
@@ -208,31 +208,42 @@ You can use this flags in your makefile or directly in your terminal if you pref
 
 10. Generating libraries:
 
-a) Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-code, *.h=headerfile,
+a) Automatic compilation
 
-*.i=assembled preprocessor C-code, *.S=assembler-code, *.s=preprocessed assembler-code,
+`sudo make` Using Makefile
+
+Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
+
+*.c=C-code, *.h=headerfile, *.S=assembler-code,
+
+*.i=assembled preprocessor C-code,  *.s=preprocessed assembler-code,
 
 *.o=compiled object, *.lib=static library, *.a=static archive, *.so=shared object, *.dll=dynamic linked library
 
-*.out=default binary, pifunk(.bin)=executable binary (program)
+*.out=default binary (program), pifunk(.bin)=executable binary
 
 b) manually compiling/linking libraries:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/`
+1. `sudo gcc pifunk.c -w -Q -std=gnu99 -g3 -ggdb3 -pg -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/`
 
-`-lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1`
+`-lbcm_host -lbcm2838 -lm -lpthread -lgnu -lsndfile -O3 -fPIC -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI1`
 
-`-o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.lib lib/pifunk.so`
+`-o lib/pifunk.o`
+
+2. `sudo gcc pifunk.o -w -Q -std=gnu99 -g3 -ggdb3 -pg -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/`
+
+`-lbcm_host -lbcm2838 -lm -lpthread -lgnu -lsndfile -O3 -fPIC -D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI1`
+
+`-shared -o lib/pifunk.so`
 
 c) manually compiling/linking executable binary:
 
-`sudo gcc -Wall -Werror -std=gnu99 -pedantic-errors -g3 -ggdb3 -Iinclude -I/opt/vc/include`
+`sudo gcc pifunk.c -Wall -Q -std=gnu99 -g3 -ggdb3 -pg -Iinclude -I/opt/vc/include`
 
-`-Llib -L/opt/vc/lib/ -lbcm_host -lm -lpthread -lgnu -lsndfile -shared -O3 -fPIC pifunk.c`
+`-Llib -L/opt/vc/lib/ -lbcm_host -bcm2835 -lm -lpthread -lgnu -lsndfile -O3`
 
-`-D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI=1 -o bin/pifunk`
+`-D_USE_MATH_DEFINES -D_GNU_SOURCE -DRASPI1 -o bin/pifunk`
 
 d) optional Pi-Flags:
 
@@ -246,25 +257,23 @@ d) optional Pi-Flags:
 
  `-ffast-math` increase speed for float ops and outside the IEEE-standard and deactivates errno-functions
 
- `sudo piversion` for checking your pi version
-
 e) Makefile commands:
 
  `sudo make piversion` for checking your pi version via make
+
+ `sudo make` for compilation with pre-configured flags for compilation for all Pi's
 
  `sudo make install` for installing pifunk files incl. build folder
 
  `sudo make uninstall` for uninstalling pifunk files
 
- `sudo make` for compilation with pre-configured flags for compilation for all Pi's
-
- `sudo make run` for running with standard pifunk flags
+ `sudo make run` for running pifunk with standard predefined flags
 
  `sudo make help` for starting help command of pifunk
 
  `sudo make assistant` for starting step-assistant of pifunk
 
- `sudo make clean` for removing pifunk.out and pifunk.o files in bin folder if necessary
+ `sudo make clean` for removing binary and library files
 
 ___
 
@@ -384,17 +393,17 @@ extra single menu-flags: -> no further argument needed
 
 `[-a]` for assistant in step-by-step
 
-`[-h]` for help with more infos and arguments
-
 `[-u]` for extra menu (csv, commandline)
 
-default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign` -g 7 -d 14 -b 12.50 -t 1 -x off
+`[-h]` for help with more infos and arguments
+
+default: `sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign` -g 7 -d 14 -b 12.50 -t 1 -x on
 
 Radio works with .wav-file with 16-bit @ 22050.000 [Hz] mono / 0.1-700 to 1500 MHz range depending on the Pi.
 
-It's recommended not to transmit on frequencies higher than the processor speed at the moment to prevent stuttering/lags,
+It's recommended not to transmit on frequencies higher than the processor speed at the moment
 
-but results would be interesting to know with overclocking.
+to prevent stuttering/lags, but results would be interesting to know with overclocking.
 
 Explicit CTSS-Tones (38 included) for PMR can be found here as a list: [CTSS](ctsspmr.csv)
 
@@ -418,10 +427,11 @@ ___
 
   for transmissions (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
 
-  with dry (not electrolytic) capacitors (C=10-100 pF (Farad)) with solenoid (ring) toroid (ferrite material) chokes with an inductance (B=10-50 uH (Henry) like the FT37-43)
+  with dry (not electrolytic) capacitors (C=10-100 pF (Farad)) with solenoid (ring)
+
+  toroid (ferrite material) chokes with an inductance (B=10-50 uH (Henry) like the FT37-43)
 
   or resistors (R=~10 kOhm), diodes to prevent backflow
-
 
 * Help / Testers and Feedback are always appreciated! :)
 
@@ -453,4 +463,4 @@ Would appreciate being named in the source, Thank you.
 
  15. Credits
 
-based on pifm/am, pifmadv, pifmrds scripts/snippets
+based onscripts/snippets from pifm/am, pifmadv, pifmrds

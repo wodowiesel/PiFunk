@@ -430,41 +430,40 @@ using namespace std; //
 #endif
 
 #ifdef __LINUX__
-  //printf ("\nProgram runs under LINUX! \n");
+  #warning Program runs under LINUX!
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __UNIX__
-  //printf ("\nProgram runs under UNIX! \n");
+  #warning Program runs under UNIX!
 	#pragma GCC dependency "pifunk.h"
 #endif
 
 #ifdef __ARM__
-  //printf ("\nProgram runs under ARM-Architecture! \n");
+  #warning Program runs under ARM-Architecture!
   //#pragma ARM
   // same as -CODE32
   //#error NOT ARM
 #endif
 
 #ifdef __ARM64__
-  //printf ("\nProgram runs under ARM64-Architecture! \n");
-  //#pragma ARM
-  // same as -CODE32
-  //#error NOT ARM
+  #warning Program runs under ARM64-Architecture!
+  //#pragma ARM64
+  //#error NOT ARM64
 #endif
 
 #ifdef __GNUC__
-  // printf ("\nUsing GNU C with ANSI ISO C99 as GNU99! \n");
+  #warning Using GNU C with ANSI ISO C99 as GNU99!
    //#pragma GCC system_header
 #endif
 
 #ifdef _GNU_SOURCE
   //#define basename __basename_gnu
-   //printf ("\nUsing GNU Source Macro! \n");
+   #warning Using GNU Source Macro!
 #endif
 
 #ifdef __CPLUSPLUS
-  //printf ("\nUsing GNU C++ with ANSI ISO C++ 11/17/20! \n");
+  #warning Using GNU C++ with ANSI ISO C++ 11/17/20!
   extern "C"
   {
    printf ("\n__CPLUSPLUS \n");
@@ -476,9 +475,10 @@ using namespace std; //
 //#define _USE_MATH_DEFINES 1 // for math lm lib
 #endif
 
-#ifdef __STDC_VERSION__ = (199901L)
-   /*#warning "\nPlease compile with flag -std=c99\n" string */
-   //printf ("\nUsing GNU C with C99 standard! \n");
+#ifdef __STDC_VERSION__
+   //#define _STDC_VERSION (199901L)  // -std=c99
+   #warning Using GNU C with C99 standard!
+
 #endif
 
 //------------------------------------------------------------------------------
@@ -497,10 +497,10 @@ using namespace std; //
 #define TRUE                  (1) //
 
 // predefine if needed when not using bcm header
-//#define HIGH 									(0x1) // 1
-//#define LOW 									(0x0) // 0
-//#define sleep 					     	[1000] // for waiting between functions & tasks
-#define usleep 								[1000] //
+//#define HIGH 						   (0x1) // 1
+//#define LOW 							 (0x0) // 0
+//#define sleep 					   [1000] // for waiting between functions & tasks
+#define usleep 							 [1000] //
 
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(euler) = 0.4342944819
@@ -534,7 +534,23 @@ volatile unsigned 										(*allof7e); //
 
 
 // specific pi adresses & definitions
-#ifdef 	RASPI0 //== 0 // pi 0 zero & w
+// alternative old/different versions
+#ifdef  RASPBERRY || RPI // and RPI == 1
+#define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
+#define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
+#define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
+#define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
+#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
+
+#define MEM_FLAG                       (0x0C) // alternative
+#define CURBLOCK                       (0x04) // dec: 4
+#define CLOCK_BASE									   (19.2E6) //
+
+#define DMA_CHANNEL										 (14) //
+#define PLLD_FREQ 										 (500000000.) //
+
+// pi 0 zero & w
+#ifdef 	RASPI0 //== 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -549,24 +565,8 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RASPBERRY // and RPI == 1 // alternative old/different versions
-#define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
-#define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
-#define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
-#define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
-#define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
-
-#define MEM_FLAG                       (0x0C) // alternative
-#define CURBLOCK                       (0x04) // dec: 4
-#define CLOCK_BASE									   (19.2E6) //
-
-#define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ 										 (500000000.) //
-#else
-#warning  Unknown Raspberry Pi Revision
-#endif
-
-#ifdef  RASPI1 // == 1 // pi 1 - BCM2835 -> my version
+// pi 1 - BCM2835 -> my version
+#ifdef  RASPI1 // == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -581,7 +581,8 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ											 (500000000.) //
 #endif
 
-#ifdef  RASPI2 //== 2 // pi 2 - BCM2836/7
+// pi 2 - BCM2836/7
+#ifdef  RASPI2 //== 2
 #define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2836_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -597,7 +598,8 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef 	RASPI3 //== 3 // pi3 - BCM2837/B0
+// pi3 - BCM2837/B0
+#ifdef 	RASPI3 //== 3
 #define PERIPH_VIRT_BASE               (0x20000000) // dec: 536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2837_PERI_BASE              (0x3F000000) // register physical address dec: 1056964608 alternative name
@@ -613,7 +615,8 @@ volatile unsigned 										(*allof7e); //
 #define PLLD_FREQ 										 (500000000.) //
 #endif
 
-#ifdef  RASPI4 //== 4 // pi 4 - BCM2838
+// pi 4 - BCM2838
+#ifdef  RASPI4 //== 4
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
@@ -800,6 +803,7 @@ clock-divider in the form of (SOURCE/(DIV_I + DIV_F/4096))
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf
 Note, that the BCM2835 ARM Peripherals document contains an error and states that the denominator of the divider is 1024 instead of 4096.
 Uses 3 GPIO pins */
+
 #define A2W_PLLA_ANA0                   (0x1010/4) // 1028
 #define A2W_PLLC_ANA0                   (0x1030/4) // 1036
 #define A2W_PLLD_ANA0                   (0x1050/4) // 1044
@@ -1368,22 +1372,23 @@ struct DMAREGS
 };
 
 // program flag options
-struct option long_opt [] =
+static struct option long_opt [] =
 {
-		{"filename",		required_argument, NULL, 'n'}, // 1
-		{"freqency",   	required_argument, NULL, 'f'}, // 2
-    {"samplerate", 	required_argument, NULL, 's'}, // 3
-    {"mod",       	required_argument, NULL, 'm'}, // 4
-    {"power", 			required_argument, NULL, 'p'}, // 5
-    {"callsign",	  required_argument, NULL, 'c'}, // 6
-    {"gpiopin",	  	required_argument, NULL, 'g'}, // 7
-		{"dmachannel",	required_argument, NULL, 'd'}, // 8
-		{"bandwidth",	  required_argument, NULL, 'b'}, // 9
-    {"type",	  		required_argument, NULL, 't'}, // 10
-    {"gps",	  		  required_argument, NULL, 'x'}, // 11
-    {"assistant",		no_argument,       NULL, 'a'}, // 12
-    {"help",	  		no_argument,       NULL, 'h'}, // 13
-		{"menu",	  		no_argument,       NULL, 'u'}  // 14
+		{"filename",		required_argument, 0, 'n'}, // 1
+		{"freqency",   	required_argument, 0, 'f'}, // 2
+    {"samplerate", 	required_argument, 0, 's'}, // 3
+    {"mod",       	required_argument, 0, 'm'}, // 4
+    {"power", 			required_argument, 0, 'p'}, // 5
+    {"callsign",	  required_argument, 0, 'c'}, // 6
+    {"gpiopin",	  	required_argument, 0, 'g'}, // 7
+		{"dmachannel",	required_argument, 0, 'd'}, // 8
+		{"bandwidth",	  required_argument, 0, 'b'}, // 9
+    {"type",	  		required_argument, 0, 't'}, // 10
+    {"gps",	  		  required_argument, 0, 'x'}, // 11
+    {"assistant",		no_argument,       0, 'a'}, // 12
+    {"menu",	  		no_argument,       0, 'u'}, // 14
+    {"help",	  		no_argument,       0, 'h'},  // 13
+    {0,             0,                 0,  0 }
 };
 
 //----------------------------------------------------
@@ -1415,7 +1420,7 @@ int timer (time_t t)
    //info = localtime (&rawtime);
 	 //strftime (buffer, 80, "%x - %I:%M%p", info);
    printf ("\nCurrent formated date & time: %s \n", ctime (&t));
-   return 0;
+   return (0);
 }
 
 //-----------------------------------------
@@ -1493,11 +1498,11 @@ int filecheck (char *filename)  // expected int
 	char *stdfile = "sound.wav";
   if (filename != stdfile)
 	{
-     fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // O_RDWR
+    int fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // O_RDWR
 	}
 	else
 	{
-	   fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // sounds/sound.wav directory should be tested
+	  int fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // sounds/sound.wav directory should be tested
 	}
 	return fp;
 }
@@ -1865,7 +1870,7 @@ char modulationselect ()
 		        break;
 
 		case 3: printf ("\nExiting... \n");
-						exit (-1);
+						exit ();
 
 		default:	mod = "fm";
 						  printf ("\n Default = 1 \n");
@@ -1906,7 +1911,7 @@ int powerselect ()
 	return power;
 }
 
-void channelselect () // make a void
+int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
 	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
@@ -1926,33 +1931,29 @@ void channelselect () // make a void
 										channelmodepmr (); // gets freq from pmr list
 									  break;
 	}
-	return;
+	return channelmode;
 }
 
-void typeselect ()
+int typeselect ()
 {
   if (!strcmp (type, "1" || "analog"))
   {
     printf ("\nUsing analog mode \n");
     channelmodepmranalog ();
-    //break;
   }
   else if (!strcmp (type, "2" || "digital"))
   {
     printf ("\nUsing digital mode \n");
     channelmodepmrdigital ();
-    //break;
   }
   else
   {
     printf ("\nError in -t \n");
-    //break;
-    //return 1;
   }
- return;
+  return type;
 }
 
-void modetypeselect ()
+int modetypeselect ()
 {
 	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
 	scanf ("%d", &modeselect);
@@ -1970,12 +1971,12 @@ void modetypeselect ()
              channelselect ();
 						 break;
 	}
-	return;
+	return modeselect;
 }
 
-void gpsselect () // char *gps
+char gpsselect () // char *gps
 {
-  printf ("\nGPS-Status is %s \n", gps);
+
   if (gps == "on")
   {
   printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
@@ -1990,7 +1991,8 @@ void gpsselect () // char *gps
     printf ("\nError: Input not recognized! NOT using GPS \n");
     gps == "off";
   }
-  return;
+  printf ("\nGPS-Status is %s \n", gps);
+  return gps;
 }
 
 //---------------
@@ -2018,7 +2020,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		read (fp, &frameinfo, sizeof (frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
-    fatal ("\nCould not map memory! \n");
+    fprintf ("\nCould not map memory! \n");
     return;
 }
 
@@ -2058,7 +2060,7 @@ void carrierlow () // disables it
 void handSig () // exit func
 {
 		printf ("\nExiting ... \n");
-		exit (0);
+		exit ();
 }
 
 static void terminate (int num)
@@ -2104,16 +2106,16 @@ void usleep2 (long us)
 
 void delayMicrosecondsHard (unsigned int howLong)
 {
-  struct timeval tNow, tLong, tEnd ;
+  struct timeval tNow, tLong, tEnd;
 
   gettimeofday (&tNow, NULL) ;
-  tLong.tv_sec  = howLong / 1000000 ;
-  tLong.tv_usec = howLong % 1000000 ;
-  timeradd (&tNow, &tLong, &tEnd) ;
+  tLong.tv_sec  = howLong / 1000000;
+  tLong.tv_usec = howLong % 1000000;
+  timeradd (&tNow, &tLong, &tEnd);
 
   while (timercmp (&tNow, &tEnd, <))
   {
-    gettimeofday (&tNow, NULL) ;
+    gettimeofday (&tNow, NULL);
   }
 return;
 }
@@ -2299,27 +2301,27 @@ void play_fm () // char *filename, float freq, int samplerate
         bufPtr++;
         // problem still with .v & .p endings for struct!!
         //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
-        //usleep (1000); // leaving out sleep for faster process
+        usleep2 (1000); // leaving out sleep for faster process
 
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
 
         bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
-        //usleep (1000);
+        //usleep2 (1000);
 
         // Create DMA command to delay using serializer module for suitable time
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
 
         bufPtr++;
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
-        //usleep (1000);
+        //usleep2 (1000);
 
         // Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
         //((struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4+4);
 
         //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
-        //usleep (1000);
+        //usleep2 (1000);
 
         // Create DMA command for more delay.
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = fracval;
@@ -2581,7 +2583,7 @@ void play_am ()
 	{
 		fprintf (stderr, "\nUnable to write sample! \n");
 	}
-	printf ("\nWriting tone \n");
+	printf ("\nWriting tone in am \n");
   return;
 }
 
@@ -2699,7 +2701,7 @@ void ledinactive ()
 {
 	  // check if transmitting
     printf ("\nChecking transmission status ... \n");
-		while (!(play_fm () )) // || play_am ()))
+		while (!(void play_fm () )) // || play_am ()))
 		{
 				//cm2835_gpio_write (PIN_17, LOW);
 				printf ("\nLED off - No transmission! \n");
@@ -2715,7 +2717,7 @@ void ledactive ()
   if (!bcm2835_init ())
 	{
 		printf ("\nBCM 2835 init failed! \n");
-  	return 1;
+  	return (1);
 	}
 	else if (1)
 	{
@@ -2779,25 +2781,15 @@ void cgimodule () //
  return;
 }
 
-void assistant () // assistant
+void tx () // int argc, char **argv []
 {
-		printf ("\nStarting assistant for setting parameters! \n");
-		filecheck (filename);
-		sampleselect (); // filename, samplerate
-		modetypeselect ();
-    modselect ();
-    typeselect ();
-		powerselect ();
-    callsignselect ();
-		gpioselect ();
-		dmaselect ();
-		bandwidthselect ();
-    gpsselect ();
-		printf ("\nAll information gathered, parsing & going back to main! \n");
-    printf ("Press Enter/return to continue ... \n");
-		//while (getchar () != ""); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
-
-		return;
+  printf ("\nPreparing for transmission ... \n");
+	while (play_fm ()) // | play_am ())
+  {
+  ledactive ();
+  printf ("\nBroadcasting now! ... \n");
+  }
+	return;
 }
 
 void menu ()
@@ -2807,7 +2799,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv [], const char *short_opt); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv []); //, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR ... \n");
@@ -2826,32 +2818,42 @@ void menu ()
 						exit (0);
 
 		default: printf ("\nMenu: Default \n");
-             int main (int argc, char **argv [], const char *short_opt);
+             int main (int argc, char **argv []);
 		 				 break;
 	}
 	return;
 }
 
-void tx () // int argc, char **argv []
+void assistant () // assistant
 {
-  printf ("\nPreparing for transmission ... \n");
-	while (play_fm ()) // | play_am ())
-  {
-  ledactive ();
-  printf ("\nBroadcasting now! ... \n");
-  }
+		printf ("\nStarting assistant for setting parameters! \n");
+		filecheck (filename);
+		sampleselect (); // filename, samplerate
+		modetypeselect ();
+    modselect ();
+    typeselect ();
+		powerselect ();
+    callsignselect ();
+		gpioselect ();
+		dmaselect ();
+		bandwidthselect ();
+    gpsselect ();
+		printf ("\nAll information gathered, parsing & going back to main! \n");
+    //printf ("Press Enter/return to continue ... \n");
+		//while (getchar () != ""); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
 
-	return;
+		return;
 }
 
 //---------------------------------------------
 // MAIN
-int main (int argc, char **argv [], const char *short_opt) // arguments for global use must be in main!
+int main (int argc, char **argv []) // , const char *short_opt
+// arguments for global use must be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
   // option parameters
-  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:ahu"; // program flags
-	char **argv [0] = "pifunk"; // actual program-name
+  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:auh"; // program flags
+	//char **argv [0] = "pifunk"; // actual program-name
   char *programname = argv [0]; //
 	char *filename = "sound.wav"; // = argv [1]; n=name
 	float freq = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
@@ -2863,7 +2865,7 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	int dmachannel = (14); // = argv [8];
 	float bandwidth = (12.50); // = argv [9];
   int type = (1); // = argv [10]; analog -> default
-  char *gps = "off"; // = argv [11]; -> default: off
+  char *gps = "on"; // = argv [11]; -> default: off
   // menues
   char *a; // = argv [12];
   char *h; // = argv [13];
@@ -2875,31 +2877,34 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	fabsf () for float
 	*/
 	// for custom program-name, default is the filename itself
-	title ();
 	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
 	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	printf ("\nshort_opt: %s \n", short_opt);
-  printf ("\nlong_opt: %s \n", long_opt);
-	infos (); // information, disclaimer
+
+	void infos (); // information, disclaimer
 	int timer (time_t t); // date and time print
 
   bcm_host_get_peripheral_address ();
-  //printf (bcm_host_get_peripheral_size ());
-  //printf (bcm_host_get_sdram_address ());
+  bcm_host_get_peripheral_size ();
+  bcm_host_get_sdram_address ();
 
-  //int options; // = 0
   int option_index = (0);
+  int options = getopt (argc, argv, short_opt); // short_opt must be constant
+  int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
 
-  int options = getopt (argc, **argv [], short_opt); // short_opt must be constant
-  int flags = getopt_long (argc, **argv [], short_opt, long_opt, &option_index);
+  printf ("\n-----------------\n");
+	printf ("\nChecking short_opt: %c \n", short_opt);
+  printf ("\nChecking options: %d \n", options);
+  printf ("\nChecking options: %d \n", option_index);
+  printf ("\nChecking flags long : %d \n", flags);
+  printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
 
 	while (options != -1 || 0) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
 				fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-        return -1;
+        return (-1);
     }
 		else
 		{
@@ -2919,13 +2924,11 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 			case 's':
 							 samplerate = atoi (optarg);
 							 printf ("\nSamplerate is %d \n", samplerate);
-							 //sampleselect (); // filename, samplerate
 							 //break;
 
 			case 'm':
 							 mod = optarg;
                printf ("\nMod is %s \n", mod);
-               //void powerselect ();
                //break;
 
       case 'p':
@@ -2956,13 +2959,11 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
       case 't':
                 type = atof (optarg);
                 printf ("\nType is %d \n", type);
-                //void typeselect ();
                 //break;
 
       case 'x':
                gps = optarg;
                printf ("\nGPS-Tracking-Status is %s \n", gps);
-               //void gpsselect ();
                //break;
 
      // additional help functions
@@ -2970,16 +2971,27 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 							 if (argc == 1)
 							 {
 								printf ("\nAssistant activated! \n");
-								assistant ();
+								void assistant ();
 								break;
 							 }
 							 else
 							 {
 								printf ("\nError in -a \n");
 								break;
-								//return 1;
 							 }
-               //break;
+
+      case 'u':
+         		   if (argc == 1)
+         			 {
+         				 printf ("\nOpening menu \n");
+         				 void menu (); // extra menu for csv
+         				 break;
+         				}
+         				else
+         				{
+         					printf ("\nError in -u menu \n");
+         					break;
+         				}
 
 			case 'h':
 							 if (argc == 1)
@@ -2992,21 +3004,6 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 								printf ("\nError in -h help\n");
 								break;
 							 }
-               //break;
-
-			case 'u':
-							 if (argc == 1)
-							 {
-									printf ("\nOpening menu \n");
-									menu (); // extra menu for csv
-									break;
-							 }
-							 else
-							 {
-									printf ("\nError in -u menu \n");
-									break;
-							 }
-               //break;
 
       case '?':
                   printf ("Unknown option: %c \n", optopt);
@@ -3024,9 +3021,6 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 
 	// for debugging or information
 	printf ("\n-----------------\n");
-	printf ("\nChecking short_opt: %s \n", short_opt);
-  printf ("\nChecking long_opt: %s \n", long_opt);
-	printf ("\n-----------------\n");
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
@@ -3037,12 +3031,12 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
-  printf ("\nangle %f \n", angle);
-  printf ("\nI-value %f \n", I);
-  printf ("\nQ-value %f \n", Q);
-  printf ("\nRF-SUM (I+Q) %f \n", RF_SUM);
-  printf ("\nAmplitude-value %f \n", ampl);
-  printf ("\nChecking GPS-Status %s \n", gps);
+  printf ("\nangle: %f \n", angle);
+  printf ("\nI-value: %f \n", I);
+  printf ("\nQ-value: %f \n", Q);
+  printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
+  printf ("\nAmplitude-value: %f \n", ampl);
+  printf ("\nChecking GPS-Status: %s \n", gps);
   printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
 	printf ("\n-----------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
@@ -3056,10 +3050,10 @@ int main (int argc, char **argv [], const char *short_opt) // arguments for glob
 
 	// gathering and parsing all given arguments it to player
   printf ("\nTransmission starting ... \n"); // EOF
-	tx (); // int argc, char **argv [] transmission
+	void tx (); // int argc, char **argv [] transmission
   printf ("\nTransmission ended! \n");
   static void terminate (int num);
 
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
-	return 0;
+	return (0);
 }
