@@ -278,6 +278,28 @@ using namespace std; //
 #include <sys/poll.h>
 
 // linux kernel driver headers: path /usr/src/linux-headers-4.19.97+/include/
+// used for bcm from header to std include /usr/include/linux/
+#include <linux/list.h>
+#include <linux/poison.h>
+#include <linux/kernel.h>
+#include <linux/const.h>
+#include <linux/preempt.h>
+#include <linux/linkage.h>
+#include <linux/compiler_types.h>
+#include <linux/stringify.h>
+#include <linux/asm/linkage.h>
+#include <linux/thread_info.h>
+#include <linux/bug.h>
+#include <build_bug.h>
+#include <linux/restart_block.h>
+#include <linux/time64.h>
+#include <linux/bitops.h>
+#include <linux/bits.h>
+#include <linux/irqflags.h>
+#include <asm-generic/bitops/_ffs.h>
+#include <asm-generic/cmpxchg-local.h>
+#include <linux/atomic.h>
+#include <linux/export.h>
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -285,53 +307,86 @@ using namespace std; //
 #include <linux/reboot.h>
 #include <linux/kd.h>
 #include <linux/compiler.h>
-/* used for bcm from header to std include /usr/include/linux/
-#include "/usr/src/linux-headers-4.19.97+/include/linux/list.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/poison.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/kernel.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/const.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/preempt.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/linkage.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/compiler_types.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/stringify.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/export.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/asm/linkage.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/thread_info.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/bug.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/build_bug.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/restart_block.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/time64.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/math64.h"
-#include "/usr/src/linux-headers-4.19.97+/include/uapi/linux/time.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/bitops.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/bits.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/irqflags.h"
-#include "/usr/src/linux-headers-4.19.97+/include/asm-generic/bitops/_ffs.h"
-#include "/usr/src/linux-headers-4.19.97+/include/asm-generic/cmpxchg-local.h"
-#include "/usr/src/linux-headers-4.19.97+/include/linux/atomic.h"
-*/
-
-/*
+#include <linux/cpu.h>
+#include <linux/node.h>
+#include <linux/device.h>
+#include <linux/ioport.h>
+#include <linux/kobject.h>
+#include <linux/sysfs.h>
+#include <linux/kernfs.h>
+#include <linux/err.h>
+#include <linux/mutex.h>
+#include <linux/osq_lock.h>
+#include <linux/debug_locks.h>
+#include <linux/idr.h>
+#include <linux/radix-tree.h>
+#include <linux/rcupdate.h>
+#include <linux/cpumask.h>
+#include <linux/threads.h>
+#include <linux/bitmap.h>
+#include <linux/gfp.h>
+#include <linux/mmdebug.h>
+#include <linux/mmzone.h>
+#include <linux/cache.h>
+#include <linux/numa.h>
 #include <linux/init.h>
+#include <linux/seqlock.h>
+#include <linux/nodemask.h>
+#include <linux/pageblock-flags.h>
+#include <linux/page-flags-layout.h>
+#include <generated/bounds.h>
+#include <asm-generic/memory_model.h>
+#include <linux/pfn.h>
+#include <asm-generic/getorder.h>
+#include <linux/memory_hotplug.h>
+#include <linux/notifier.h>
+#include <linux/rwsem.h>
+#include <linux/srcu.h>
+#include <linux/workqueue.h>
+#include <linux/timer.h>
+#include <linux/ktime.h>
+#include <linux/jiffies.h>
+#include <linux/timekeeping.h>
+#include <linux/timekeeping32.h>
+#include <linux/debugobjects.h>
+#include <linux/rcu_segcblist.h>
+#include <linux/topology.h>
+#include <linux/smp.h>
+#include <linux/llist.h>
+#include <linux/percpu.h>
+#include <linux/printk.h>
+#include <linux/kern_levels.h>
+#include <linux/srcu.h>
+#include <linux/percpu-defs.h>
+#include <linux/rbtree.h>
+#include <linux/uidgid.h>
+#include <linux/highuid.h>
+#include <linux/kobject_ns.h>
+#include <linux/kref.h>
+#include <linux/refcount.h>
+#include <linux/klist.h>
+#include <linux/pm.h>
+#include <linux/completion.h>
+#include <linux/ratelimit.h>
+#include <linux/overflow.h>
+#include <linux/pm_wakeup.h>
+#include <linux/cpuhotplug.h>
+#include <linux/platform_device.h>
+#include <linux/of_platform.h>
+#include <linux/mod_devicetable.h>
+#include <linux/of.h>
+#include <linux/property.h>
+#include <linux/fwnode.h>
+#include <linux/rcutiny.h>
 #include <linux/io.h>
 #include <linux/clk.h>
-#include <linux/cpu.h>
 #include <linux/cpufreq.h>
-#include <linux/cpumask.h>
 #include <linux/cpu_cooling.h>
 #include <linux/math64.h>
 #include <linux/slab.h>
-#include <linux/err.h>
-#include <linux/notifier.h>
 #include <linux/bcd.h>
 #include <linux/interrupt.h>
-#include <linux/completion.h>
-#include <linux/platform_device.h>
-#include <linux/of_platform.h>
 #include <linux/pm_opp.h>
-#include <linux/export.h>
-#include <linux/sched/signal.h>
-#include <linux/device.h>
 #include <linux/ctype.h>
 #include <linux/pm_runtime.h>
 #include <linux/reset.h>
@@ -339,9 +394,11 @@ using namespace std; //
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
 #include <linux/textsearch.h>
-#include <linux/config.h>
+//#include <linux/config.h>
+
+#include <linux/sched/signal.h>
 #include <linux/regulator/consumer.h>
-*/
+
 
 // I2C & SPI support need
 #include <linux/i2c.h>
@@ -379,11 +436,11 @@ using namespace std; //
 
 // broadcom arm processor for mapping phys. addresses
 #include <bcm_host.h>
-#include <bcm2835.h> // -lbcm2835
-
 #include "opt/vc/include/bcm_host.h" // firmware stuff
+#include <bcm2835.h> // -lbcm2835
 #include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
-#include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
+
+//#include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
 //#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
 
 // activate for your specific system
