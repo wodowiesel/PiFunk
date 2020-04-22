@@ -378,6 +378,7 @@ using namespace std; //
 #include <linux/property.h>
 #include <linux/fwnode.h>
 #include <linux/rcutiny.h>
+
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/cpufreq.h>
@@ -394,11 +395,9 @@ using namespace std; //
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
 #include <linux/textsearch.h>
-//#include <linux/config.h>
-
+#include <linux/autoconf.h> // old config.h
 #include <linux/sched/signal.h>
 #include <linux/regulator/consumer.h>
-
 
 // I2C & SPI support need
 #include <linux/i2c.h>
@@ -437,14 +436,14 @@ using namespace std; //
 // broadcom arm processor for mapping phys. addresses
 #include <bcm_host.h>
 #include "opt/vc/include/bcm_host.h" // firmware stuff
-#include <bcm2835.h> // -lbcm2835
 #include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 
 //#include "bcm2709/src/bcm2709.h" // pi 1 & 2 A/A+ & B/B+ processor family
 //#include "bcm2711/src/bcm2711.h" // pi 3 & 4 A/B coprocessor
 
 // activate for your specific system
-#include "bcm2835/src/bcm2835.h" // pi 0/1
+#include <bcm2835.h> // -lbcm2835
+#include "bcm2835/src/bcm2835.h" // pi 0/1 v1.3
 //#include "bcm2836/src/bcm2836.h" // pi 2
 //#include "bcm2837/src/bcm2837.h" // pi 3
 //#include "bcm2838/src/bcm2838.h" // pi 4
