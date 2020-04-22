@@ -287,7 +287,7 @@ using namespace std; //
 #include <linux/linkage.h>
 #include <linux/compiler_types.h>
 #include <linux/stringify.h>
-#include <linux/asm/linkage.h>
+#include <asm/linkage.h>
 #include <linux/thread_info.h>
 #include <linux/bug.h>
 #include <build_bug.h>
@@ -296,7 +296,7 @@ using namespace std; //
 #include <linux/bitops.h>
 #include <linux/bits.h>
 #include <linux/irqflags.h>
-#include <asm-generic/bitops/_ffs.h>
+#include <asm-generic/bitops/__ffs.h>
 #include <asm-generic/cmpxchg-local.h>
 #include <linux/atomic.h>
 #include <linux/export.h>
@@ -378,26 +378,51 @@ using namespace std; //
 #include <linux/property.h>
 #include <linux/fwnode.h>
 #include <linux/rcutiny.h>
-
+#include <asm-generic/pci_iomap.h>
+#include <linux/logic_pio.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/cpufreq.h>
 #include <linux/cpu_cooling.h>
 #include <linux/math64.h>
 #include <linux/slab.h>
+#include <linux/kasan.h>
 #include <linux/bcd.h>
 #include <linux/interrupt.h>
+#include <linux/irqreturn.h>
+#include <linux/hardirq.h>
+#include <linux/ftrace_irq.h>
+#include <linux/vtime.h>
+#include <linux/context_tracking_state.h>
+#include <linux/static_key.h>
+#include <linux/jump_label.h>
+#include <linux/irq_cpustat.h>
+#include <linux/irq.h>
+#include <linux/irqhandler.h>
+#include <linux/irqdesc.h>
+#include <linux/hrtimer.h>
+#include <linux/timerqueue.h>
 #include <linux/pm_opp.h>
 #include <linux/ctype.h>
 #include <linux/pm_runtime.h>
 #include <linux/reset.h>
 #include <linux/dma-mapping.h>
+#include <linux/sizes.h>
+#include <linux/dma-debug.h>
+#include <linux/dma-direction.h>
+#include <linux/scatterlist.h>
+#include <linux/mm.h>
+#include <linux/mem_encrypt.h>
+#include <linux/hdmi.h>
+#include <linux/ww_mutex.h>
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
 #include <linux/textsearch.h>
-#include <linux/autoconf.h> // old (till kernel 2.6): config.h
+#include <linux/autoconf.h> // path include/generated
+//old (till kernel 2.6): config.h
 #include <linux/sched/signal.h>
 #include <linux/regulator/consumer.h>
+#include <linux/kgdb.h>
 
 // I2C & SPI support need
 #include <linux/i2c.h>
@@ -481,8 +506,8 @@ using namespace std; //
 
 //------------------------------------------------------------------------------
 // preproccessor definitions
-#ifndef _PIFUNK_C_
-  #define _PIFUNK_C_
+#ifndef PIFUNK_C
+  #define PIFUNK_C
 #endif
 
 #ifdef __LINUX__
@@ -538,7 +563,7 @@ using namespace std; //
 #endif
 
 //------------------------------------------------------------------------------
-// definitions & Makros
+// definitions & Macros
 #define VERSION 						 "0.1.7.8" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
@@ -591,7 +616,7 @@ volatile unsigned 										(*allof7e); //
 
 // specific pi adresses & definitions
 // alternative old/different versions
-#ifdef  RASPBERRY || RPI // and RPI == 1
+#ifdef  RASPBERRY || RPI// and RPI == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -604,6 +629,7 @@ volatile unsigned 										(*allof7e); //
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
+#endif
 
 // pi 0 zero & w
 #ifdef 	RASPI0 //== 0
