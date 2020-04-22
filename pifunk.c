@@ -395,7 +395,7 @@ using namespace std; //
 #include <linux/mailbox_client.h>
 #include <linux/pm_domain.h>
 #include <linux/textsearch.h>
-#include <linux/autoconf.h> // old config.h
+#include <linux/autoconf.h> // old (till kernel 2.6): config.h
 #include <linux/sched/signal.h>
 #include <linux/regulator/consumer.h>
 
@@ -2907,6 +2907,7 @@ int main (int argc, char **argv []) // , const char *short_opt
 // arguments for global use must be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
+  void title ();
   // option parameters
   const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:auh"; // program flags
 	//char **argv [0] = "pifunk"; // actual program-name
