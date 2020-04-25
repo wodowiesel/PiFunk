@@ -12,7 +12,7 @@ ___
 
 ### Configurations
 
-0. Download Linux-Pi-Distro
+0. Download Linux-Pi-Distribution
 
 [Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.97+
 
@@ -20,23 +20,31 @@ or use the extra provided imager and extract and load bootable image on SD-card 
 
 1. Get this program:
 
-`sudo apt-get install git` via git or download it on the page as tar.gz/zip
+`sudo apt-get install git` via git or download it on the page as .tar.gz
 
-`git clone https://github.com/wodowiesel/PiFunk`
+`git clone https://www.github.com/wodowiesel/PiFunk`
 
-2. To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
+2. Configurations
+
+To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
 
 Not recommending to use w1-protocol at the beginning (i don't need it in my setup)
 
-Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO Pin
+Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO-Pin
 
 1-Wire by default BCM4 setting needs to be activated in boot-config for autostart additionally
 
 (if you have problems deactivate 1-wire config!)
 
-3. Manually open with nano-editor: `sudo nano /boot/config.txt` (i provide one too)
+3. Adding parameters:
+
+Manually open with nano-editor:
+
+`sudo nano /boot/config.txt` (i provide one too)
 
 check/add lines:
+
+`dtoverlay=i2c1-bcm2708` for pi 4: 2711 for using I2C Bus
 
 `dtoverlay=gpiopin=4,pullup=0` add pullup=1 or w1-gpio if needed
 
@@ -46,9 +54,7 @@ optional:
 
 `dtparam=spi=on` for SPI support optional
 
-`dtoverlay=i2c1-bcm2708` for pi 4 2711 for using I2C Bus
-
-`enable_uart=1` for UART RX & TX
+`enable_uart=1` for UART RX & TX remote control
 
 `init_uart_baud=9600` data transmission rate for serial data
 
@@ -415,9 +421,9 @@ ___
 
 - Private Project! It's Early Access & Work in Progress (WIP)!
 
-- I'm not a professional so **NO guarantees or warranty** for any damage etc.!!
+- **NO guarantees/liabilities or warranties for any damages/injuries!!**
 
-- Usage at **your own risk** !!
+- Usage at **your own risk** !! I'm not a professional!
 
 - Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited
 
@@ -427,7 +433,7 @@ ___
 
   for transmissions (TX) simultaneously on permitted frequencies! -> [Bandpass-Diagram](docs/filter_600.jpg)
 
-  with dry (not electrolytic) capacitors (C=10-100 pF (Farad)) with solenoid (ring)
+  with dry (not electrolytic, to prevent leakages) capacitors (C=10-100 pF (Farad)) with solenoid (ring)
 
   toroid (ferrite material) chokes with an inductance (B=10-50 uH (Henry) like the FT37-43)
 

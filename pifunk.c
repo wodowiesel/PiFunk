@@ -6,18 +6,18 @@ version = 0.1.7.8e
 ----Licence----------------------------------------------------------------------------------------------
                     GPL v3 !!
 
------Disclaimer------------------------------------------------------------------------------------------
+-----Disclaimers------------------------------------------------------------------------------------------
 - Rewritten for own purposes!
 
 - Private Project! It's Early Access & Work in Progress (WIP)!
 
-- I'm not a professional, so **NO guarantees or warranty** for any damage etc.!!
+- **NO guarantees/liabilities or warranty** for any damages/injuries !!
 
-- Usage at **your own risk** !!
+- Usage at **your own risk** !! I'm not a professional!
 
 - Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited or need at least a HAM-License!
 
-  transmissions in EU only 0.4 mW ERP "effective radiated power" allowed
+  Transmissions in EU only 0.4 mW ERP "effective radiated power" allowed.
 
 - Pi operates with square-waves (²/^2)!!
 
@@ -40,6 +40,7 @@ version = 0.1.7.8e
   more infos about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
 
 - Access on ARM-System and running Linux, normaly on Raspberry Pi (my Pi Model B+ Rev. 1.2 2014)
+
   used python 3.7.4+ on original Raspbian
 
 !!!!!!! program needs more testing on real pi !!!!!!!
