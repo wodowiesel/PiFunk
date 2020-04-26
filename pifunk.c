@@ -11,7 +11,7 @@ version = 0.1.7.8e
 
 - Private Project! It's Early Access & Work in Progress (WIP)!
 
-- **NO guarantees/liabilities or warranty** for any damages/injuries !!
+- **NO guarantees/liabilities or warranties** for any damages/injuries !!
 
 - Usage at **your own risk** !! I'm not a professional!
 
@@ -565,11 +565,11 @@ using namespace std; //
 
 //------------------------------------------------------------------------------
 // definitions & Macros
-#define VERSION 						 "0.1.7.8" // my version
+#define VERSION 						 "0.1.7.6" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
-#define VERSION_PATCH        (8) //
+#define VERSION_PATCH        (6) //
 #define VERSION_STATUS 			 "experimental" // WIP work in progress
 
 // simple operators
@@ -1100,7 +1100,8 @@ Uses 3 GPIO pins */
     }                                                                         \
   } while (0)
 
-// RTC (DS3231/DS1307 driver as bcm)
+//optional hardware
+// RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
 #define RTC_PWR2                        (PIN_4) // dec: 104 +5 V
 #define RTC_GND                         (PIN_9) // RTC ground

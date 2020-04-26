@@ -66,7 +66,7 @@ We expect all community participants (contributors, paid or otherwise; sponsors;
 This code of conduct and its related procedures also applies to unacceptable behavior occuring outside the scope of community activities when such behavior has the potential to adversely affect the safety and well-being of community members.
 
 10. Contact info
-silicator a.k.a. wiesel on github
+wodowiesel on github
 email: abx@gmx.de
 
 11. License and attribution
@@ -80,9 +80,9 @@ Revision 2.1. Posted 4 February 2015.
 
 Revision 2.0, adopted by the Stumptown Syndicate board on 10 January 2013. Posted 17 March 2013.
 
-This COC was linked by GitHub. Edited by silicator 24.02.19
+This COC was linked by GitHub. Edited by wodowiesel 24.02.19
 
-[GitPage](https://silicator.github.io/PiFunk/)
+[GitPage](https://wodowiesel.github.io/PiFunk/)
 
 [Readme guideline](README.md)
 
