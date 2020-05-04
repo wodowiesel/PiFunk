@@ -29,25 +29,30 @@ version = 0.1.7.8e
 
   toroid (ferrite material) chokes with inductance (B=10-50 uH (Henry) like the FT37-43, depends on the Freq.)
 
-  or resistors (R=~10 kOhm), diodes to prevent backflow
+  or resistors (R=~10 kOhm), diodes to prevent backflow if needed
 
 - You should always ground your antenna to prevent further damage!!
 
 - at least use dummyloads with 50 Ohm @ max. 4 Watt (S=0 level) and compare signals with swr/pwr-meter when no antenna is attached!
 
-- Do not shortout or do overstress it with more than 3.3V, it may cause damages!
+- Do not shortout or do overstress it with more than 3.3 V, it may cause damages!
 
   more infos about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
 
 - Access on ARM-System and running Linux, normaly on Raspberry Pi (my Pi Model B+ Rev. 1.2 2014)
 
-  used python 3.7.4+ on original Raspbian
+  and used python 3.7.4+ on original Raspbian
 
 !!!!!!! program needs more testing on real pi !!!!!!!
 --------------------------------------------------------------------------------------------------------
+1) Pi-FM version - frequency modulation direction left/right ← , →
+2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
+--> 700 MHz system clock of the Pi 1 -> please use heatsink + fan
+
 Setups & dependencies:
 OS: Raspbian Buster - Kernel 4.19.97+ (01.04.2020) full incl. desktop & recommended software based on debian
-don't forget to sudo apt-get update && upgrade
+don't forget to update:
+sudo apt-get update && upgrade
 
 SHA-256: ac557f27eb8697912263a1de812dfc99fa8d69bd6acc73a0b7756a1083ba0176
 -> get 3 different versions here: https://www.raspberrypi.org/downloads/raspbian/
@@ -57,24 +62,42 @@ gcc >=9.2.0 compiler or g++>=5.4.1 for 11/14/17
 gdb >=7.11.1 debugger
 
 ->get project:
-git clone https://github.com/wodowiesel/PiFunk/
+git clone https://www.github.com/wodowiesel/PiFunk/
 
 ->instructions:
-You will need "alsa" library for this:
+ => You need admin/root permissions!!
+
+You will need "alsa" sound library for this:
 sudo apt-get install libsndfile1-dev
 
-sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
--lbcm_host // firmware v1.20190718 located in /opt/vc/include/
+install kernal and I2C:
+sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers i2c-tools
+
+The I2C pins include a fixed 1.8 kOhm pull-up resistor to 3.3 V
+This means they are not suitable for use as general purpose IO where a pull-up is not required
+Check I2C BUS:
+sudo i2cdetect -y 1
 
 cd PiFunk // goto path
-// https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Preprocessor-Options.html
-// https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
--> -lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
- => compile with admin/root permissions!!
- Libs: sudo gcc -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC pifunk.c -O3 -o include/pifunk.i lib/pifunk.s lib/pifunk.o lib/pifunk.a lib/pifunk.so lib/pifunk.lib
- program: sudo gcc -g3 -std=gnu99 -Iinclude -D_USE_MATH_DEFINES -D_GNU_SOURCE -Llib -L/opt/vc/lib -lm -Llib -lbcm2835 -lsndfile -lgnu -lbcm_host -fPIC pifunk.c -O3 -o bin/pifunk bin/pifunk.out
+
+ generate Lib:
+ sudo gcc pifunk.c -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/pifunk.o
+ sudo gcc pifunk.o -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -o lib/pifunk.a lib/pifunk.lib
+ sudo gcc pifunk.o -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/pifunk.so lib/pifunk.dll
+
+ program: sudo gcc pifunk.c -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -llibpifunk -O3 -o bin/pifunk
+
+ Usage/run:
+ default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign -g 4 -d 14 -b 12.50 -t 1 -x on
+
+ https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Preprocessor-Options.html
+ https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
+
  or do make (compile flags in make included)
- -lpifunk own lib from this project
+ -lbcm_host // firmware v1.20190718 located in /opt/vc/include/
+ -lbcm2835
+ -lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
+ -llibpifunk own lib from this project
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
  or -std=gnu99 supports c99 + additional gnu extensions
@@ -82,23 +105,16 @@ cd PiFunk // goto path
  -E tells to stop after preprocessing stage
  -v verbose
  `-a` keyword performs basic-block counting annotations for gdb & gprof
-This option is supported for HP/UX compatibility.
-The keyword argument must be one of the strings ‘archive’, ‘shared’, or ‘default’.
+ This option is supported for HP/UX compatibility.
+ The keyword argument must be one of the strings ‘archive’, ‘shared’, or ‘default’.
  ‘-aarchive’ is functionally equivalent to ‘-Bstatic’, and the other two keywords are functionally equivalent to ‘-Bdynamic’.
-  This option may be used any number of times.
+ This option may be used any number of times.
  `-Q` Print function names. Show statistics about compilation passes.
 
 -> real gpio hardware can't be simulated by VM! must be executed and compiled on pi wtith linux!
 As virtual machine best possible with Qemu
-or rather not using it http://beta.etherpad.org/p/pihackfm/export/txt (old)
 
-Usage:
-default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
-possible freq-shift of ~0.005 MHz -> 5kHz!!
-
-1) Pi-FM version - frequency modulation direction left/right ← , →
-2) Pi-AM version - amplitude modulation direction up/down ↑ , ↓
---> 700 MHz system clock of the pi1 -> please use heatsink + fan
+possible freq-shift of ~0.005 MHz -> 5 kHz !!
 
 todo:
 memory-stuff
@@ -545,7 +561,7 @@ using namespace std; //
 #endif
 
 #ifdef __CPLUSPLUS
-  #warning Using GNU C++ with ANSI ISO C++ 11/17/20!
+  #warning Using GNU C++ with ANSI ISO C++ 99/11/17/20!
   extern "C"
   {
    printf ("\n__CPLUSPLUS \n");
@@ -553,14 +569,13 @@ using namespace std; //
 #endif
 
 #ifdef _POSIX
-#define _POSIX_C_SOURCE   		(200809L) // or 199309L
-//#define _USE_MATH_DEFINES 1 // for math lm lib
+  #define _POSIX_C_SOURCE   		(200809L) // or 199309L
+  //#define _USE_MATH_DEFINES 1 // for math lm lib
 #endif
 
 #ifdef __STDC_VERSION__
    //#define _STDC_VERSION (199901L)  // -std=c99
    #warning Using GNU C with C99 standard!
-
 #endif
 
 //------------------------------------------------------------------------------
@@ -585,7 +600,7 @@ using namespace std; //
 #define usleep 							 [1000] //
 
 // mathematical stuff
-#define EULER                         (2.718281828459045235360287471352f) // log e(euler) = 0.4342944819
+#define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
 //#define log(EULER)                    (0.4342944819)
 #define lg(EULER)                     (1.44269504089)
 #define ln(x)                         (log(x)/log(EULER))
@@ -595,7 +610,6 @@ using namespace std; //
 #define PERIOD                        (1/PHASE) // 0.15915494309
 
 // buffers
-#define PAGE_SIZE                     (4*1024) // 4096
 #define BLOCK_SIZE                    (4*1024) // 4096
 #define BUFFER_LEN                    (8*1024) // 8192
 #define BUFFERINSTRUCTIONS            (65536) // [1024]
@@ -659,6 +673,7 @@ volatile unsigned 										(*allof7e); //
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
 #define CLOCK_BASE										 (19.2E6) //
+#define PAGE_SIZE                      (1024) // 4096
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
@@ -676,6 +691,7 @@ volatile unsigned 										(*allof7e); //
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
+#define PAGE_SIZE                      (1024) // 4096
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
@@ -693,6 +709,7 @@ volatile unsigned 										(*allof7e); //
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
+#define PAGE_SIZE                      (1024) // 4096
 
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
@@ -708,9 +725,10 @@ volatile unsigned 										(*allof7e); //
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 
 #define MEM_FLAG                       (0x04) // dec: 4
-#define PAGE_SIZE 										 (4096) //
-#define CLOCK_BASE									   (19.2E6) //
+#define CURBLOCK                       (0x04) // dec: 4 memflag
+#define CLOCK_BASE									   (19.2E6) // = 19200000
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
+#define PAGE_SIZE 										 (4096) //
 
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
@@ -728,11 +746,7 @@ volatile unsigned 										(*allof7e); //
 #define PIN_40                          (40) // pin 40
 #define GPIO_21                         (PIN_40)
 
-#define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE3                      (BCM2837B0_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE4                      (BCM2838_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_LEN                        (0x100) // dec: 256
 
 #define LENGTH                          (0x01000000) // dec: 1
 #define SUB_BASE                        (0x7E000000) // dec: 2113929216 phys base
@@ -750,31 +764,7 @@ volatile unsigned 										(*allof7e); //
 
 #define PWMCLK_CNTL0                    (0x5A000016) // dec: 1509949462
 #define PWMCLK_DIV0                     (0x5A002800) // dec: 1509959680
-
-// possibility to give argv 0-4 a specific addresses or pointers
-#define ARGC_ADR                        (0x7FFFFFFFEB0C) // dec: 140737488349964
-#define NAME_ADR                        (0x7FFFFFFEC08)  // dec: 8796093017096
-#define FILE_ADR                        (0x7FFFFFFFEC10) // dec: 140737488350224
-#define FREQ_ADR                        (0x7FFFFFFFEC18) // dec: 140737488350232
-#define SAMPLERATE_ADR                  (0x7FFFFFFFEC20) // dec: 140737488350240
-#define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 1407374883502484
-#define CALLSIGN1_ADR                   (0x6052C0)       // dec: 6312640
-#define CALLSIGN2_ADR                   (0x7FFFFFFFEAEF) // dec: 140737488349935
-#define CALLSIGN3_ADR                   (0x7FFFFFFFEAE8) // dec: 140737488349928
-
-// Pointers
-#define FLOOR                           (0x0) // dec: 0
-
-#define PWMADD1                         (0x4) // dec: 4
-#define PWMADD2                         (0x8) // dec: 8
-
-#define ARGC_PTR                        (0x5) // dec: 5
-#define NAME_PTR                        (0x2F) // dec: 47
-#define FILE_PTR                        (0x73) // dec: 115
-#define FREQ_PTR                        (0x31) // $ means is in RDS data dec: 49
-#define SAMPLERATE_PTR                  (0x32) // $ in RDS data  dec: 50
-#define MODULATION_PTR                  (0x66) //  $ means isin RDS data // dec: 102
-#define CALLSIGN_PTR                    (0x6D) // dec: 109
+#define PWMCLK_BASE_OFFSET              (0x001010A0) // dec: 1052832
 
 // the normal fm-script didn't specified that
 #define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672
@@ -790,18 +780,22 @@ volatile unsigned 										(*allof7e); //
 #define CLK1_BASE_OFFSET                (0x00101078) // dec: 1052792
 #define CLK_LEN                         (0x1300) // dec: 4864
 
-#define GPIO_LEN                        (0x100) // dec: 256
-
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
 
+#define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE3                      (BCM2837B0_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE4                      (BCM2838_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+
 #define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA0_BASE_OFFSET) //
 
-#define PWMCLK_BASE_OFFSET              (0x001010A0) // dec: 1052832
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
 #define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
 
 #define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET) //
+
 
 #define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET) //
 #define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
@@ -857,10 +851,10 @@ volatile unsigned 										(*allof7e); //
 #define EMMCCLK_DIV                     (0x1C4/4) // 113
 
 #define CM_PLLA                         (0x104/4) // 65
+#define CM_PLLB                         (0x170/4) // 92
 #define CM_PLLC                         (0x108/4) // 66
 #define CM_PLLD                         (0x10C/4) // 67
 #define CM_PLLH                         (0x110/4) // 68
-#define CM_PLLB                         (0x170/4) // 92
 
 #define CM_LOCK                         (0x114/4) // 69
 #define CM_LOCK_FLOCKA                  (1<<8) //
@@ -872,26 +866,27 @@ volatile unsigned 										(*allof7e); //
 /*
 https://pinout.xyz/pinout/gpclk
 SOURCES:
-0     0 Hz     Ground
-1     19.2 MHz oscillator
-2     0 Hz     testdebug0
-3     0 Hz     testdebug1
-4     0 Hz     PLLA
-5     1000 MHz PLLC (changes with overclock settings)
-6     500 MHz  PLLD
-7     216 MHz  HDMI auxiliary // not needed here in the program
-8-15  0 Hz     Ground
+0     0     Hz     Ground
+1     19.2 MHz     oscillator
+2     0     Hz     testdebug0
+3     0     Hz     testdebug1
+4     0     Hz     PLLA // Auxiliary PLL -> for camera
+5     1000 MHz     PLLC (changes with overclock settings)
+6     500  MHz     PLLD
+7     216  MHz     HDMI auxiliary // not needed here in the program
+8-15  0     Hz     Ground
 
 clock-divider in the form of (SOURCE/(DIV_I + DIV_F/4096))
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf
-Note, that the BCM2835 ARM Peripherals document contains an error and states that the denominator of the divider is 1024 instead of 4096.
+Note: that the BCM2835 ARM Peripherals document contains an error
+and states that the denominator of the divider is 1024 instead of 4096.
 Uses 3 GPIO pins */
 
-#define A2W_PLLA_ANA0                   (0x1010/4) // 1028
+#define A2W_PLLA_ANA0                   (0x1010/4) // 10287
+#define A2W_PLLB_ANA0                   (0x10F0/4) // 1084
 #define A2W_PLLC_ANA0                   (0x1030/4) // 1036
 #define A2W_PLLD_ANA0                   (0x1050/4) // 1044
 #define A2W_PLLH_ANA0                   (0x1070/4) // 1052
-#define A2W_PLLB_ANA0                   (0x10F0/4) // 1084
 
 #define A2W_PLL_KA_SHIFT                (7) //
 #define A2W_PLL_KI_SHIFT                (19) //
@@ -991,7 +986,7 @@ Uses 3 GPIO pins */
 #define PCM_GRAY                        (0x20/4) // 8
 
 // DMA
-// Technically 2708 is the family-chipname, and 2835/5/7 is a specific implementation for arm
+// technically 2708 is the family-chipname, and 2835/6/7 is a specific implementation for arm
 #define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000)
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
@@ -1070,27 +1065,29 @@ Uses 3 GPIO pins */
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 
-//
+// sleep timer
 #define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
 #define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
-#define timercmp(a, b, CMP)                                                  \
+#define timercmp(a, b, CMP)                                                   \
   (((a)->tv_sec == (b)->tv_sec) ?                                             \
    ((a)->tv_usec CMP (b)->tv_usec) :                                          \
    ((a)->tv_sec CMP (b)->tv_sec))
 
 #define timeradd(a, b, result)                                                \
-  do {                                                                        \
+    do
+    {                                                                        \
     (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;                             \
     (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;                          \
-    if ((result)->tv_usec >= 1000000)                                         \
+    if ((result)->tv_usec >= (1000000))                                         \
       {                                                                       \
         ++(result)->tv_sec;                                                   \
-        (result)->tv_usec -= 1000000;                                         \
+        (result)->tv_usec -= (1000000);                                         \
       }                                                                       \
   } while (0)
 
-#define timersub(a, b, result)                                               \
-  do {                                                                        \
+#define timersub(a, b, result)                                                \
+    do
+    {                                                                         \
     (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;                             \
     (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;                          \
     if ((result)->tv_usec < 0)
@@ -1100,7 +1097,7 @@ Uses 3 GPIO pins */
     }                                                                         \
   } while (0)
 
-//optional hardware
+// optional hardware
 // RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
 #define RTC_PWR2                        (PIN_4) // dec: 104 +5 V
@@ -1137,8 +1134,31 @@ Uses 3 GPIO pins */
 #define PIN_17                          (RPI_GPIO_P17) // which is the GPIO pin 17 for led1
 #define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led2
 
+/* possibility to give argv 0-4 a specific addresses or pointers
+#define FLOOR                           (0x0) // dec: 0
+#define PWMADD1                         (0x4) // dec: 4
+#define PWMADD2                         (0x8) // dec: 8
+
+#define ARGC_ADR                        (0x7FFFFFFFEB0C) // dec: 140737488349964
+#define NAME_ADR                        (0x7FFFFFFEC08)  // dec: 8796093017096
+#define FILE_ADR                        (0x7FFFFFFFEC10) // dec: 140737488350224
+#define FREQ_ADR                        (0x7FFFFFFFEC18) // dec: 140737488350232
+#define SAMPLERATE_ADR                  (0x7FFFFFFFEC20) // dec: 140737488350240
+#define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 1407374883502484
+#define CALLSIGN_ADR                    (0x7FFFFFFFEAEF) // dec: 140737488349935
+
+// Pointers
+#define ARGC_PTR                        (0x5) // dec: 5
+#define NAME_PTR                        (0x2F) // dec: 47
+#define FILE_PTR                        (0x73) // dec: 115
+#define FREQ_PTR                        (0x31) // dec: 49, $ means is in RDS data
+#define SAMPLERATE_PTR                  (0x32) // dec: 50 $
+#define MODULATION_PTR                  (0x66) // dec: 102 $
+#define CALLSIGN_PTR                    (0x6D) // dec: 109
+*/
+
 // try a modprobe of i2C-BUS
-// if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == -1) {printf ("\nmodprobe test\n"); /*ignore errors*/}
+ if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
 
 //----------------------------------
 // declaring normal variables
@@ -1174,7 +1194,7 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 int opt;
 char *filename = "sound.wav";
 float freq = fabs (446.006250);
-double shift_ppm = (0.0);
+float shift_ppm = (0.0);
 float xtal_freq = (1.0/19.2E6); // LOCK_BASE
 float subfreq = (67.0);
 float ctss_freq = (67.0);
@@ -1216,11 +1236,11 @@ time_t t;
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
-int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_NONBLOCK);
+int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK);
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = NULL;
-int fp;// = STDIN_FILENO;
+int fp; // = STDIN_FILENO;
 int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
 int readBytes;
@@ -1263,7 +1283,7 @@ float angle = ((PHASE*freq)+shift_ppm); // A*cos(2pi*freq+phaseshift)
 float I = FactAmplitude*cosf (angle); // real! In-Phase signal component
 float Q = FactAmplitude*sinf (angle); // Quadrature signal component
 float RF_SUM = (I+Q);
-float ampl = sqrtf(((I*I)+(Q*Q)));
+float ampl = sqrtf (((I*I)+(Q*Q)));
 
 // instructor for access
 unsigned long frameinfo;
@@ -1513,7 +1533,7 @@ int gpioselect ()
 {
   // how to change pin-config on boot
   // https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
-	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 -> default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
+	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
   scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for transmission is %d ... \n", gpiopin);
   if (gpiopin == 4)
@@ -1528,12 +1548,12 @@ int gpioselect ()
   }
   else if (gpiopin == 20 || 29 || 32 || 34 || 38)
   {
-    printf ("\nUsing alternative GPIO setup ... \n");
+    printf ("\nUsing alternative GPIO setup %d ... \n", gpiopin);
     //
   }
   else
   {
-    printf ("\nError: not recognized! Using default GPIO 4 \n");
+    printf ("\nError: not recognized! Using default GPIO 4! \n");
     gpiopin = 4;
   }
 	return gpiopin;
@@ -1570,7 +1590,7 @@ int dmaselect ()
 	return dmachannel;
 }
 
-int filecheck (char *filename)  // expected int
+int fileselect (char *filename)  // expected int
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
   //scanf ("%s", &filename);
@@ -1582,11 +1602,12 @@ int filecheck (char *filename)  // expected int
 	char *stdfile = "sound.wav";
   if (filename != stdfile)
 	{
-    int fp = open (filename, O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // O_RDWR
+    // http://man7.org/linux/man-pages/man2/open.2.html
+    int fp = open (filename, O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_WRONLY | O_RDWR |
 	}
 	else
 	{
-	  int fp = open ("sound.wav", O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK, 0644); // sounds/sound.wav directory should be tested
+	  int fp = open ("sound.wav", O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_WRONLY | O_RDWR | sounds/sound.wav directory should be tested
 	}
 	return fp;
 }
@@ -2384,7 +2405,7 @@ void play_fm () // char *filename, float freq, int samplerate
 
         bufPtr++;
         // problem still with .v & .p endings for struct!!
-        //while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
+        while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
         usleep2 (1000); // leaving out sleep for faster process
 
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
@@ -2674,7 +2695,7 @@ void play_am ()
 void modulationfm () // int argc, char **argv [], char *mod
 {
   	printf ("\nPreparing for fm ... \n");
-    setupfm (); // gets filename & path or done by filecheck () func
+    setupfm (); // gets filename & path or done by fileselect () func
 	  printf ("\nSetting up DMA ... \n");
 		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
@@ -2901,7 +2922,7 @@ void menu ()
 		case 4: printf ("\nExiting ... \n");
 						exit (0);
 
-		default: printf ("\nMenu: Default \n");
+		default: printf ("\n Error: Returning back to Main (Default) \n");
              int main (int argc, char **argv []);
 		 				 break;
 	}
@@ -2911,7 +2932,7 @@ void menu ()
 void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
-		filecheck (filename);
+		fileselect (filename);
 		sampleselect (); // filename, samplerate
 		modetypeselect ();
     modselect ();
@@ -2923,8 +2944,8 @@ void assistant () // assistant
 		bandwidthselect ();
     gpsselect ();
 		printf ("\nAll information gathered, parsing & going back to main! \n");
-    //printf ("Press Enter/return to continue ... \n");
-		//while (getchar () != ""); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
+    //printf ("\nPress Enter or Space to continue ... \n");
+		//while (getchar () != " "); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
 
 		return;
 }
@@ -2932,7 +2953,7 @@ void assistant () // assistant
 //---------------------------------------------
 // MAIN
 int main (int argc, char **argv []) // , const char *short_opt
-// arguments for global use must be in main!
+// arguments for global use should be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
   void title ();
@@ -2984,7 +3005,7 @@ int main (int argc, char **argv []) // , const char *short_opt
   printf ("\nChecking flags long : %d \n", flags);
   printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
 
-	while (options != -1 || 0) // if -1 then all flags were read, if ? then unknown
+	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
@@ -3028,12 +3049,12 @@ int main (int argc, char **argv []) // , const char *short_opt
 
 			case 'g':
 								gpiopin = atof (optarg);
-								printf ("\nGPIO-Pin is %d \n", gpiopin);
+								printf ("\nGPIOPIN is %d \n", gpiopin);
 								//break;
 
 			case 'd':
 								dmachannel = atof (optarg);
-								printf ("\nDMA-channel is %d \n", dmachannel);
+								printf ("\nDMAchannel is %d \n", dmachannel);
 								//break;
 
 			case 'b':
@@ -3061,7 +3082,7 @@ int main (int argc, char **argv []) // , const char *short_opt
 							 }
 							 else
 							 {
-								printf ("\nError in -a \n");
+								printf ("\nError in -a assistant \n");
 								break;
 							 }
 
@@ -3081,21 +3102,21 @@ int main (int argc, char **argv []) // , const char *short_opt
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type a/d>] [-x <GPS on/off>]\nThere is also an assistant [-a], or menu [-u] or for help [-h]  \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] [-x <GPS on/off>]\nThere is also an assistant [-a], menu [-u] or help [-h] The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								break;
 							 }
 							 else
 							 {
-								printf ("\nError in -h help\n");
+								printf ("\nError in -h help \n");
 								break;
 							 }
 
       case '?':
-                  printf ("Unknown option: %c \n", optopt);
+                  printf ("\nUnknown option: %c \n", optopt);
                   break;
 
 			default:
-								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type a/d>] [-x <GPS on/off>]\n There is also an assistant [-a], menu [-u] or for help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type 1/2 for a/d>] [-x <GPS on/off>]\n There is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								break;
 		} // end of switch
 
@@ -3116,13 +3137,14 @@ int main (int argc, char **argv []) // , const char *short_opt
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
+  printf ("\nChecking GPS-Status: %s \n", gps);
+  printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
   printf ("\nangle: %f \n", angle);
   printf ("\nI-value: %f \n", I);
   printf ("\nQ-value: %f \n", Q);
   printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
   printf ("\nAmplitude-value: %f \n", ampl);
-  printf ("\nChecking GPS-Status: %s \n", gps);
-  printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
+
 	printf ("\n-----------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
