@@ -1,17 +1,17 @@
 # /boot/config.txt
-## For more options and information see http://rpf.io/configtxt
+## For more options and informations see http://rpf.io/configtxt
 
 ## setting specific settings for the pi
-## exact values @ https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md
-force_turbo=1 ## needed if overclocking or custom values
-arm_freq=700 ## for pi1
+## exact values in MHz @ https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md
+force_turbo=1 ## needed if overclocking and custom/default values should be activated to work properly
+arm_freq=700 ## for pi1 default for now
 gpu_freq=250 ## for pi1
 core_freq=250 ## for pi1
 sdram_freq=400 ## for pi1
-#dtparam=sd_overclock=100 ## sd-card 50 is default
+#dtparam=sd_overclock=100 ## sd-card speed, 50 is default
 
 ## set i2c usage
-#modprobe i2c_bcm2708
+modprobe i2c_bcm2708
 #modprobe i2c_bcm2709
 #modprobe i2c_bcm2710
 #modprobe i2c_bcm2711
@@ -20,14 +20,14 @@ modprobe i2c_dev
 
 #modprobe bcm2708_wdog
 
-chmod 666 /dev/i2c-1 ## permission and user
+chmod 666 /dev/i2c-1 ## permissions and user names
 
 adduser pi i2c
 adduser pi i2s
 
-## for UART RX & TX
+## for UART + GPS RX & TX
 enable_uart=1
-init_uart_baud=9600 ## baud
+init_uart_baud=9600 ## samplerate for ttl serial
 
 ## Enable audio (loads snd_bcm2835)
 dtparam=audio=on
@@ -40,20 +40,20 @@ dtparam=i2c1=on
 dtparam=i2c1_baudrate=100000 ## for 100 (default) or 400 kHz clock
 dtparam=i2c_arm=on
 dtparam=i2c_arm_baudrate=100000
-#dtparam=watchdog=on ## hardware watchdog for pi3 for debug purpose
+#dtparam=watchdog=on ## hardware watchdog for pi3 for debug purposes
 
 ## gpio settings
 ## realtime-hw clock & gps sync-clock
-dtoverlay=i2c-rtc,ds3231
+dtoverlay=i2c-rtc,ds3231 ## /dev/rtc0
 dtoverlay=pps-gpio,gpiopin=18
 
-## radio pin
-dtoverlay=w1-gpio,gpiopin=4,pullup=0
 ## Configures the w1-gpio 1-wire interface module. <param>=<val>
 ## Use this overlay if you *don't* need a pin to drive an external pullup 4.7 kΩ.
 ## Params: gpiopin -> GPIO pin for I/O (default "4")
 ## pullup -> Non-zero, 1, "on", or "y" to enable the parasitic
 ## power (2-wire, power-on-data) feature
+## radio pwm pin
+#dtoverlay=w1-gpio,gpiopin=4,pullup=0
 
 ## list w1-devices
 ls /sys/bus/w1/devices/
