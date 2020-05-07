@@ -1265,7 +1265,7 @@ float volume = (1.1f);
 float volbuffer [512];
 float volumeLevelDb = (-6.f); // cut amplitude in half
 float volumeMultiplier = (10E-1); // 10*10^-1 = 1
-float datavalue = (data [m] * 4 * volume);
+float datavalue = (data [n] * 4 * volume);
 // samples max. 15.75 kHz resolution for AM / 14.50 kHz FM radio can be recorded
 //SF_INFO sfinfo;
 float samp1 = (15.75);
