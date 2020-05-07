@@ -1170,11 +1170,14 @@ const char *device = "default"; // playback device
 // iterators for loops
 int w = (0);
 int m;
+int n;
 int i;
+int j;
 int k;
 int l;
-char j;
-float x;
+int r;
+float e;
+char c;
 
 //pi memory-map peripherials:
 char *gpio_mem;
@@ -1206,8 +1209,8 @@ char *fm = "fm";
 char *am = "am";
 int power = (7);
 int powerlevel = abs (power); // same as drive
-int DRIVESTRENGTH; // drive
-int HYSTERESIS; // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
+int DRIVESTRENGTH = (7); // drive
+int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
 char *callsign;
 int type; // analog or digital
 char *mod_type; // = "a"
@@ -1262,7 +1265,7 @@ float volume = (1.1f);
 float volbuffer [512];
 float volumeLevelDb = (-6.f); // cut amplitude in half
 float volumeMultiplier = (10E-1); // 10*10^-1 = 1
-
+float datavalue = (data [m] * 4 * volume);
 // samples max. 15.75 kHz resolution for AM / 14.50 kHz FM radio can be recorded
 //SF_INFO sfinfo;
 float samp1 = (15.75);
@@ -1469,9 +1472,7 @@ this will be reduced if the GPIO pins are heavily loaded or have a capacitive lo
 		char SRC         : 4; // 4 = PLLA per
 		char ENAB        : 1; // Enable the clock generator
 		char KILL        : 1; // 0 = no action, 1 = stop and reset the clock generator
-    //This is intended for test/debug only. Using this control
-    //may cause glitch on the clock generator output.
-
+    // This is intended for test/debug only. Using this control may cause glitch on the clock generator output.
 		char             : 1; // un-used, bit: 23-11, type: R, reset: 0
 		char BUSY        : 1; //
 		char FLIP        : 1; //
@@ -1513,8 +1514,8 @@ struct DMAREGS
   0xE1C 14_NEXTCONBK DMA Channel 14 CB Word 5 (Next CB Address) 32
   0xE20 14_DEBUG DMA Channel 14 Debug 32
 
-  0xfe0 INT_STATUS Interrupt status of each DMA channel 32
-  0xff0 ENABLE Global enable bits for each DMA channel 32
+  0xFE0 INT_STATUS Interrupt status of each DMA channel 32
+  0xFF0 ENABLE Global enable bits for each DMA channel 32
   */
 		volatile unsigned int CS;
 		volatile unsigned int CONBLK_AD;
@@ -1547,6 +1548,34 @@ static struct option long_opt [] =
     {0,             0,                 0,  0 }
 };
 
+/*
+// pi4 pin fix for under 93 MHz
+class ClockOutput : public ClockDevice
+{
+        public:
+        #ifndef GPIO_21
+        ClockOutput (unsigned divisor) : ClockDevice (CLK0_BASE_OFFSET, divisor)
+        {
+            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET));
+            *output = (*output & 0xFFFF8FFF) | (0x04 << 12);
+        #else
+        ClockOutput(unsigned divisor) : ClockDevice (CLK1_BASE_OFFSET, divisor)
+        {
+            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + 0x08));
+            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
+        #endif
+        }
+
+        virtual ~ClockOutput ()
+        {
+        #ifndef GPIO_21
+            *output = (*output & 0xFFFF8FFF) | (0x01 << 12);
+        #else
+            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
+        #endif
+        }
+}
+*/
 //----------------------------------------------------
 // basic functions specified one after another
 void clearscreen ()
@@ -1606,7 +1635,7 @@ int gpioselect ()
   else
   {
     printf ("\nError: not recognized! Using default GPIO 4! \n");
-    gpiopin = 4;
+    gpiopin = (4);
   }
 	return gpiopin;
 }
@@ -1616,28 +1645,28 @@ int dmaselect ()
 	printf ("\nPlease choose the DMA-Channel: 7 (Pi 4) / 14 (default) / 255 (off): \n");
   scanf ("%d", &dmachannel);
 	printf ("\nThe DMA-Channel is %d ... \n", dmachannel);
-  if (dmachannel == 255)
+  if (dmachannel == (255))
   {
     printf ("\nThe DMA-Channel is deactivated! \n");
-    dmachannel = 255;
+    dmachannel = (255);
     //DMA_CHANNEL = 255;
   }
-  else if (dmachannel == (7)
+  else if (dmachannel == (7))
   {
     printf ("\nThe DMA-Channel is activated! \n");
-    dmachannel = 7;
+    dmachannel = (7);
     //DMA_CHANNEL = 7;
   }
-  else if (dmachannel == (14)
+  else if (dmachannel == (14))
   {
     printf ("\nThe DMA-Channel is activated! \n");
-    dmachannel = 14;
+    dmachannel = (14);
     //DMA_CHANNEL = 14;
   }
   else
   {
     printf ("\nThe DMA-Channel not recognized, using default 14! \n");
-    dmachannel = 14;
+    dmachannel = (14);
   }
 	return dmachannel;
 }
@@ -1671,20 +1700,6 @@ float freqselect () // gets freq by typing in
 	scanf  ("%f", &freq);
 	printf ("\nYou chose: %f MHz \n", freq);
   return freq;
-}
-
-float audiovolume () // audio & freq stuff
-{
-	float datavalue = (data [i] * 4 * volume); // modulation index (AKA volume) logarithmic hearing of human
-  printf ("\ndatavalue: %f, SAMPLES_PER_BUFFER: %d \n", datavalue, SAMPLES_PER_BUFFER);
-	for (i = 0; i < SAMPLES_PER_BUFFER; ++i)
-	{
-     volbuffer [i] *= volumeMultiplier;
-     printf ("\nValues-> i: %d, volbuffer: %f, volumeMultiplier: %f \n", i, volbuffer [i], volumeMultiplier);
-		 printf ("\nAdresses.> i: %p, volbuffer: %p, volumeMultiplier: %p \n", &i, &volbuffer [i], &volumeMultiplier);
-     return volbuffer [i];
-	}
-	return volumeMultiplier;
 }
 
 float bandwidthselect ()
@@ -1725,7 +1740,7 @@ float channelmodepmranalog ()
   scanf ("%d", &channelnumberpmr);
 
   switch (channelnumberpmr)
-   {
+  {
    // Analog & DMR
    case 0: freq=446.00000; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// base
    case 1: freq=446.00625; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// Standard
@@ -1756,10 +1771,10 @@ float channelmodepmranalog ()
    default:	freq=446.00625;
             printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
             break;
-   }
+  }
 
- printf ("\nanalog-freq is %f \n", freq);
- return freq;
+  printf ("\nanalog-freq is %f \n", freq);
+  return freq;
 }
 
 float channelmodepmrdigital ()
@@ -2152,6 +2167,19 @@ char gpsselect () // char *gps
   return gps;
 }
 
+float volumeselect () // audio & sample stuff
+{
+  // modulation index (AKA volume) logarithmic hearing of human
+  printf ("\ndatavalue: %f, SAMPLES_PER_BUFFER: %d \n", datavalue, SAMPLES_PER_BUFFER);
+	for (n = 0; n < SAMPLES_PER_BUFFER; ++n)
+	{
+     volbuffer [n] *= volumeMultiplier;
+     printf ("\nValues-> n: %d, volbuffer: %f, volumeMultiplier: %f \n", n, volbuffer [n], volumeMultiplier);
+		 printf ("\nAddresses-> n: %p, volbuffer: %p, volumeMultiplier: %p \n", &n, &volbuffer [n], &volumeMultiplier);
+     return volbuffer [n];
+	}
+	return volbuffer [n];
+}
 //---------------
 // Voids for modulation and memory handling
 
@@ -2274,7 +2302,7 @@ void delayMicrosecondsHard (unsigned int howLong)
   {
     gettimeofday (&tNow, NULL);
   }
-return;
+  return;
 }
 
 void setupio ()
@@ -2305,7 +2333,7 @@ void setupio ()
 	if ((unsigned long) gpio_mem % PAGE_SIZE)
 	    gpio_mem += PAGE_SIZE - ((unsigned long) gpio_mem % PAGE_SIZE);
 
-	// Now map it
+  	// Now map it
 	  gpio_map = (unsigned char *) mmap (
 		gpio_mem,
 		BLOCK_SIZE,
@@ -2320,10 +2348,10 @@ void setupio ()
 	    exit ();
   }
 
-   gpio = (volatile unsigned *) gpio_map;
+  gpio = (volatile unsigned *) gpio_map;
 
-	 carrierhigh ();
-   return;
+	carrierhigh ();
+  return;
 }
 
 void setupfm ()
@@ -2421,7 +2449,7 @@ void play_fm () // char *filename, float freq, int samplerate
 	  SEEK_END: The file offset is set to the size of the file plus offset bytes. */
   short *data = (short*) malloc (sz);
 
-  for (int i = 0; i < 22; i++) // why i less then 22?
+  for (r = 0; r < 22; r++) // why i less then 22?
   {
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
         printf ("\nReading fp \n");
@@ -2491,9 +2519,9 @@ void play_fm () // char *filename, float freq, int samplerate
         printf ("\nReading bytes from fp ... \n");
   }
 
-   close (fp);
-   printf ("\nClosing file \n");
-   return;
+  close (fp);
+  printf ("\nClosing file \n");
+  return;
 }
 
 void setupDMA ()
@@ -2512,7 +2540,7 @@ void setupDMA ()
 	printf ("\ncenterFreqDivider: %d \n", centerFreqDivider);
 	// make data page contents - its essientially 1024
 	// different commands for the DMA controller to send to the clock module at the correct time
-	for (int i=0; i<1024; i++)
+	for (i = 0; i < 1024; i++)
 	{
 	   // ((int*) (constPage.v))[i] = (CARRIER << 24) + centerFreqDivider - 512 + i;
 	}
@@ -2524,7 +2552,7 @@ void setupDMA ()
      // make copy instructions
   	 //struct CB* instr0 = (struct CB*)instrPage.v;
 
-     for (int i = 0; i < (4096/sizeof (struct CB)); i++)
+     for (i = 0; i < (4096/sizeof (struct CB)); i++)
      {
          /*
          instrs[instrCnt].v = (void*) ((int) instrPage.v + sizeof(struct CB)*i);
@@ -2596,7 +2624,6 @@ void unsetupDMA ()
 	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
-
 	exit ();
 }
 
@@ -2620,7 +2647,17 @@ int sampleselect () // char *filename, int samplerate
   }
 
 	//sfinfo.samplerate = samplerate;
-	if (sfinfo.samplerate == 22050) // 44 or 48 kHz needs testing
+  if (sfinfo.samplerate == 48000) // 44 or 48 kHz needs testing
+  {
+    printf ("\nSamplerate is 48000! (%d) \n", sfinfo.samplerate);
+    return sfinfo.samplerate;
+  }
+  else if (sfinfo.samplerate == 44100)
+  {
+    printf ("\nSamplerate is 44100! (%d) \n", sfinfo.samplerate);
+    return sfinfo.samplerate;
+  }
+	else if (sfinfo.samplerate == 22050)
 	{
 		printf ("\nSamplerate is 22050! (%d) \n", sfinfo.samplerate);
 		return sfinfo.samplerate;
@@ -2630,23 +2667,26 @@ int sampleselect () // char *filename, int samplerate
 		printf ("\nSamplerate is 14500! (%d) \n", sfinfo.samplerate);
 		return sfinfo.samplerate;
 	}
+  else if (sfinfo.samplerate == 11025)
+	{
+		printf ("\nSamplerate is 11025! (%d) \n", sfinfo.samplerate);
+		return sfinfo.samplerate;
+	}
 	else
   {
 	printf ("\nInput samplerate must be at least 22.050 kHz for FM or 14.500 kHz for AM! \n");
 	return (1);
-}
-*/
+  }
+  */
 
 	// check filebits here somehow (via SFM)
 	if (filebit != 16)
 	{
-
 		printf ("\nError: Input must be 16 bit! \n");
 		return (1);
 	}
 	else
 	{
-
 		printf ("\nInput is 16 bit! \n");
 		return (0);
 	}
@@ -2701,8 +2741,8 @@ int sampleselect () // char *filename, int samplerate
   		ampf2 = (fabs (ampf) < 1.0f/A) ? A*fabs (ampf)/(1.0f+ln (A)):(1.0f+ln (A*fabs (ampf)))/(1.0f+ln (A)); //compand
 			printf ("\ncompand ampf2: %f \n", ampf2);
 
-			x = (int) (round (ampf2*excursion2));
-			printf ("\nnew x: %f \n", x);
+			e = (int) (round (ampf2*excursion2));
+			printf ("\nnew e: %f \n", x);
 
 		  factorizer = (x*excursion2*FactAmplitude);
 			printf ("\nfactorizer: %f \n", factorizer);
@@ -2710,7 +2750,7 @@ int sampleselect () // char *filename, int samplerate
 			sampler = (1E9/samplerate); // 44.100
 			printf ("\nsampler: %f \n", sampler);
 
-			//return channels, ampf, ampf2, x, factorizer, sampler;
+			//return channels, ampf, ampf2, e, factorizer, sampler;
 	  } // for loop
 		printf ("\nEnding readcount ... \n");
   } // while loop
@@ -2784,39 +2824,11 @@ void modselect () // int argc, char **argv [], char *mod
 	}
 	else
 	{
-    printf ("\nError in -m selecting modulation! \n");
+    printf ("\nError in -m selecting modulation! Using daefault fm \n");
+    modulationfm ();
 	}
  	return;
 }
-
-/*
-// pi4 pin fix for under 93 MHz
-class ClockOutput : public ClockDevice
-{
-        public:
-        #ifndef GPIO_21
-        ClockOutput (unsigned divisor) : ClockDevice (CLK0_BASE_OFFSET, divisor)
-        {
-            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET));
-            *output = (*output & 0xFFFF8FFF) | (0x04 << 12);
-        #else
-        ClockOutput(unsigned divisor) : ClockDevice (CLK1_BASE_OFFSET, divisor)
-        {
-            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + 0x08));
-            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
-        #endif
-        }
-
-        virtual ~ClockOutput ()
-        {
-        #ifndef GPIO_21
-            *output = (*output & 0xFFFF8FFF) | (0x01 << 12);
-        #else
-            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
-        #endif
-        }
-}
-*/
 
 char cw ()
 {
@@ -2828,7 +2840,7 @@ char cw ()
   printf ("\nMessage: %s, length: %ld \n", message, length_m); // length unsigned int %zu
 
   // tone translation
-/*
+  /*
   while (message [w] != NULL) // Stop looping when we reach the NULL-character "\0"
   {
     if (message [w] == short_cw)
@@ -2847,7 +2859,7 @@ char cw ()
     printf ("%c", message [w]);  // Print each character of the string
     w++;
   }
-*/
+  */
   return message;
 }
 
@@ -2868,8 +2880,8 @@ void ledinactive ()
 
 void ledactive ()
 {
-// initialize bcm
-/*
+  // initialize bcm
+  /*
   bcm2835_set_debug (1);
   if (!bcm2835_init ())
 	{
@@ -2896,8 +2908,8 @@ void ledactive ()
 		cm2835_gpio_write (PIN_17, LOW);
 		printf ("\nLED off - No transmission \n");
 	}
-   //bcm2835_close ();
-	 */
+   // bcm2835_close ();
+	*/
 	printf ("\nLED active \n");
   return;
 }
@@ -2914,28 +2926,28 @@ char csvreader ()
     while (!feof (rfp))
     {
     	// here check for semicolon or comma delimiter (default)
-    	j = fgetc (rfp);
-    	fputc (j, wfp);
+    	c = fgetc (rfp);
+    	fputc (c, wfp);
     }
-		printf ("\n%d\n", j);
+		printf ("\nc: %d\n", c);
     fclose (rfp);
     fclose (wfp);
     printf ("\nCSV-import of CTSS-list finished! \n");
-    return j;
+    return c;
 }
 
 void cgimodule () //
 {
- printf ("\ncontext-type:text/html\n");
- printf ("\n<html>\n");
- printf ("\n<head>\n");
- printf	("\nPiFunk-Project\n");
- printf	("\n</head>\n");
- printf ("\n<body>\n");
- printf	("\nPiFunk-CGI\n");
- printf	("\n</body>\n");
- printf ("\n</html>\n");
- return;
+  printf ("\ncontext-type:text/html\n");
+  printf ("\n<html>\n");
+  printf ("\n<head>\n");
+  printf	("\nPiFunk-Project\n");
+  printf	("\n</head>\n");
+  printf ("\n<body>\n");
+  printf	("\nPiFunk-CGI\n");
+  printf	("\n</body>\n");
+  printf ("\n</html>\n");
+  return;
 }
 
 void tx () // int argc, char **argv []
@@ -2995,10 +3007,10 @@ void assistant () // assistant
 		dmaselect ();
 		bandwidthselect ();
     gpsselect ();
+    volumeselect ();
 		printf ("\nAll information gathered, parsing & going back to main! \n");
     //printf ("\nPress Enter or Space to continue ... \n");
 		//while (getchar () != " "); // unsigned char, waiting for return/enter hit, \n = \012, \r return cursor to left
-
 		return;
 }
 
