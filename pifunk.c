@@ -767,8 +767,8 @@ volatile unsigned 										(*allof7e); //
 #define PWMCLK_BASE_OFFSET              (0x001010A0) // dec: 1052832
 
 // the normal fm-script didn't specified that
-#define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672
-#define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544
+#define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672 -> dma7=0x700, dma14 = 0xE00
+#define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544 -> 0x00
 
 #define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
 
@@ -944,10 +944,10 @@ Uses 3 GPIO pins */
 // we want this as burst DMA would mess up our timing
 // The deviation specifies the bandwidth of the signal: ~20.0 for WBFM (broadcasts) and ~3.5 for NBFM (walkie-talkie)
 #define DEVIATION                       (12.50) // in kHz, a-pmr width normal analog
-#define DEVIATION2                      (6.25) // d-pmr width digital
-#define DEVIATION3                      (20.00) // dmr width
-#define DEVIATION4                      (25.00) // dmr mixed
-#define DEVIATION5                      (10.00) // CB width
+#define DEVIATION2                      (6.25)  // d-pmr width digital
+#define DEVIATION3                      (10.00) // CB width
+#define DEVIATION4                      (20.00) // dmr width
+#define DEVIATION5                      (25.00) // dmr mixed
 
 #define PWMCLK_CNTL                     (40) // offset 0A0
 #define PWMCLK_DIV                      (41) // 0A4
@@ -1205,7 +1205,9 @@ char *mod; // = "fm"
 char *fm = "fm";
 char *am = "am";
 int power = (7);
-int powerlevel = abs (power);
+int powerlevel = abs (power); // same as drive
+int DRIVESTRENGTH; // drive
+int HYSTERESIS; // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
 char *callsign;
 int type; // analog or digital
 char *mod_type; // = "a"
@@ -1439,18 +1441,46 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 
 struct GPCTL // 9 parameters
 {
-		char SRC         : 4; //
-		char ENAB        : 1; //
-		char KILL        : 1; //
-		char IDK1        : 1; // what is the blank char? gave it a dummyname (IDK) for now
+/* from pdf
+The General Purpose clocks can be output to GPIO pins. They run from the peripherals clock
+sources and use clock generators with noise-shaping MASH dividers. These allow the GPIO
+clocks to be used to drive audio devices.
+The fractional divider operates by periodically dropping source clock pulses, therefore the
+output frequency will periodically switch between:
+source_frequency / DIVI or source_frequency / DIVI + 1
+Jitter is therefore reduced by increasing the source clock frequency. In applications where
+jitter is a concern, the fastest available clock source should be used.
+The General Purpose clocks have MASH noise-shaping dividers which push this fractional
+divider jitter out of the audio band.
+MASH noise-shaping is incorporated to push the fractional divider jitter out of the audio band
+if required. The MASH can be programmed for 1, 2 or 3-stage filtering. MASH filter, the
+frequency is spread around the requested frequency and the user must ensure that the module
+is not exposed to frequencies higher than 25MHz. Also, the MASH filter imposes a low limit
+on the range of DIVI.
+MASH min DIVI min output freq average output freq max output freq
+0 (int divide) 1 source / ( DIVI ) source / ( DIVI ) source / ( DIVI )
+1 2 source / ( DIVI ) source / ( DIVI + DIVF / 1024 ) source / ( DIVI + 1 )
+2 3 source / ( DIVI - 1 ) source / ( DIVI + DIVF / 1024 ) source / ( DIVI + 2 )
+3 5 source / ( DIVI - 3 ) source / ( DIVI + DIVF / 1024 ) source / ( DIVI + 4 )
+Table 6-32 Effect of MASH Filter on Frequency
+The maximum operating frequency of the General Purpose clocks is ~125MHz at 1.2 V but
+this will be reduced if the GPIO pins are heavily loaded or have a capacitive load.
+*/
+		char SRC         : 4; // 4 = PLLA per
+		char ENAB        : 1; // Enable the clock generator
+		char KILL        : 1; // 0 = no action, 1 = stop and reset the clock generator
+    //This is intended for test/debug only. Using this control
+    //may cause glitch on the clock generator output.
+
+		char             : 1; // un-used, bit: 23-11, type: R, reset: 0
 		char BUSY        : 1; //
 		char FLIP        : 1; //
-		char MASH        : 2; //
-		unsigned int IDK2 : 13; // what is the blank int?
-		char PASSWD      : 8; //
+		char MASH        : 2; // 2 -> 3 source / ( DIVI - 1 ) source / ( DIVI + DIVF / 1024 ) source / ( DIVI + 2 )
+		unsigned int     : 13; // un-used, type: R, reset: 0
+		char PASSWD      : 8; // bits: 31:24, Must be 0x5A when writing: Accidental write protect password, type: W, reset: 0
 };
 
-struct CB
+struct CB // control blocks
 {
 		volatile unsigned int TI;
 		volatile unsigned int SOURCE_AD;
@@ -1458,12 +1488,34 @@ struct CB
 		volatile unsigned int TXFR_LEN;
 		volatile unsigned int STRIDE;
 		volatile unsigned int NEXTCONBK;
-		volatile unsigned int RES1;
-		volatile unsigned int RES2;
+		volatile unsigned int RES1; // reserved set to 0
+		volatile unsigned int RES2; // reserved set to 0
 };
 
 struct DMAREGS
 {
+  /*
+  0x700 7_CS DMA Channel 7 Control and Status 32
+  0x704 7_CONBLK_AD DMA Channel 7 Control Block Address 32
+  0x708 7_TI DMA Channel 7 CB Word 0 (Transfer Information) 32
+  0x70C 7_SOURCE_AD DMA Channel 7 CB Word 1 (Source Address) 32
+  0x710 7_DEST_AD DMA Channel 7 CB Word 2 (Destination Address) 32
+  0x714 7_TXFR_LEN DMA Channel 7 CB Word 3 (Transfer Length) 32
+  0x71C 7_NEXTCONBK DMA Channel 7 CB Word 5 (Next CB Address) 32
+  0x720 7_DEBUG DMA Channel 7 Debug 32
+
+  0xE00 14_CS DMA Channel 14 Control and Status 32
+  0xE04 14_CONBLK_AD DMA Channel 14 Control Block Address 32
+  0xE08 14_TI DMA Channel 14 CB Word 0 (Transfer Information) 32
+  0xE0C 14_SOURCE_AD DMA Channel 14 CB Word 1 (Source Address) 32
+  0xE10 14_DEST_AD DMA Channel 14 CB Word 2 (Destination Address) 32
+  0xE14 14_TXFR_LEN DMA Channel 14 CB Word 3 (Transfer Length) 32
+  0xE1C 14_NEXTCONBK DMA Channel 14 CB Word 5 (Next CB Address) 32
+  0xE20 14_DEBUG DMA Channel 14 Debug 32
+
+  0xfe0 INT_STATUS Interrupt status of each DMA channel 32
+  0xff0 ENABLE Global enable bits for each DMA channel 32
+  */
 		volatile unsigned int CS;
 		volatile unsigned int CONBLK_AD;
 		volatile unsigned int TI;
@@ -2009,7 +2061,7 @@ char callsignselect ()
 
 int powerselect ()
 {
-	printf ("\nType in powerlevel (0-7 from 2-16 mA): \n");
+	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA): \n"); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
 	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
   power = abs (powerlevel);
@@ -2053,7 +2105,7 @@ int typeselect ()
   }
   else
   {
-    printf ("\nError in -t \n");
+    printf ("\nError in -t type \n");
   }
   return type;
 }
@@ -2293,7 +2345,7 @@ void setupfm ()
    CLRBIT (GPFSEL0, 13);
    CLRBIT (GPFSEL0, 12);
 
-  struct GPCTL setupword = {6, 1, 0, 0, 0, 1,0x5A};
+  struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};
 	ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
 	ACCESS (CM_GP0CTL) = *((int*) &setupword);
 
@@ -2457,7 +2509,7 @@ void setupDMA ()
 	// allocate a few pages of ram
   //getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int) ((500.0/freq) * (float) (1<<12) + 0.5);
-	printf ("\ncenterFreqDivider %d \n", centerFreqDivider);
+	printf ("\ncenterFreqDivider: %d \n", centerFreqDivider);
 	// make data page contents - its essientially 1024
 	// different commands for the DMA controller to send to the clock module at the correct time
 	for (int i=0; i<1024; i++)
@@ -2479,7 +2531,7 @@ void setupDMA ()
          instrs[instrCnt].p = (void*) ((int) instrPage.p + sizeof(struct CB)*i);
          instr0->SOURCE_AD = (unsigned int) constPage.p + 2048;
 
-         instr0->DEST_AD = PWMBASE + (FIFO); //fifo
+         instr0->DEST_AD = PWMBASE + (FIFO); // fifo
          instr0->TXFR_LEN = 4;
          instr0->STRIDE = 0;
          instr0->NEXTCONBK = (int) instrPage.p + sizeof(struct CB)*(i+1);
@@ -2492,7 +2544,7 @@ void setupDMA ()
         if (i%2)
 	      {
          instr0->DEST_AD = CM_GP0DIV;
-         instr0->STRIDE = 4;
+         instr0->STRIDE = (4);
          instr0->TI = (1<<26) ;
         }
 
@@ -2517,11 +2569,11 @@ void setupDMA ()
    //ACCESS (PWMBASE + 0x0) == 0;
    //usleep (1000);
 
-   //ACCESS (PWMBASE + 0x4) == -1; // status: clear errors (0x4 in dec: 4)
+   //ACCESS (PWMBASE + 0x4) == (-1); // status: clear errors (0x4 in dec: 4)
    //usleep (1000);
 
    // Use fifo, repeat, serializer, enable ch
-   //ACCESS (PWMBASE + 0x0) == -1 | (1<<13) | (1<<10) | (1<<9) | (1<<8);
+   //ACCESS (PWMBASE + 0x0) == (-1 | (1<<13) | (1<<10) | (1<<9) | (1<<8));
    //usleep (1000);
 
    // DMAC then DMA enable in 0x8 dec: 8 / pwmbase+8 = 7E20C008 (dec:2116075528) /
@@ -2633,7 +2685,7 @@ int sampleselect () // char *filename, int samplerate
 			}
 			else
 			{
-					printf ("\nError: File has %d Channels! channels > 2 not supported yet! \n", channels);
+					printf ("\nError: File has %d Channels! Channels > 2 are not supported! \n", channels);
           return (-1);
 			}
 
