@@ -461,6 +461,8 @@ using namespace std; //
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <netinet/in.h>
+#include <net/sctp.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <ifaddrs.h>

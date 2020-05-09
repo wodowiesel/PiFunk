@@ -32,6 +32,7 @@ RM=rm -f ## remove files or folder
 ## $(RM)
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
+## environment variable C_INCLUDE_PATH
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
 CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/linux/ ## kernel now 4.19.97+
 $(CINC)
@@ -53,12 +54,9 @@ SHFLAGS=-shared -fPIC ## make shared big libraries
 $(SHFLAGS)
 
 DEBUG=-Wall -v -g3 -ggdb3 -pg -Q
-## -pg makes profiles for object code for analysis with gprof
-## -dM dumps preprocessor Macros -> not needed
-## -Werror makes -> all warnings into errors -w inhibits warnings
-## --working-directory
-## -pedantic-errors
 $(DEBUG)
+## -pg makes profiles for object code for analysis with gprof
+## -Wall shows all errors&warnings, -w inhibits warnings
 
 LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
 $(LDLIBS)
@@ -69,7 +67,8 @@ LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile
 $(LDFLAGS)
 PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
-
+AOFLAGGS=-arm-none-eabi-objdump
+$(AOFLAGS)
 ## other optional macros if necessary
 ##-isystem $(KERNEL_DIR) : You must use the kernel headers of the kernel you're compiling against. Using the default /usr/include/linux won't work.
 ##-D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
@@ -133,10 +132,10 @@ $(TARGET)
 
 #@echo Compiling PiFunk
 
-## Generating objects in gcc specific order
-## c-translated assembler-code
+## Generating objects in gcc specific order, -save-temps
+## translated assembler/c-code
 pifunk.s:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm: arm-none-eabi-objdump
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm:
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal asm suffix
 ## precompiled/processor c-code
 pifunk.i:	$(SOURCE) pifunk.h
@@ -165,7 +164,7 @@ libpifunk.dll:	libpifunk.o
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib libpifunk.dll
 ## lib object list
-OBJECTS=pifunk.i pifunk.s pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
+OBJECTS=pifunk.s pifunk.i pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
 $(OBJECTS)
 
 ## generating standard binary
