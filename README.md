@@ -22,19 +22,23 @@ or use the extra provided imager and extract and load bootable image on SD-card 
 
 `sudo apt-get install git` via git or download it on the page as .tar.gz
 
-`git clone https://www.github.com/wodowiesel/PiFunk`
+`sudo git clone https://www.github.com/wodowiesel/PiFunk`
 
 2. Configurations
 
-To configure the Pi for modules via menu (I2C, UART etc.): `sudo raspi-config`
+To configure the Pi modules via menu (I2C, ALSA-Audio, UART etc.): `sudo raspi-config`
 
-Not recommending to use w1-protocol at the beginning (i don't need it in my setup)
+- Not recommending to use w1-protocol at the beginning (i don't need it in my setup)
 
 Using w1-gpio sometimes needs a 4.7 - 10 kΩ pullup resistor connected on GPIO-Pin
 
-1-Wire by default BCM4 setting needs to be activated in boot-config for autostart additionally
+1-Wire by default BCM4 setting needs to be activated in boot-config for additional autostart
 
-(if you have problems deactivate 1-wire config!)
+if you like to you can install [wiringpi](http://wiringpi.com/the-gpio-utility/)
+
+via `sudo apt-get install wiringpi`
+
+(if you have problems while transmission deactivate 1-wire config, default should be off!)
 
 3. Adding parameters:
 
@@ -44,11 +48,11 @@ Manually open with nano-editor:
 
 check/add lines:
 
-`dtoverlay=i2c1-bcm2708` for pi 4: 2711 for using I2C Bus
+`dtoverlay=i2c1-bcm2708` for Pi1, Pi4: 2711 for using I2C Bus
 
 `dtoverlay=gpiopin=4,pullup=0` add pullup=1 or w1-gpio if needed
 
-`dtoverlay=audio=on` for bcm audio required
+`dtoverlay=audio=on` for bcm-alsa-audio required!
 
 optional:
 
@@ -66,7 +70,7 @@ Add PPS to autostart boot process:
 
 `bcm2708.pps_gpio_pin=18` It must be on the same line, not on a new line
 
-Sync to GPS 1 PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK / PWM0) or RTC for accuracy
+Sync to GPS 1-PPS signal for Pi PCM-Clock (PIN 12 / GPIO 18 = PCM_CLK / PWM0) or RTC for accuracy
 
 `sudo nano /etc/modules` opens `modules.conf` with text editor (provide one too)
 
@@ -96,13 +100,13 @@ ___
 
 6. You will need some libraries for this:
 
-a) `sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers` for Kernel & Firmware
+a) `sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers i2c-tools` for Kernel & Firmware
 
 b) `sudo apt-get install libsndfile1-dev` for ALSA SND-lib
 
 or download it directly [SND](https://packages.debian.org/de/sid/libsndfile1-dev)
 
-c) `sudo apt-get install python-dev python3-dev` for py3
+c) `sudo apt-get install python3-dev` for py3
 
 d) [RPi.GPIO lib v0.7.0+ for Py3](https://files.pythonhosted.org/packages/cb/88/d3817eb11fc77a8d9a63abeab8fe303266b1e3b85e2952238f0da43fed4e/RPi.GPIO-0.7.0.tar.gz) (also in repo)
 
@@ -117,6 +121,8 @@ then extract: `tar -xvf RPi.GPIO-0.7.0.tar.gz` or a later version
 and install it: `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
 or alternative way: `sudo apt-get -y install python3-rpi.gpio`
+
+e) Check i2C Bus: `sudo i2cdetect -y 1`
 
 7. Compiler installation:
 
@@ -221,9 +227,9 @@ a) Automatic compilation
 
 Image of the GCC Flow-diagram for generating [Libraries](docs/GCC_Schema.jpg)
 
-*.c=C-code, *.h=headerfile, *.S=assembler-code,
+*.c(pp)=C-code, *.h(pp)=headerfile, *.S=assembler-code,
 
-*.i=assembled preprocessor C-code,  *.s=preprocessed assembler-code,
+*.i=assembled preprocessor C-code, *.s=preprocessed assembler-code,
 
 *.o=compiled object, *.lib=static library, *.a=static archive, *.so=shared object, *.dll=dynamic linked library
 
@@ -295,7 +301,7 @@ b) Check specifications: my Raspberry Pi B+ Rev. 1.2 @ 700 MHz / 512 MB RAM on A
 
 for more infos on other boards just visit [Adafruit](http://www.adafruit.com)
 
-or [Wikipedia Spec Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
+or [Wikipedia Specifications Summary](https://de.wikipedia.org/wiki/Raspberry_Pi)
 
 c) Antenna to GPCLK0 (GPIO 4, PIN 7) for PWM (Pulse with Modulation)
 
