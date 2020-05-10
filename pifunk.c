@@ -2281,8 +2281,8 @@ static void terminate (int num)
     }
 
     printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exiting \n");
-
-    exit (num);
+    return (num);
+    //exit (num);
 }
 
 void usleep2 (long us)
@@ -2786,7 +2786,7 @@ void play_am ()
   return;
 }
 
-void modulationfm () // int argc, char **argv [], char *mod
+void modulationfm () // int argc, char *argv [], char *mod
 {
   	printf ("\nPreparing for fm ... \n");
     setupfm (); // gets filename & path or done by fileselect () func
@@ -2797,7 +2797,7 @@ void modulationfm () // int argc, char **argv [], char *mod
 		return;
 }
 
-void modulationam () // int argc, char **argv [], char, *mod
+void modulationam () // int argc, char *argv [], char, *mod
 {
 	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
 		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -2809,7 +2809,7 @@ void modulationam () // int argc, char **argv [], char, *mod
 	  return;
 }
 
-void modselect () // int argc, char **argv [], char *mod
+void modselect () // int argc, char *argv [], char *mod
 {
 	printf ("\nOpening Modulator-Selection ... \n");
 	if (strcmp (mod, "fm"))
@@ -2822,7 +2822,7 @@ void modselect () // int argc, char **argv [], char *mod
 	{
     printf ("\nYou selected 2 for am! \n");
     printf ("\nPushing args to am Modulator ... \n");
-		modulationam (); // int argc, char **argv []
+		modulationam (); // int argc, char *argv []
 	}
 	else
 	{
@@ -2952,7 +2952,7 @@ void cgimodule () //
   return;
 }
 
-void tx () // int argc, char **argv []
+void tx () // int argc, char *argv []
 {
   printf ("\nPreparing for transmission ... \n");
 	while (play_fm ()) // | play_am ())
@@ -2970,7 +2970,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char **argv []); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char *argv []); //, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR ... \n");
@@ -2989,7 +2989,7 @@ void menu ()
 						exit (0);
 
 		default: printf ("\n Error: Returning back to Main (Default) \n");
-             int main (int argc, char **argv []);
+             int main (int argc, char *argv []);
 		 				 break;
 	}
 	return;
@@ -3018,7 +3018,7 @@ void assistant () // assistant
 
 //---------------------------------------------
 // MAIN
-int main (int argc, char **argv []) // , const char *short_opt
+int main (int argc, char *argv []) // , const char *short_opt, *argv []=**argv
 // arguments for global use should be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
@@ -3068,10 +3068,10 @@ int main (int argc, char **argv []) // , const char *short_opt
 	printf ("\nChecking short_opt: %c \n", short_opt);
   printf ("\nChecking options: %d \n", options);
   printf ("\nChecking options: %d \n", option_index);
-  printf ("\nChecking flags long : %d \n", flags);
+  printf ("\nChecking flags long: %d \n", flags);
   printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
 
-	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
+  while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
 		{
@@ -3082,7 +3082,7 @@ int main (int argc, char **argv []) // , const char *short_opt
 		{
 		switch (options)
 		{
-
+      printf ("\nArgument-Switch \n");
 			case 'n':
 							 filename = optarg;
 							 printf ("\nFilename is %s \n", filename);
@@ -3185,14 +3185,13 @@ int main (int argc, char **argv []) // , const char *short_opt
 								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type 1/2 for a/d>] [-x <GPS on/off>]\n There is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								break;
 		} // end of switch
-
-		break;
-	} // end of while
-
-  } // end of else
+    printf ("\nEnd of switch \n");
+	} // end of else
+  printf ("\nEnd of argument check, printing debug \n");
+  } // end of while
 
 	// for debugging or information
-	printf ("\n-----------------\n");
+	printf ("\n-----------------------------------------\n");
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
@@ -3215,16 +3214,17 @@ int main (int argc, char **argv []) // , const char *short_opt
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
   printf ("\nlong_cw: %s \n", long_cw); //
-  //printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
-	//printf ("\nChecking *Pointers-> argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
+  printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+	printf ("\nChecking *Pointers: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
 
 	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
-	//printf ("local ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
+	//printf ("\nlocal ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 
-	// gathering and parsing all given arguments it to player
+	// gathering and parsing all given arguments it to player?!
   printf ("\nTransmission starting ... \n"); // EOF
-	void tx (); // int argc, char **argv [] transmission
+	void tx (); // int argc, char *argv [] transmission
   printf ("\nTransmission ended! \n");
+
   static void terminate (int num);
 
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
