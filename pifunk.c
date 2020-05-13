@@ -1347,9 +1347,9 @@ char *tcp;
 
 const char *short_cw = ".";  // morse-code short beep
 const char *long_cw = "-"; // morse-code long beep
-char *message;
+char message [];
 
-static const char *alpha [] =
+static const char *morse [] =
 {
   ".-",   // A
   "-...", // B
@@ -1387,11 +1387,9 @@ static const char *alpha [] =
   ".--.-", // Â
   "..--.-", // ~N
   "*--**", // ]p (thorn)
-  "**--*" // -D (eth)
-};
+  "**--*", // -D (eth)
 
-static const char *numb [] =
-{
+  // numbers
   "-----", // 0
   ".----", // 1
   "..---", // 2
@@ -1403,7 +1401,7 @@ static const char *numb [] =
   "---..", // 8
   "----.",  // 9
 
-  // special chars
+  // special symbols& signs
   ".-.-.-", // .
   "..--.-",  // -
   ".-.-.",  // +
@@ -1426,7 +1424,7 @@ static const char *numb [] =
   ".--.-."  // @
 };
 
-static const char **table [] = {alpha, numb};
+static const char *morsetable [] = {morse};
 
 //--------------------------------------------------
 // Structs
@@ -1835,12 +1833,12 @@ float channelmodepmrdigital ()
 // Channel-mode
 int channelmodepmr () // PMR
 {
-	printf ("\nChoose PMR-Type (1) analog / (2) digital : \n");
+	printf ("\nChoose PMR-Type (1) analog / (2) digital: \n");
 	scanf ("%d", &type);
 
   if (type==1)
   {
-    printf ("\nYou chose type (1) analog  \n");
+    printf ("\nYou chose type (1) analog \n");
     channelmodepmranalog ();
   }
   else if (type==2)
@@ -1851,10 +1849,10 @@ int channelmodepmr () // PMR
   else
 	{
     type=1;
-		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", analog);
+		printf ("\nNO type could be determined, wrong input! Using %d as standard \n", type);
 	}
-  printf ("\nOn type = %d with Channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
-	return freq;
+  printf ("\nOn type = %d with channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
+	return type;
 }
 
 float subchannelmodepmr () // Pilot-tone
@@ -2150,7 +2148,6 @@ int modetypeselect ()
 
 char gpsselect () // char *gps
 {
-
   if (gps == "on")
   {
   printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
@@ -2162,8 +2159,8 @@ char gpsselect () // char *gps
   }
   else
   {
-    printf ("\nError: Input not recognized! NOT using GPS \n");
-    gps == "off";
+    printf ("\nError: Input not recognized! Using default GPS settings \n");
+    gps == "on";
   }
   printf ("\nGPS-Status is %s \n", gps);
   return gps;
@@ -2228,7 +2225,6 @@ void carrierhigh () // enables it
   struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
   ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
   while (!(ACCESS(CM_GP0CTL)&0x80)); // Wait for busy flag to turn on.
-
   printf ("\nCarrier is high ... \n");
   return;
 }
@@ -2239,7 +2235,6 @@ void carrierlow () // disables it
   struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
   ACCESS (CM_GP0CTL) = *((int*) &setupword);
   while (ACCESS(CM_GP0CTL)&0x80); //
-
   printf ("\ncarrier is low ... \n");
   return;
 }
@@ -2279,7 +2274,6 @@ static void terminate (int num)
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
     }
-
     printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exiting \n");
     return (num);
     //exit (num);
@@ -2294,12 +2288,10 @@ void usleep2 (long us)
 void delayMicrosecondsHard (unsigned int howLong)
 {
   struct timeval tNow, tLong, tEnd;
-
   gettimeofday (&tNow, NULL) ;
   tLong.tv_sec  = howLong / 1000000;
   tLong.tv_usec = howLong % 1000000;
   timeradd (&tNow, &tLong, &tEnd);
-
   while (timercmp (&tNow, &tEnd, <))
   {
     gettimeofday (&tNow, NULL);
@@ -2310,7 +2302,6 @@ void delayMicrosecondsHard (unsigned int howLong)
 void setupio ()
 {
   printf ("\nSetting up FM ... \n");
-
   struct sched_param sp;
   memset (&sp, 0, sizeof (sp));
   sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
@@ -2333,8 +2324,8 @@ void setupio ()
 
 	// Make sure pointer is on 4K boundary
 	if ((unsigned long) gpio_mem % PAGE_SIZE)
-	    gpio_mem += PAGE_SIZE - ((unsigned long) gpio_mem % PAGE_SIZE);
-
+  {
+	  gpio_mem += PAGE_SIZE - ((unsigned long) gpio_mem % PAGE_SIZE);
   	// Now map it
 	  gpio_map = (unsigned char *) mmap (
 		gpio_mem,
@@ -2343,6 +2334,7 @@ void setupio ()
 		MAP_SHARED | MAP_FIXED,
 		MEM_FD,
 		GPIO_BASE);
+  }
 
 	if ((long) gpio_map < 0)
   {
@@ -2351,7 +2343,6 @@ void setupio ()
   }
 
   gpio = (volatile unsigned *) gpio_map;
-
 	carrierhigh ();
   return;
 }
@@ -2834,35 +2825,35 @@ void modselect () // int argc, char *argv [], char *mod
 
 char cw ()
 {
-  sprintf ("\n%s\n", table);
-  printf ("\nStd-cw: short_cw: %s, long_cw: %s \n Type in your CW-message: \n", long_cw, short_cw); // morse beeps
-  scanf ("%s", &message);
-  long int length_m = strlen (message); // size_t,  strlen -> long int
+  //printf ("\n%s", morsetable);
+  printf ("\nStd-cw: short_cw: %s & long_cw: %s \nType in your cw-message: ", short_cw, long_cw); // morse beeps
+  scanf ("%s", message);
+  long int length_m = strlen (message); // size_t, strlen -> long int
 
-  printf ("\nMessage: %s, length: %ld \n", message, length_m); // length unsigned int %zu
+  printf ("\nMessage: %s \nlength: %ld \n", message, length_m); // length unsigned int %zu
 
   // tone translation
-  /*
-  while (message [w] != NULL) // Stop looping when we reach the NULL-character "\0"
+
+  while (message [w] != 0) // Stop looping when we reach the NULL-character "\0"
+  //for (w=0; w < length_m; w++)
   {
-    if (message [w] == short_cw)
+    if (message [w] == *short_cw)
     {
       printf ("\a"); // system beep terminal, maybe beep-function later
     }
-    else if (message [w] == long_cw)
+    else if (message [w] == *long_cw)
     {
       printf ("\a\a");
     }
     else
     {
-      printf ("\nMessage error \n");
+      printf ("\nError: NOT CW-Code! \n");
     }
-
-    printf ("%c", message [w]);  // Print each character of the string
+    //printf ("%c", message [w]);  // Print each character of the string
     w++;
   }
-  */
-  return message;
+
+  return *message;
 }
 
 // LED stuff
