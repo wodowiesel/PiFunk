@@ -541,20 +541,22 @@ using namespace std; //
 
 #ifdef __ARM__
   #warning Program runs under ARM-Architecture!
-  //#pragma ARM
-  // same as -CODE32
-  //#error NOT ARM
+  //#pragma ARM // same as -CODE32
+  //#warning NOT ARM
 #endif
 
 #ifdef __ARM64__
   #warning Program runs under ARM64-Architecture!
-  //#pragma ARM64
-  //#error NOT ARM64
+  #pragma ARM64
 #endif
 
-#ifdef __GNUC__
+#ifdef __GNUC__ // gcc
   #warning Using GNU C with ANSI ISO C99 as GNU99!
-   //#pragma GCC system_header
+  //#pragma GCC system_header
+  #pragma GCC visibility pop
+  #define EXPORT __attribute__((visibility("default")))
+  #define EXPORT_HIDDEN __attribute__((visibility("hidden")))
+  #define IMPORT
 #endif
 
 #ifdef _GNU_SOURCE
@@ -566,18 +568,19 @@ using namespace std; //
   #warning Using GNU C++ with ANSI ISO C++ 99/11/17/20!
   extern "C"
   {
-   printf ("\n__CPLUSPLUS \n");
+   printf ("\n__CPLUSPLUS\n");
   }
 #endif
 
 #ifdef _POSIX
+  #warning Using POSIX standard!
   #define _POSIX_C_SOURCE   		(200809L) // or 199309L
   //#define _USE_MATH_DEFINES 1 // for math lm lib
 #endif
 
 #ifdef __STDC_VERSION__
-   //#define _STDC_VERSION (199901L)  // -std=c99
-   #warning Using GNU C with C99 standard!
+  #warning Using GNU C with C99 standard!
+  //#define _STDC_VERSION (199901L)  // -std=c99
 #endif
 
 //------------------------------------------------------------------------------
@@ -810,7 +813,7 @@ volatile unsigned 										(*allof7e); //
 // GPIO
 // https://elinux.org/RPi_BCM2835_GPIOs
 // https://books.google.de/books?id=gks1CgAAQBAJ&pg=PA407&lpg=PA407&dq=GPCLK2+address&source=bl&ots=OQkStH20YL&sig=ACfU3U2tp104Z3TTsrmU67Ai4L54JhF1uA&hl=de&sa=X&ved=2ahUKEwjw-uKyhZDnAhUCU1AKHcuRDMgQ6AEwAXoECBQQAQ#v=onepage&q=GPCLK2%20address
-#define GPFSEL0                         (0x00/4) // p.90 dec: 0
+#define GPFSEL0                         (0x00/4) // p.90, dec: 0
 #define GPFSEL1                         (0x04/4) // 1
 #define GPFSEL2                         (0x08/4) // 2
 #define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368
@@ -938,8 +941,9 @@ Uses 3 GPIO pins */
 #define PWM_CTL                         (0x00/4) // 0
 #define PWM_FIFO                        (0x18/4) // 6
 #define PWM_DMAC                        (0x08/4) // 2
-#define PWM_RNG1                        (0x10/4) //4
-#define PWM_RNG2                        (0x20/4) //8
+
+#define PWM_RNG1                        (0x10/4) // 4
+#define PWM_RNG2                        (0x20/4) // 8
 
 #define PWMDMAC_ENAB                    (1<<31)  // shift bit to left
 #define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) // this means it requests as soon as there is one free slot in the FIFO
@@ -1062,42 +1066,7 @@ Uses 3 GPIO pins */
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
 
-#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
-#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
-#define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
-#define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
-
-// sleep timer
-#define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
-#define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
-#define timercmp(a, b, CMP)                                                   \
-  (((a)->tv_sec == (b)->tv_sec) ?                                             \
-   ((a)->tv_usec CMP (b)->tv_usec) :                                          \
-   ((a)->tv_sec CMP (b)->tv_sec))
-
-#define timeradd(a, b, result)                                                \
-    do
-    {                                                                        \
-    (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;                             \
-    (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;                          \
-    if ((result)->tv_usec >= (1000000))                                         \
-      {                                                                       \
-        ++(result)->tv_sec;                                                   \
-        (result)->tv_usec -= (1000000);                                         \
-      }                                                                       \
-  } while (0)
-
-#define timersub(a, b, result)                                                \
-    do
-    {                                                                         \
-    (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;                             \
-    (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;                          \
-    if ((result)->tv_usec < 0)
-    {                                                                         \
-      --(result)->tv_sec;                                                     \
-      (result)->tv_usec += 1000000;                                           \
-    }                                                                         \
-  } while (0)
+#define AMPLITUDE                       (1) // for sampling I/Q must be constant
 
 // optional hardware
 // RTC (DS3231/DS1307 driver)
@@ -1158,6 +1127,44 @@ Uses 3 GPIO pins */
 #define MODULATION_PTR                  (0x66) // dec: 102 $
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
 */
+
+#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
+#define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
+#define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
+#define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+
+// sleep timer
+#define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
+#define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
+#define timercmp(a, b, CMP)                                                   \
+  (((a)->tv_sec == (b)->tv_sec) ?                                             \
+   ((a)->tv_usec CMP (b)->tv_usec) :                                          \
+   ((a)->tv_sec CMP (b)->tv_sec))
+
+#define timeradd(a, b, result)                                                \
+    do
+    {                                                                         \
+    (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;                             \
+    (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;                          \
+    if ((result)->tv_usec >= (1000000))                                       \
+      {                                                                       \
+        ++(result)->tv_sec;                                                   \
+        (result)->tv_usec -= (1000000);                                       \
+      }                                                                       \
+    } while (0)
+
+#define timersub(a, b, result)                                                \
+    do
+    {                                                                         \
+    (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;                             \
+    (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;                          \
+    if ((result)->tv_usec < 0)
+    {                                                                         \
+      --(result)->tv_sec;                                                     \
+      (result)->tv_usec += 1000000;                                           \
+    }                                                                         \
+    } while (0)
+
 
 // try a modprobe of i2C-BUS
  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
@@ -1287,8 +1294,8 @@ float sampler;
 // IQ & carrier http://whiteboard.ping.se/SDR/IQ
 uint16_t pis = (0x1234); // dec: 4660
 float angle = ((PHASE*freq)+shift_ppm); // A*cos(2pi*freq+phaseshift)
-float I = FactAmplitude*cosf (angle); // real! In-Phase signal component
-float Q = FactAmplitude*sinf (angle); // Quadrature signal component
+float I = AMPLITUDE*cosf (angle); // real! In-Phase signal component , FactAmplitude not constant
+float Q = AMPLITUDE*sinf (angle); // Quadrature signal component
 float RF_SUM = (I+Q);
 float ampl = sqrtf (((I*I)+(Q*Q)));
 
@@ -1544,8 +1551,8 @@ static struct option long_opt [] =
     {"gps",	  		  required_argument, 0, 'x'}, // 11
     {"assistant",		no_argument,       0, 'a'}, // 12
     {"menu",	  		no_argument,       0, 'u'}, // 14
-    {"help",	  		no_argument,       0, 'h'},  // 13
-    {0,             0,                 0,  0 }
+    {"help",	  		no_argument,       0, 'h'}, // 13
+    {0,             0,                 0,  0 } // blank
 };
 
 /*
@@ -1556,12 +1563,12 @@ class ClockOutput : public ClockDevice
         #ifndef GPIO_21
         ClockOutput (unsigned divisor) : ClockDevice (CLK0_BASE_OFFSET, divisor)
         {
-            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET));
+            output = reinterpret_cast<uint32_t *> (peripherals->GetVirtualAddress (GPIO_BASE_OFFSET));
             *output = (*output & 0xFFFF8FFF) | (0x04 << 12);
         #else
-        ClockOutput(unsigned divisor) : ClockDevice (CLK1_BASE_OFFSET, divisor)
+        ClockOutput (unsigned divisor) : ClockDevice (CLK1_BASE_OFFSET, divisor)
         {
-            output = reinterpret_cast<uint32_t *>(peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + 0x08));
+            output = reinterpret_cast<uint32_t *> (peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + 0x08));
             *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
         #endif
         }
@@ -2833,7 +2840,6 @@ char cw ()
   printf ("\nMessage: %s \nlength: %ld \n", message, length_m); // length unsigned int %zu
 
   // tone translation
-
   while (message [w] != 0) // Stop looping when we reach the NULL-character "\0"
   //for (w=0; w < length_m; w++)
   {
