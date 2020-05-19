@@ -34,5 +34,6 @@ target_link_libraries(pifunk
   	)
 
 add_executable(bin/pifunk
+							 bin/pifunk.out
 							 bin/pifunk.bin
 							 )

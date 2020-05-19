@@ -2,16 +2,24 @@
 * text=auto
 
 # Custom for Visual Studio
-*.cs     diff=csharp
+*.cs diff=csharp
 
 # here c and py
 *.c diff=astextplain
 *.cpp diff=astextplain
 *.h diff=astextplain
 *.hpp diff=astextplain
+*.s diff=astextplain
+*.i diff=astextplain
+*.o diff=astextplain
+*.so diff=astextplain
+*.dll diff=astextplain
+*.a diff=astextplain
+*.lib diff=astextplain
 
 *.py diff=astextplain
 *.sh diff=astextplain
+*.bat diff=astextplain
 
 # Standard to msysgit
 *.doc	 diff=astextplain
@@ -20,3 +28,9 @@
 *.pdf  diff=astextplain
 *.rtf	 diff=astextplain
 *.txt	 diff=astextplain
+*.csv diff=astextplain
+*.md diff=astextplain
+
+*.conf diff=astextplain
+*.texi diff=astextplain
+*.am diff=astextplain

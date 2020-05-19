@@ -1,5 +1,5 @@
 /*
- * rtc-ds1307.c - RTC driver for some mostly-compatible I2C chips.
+ * ds1307.c - RTC driver for some mostly-compatible I2C chips.
  *
  *  Copyright (C) 2005 James Chapman (ds1337 core)
  *  Copyright (C) 2006 David Brownell
@@ -72,7 +72,7 @@ enum ds_type
 #	define DS1307_BIT_SQWE				0x10
 #	define DS1307_BIT_RS1					0x02
 #	define DS1307_BIT_RS0					0x01
-# define DS1337_REG_CONTROL			0x0e
+# define DS1337_REG_CONTROL			0x0E
 #	define DS1337_BIT_NEOSC				0x80
 #	define DS1339_BIT_BBSQI				0x20
 #	define DS3231_BIT_BBSQW				0x40 /* same as BBSQI */
@@ -85,20 +85,20 @@ enum ds_type
 #	define DS1340_BIT_OUT					0x80
 #	define DS1340_BIT_FT					0x40
 #	define DS1340_BIT_CALIB_SIGN	0x20
-#	define DS1340_M_CALIBRATION		0x1f
+#	define DS1340_M_CALIBRATION		0x1F
 # define DS1340_REG_FLAG				0x09
 #	define DS1340_BIT_OSF					0x80
-# define DS1337_REG_STATUS			0x0f
+# define DS1337_REG_STATUS			0x0F
 #	define DS1337_BIT_OSF					0x80
 #	define DS1337_BIT_A2I					0x02
 #	define DS1337_BIT_A1I					0x01
 # define DS1339_REG_ALARM1_SECS	0x07
 
-# define DS13XX_TRICKLE_CHARGER_MAGIC	0xa0
+# define DS13XX_TRICKLE_CHARGER_MAGIC	0xA0
 
-# define RX8025_REG_CTRL1				0x0e
+# define RX8025_REG_CTRL1				0x0E
 #	define RX8025_BIT_2412				0x20
-# define RX8025_REG_CTRL2				0x0f
+# define RX8025_REG_CTRL2				0x0F
 #	define RX8025_BIT_PON					0x10
 #	define RX8025_BIT_VDET				0x40
 #	define RX8025_BIT_XST					0x20
@@ -1319,7 +1319,7 @@ static struct i2c_driver ds1307_driver =
 {
 	.driver =
 	{
-		.name	= "rtc-ds1307",
+		.name	= "ds1307",
 		.owner	= THIS_MODULE,
 	},
 	.probe		= ds1307_probe,

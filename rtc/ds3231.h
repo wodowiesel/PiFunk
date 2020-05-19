@@ -14,8 +14,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ds3231_h
-#define ds3231_h
+#ifndef DS3231_H
+#define DS3231_H
 
 #define DS3231_ADDRESS              (0x68)
 #define DS3231_REG_TIME             (0x00)
@@ -62,7 +62,7 @@ typedef enum
     DS3231_EVERY_SECOND   = 0b00001111,
     DS3231_MATCH_S        = 0b00001110,
     DS3231_MATCH_M_S      = 0b00001100,
-    DS3231_MATCH_H_M_S    = 0b00001000,
+    DS3231_MATCH_H_M_S    = 000001000,
     DS3231_MATCH_DT_H_M_S = 0b00000000,
     DS3231_MATCH_DY_H_M_S = 0b00010000
 } DS3231_alarm1_t;
