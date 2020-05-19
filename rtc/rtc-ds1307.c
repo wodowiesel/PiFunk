@@ -1319,7 +1319,7 @@ static struct i2c_driver ds1307_driver =
 {
 	.driver =
 	{
-		.name	= "ds1307",
+		.name	= "rtc-ds1307",
 		.owner	= THIS_MODULE,
 	},
 	.probe		= ds1307_probe,
