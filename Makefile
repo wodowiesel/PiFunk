@@ -10,7 +10,7 @@ $(CXX)
 ## general infos
 MAKEINFO=pifunk
 $(MAKEINFO)
-VERSION=0.1.7.8
+VERSION=0.1.7.6
 $(VERSION)
 STATUS=experimental
 $(STATUS)
@@ -29,7 +29,7 @@ KERNEL_DIR:=/lib/modules/$(shell uname -r)/build/
 $(KERNEL_DIR)
 
 RM=rm -f ## remove files or folder
-## $(RM)
+#$(RM)
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## environment variable C_INCLUDE_PATH
@@ -56,7 +56,7 @@ $(SHFLAGS)
 DEBUG=-Wall -v -g3 -ggdb3 -pg -Q
 $(DEBUG)
 ## -pg makes profiles for object code for analysis with gprof
-## -Wall shows all errors&warnings, -w inhibits warnings
+## -Wall shows all errors & warnings, -w inhibits warnings
 
 LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
 $(LDLIBS)
@@ -67,8 +67,9 @@ LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile
 $(LDFLAGS)
 PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
-AOFLAGGS=-arm-none-eabi-objdump
-$(AOFLAGS)
+#AOFLAGGS=-arm-none-eabi-objdump ## objdump gnu tools
+#$(AOFLAGS)
+
 ## other optional macros if necessary
 ##-isystem $(KERNEL_DIR) : You must use the kernel headers of the kernel you're compiling against. Using the default /usr/include/linux won't work.
 ##-D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
@@ -94,12 +95,12 @@ $(PCPUI)
 ## old/special pi versions
 ifeq ($(UNAME), armv5)
 PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
-TARGET=RPI # alternative1
+TARGET=RPI ## alternative1
 endif
 
 ifeq ($(UNAME), armv5l)
 PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET=RASPBERRY # alternative2
+TARGET=RASPBERRY ## alternative2
 endif
 
 ifeq ($(UNAME), armv6)

@@ -80,12 +80,13 @@ sudo i2cdetect -y 1
 
 cd PiFunk // goto path
 
- generate Lib:
- sudo gcc pifunk.c -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/pifunk.o
- sudo gcc pifunk.o -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -o lib/pifunk.a lib/pifunk.lib
- sudo gcc pifunk.o -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/pifunk.so lib/pifunk.dll
+ generate Libs:
+ sudo gcc pifunk.c -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/pifunk.o
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -o lib/pifunk.a lib/libpifunk.lib
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/libpifunk.so
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/libpifunk.dll
 
- program: sudo gcc pifunk.c -g3 -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -llibpifunk -O3 -o bin/pifunk
+ program: sudo gcc pifunk.c -v -g3 -ggdb3 -pg -Q -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -llibpifunk -O3 -o bin/pifunk
 
  Usage/run:
  default: sudo ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign -g 4 -d 14 -b 12.50 -t 1 -x on
@@ -93,28 +94,30 @@ cd PiFunk // goto path
  https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Preprocessor-Options.html
  https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
 
- or do make (compile flags in make included)
+ or do make (compile flags and arm-specifics in makefile included)
  -lbcm_host // firmware v1.20190718 located in /opt/vc/include/
  -lbcm2835
- -lm flag for math lib (obligatory), -g3 for debugger level, -c for not linkin to library
- -llibpifunk own lib from this project
+ -lpthread
+ -lm flag for math lib (obligatory),
+ -g3 for debugger level, -c for not linking to library
+ -llibpifunk // own lib from this project
  -D_POSIX_C_SOURCE=200809L // already in gnu_source included
  -std=c99 is the same as -std=iso9899:1999
  or -std=gnu99 supports c99 + additional gnu extensions
  or -std=c17 (11/14 also possible)
  -E tells to stop after preprocessing stage
  -v verbose
- `-a` keyword performs basic-block counting annotations for gdb & gprof
+ -a keyword performs basic-block counting annotations for gdb & gprof
  This option is supported for HP/UX compatibility.
  The keyword argument must be one of the strings ‘archive’, ‘shared’, or ‘default’.
- ‘-aarchive’ is functionally equivalent to ‘-Bstatic’, and the other two keywords are functionally equivalent to ‘-Bdynamic’.
+ -aarchive is functionally equivalent to ‘-Bstatic’, and the other two keywords are functionally equivalent to ‘-Bdynamic’.
  This option may be used any number of times.
- `-Q` Print function names. Show statistics about compilation passes.
+ -Q Print function names. Show statistics about compilation passes.
 
 -> real gpio hardware can't be simulated by VM! must be executed and compiled on pi wtith linux!
 As virtual machine best possible with Qemu
 
-possible freq-shift of ~0.005 MHz -> 5 kHz !!
+possible freq-shift of ~0.005 MHz -> ~5 kHz !!
 
 todo:
 memory-stuff
@@ -611,8 +614,9 @@ using namespace std; //
 #define ln(x)                         (log(x)/log(EULER))
 #define PI                            (3.14159265358979323846) // radial constant
 #define PHASE                         (2*PI) // 6.28318530718
-#define HALF_PERIOD                   (1/PI) // 0.31830988618
 #define PERIOD                        (1/PHASE) // 0.15915494309
+#define HALF_PERIOD                   (1/PI) // 0.31830988618
+#define AMPLITUDE                     (1) // for sampling I/Q must be constant
 
 // buffers
 #define BLOCK_SIZE                    (4*1024) // 4096
@@ -801,7 +805,6 @@ volatile unsigned 										(*allof7e); //
 
 #define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET) //
 
-
 #define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET) //
 #define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
 
@@ -872,13 +875,13 @@ volatile unsigned 										(*allof7e); //
 https://pinout.xyz/pinout/gpclk
 SOURCES:
 0     0     Hz     Ground
-1     19.2 MHz     oscillator
+1     19.2  MHz    oscillator
 2     0     Hz     testdebug0
 3     0     Hz     testdebug1
 4     0     Hz     PLLA // Auxiliary PLL -> for camera
-5     1000 MHz     PLLC (changes with overclock settings)
-6     500  MHz     PLLD
-7     216  MHz     HDMI auxiliary // not needed here in the program
+5     1000  MHz    PLLC (changes with overclock settings)
+6     500   MHz    PLLD
+7     216   MHz    HDMI auxiliary // not needed here in the program
 8-15  0     Hz     Ground
 
 clock-divider in the form of (SOURCE/(DIV_I + DIV_F/4096))
@@ -1066,8 +1069,6 @@ Uses 3 GPIO pins */
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
 
-#define AMPLITUDE                       (1) // for sampling I/Q must be constant
-
 // optional hardware
 // RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
@@ -1203,7 +1204,6 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 
 //-----------------------------------------
 // arguments
-int opt;
 char *filename = "sound.wav";
 float freq = fabs (446.006250);
 float shift_ppm = (0.0);
@@ -1220,8 +1220,8 @@ int power = (7);
 int powerlevel = abs (power); // same as drive
 int DRIVESTRENGTH = (7); // drive
 int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
-char *callsign;
-int type; // analog or digital
+char *callsign = "callsign";
+int type; // analog 1 or digital 2
 char *mod_type; // = "a"
 char *analog = "a"; // type = 1
 char *digital = "d"; // type = 2
@@ -1235,6 +1235,7 @@ uint32_t idivider = (float) divider;
 uint32_t fdivider = (uint32_t) ((divider-idivider) * pow (2, 12));
 
 // menu variables
+int opt;
 int menuoption;
 int channelnumbercb;
 int channelnumberpmr;
@@ -1264,7 +1265,7 @@ float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
 char data_name [1024];
 char buffer [80];
-
+uint16_t pis = (0x1234); // dec: 4660
 // audio & sample control
 // logarithmic modulation
 // volume in dB -> 0 db = unity gain, no attenuation, full amplitude signal
@@ -1283,21 +1284,22 @@ int nb_samples;
 float timeconst = (50.0E-6); // 0.00005 = => 50 us (microseconds) time constant
 int excursion = (6000);
 int excursion2 = (32767); // found another value but dont know on what this is based on
-float A = (87.6f); // compression parameter
+float A = (87.6f); // compression amplitude parameter < 90°
 uint32_t carrier_freq = (87600000); // this might be the carrier too, why this value?
-float FactAmplitude = (1.0); // maybe here amp-modulator input?
+float FactAmplitude = (1.0f); // maybe here amp-modulator input?
 float ampf;
 float ampf2;
 float factorizer;
 float sampler;
+float times = 1;
 
 // IQ & carrier http://whiteboard.ping.se/SDR/IQ
-uint16_t pis = (0x1234); // dec: 4660
-float angle = ((PHASE*freq)+shift_ppm); // A*cos(2pi*freq+phaseshift)
-float I = AMPLITUDE*cosf (angle); // real! In-Phase signal component , FactAmplitude not constant
-float Q = AMPLITUDE*sinf (angle); // Quadrature signal component
+float ANGLE = (PHASE*(freq+shift_ppm)*times); //2*pi*freq*timediff
+float I = AMPLITUDE*cosf (ANGLE); // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
+float Q = AMPLITUDE*sinf (ANGLE); // Quadrature signal component
+float ANGLE_REV = (atanf (Q/I)); // arctan
 float RF_SUM = (I+Q);
-float ampl = sqrtf (((I*I)+(Q*Q)));
+float AMPLITUDE_REV = (sqrtf (((I*I)+(Q*Q))));
 
 // instructor for access
 unsigned long frameinfo;
@@ -1644,7 +1646,7 @@ int gpioselect ()
     printf ("\nError: not recognized! Using default GPIO 4! \n");
     gpiopin = (4);
   }
-	return gpiopin;
+	return (gpiopin);
 }
 
 int dmaselect ()
@@ -1675,19 +1677,20 @@ int dmaselect ()
     printf ("\nThe DMA-Channel not recognized, using default 14! \n");
     dmachannel = (14);
   }
-	return dmachannel;
+	return (dmachannel);
 }
 
 int fileselect (char *filename)  // expected int
 {
   printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-  //scanf ("%s", &filename);
+  scanf ("%s", &filename);
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
 	char *filename = (char *) malloc (128); // allocating memory for filename
 	sprintf (filename, "%s", "file.ft");
 	char *stdfile = "sound.wav";
+
   if (filename != stdfile)
 	{
     // http://man7.org/linux/man-pages/man2/open.2.html
@@ -1697,7 +1700,7 @@ int fileselect (char *filename)  // expected int
 	{
 	  int fp = open ("sound.wav", O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_WRONLY | O_RDWR | sounds/sound.wav directory should be tested
 	}
-	return fp;
+	return (fp);
 }
 
 float freqselect () // gets freq by typing in
@@ -1738,7 +1741,7 @@ float bandwidthselect ()
   printf ("\nNO steps could be determined, wrong input! Using standard 12.50 kHz \n");
   bandwidth = DEVIATION;
   }
-  return bandwidth;
+  return (bandwidth);
 }
 
 float channelmodepmranalog ()
@@ -1781,7 +1784,7 @@ float channelmodepmranalog ()
   }
 
   printf ("\nanalog-freq is %f \n", freq);
-  return freq;
+  return (freq);
 }
 
 float channelmodepmrdigital ()
@@ -1834,7 +1837,7 @@ float channelmodepmrdigital ()
 	 }
 
    printf ("\ndigital-freq is %f \n", freq);
-   return freq;
+   return (freq);
 }
 
 // Channel-mode
@@ -1859,7 +1862,7 @@ int channelmodepmr () // PMR
 		printf ("\nNO type could be determined, wrong input! Using %d as standard \n", type);
 	}
   printf ("\nOn type = %d with channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
-	return type;
+	return (type);
 }
 
 float subchannelmodepmr () // Pilot-tone
@@ -1917,7 +1920,7 @@ float subchannelmodepmr () // Pilot-tone
 						break;
 	}
   printf ("\nSubchannelnumber = %d on subfreq = %f \n", subchannelnumberpmr, subfreq);
-	return subfreq;
+	return (subfreq);
 }
 
 float channelmodecb () // CB
@@ -2055,7 +2058,7 @@ char modulationselect ()
 						  printf ("\n Default = 1 \n");
 						  break;
 	}
-	return mod;
+	return (mod);
 }
 
 char callsignselect ()
@@ -2067,18 +2070,18 @@ char callsignselect ()
 	  {
 	   case 1: printf ("\nType in your callsign: \n");
 						 scanf  ("%s", &callsign);
-						 printf ("\nYour callsign is: %s \n", callsign);
+						 printf ("\nYour callsign is: %s \n", &callsign);
 						 break;
 
 		 case 2: callsign = "callsign"; // default callsign
-						 printf ("\nUsing default callsign: %s \n", callsign);
+						 printf ("\nUsing default callsign: %s \n", &callsign);
 						 break;
 
 		 default: callsign = "callsign"; // default callsign
-		 					printf ("\nError! Using default callsign: %s \n", callsign);
+		 					printf ("\nError! Using default callsign: %s \n", &callsign);
 							break;
     }
-  	return callsign;
+  	return (callsign);
 }
 
 int powerselect ()
@@ -2087,7 +2090,7 @@ int powerselect ()
 	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
   power = abs (powerlevel);
-	return power;
+	return (power);
 }
 
 int channelselect ()
@@ -2110,7 +2113,7 @@ int channelselect ()
 										channelmodepmr (); // gets freq from pmr list
 									  break;
 	}
-	return channelmode;
+	return (channelmode);
 }
 
 int typeselect ()
@@ -2129,7 +2132,7 @@ int typeselect ()
   {
     printf ("\nError in -t type \n");
   }
-  return type;
+  return (type);
 }
 
 int modetypeselect ()
@@ -2150,7 +2153,7 @@ int modetypeselect ()
              channelselect ();
 						 break;
 	}
-	return modeselect;
+	return (modeselect);
 }
 
 char gpsselect () // char *gps
@@ -2170,7 +2173,7 @@ char gpsselect () // char *gps
     gps == "on";
   }
   printf ("\nGPS-Status is %s \n", gps);
-  return gps;
+  return (gps);
 }
 
 float volumeselect () // audio & sample stuff
@@ -2184,7 +2187,7 @@ float volumeselect () // audio & sample stuff
 		 printf ("\nAddresses-> n: %p, volbuffer: %p, volumeMultiplier: %p \n", &n, &volbuffer [n], &volumeMultiplier);
      return volbuffer [n];
 	}
-	return volbuffer [n];
+	return (volbuffer [n]);
 }
 //---------------
 // Voids for modulation and memory handling
@@ -2758,7 +2761,7 @@ int sampleselect () // char *filename, int samplerate
     //fclose (FileFreqTiming);
   close (fp);
   printf ("\nFile closed! \n");
-	return samplerate;
+	return (samplerate);
 }
 // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 
@@ -2834,7 +2837,7 @@ char cw ()
 {
   //printf ("\n%s", morsetable);
   printf ("\nStd-cw: short_cw: %s & long_cw: %s \nType in your cw-message: ", short_cw, long_cw); // morse beeps
-  scanf ("%s", message);
+  scanf ("%s", &message);
   long int length_m = strlen (message); // size_t, strlen -> long int
 
   printf ("\nMessage: %s \nlength: %ld \n", message, length_m); // length unsigned int %zu
@@ -2859,7 +2862,7 @@ char cw ()
     w++;
   }
 
-  return *message;
+  return ()*message);
 }
 
 // LED stuff
@@ -2932,7 +2935,7 @@ char csvreader ()
     fclose (rfp);
     fclose (wfp);
     printf ("\nCSV-import of CTSS-list finished! \n");
-    return c;
+    return (c);
 }
 
 void cgimodule () //
@@ -2967,7 +2970,7 @@ void menu ()
 	switch (menuoption)
 	{
 		case 0: printf ("\nShell - Commandline (main): \n");
-						int main (int argc, char *argv []); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
 						break;
 
 		case 1: printf ("\nReading CSV for PMR ... \n");
@@ -2986,7 +2989,7 @@ void menu ()
 						exit (0);
 
 		default: printf ("\n Error: Returning back to Main (Default) \n");
-             int main (int argc, char *argv []);
+             int main (int argc, char **argv);
 		 				 break;
 	}
 	return;
@@ -3015,7 +3018,7 @@ void assistant () // assistant
 
 //---------------------------------------------
 // MAIN
-int main (int argc, char *argv []) // , const char *short_opt, *argv []=**argv
+int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 // arguments for global use should be in main!
 {
   printf ("\nStarting Main-PiFunk \n");
@@ -3201,11 +3204,13 @@ int main (int argc, char *argv []) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
   printf ("\nChecking GPS-Status: %s \n", gps);
   printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
-  printf ("\nangle: %f \n", angle);
+  printf ("\nangle: %f \n", ANGLE);
   printf ("\nI-value: %f \n", I);
   printf ("\nQ-value: %f \n", Q);
+  printf ("\nangle reverse: %f \n", ANGLE_REV);
   printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
-  printf ("\nAmplitude-value: %f \n", ampl);
+  printf ("\nAmplitude-value: %f \n", AMPLITUDE);
+  printf ("\nAmplitude_RV-value: %f \n", AMPLITUDE_RV);
 
 	printf ("\n-----------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
