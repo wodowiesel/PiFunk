@@ -450,9 +450,9 @@ using namespace std; //
 #include <linux/spi/spidev.h>
 
 // FW
-#include <soc/bcm2835/raspberrypi-firmware.h>
+//#include <soc/bcm2835/raspberrypi-firmware.h>
 #include <drm/drm_fb_cma_helper.h>
-#include <drm/drm_fb_helper.h>
+//#include <drm/drm_fb_helper.h>
 
 // RTC support
 #include <linux/rtc.h>
@@ -465,7 +465,7 @@ using namespace std; //
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <netinet/in.h>
-#include <net/sctp.h>
+//#include <net/sctp.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <ifaddrs.h>
@@ -1069,6 +1069,17 @@ Uses 3 GPIO pins */
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
 
+// IQ & carrier http://whiteboard.ping.se/SDR/IQ
+float freq;
+float shift_ppm = (0.0);
+float timed = 1.0;
+#define ANGLE (PHASE*(freq+shift_ppm)*timed) //2*pi*freq*timediff
+#define I AMPLITUDE*cosf(ANGLE) // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
+#define Q AMPLITUDE*sinf(ANGLE) // Quadrature signal component
+#define ANGLE_REV (atanf(Q/I)) // arctan
+#define RF_SUM (I+Q) // sum
+#define AMPLITUDE_REV (sqrtf (((I*I)+(Q*Q))))
+
 // optional hardware
 // RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
@@ -1137,33 +1148,33 @@ Uses 3 GPIO pins */
 // sleep timer
 #define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
 #define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
-#define timercmp(a, b, CMP)                                                   \
-  (((a)->tv_sec == (b)->tv_sec) ?                                             \
-   ((a)->tv_usec CMP (b)->tv_usec) :                                          \
+#define timercmp(a, b, CMP)
+  (((a)->tv_sec == (b)->tv_sec) ?
+   ((a)->tv_usec CMP (b)->tv_usec) :
    ((a)->tv_sec CMP (b)->tv_sec))
 
-#define timeradd(a, b, result)                                                \
+#define timeradd(a, b, result)
     do
-    {                                                                         \
-    (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;                             \
-    (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;                          \
-    if ((result)->tv_usec >= (1000000))                                       \
-      {                                                                       \
-        ++(result)->tv_sec;                                                   \
-        (result)->tv_usec -= (1000000);                                       \
-      }                                                                       \
+    {
+    (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;
+    (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;
+    if ((result)->tv_usec >= (1000000))
+      {
+        ++(result)->tv_sec;
+        (result)->tv_usec -= (1000000);
+      }
     } while (0)
 
-#define timersub(a, b, result)                                                \
+#define timersub(a, b, result)
     do
-    {                                                                         \
-    (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;                             \
-    (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;                          \
+    {
+    (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;
+    (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;
     if ((result)->tv_usec < 0)
-    {                                                                         \
-      --(result)->tv_sec;                                                     \
-      (result)->tv_usec += 1000000;                                           \
-    }                                                                         \
+    {
+      --(result)->tv_sec;
+      (result)->tv_usec += (1000000);
+    }
     } while (0)
 
 
@@ -1205,8 +1216,6 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 //-----------------------------------------
 // arguments
 char *filename = "sound.wav";
-float freq = fabs (446.006250);
-float shift_ppm = (0.0);
 float xtal_freq = (1.0/19.2E6); // LOCK_BASE
 float subfreq = (67.0);
 float ctss_freq = (67.0);
@@ -1291,15 +1300,6 @@ float ampf;
 float ampf2;
 float factorizer;
 float sampler;
-float times = 1;
-
-// IQ & carrier http://whiteboard.ping.se/SDR/IQ
-float ANGLE = (PHASE*(freq+shift_ppm)*times); //2*pi*freq*timediff
-float I = AMPLITUDE*cosf (ANGLE); // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
-float Q = AMPLITUDE*sinf (ANGLE); // Quadrature signal component
-float ANGLE_REV = (atanf (Q/I)); // arctan
-float RF_SUM = (I+Q);
-float AMPLITUDE_REV = (sqrtf (((I*I)+(Q*Q))));
 
 // instructor for access
 unsigned long frameinfo;
@@ -1314,8 +1314,8 @@ static volatile uint32_t *pad_reg1;
 static volatile uint32_t *pad_reg2;
 static volatile uint32_t *pad_val;
 
-pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
-pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
+*pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
+*pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
 /*
 pad_val = (PADGPIO + power);
 if ((pad_reg1 || pad_reg2) == pad_val) // check equality
@@ -2067,7 +2067,7 @@ char modulationselect ()
 		        break;
 
 		case 3: printf ("\nExiting... \n");
-						exit ();
+						exit (0);
 
 		default:	mod = "fm";
 						  printf ("\n Default = 1 \n");
@@ -2267,7 +2267,7 @@ void carrierlow () // disables it
 void handSig () // exit func
 {
 		printf ("\nExiting ... \n");
-		exit ();
+		exit (0);
 }
 
 static void terminate (int num)
@@ -2344,7 +2344,7 @@ void setupio ()
 	if ((gpio_mem = malloc (BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
   {
 		printf ("\nAllocation error \n");
-		exit ();
+		exit (0);
 	}
 
 	// Make sure pointer is on 4K boundary
@@ -2364,7 +2364,7 @@ void setupio ()
 	if ((long) gpio_map < 0)
   {
 	    printf ("\nmmap error %d \n", (int) gpio_map);
-	    exit ();
+	    exit (0);
   }
 
   gpio = (volatile unsigned *) gpio_map;
@@ -2384,7 +2384,7 @@ void setupfm ()
 
   if ((int) allof7e == -1)
   {
-    exit ();
+    exit (0);
   }
 
    SETBIT (GPFSEL0, 14);
@@ -2887,7 +2887,7 @@ void ledinactive ()
 {
 	  // check if transmitting
     printf ("\nChecking transmission status ... \n");
-		while (!(void play_fm () )) // || play_am ()))
+		while (!play_fm ()) // || play_am ()
 		{
 				//cm2835_gpio_write (PIN_17, LOW);
 				printf ("\nLED off - No transmission! \n");
@@ -3225,7 +3225,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nangle reverse: %f \n", ANGLE_REV);
   printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
   printf ("\nAmplitude-value: %f \n", AMPLITUDE);
-  printf ("\nAmplitude_RV-value: %f \n", AMPLITUDE_RV);
+  printf ("\nAmplitude_RV-value: %f \n", AMPLITUDE_REV);
 
 	printf ("\n-----------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
