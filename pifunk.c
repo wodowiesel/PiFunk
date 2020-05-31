@@ -1410,7 +1410,7 @@ static const char *morse [] =
   "---..", // 8
   "----.",  // 9
 
-  // special symbols& signs
+  // special symbols & signs
   ".-.-.-", // .
   "..--.-",  // -
   ".-.-.",  // +
@@ -1709,7 +1709,7 @@ float freqselect () // gets freq by typing in
 	printf ("\nType in Frequency (0.1-1200.00000 MHz): \n"); // 1B+ for 700 MHz chip, pi3 1.2 GHz pi4
 	scanf  ("%f", &freq);
 	printf ("\nYou chose: %f MHz \n", freq);
-  return freq;
+  return (freq);
 }
 
 float bandwidthselect ()
@@ -1752,7 +1752,7 @@ float channelmodepmranalog ()
   switch (channelnumberpmr)
   {
    // Analog & DMR
-   case 0: freq=446.00000; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// base
+   case 0: freq=446.00000; printf ("\naPMR-Chan 0 on %f \n", freq); break;	// base
    case 1: freq=446.00625; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// Standard
    case 2: freq=446.01875; printf ("\naPMR-Chan 2 on %f \n", freq); break; // Geocaching
    case 3: freq=446.03125; printf ("\naPMR-Chan 3 on %f \n", freq); break; // Standard
@@ -1795,7 +1795,7 @@ float channelmodepmrdigital ()
 	switch (channelnumberpmr)
 	 {
    // FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Contact, CC1 TG9112 TS1 = EmCOM
-   case 1:	freq=446.000000; printf ("\ndPMR-Chan 1 on %f \n", freq); break;
+   case 0:	freq=446.000000; printf ("\ndPMR-Chan 0 on %f \n", freq); break;
 	 case 1:	freq=446.003125; printf ("\ndPMR-Chan 1 on %f \n", freq); break;
 	 case 2:	freq=446.009375; printf ("\ndPMR-Chan 2 on %f \n", freq); break;
 	 case 3:	freq=446.015625; printf ("\ndPMR-Chan 3 on %f \n", freq); break;
@@ -1867,15 +1867,15 @@ int channelmodepmr () // PMR
 
 float subchannelmodepmr () // Pilot-tone
 {
-	printf ("\nChoose Sub-Channel 0-38 (39 to exit): \n");
+	printf ("\nChoose Standard Subchannel: 0-38 / non-typical 39-50 (51 to exit): \n");
 	scanf ("%d", &subchannelnumberpmr);
 
 	switch (subchannelnumberpmr)
 	{
-	 // FYI 19 (38)-kHz-Pilottone on UKW
-	 // Analog & digital
-	 case 0:	subfreq=67.000; printf ("\nCTSS-Chan 0, default base on %f \n", subfreq); break;	// Scan all Chan till active , now chan0 base
-	 case 1:  subfreq=67.900; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.90 Hz steps
+	 // 38 kHz Pilottone on UKW
+	 // Analog & digital standard tones
+	 case 0:	subfreq=0.000;  printf ("\nCTSS-Chan 0, default base on %f (NoTone) \n", subfreq); break;	// chan 0 base -> no tone
+	 case 1:  subfreq=67.000; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.90 Hz steps, normal. 67.000
 	 case 2: 	subfreq=71.900; printf ("\nCTSS-Chan 2 on %f \n", subfreq); break;
 	 case 3: 	subfreq=74.400; printf ("\nCTSS-Chan 3 on %f \n", subfreq); break;
 	 case 4: 	subfreq=77.000; printf ("\nCTSS-Chan 4 on %f \n", subfreq); break; // at 3-chan-PMR-devices it's ch. 2
@@ -1914,8 +1914,23 @@ float subchannelmodepmr () // Pilot-tone
 	 case 37: subfreq=241.800; printf ("\nCTSS-Chan 37 on %f \n", subfreq); break;
 	 case 38: subfreq=250.300; printf ("\nCTSS-Chan 38 on %f \n", subfreq); break;
 
-	 case 39: printf ("\nExit ... \n"); exit (0);
-	 default: subfreq=67.900;
+   // non-typical mid-freq
+   case 39:  subfreq=69.300;  printf ("\nCTSS-Chan 39 on %f \n", subfreq); break;
+   case 40:  subfreq=159.800; printf ("\nCTSS-Chan 40 on %f \n", subfreq); break;
+   case 41:  subfreq=165.500; printf ("\nCTSS-Chan 41 on %f \n", subfreq); break;
+   case 42:  subfreq=171.300; printf ("\nCTSS-Chan 42 on %f \n", subfreq); break;
+   case 43:  subfreq=177.300; printf ("\nCTSS-Chan 43 on %f \n", subfreq); break;
+   case 44:  subfreq=183.500; printf ("\nCTSS-Chan 44 on %f \n", subfreq); break;
+   case 45:  subfreq=189.900; printf ("\nCTSS-Chan 45 on %f \n", subfreq); break;
+   case 46:  subfreq=196.600; printf ("\nCTSS-Chan 46 on %f \n", subfreq); break;
+   case 47:  subfreq=199.500; printf ("\nCTSS-Chan 47 on %f \n", subfreq); break;
+   case 48:  subfreq=206.500; printf ("\nCTSS-Chan 48 on %f \n", subfreq); break;
+   case 49:  subfreq=229.100; printf ("\nCTSS-Chan 49 on %f \n", subfreq); break;
+   case 50:  subfreq=254.100; printf ("\nCTSS-Chan 50 on %f \n", subfreq); break;
+
+	 case 51: printf ("\nExit ... \n"); exit (0);
+
+	 default: subfreq=67.000;
 						printf ("\nDefault subchannel = 1 on subfreq = %f \n", subfreq);
 						break;
 	}
@@ -2033,7 +2048,7 @@ float channelmodecb () // CB
 									break;
 	}
   printf ("\nUsing channel = %d on freq = %f \n", channelnumbercb, freq);
-	return freq;
+	return (freq);
 }
 
 char modulationselect ()
@@ -2299,8 +2314,8 @@ void delayMicrosecondsHard (unsigned int howLong)
 {
   struct timeval tNow, tLong, tEnd;
   gettimeofday (&tNow, NULL) ;
-  tLong.tv_sec  = howLong / 1000000;
-  tLong.tv_usec = howLong % 1000000;
+  tLong.tv_sec  = (howLong / 1000000);
+  tLong.tv_usec = (howLong % 1000000);
   timeradd (&tNow, &tLong, &tEnd);
   while (timercmp (&tNow, &tEnd, <))
   {
@@ -2424,7 +2439,7 @@ void sendStringAsk (char *string, int sleep)
 void play_list () // exit func
 {
 		printf ("\nOpening playlist-folder (dummy) \n"); // in sounds/playlist
-    // searching for all soundfiles in folder and counting and making a list and order
+    // searching for all soundfiles in folder and counting and making a list and order implemented later
     return;
 }
 
@@ -2455,7 +2470,7 @@ void play_fm () // char *filename, float freq, int samplerate
   for (r = 0; r < 22; r++) // why i less then 22?
   {
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
-        printf ("\nReading fp \n");
+        printf ("\nReading fp .. \n");
   }
 
   while (readBytes == read (fp, &data, 1024))
@@ -2539,7 +2554,7 @@ void setupDMA ()
 
 	// allocate a few pages of ram
   //getRealMemPage (&constPage.v, &constPage.p);
-	int centerFreqDivider = (int) ((500.0/freq) * (float) (1<<12) + 0.5);
+	int centerFreqDivider = (int) ((500.000/freq) * (float) (1<<12) + 0.5);
 	printf ("\ncenterFreqDivider: %d \n", centerFreqDivider);
 	// make data page contents - its essientially 1024
 	// different commands for the DMA controller to send to the clock module at the correct time
@@ -2627,7 +2642,7 @@ void unsetupDMA ()
 	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
-	exit ();
+	return;
 }
 
 // sample funcs
@@ -2709,7 +2724,7 @@ int sampleselect () // char *filename, int samplerate
 			printf ("\nChannel buffer b = %c \n", b);
 			if (channels == 0)
 			{
-				printf ("\nSample Error! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
+				printf ("\nError! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
         return (-1);
 			}
 			else if (channels == 1)
@@ -2762,8 +2777,8 @@ int sampleselect () // char *filename, int samplerate
   close (fp);
   printf ("\nFile closed! \n");
 	return (samplerate);
+  // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 }
-// return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 
 // AM
 void play_am ()
@@ -2787,7 +2802,7 @@ void play_am ()
   return;
 }
 
-void modulationfm () // int argc, char *argv [], char *mod
+void modulationfm () // int argc, char **argv
 {
   	printf ("\nPreparing for fm ... \n");
     setupfm (); // gets filename & path or done by fileselect () func
@@ -2798,7 +2813,7 @@ void modulationfm () // int argc, char *argv [], char *mod
 		return;
 }
 
-void modulationam () // int argc, char *argv [], char, *mod
+void modulationam () // int argc, char **argv, char
 {
 	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
 		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
@@ -2810,20 +2825,20 @@ void modulationam () // int argc, char *argv [], char, *mod
 	  return;
 }
 
-void modselect () // int argc, char *argv [], char *mod
+void modselect () // int argc, char **argv
 {
 	printf ("\nOpening Modulator-Selection ... \n");
 	if (strcmp (mod, "fm"))
 	{
     printf ("\nYou selected 1 for fm! \n");
     printf ("\nPushing args to fm Modulator ... \n");
-		modulationfm (); //int argc, char **argv []
+		modulationfm (); // int argc, char **argv
 	}
 	else if (strcmp (mod, "am"))
 	{
     printf ("\nYou selected 2 for am! \n");
     printf ("\nPushing args to am Modulator ... \n");
-		modulationam (); // int argc, char *argv []
+		modulationam (); // int argc, char **argv
 	}
 	else
 	{
@@ -2862,7 +2877,7 @@ char cw ()
     w++;
   }
 
-  return ()*message);
+  return (*message);
 }
 
 // LED stuff
@@ -2931,7 +2946,7 @@ char csvreader ()
     	c = fgetc (rfp);
     	fputc (c, wfp);
     }
-		printf ("\nc: %d\n", c);
+		printf ("\nc: %d \n", c);
     fclose (rfp);
     fclose (wfp);
     printf ("\nCSV-import of CTSS-list finished! \n");
@@ -2963,7 +2978,7 @@ void tx () // int argc, char *argv []
 	return;
 }
 
-void menu ()
+int menu ()
 {
 	printf ("\nChoose menu: [1] CMD // [2] CSV-Reader // [3] CGI-Page // [4] Exit: \n");
  	scanf ("%d", &menuoption);
@@ -2992,7 +3007,7 @@ void menu ()
              int main (int argc, char **argv);
 		 				 break;
 	}
-	return;
+	return (menuoption);
 }
 
 void assistant () // assistant
@@ -3156,7 +3171,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
          		   if (argc == 1)
          			 {
          				 printf ("\nOpening menu \n");
-         				 void menu (); // extra menu for csv
+         				 int menu (); // extra menu for csv
          				 break;
          				}
          				else
