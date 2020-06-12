@@ -52,11 +52,13 @@ check/add lines:
 
 `dtoverlay=gpiopin=4,pullup=0` add pullup=1 or w1-gpio if needed
 
-`dtoverlay=audio=on` for bcm-alsa-audio required!
+further info [Pin-circuits & Specs](http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/raspberry-pi/gpio-pin-electrical-specifications)
+
+`dtoverlay=audio=on` for bcm-alsa-audio required
 
 optional:
 
-`dtparam=spi=on` for SPI support optional
+`dtparam=spi=off` for SPI support optional
 
 `enable_uart=1` for UART RX & TX remote control
 
@@ -94,9 +96,9 @@ ___
 
 5. First update & upgrade system:
 
-`sudo apt-get update` for system updates
+`sudo apt-get update` for system updates package list
 
-`sudo apt-get upgrade` for system upgrades
+`sudo apt-get upgrade` for system upgrade packages
 
 6. You will need some libraries for this:
 
@@ -122,7 +124,7 @@ and install it: `sudo pip-3.7 install RPi.GPIO` for Py3 (easiest way)
 
 or alternative way: `sudo apt-get -y install python3-rpi.gpio`
 
-e) Check i2C Bus: `sudo i2cdetect -y 1`
+e) Check i2C Bus adresses: `sudo i2cdetect -y 1`
 
 7. Compiler installation:
 
@@ -427,9 +429,9 @@ ___
 
 - Private Project! It's Early Access & Work in Progress (WIP)!
 
-- **NO guarantees/liabilities or warranties for any damages/injuries!!**
+- **NO guarantees/liabilities or warranties for any damages/injuries or illegal actions!!**
 
-- Usage at **your own risk** !! I'm not a professional!
+- Usage at **your own risk/responsibility** !! I'm not a professional and doing it for fun/hobby!
 
 - Check laws of your country first! Some Frequencies (MHz) & Powerlevels (W / Watt) are prohibited
 
@@ -476,3 +478,5 @@ Would appreciate being named in the source, Thank you.
  15. Credits
 
 based on scripts/snippets from pifm/am, pifmadv, pifmrds
+
+Included sample audio (sound.wav) was created by graham_makes and published on freesound.org

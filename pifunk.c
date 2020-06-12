@@ -1,3 +1,4 @@
+// PiFunk lite
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -133,7 +134,7 @@
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
 #define VERSION_PATCH        (6) //
-#define VERSION_STATUS 			 "experimental" // WIP work in progress
+#define VERSION_STATUS 			 "lite" // WIP work in progress
 // simple operators
 #define IN                    (0) //
 #define OUT                   (1) //
@@ -158,7 +159,7 @@
 #define F_XTAL    						 		  	 (19200000.0)
 // I-O access via GPIO
 volatile unsigned 										(*gpio); //
-volatile unsigned 										(*allof7e); //
+volatile unsigned 										(*allof7e); // shouuld be null in the begining
 
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7EB											(*allof7e-SUB_BASE)
@@ -168,7 +169,7 @@ volatile unsigned 										(*allof7e); //
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3)) // % means here Modulo-operation for remainder
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3)) //
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
-// specific pi adresses & definitions
+// specific pi addresses & definitions
 // alternative old/different versions
 #ifdef  RASPBERRY || RPI// and RPI == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
@@ -181,6 +182,7 @@ volatile unsigned 										(*allof7e); //
 #define CLOCK_BASE									   (19.2E6) //
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
+#define F_PLLD_CLK 										(500000000.0)
 #endif
 // pi 0 zero & w
 #ifdef 	RASPI0 //== 0
@@ -194,6 +196,7 @@ volatile unsigned 										(*allof7e); //
 #define CLOCK_BASE										 (19.2E6) // = 19200000
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
+#define F_PLLD_CLK 										(500000000.0)
 #endif
 // pi 1 - BCM2835 -> my version
 #ifdef  RASPI1 // == 1
@@ -584,6 +587,7 @@ unsigned bcm_host_get_peripheral_address (); // // This returns the ARM-side phy
 unsigned bcm_host_get_peripheral_size (); // This returns the size of the peripheral's space, which is (0x01000000) for all models.
 unsigned bcm_host_get_sdram_address (); // This returns the bus address of the SDRAM.
 // arguments
+//Included sample audio was created by graham_makes and published on freesound.org
 char *filename = "sound.wav";
 float xtal_freq; // LOCK_BASE
 float subfreq;
@@ -596,7 +600,7 @@ char fm = "fm";
 char am = "am";
 int power;
 int powerlevel = abs (power); // same as drive
-int DRIVESTRENGTH; // drive
+int DRIVESTRENGTH; // drive 1-7
 int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
 char callsign = "callsign";
 int type; // analog 1 or digital 2
@@ -661,8 +665,8 @@ int bufPtr;
 int instrCnt;
 int instrPage;
 int constPage;
-int reg; // = (gpio / 10)
-int shift; // = (gpio % 10) * 3
+int reg = (gpio / 10);
+int shift = (gpio % 10) * 3;
 static volatile uint32_t *pwm_reg;
 static volatile uint32_t *clk_reg;
 static volatile uint32_t *gpio_reg;
@@ -684,13 +688,15 @@ else
 {
   printf ("\npad_reg are NOT the same -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
 }
-*pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
-*pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
+*/
+pad_reg = pad_reg [GPIO_PAD_0_27] = 0x5A000018 + power; // pi-gpio bank-row1
+pad_reg2 = pad_reg [GPIO_PAD_28_45] = 0x5A000018 + power; // pi-gpio bank-row2
 
 gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
-*/
+
 return;
 }
+
 // GPS-coordinates
 // default nothing in decimal °grad (centigrade) -> easier value to handle
 char *position; // for live gps-module input later
@@ -742,25 +748,6 @@ struct DMAREGS
 		volatile unsigned int STRIDE;
 		volatile unsigned int NEXTCONBK;
 		volatile unsigned int DEBUG;
-};
-// program flag options
-static struct option long_opt [] =
-{
-		{"filename",	required_argument, 0, 'n'}, // 1
-		{"freqency",   	required_argument, 0, 'f'}, // 2
-		{"samplerate", 	required_argument, 0, 's'}, // 3
-		{"mod",			required_argument, 0, 'm'}, // 4
-		{"power",		required_argument, 0, 'p'}, // 5
-		{"callsign",	required_argument, 0, 'c'}, // 6
-		{"gpiopin",		required_argument, 0, 'g'}, // 7
-		{"dmachannel",	required_argument, 0, 'd'}, // 8
-		{"bandwidth",	required_argument, 0, 'b'}, // 9
-		{"type",		required_argument, 0, 't'}, // 10
-		{"gps",			required_argument, 0, 'x'}, // 11
-		{"assistant",	no_argument,       0, 'a'}, // 12
-		{"menu",		no_argument,       0, 'u'}, // 14
-		{"help",		no_argument,       0, 'h'}, // 13
-		{0,				0,                 0,  0 }  // blank
 };
 /*
 // pi4 pin fix for under 93 MHz
@@ -1247,11 +1234,16 @@ char callsignselect ()
 }
 int powerselect ()
 {
-	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA): \n"); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
+	// http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/raspberry-pi/gpio-pin-electrical-specifications
+	//-->Don't drive capacitive loads
+	// low-output ~0.4 V -> 400 mV, high-output 2.4-2.9/3.3V -> 2900 mV => a) P=V*A=400mV*2mA=800mW b) 2900*16=mW=46.4W c)400*16=6400mW=6.4W
+	//0.1024W for all pins simultaniously -> *16 (all on 1 pin would be 1.6384 W)
+	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA @0.4-3.3V): \n"); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
 	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	power = abs (powerlevel);
 	return (power);
+	//maybe input/switch for hysteresis
 }
 int channelselect ()
 {
@@ -1267,10 +1259,10 @@ int channelselect ()
 									channelmodecb ();
 									break;
 					default: printf ("\nDefault: PMR CHAN-MODE \n");
-									channelmodepmr (); // gets freq from pmr list
-									break;
-	return (channelmode);
+									 channelmodepmr ();
+									 break;
 	}
+	return (channelmode);
 }
 int typeselect ()
 {
@@ -1536,11 +1528,23 @@ void sendStringAsk (char *string, int sleep)
 void play_fm () // char *filename, float freq, int samplerate
 {
 	printf ("\nAllocating file to memory for wave-data ... \n");
+	// version 1
+	dma_reg = map_peripheral(DMA_VIRT_BASE, (DMA_CHANNEL_SIZE * (DMA_CHANNEL_MAX + 1)));
+	dma_reg = dma_reg + ((DMA_CHANNEL_SIZE / sizeof(int)) * (DMA_CHANNEL));
+	pwm_reg = map_peripheral(PWM_VIRT_BASE, PWM_LEN);
+	gpio_reg = map_peripheral(GPIO_VIRT_BASE, GPIO_LEN);
+	pcm_reg = map_peripheral(PCM_VIRT_BASE, PCM_LEN);
+	pad_reg = map_peripheral(PAD_VIRT_BASE, PAD_LEN);
+	clk_reg = map_peripheral(CLK_VIRT_BASE, CLK_LEN);
+	clk_reg[GPCLK_CNTL] = (0x5a<<24) | (1<<4) | (4);
+	clk_reg[CM_PLLA] = 0x5A00022A; // Enable PLLA_PER
+	pad ();
+	// version 2
 	int sz = lseek (fp, 0L, SEEK_END);
 	/* lseek: repositions the file offset of the open file description
-    associated with the file descriptor fd to the argument offset
-    according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
-	  SEEK_END: The file offset is set to the size of the file plus offset bytes. */
+		associated with the file descriptor fd to the argument offset
+		according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
+		SEEK_END: The file offset is set to the size of the file plus offset bytes. */
 	short *data = (short*) malloc (sz);
 	for (r = 0; r < 22; r++) // why i less then 22?
 	{
@@ -1823,11 +1827,11 @@ void modulationfm () // int argc, char **argv
 {
   	printf ("\nPreparing for fm ... \n");
     setupfm (); // gets filename & path or done by fileselect () func
-	printf ("\nSetting up DMA ... \n");
-	setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
+		printf ("\nSetting up DMA ... \n");
+		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
     play_fm (); // atof (argv [3]):22050)
-	return;
+		return;
 }
 void modulationam () // int argc, char **argv, char
 {
@@ -1847,13 +1851,13 @@ void modselect () // int argc, char **argv
 	{
     printf ("\nYou selected 1 for fm! \n");
     printf ("\nPushing args to fm Modulator ... \n");
-		modulationfm (); // int argc, char **argv
+		modulationfm ();
 	}
 	else if (strcmp (mod, "am"))
 	{
     printf ("\nYou selected 2 for am! \n");
     printf ("\nPushing args to am Modulator ... \n");
-		modulationam (); // int argc, char **argv
+		modulationam ();
 	}
 	else
 	{
@@ -1909,15 +1913,15 @@ void ledactive ()
 	printf ("\nLED active \n");
 	return;
 }
-void tx () // int argc, char *argv []
+int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type)
 {
   printf ("\nPreparing for transmission ... \n");
-  while (play_fm ()) // | play_am ())
+  while (play_fm ()) // || play_am ())
   {
   ledactive ();
   printf ("\nBroadcasting now! ... \n");
   }
-	return;
+	return (1);
 }
 int menu ()
 {
@@ -1962,7 +1966,26 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 {
 	// option parameters
 	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:auh"; // program flags
-	printf ("\nStarting Main in PiFunk \n");
+	// program flag options
+	static struct option long_opt [] =
+	{
+			{"filename",	required_argument, 0, 'n'}, // 1
+			{"freqency",   	required_argument, 0, 'f'}, // 2
+			{"samplerate", 	required_argument, 0, 's'}, // 3
+			{"mod",			required_argument, 0, 'm'}, // 4
+			{"power",		required_argument, 0, 'p'}, // 5
+			{"callsign",	required_argument, 0, 'c'}, // 6
+			{"gpiopin",		required_argument, 0, 'g'}, // 7
+			{"dmachannel",	required_argument, 0, 'd'}, // 8
+			{"bandwidth",	required_argument, 0, 'b'}, // 9
+			{"type",		required_argument, 0, 't'}, // 10
+			{"gps",			required_argument, 0, 'x'}, // 11
+			{"assistant",	no_argument,       0, 'a'}, // 12
+			{"menu",		no_argument,       0, 'u'}, // 14
+			{"help",		no_argument,       0, 'h'}, // 13
+			{0,				0,                 0,  0 }  // blank
+	};
+	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
 	infos ();
 	// char *argv [0] = "pifunk"; // actual program-name
 	char *programname = *argv [0]; //
@@ -1993,13 +2016,13 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
-	int option_index;
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
+	int option_index;
 	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
 	printf ("\n-----------------\n");
 	printf ("\nChecking short_opt: %c \n", short_opt);
 	printf ("\nChecking options: %d \n", options);
-	printf ("\nChecking options: %d \n", option_index);
+	printf ("\nChecking option_index: %d \n", option_index);
 	printf ("\nChecking flags long: %d \n", flags);
 	printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
 	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
@@ -2032,8 +2055,15 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                //break;
 		case 'p':
          				power = atoi (optarg);
-         				printf ("\nPower is %d \n", power);
-         				//break;
+								if (power < 0 || power > 7)
+								{
+								fatal ("\nOutput power has to be set in range of 0 - 7 \n");
+							  }
+								else
+         				{
+									printf ("\nPower is %d \n", power);
+								}
+								//break;
 		case 'c':
 							  callsign = optarg;
 							  printf ("\nCallsign is %s \n", callsign);
@@ -2058,7 +2088,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                gps = optarg;
                printf ("\nGPS-Tracking-Status is %s \n", gps);
                //break;
-			  // additional help functions
+		// additional help functions
 		case 'a':
 							 if (argc == 1)
 							 {
@@ -2068,7 +2098,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 							 }
 							 else
 							 {
-								printf ("\nError in -a assistant \n");
+								printf ("\nError in -a assistant, no other arguments required \n");
 								break;
 							 }
 		case 'u':
@@ -2127,11 +2157,11 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nAmplitude-value: %f \n", AMPLITUDE);
 	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
-	printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
+	printf ("\nChecking &Addresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
 	printf ("\nChecking *Pointers: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
 	// gathering and parsing all given arguments it to player?!
 	printf ("\nTransmission starting ... \n"); // EOF
-	tx (); // transmission
+	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type); // transmission
 	printf ("\nTransmission ended! \n");
 	terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF

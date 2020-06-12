@@ -31,8 +31,8 @@ init_uart_baud=9600 ## samplerate for ttl serial
 
 ## Enable audio (loads snd_bcm2835)
 dtparam=audio=on
-dtparam=spi=on
-dtparam=i2s=on
+dtparam=spi=off
+dtparam=i2s=off
 
 ## Enable I2C bus for gpios
 dtparam=i2c0=on
@@ -42,18 +42,17 @@ dtparam=i2c_arm=on
 dtparam=i2c_arm_baudrate=100000
 #dtparam=watchdog=on ## hardware watchdog for pi3 for debug purposes
 
-## gpio settings
-## realtime-hw clock & gps sync-clock
-dtoverlay=i2c-rtc,ds3231 ## /dev/rtc0
-dtoverlay=pps-gpio,gpiopin=18
-
 ## Configures the w1-gpio 1-wire interface module. <param>=<val>
 ## Use this overlay if you *don't* need a pin to drive an external pullup 4.7 kΩ.
-## Params: gpiopin -> GPIO pin for I/O (default "4")
+## Parameters: gpiopin -> GPIO pin for I/O (default "4")
 ## pullup -> Non-zero, 1, "on", or "y" to enable the parasitic
 ## power (2-wire, power-on-data) feature
 ## radio pwm pin
-#dtoverlay=w1-gpio,gpiopin=4,pullup=0
+dtoverlay=gpiopin=4,pullup=0 #w1-gpio,
+
+## realtime-hw clock & gps sync-clock
+dtoverlay=i2c-rtc,ds3231 ## /dev/rtc0
+dtoverlay=pps-gpio,gpiopin=18
 
 ## list w1-devices
 ls /sys/bus/w1/devices/
