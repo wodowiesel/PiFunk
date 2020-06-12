@@ -2175,7 +2175,7 @@ char gpsselect () // char *gps
   if (gps == "on")
   {
   printf ("\nGPS-position is %s \n", *position); // live input here from gps-module
-  print ("\nPreset location is: long_pos %s longitude %f / lat_pos %s latitude %f / elevation %lf / altitude %d \n", long_pos, longitude, lat_pos, latitude, elevation, altitude);
+  printf ("\nPreset location is: long_pos %s longitude %f / lat_pos %s latitude %f / elevation %lf / altitude %d \n", long_pos, longitude, lat_pos, latitude, elevation, altitude);
   }
   else if (gps == "off")
   {
