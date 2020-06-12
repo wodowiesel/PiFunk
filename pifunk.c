@@ -8,7 +8,7 @@
 #include <stdnoreturn.h>
 #include <stdatomic.h>
 #include <unistd.h>
-#include <iso646.h> 
+#include <iso646.h>
 #include <argp.h>
 #include <string.h>
 #include <getopt.h>
@@ -155,9 +155,11 @@
 #define BLOCK_SIZE                    (4*1024) // 4096
 #define BUFFER_LEN                    (8*1024) // 8192
 #define BUFFERINSTRUCTIONS            (65536) // [1024]
+#define F_XTAL    						 		  	 (19200000.0)
 // I-O access via GPIO
 volatile unsigned 										(*gpio); //
 volatile unsigned 										(*allof7e); //
+
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7EB											(*allof7e-SUB_BASE)
 #define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
@@ -206,6 +208,7 @@ volatile unsigned 										(*allof7e); //
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
+#define F_PLLD_CLK 										(500000000.0)
 #endif
 // pi 2 - BCM2836/7
 #ifdef  RASPI2 //== 2
@@ -221,6 +224,7 @@ volatile unsigned 										(*allof7e); //
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
+#define F_PLLD_CLK 										(500000000.0)
 #endif
 // pi3 - BCM2837/B0
 #ifdef 	RASPI3 //== 3
@@ -236,6 +240,7 @@ volatile unsigned 										(*allof7e); //
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
+#define F_PLLD_CLK 										(500000000.0)
 #endif
 // pi 4 - BCM2838
 #ifdef  RASPI4 //== 4
@@ -252,6 +257,7 @@ volatile unsigned 										(*allof7e); //
 #define PAGE_SIZE 										 (4096) //
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
+#define F_PLLD_CLK 											(750000000.0)
 #define PLLD_FREQ 										 (750000000.) // has higher freq than pi 0-3
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -480,7 +486,7 @@ volatile unsigned 										(*allof7e); //
 #define NUM_CBS                         (NUM_SAMPLES*2) // 128000
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
-#define SAMPLES_PER_BUFFER 				(512) //
+#define SAMPLES_PER_BUFFER 							(512) //
 // IQ & carrier http://whiteboard.ping.se/SDR/IQ
 float freq;
 float shift_ppm = (0.0);
@@ -1213,7 +1219,7 @@ char modulationselect ()
 					break;
 		case 3:		printf ("\nExiting... \n");
 					exit (0);
-		default:	printf ("\n Default = 1 (FM) \n"); 
+		default:	printf ("\n Default = 1 (FM) \n");
 					mod = "fm";
 					break;
 	}
@@ -1442,7 +1448,8 @@ void setupio ()
 	return;
 	}
 	// Allocate MAP block
-	if ((gpio_mem = malloc (BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
+
+	if ((gpio_mem = (char *) malloc(BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
 	{
 		printf ("\nAllocation error \n");
 		exit (0);
@@ -1556,6 +1563,8 @@ void play_fm () // char *filename, float freq, int samplerate
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
+				int div_val = (0x5A<<24)+((int)(divisor*pow(2.0, 12)));
+				printf ("\ndiv_val: %d \n", div_val);
         float frac = ((dval-intval)/2+0.5);
 				printf ("\nfrac: %f \n", frac);
         int fracval = (frac*clocksPerSample);
