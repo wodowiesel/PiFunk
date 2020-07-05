@@ -1,10 +1,11 @@
-/* Program: PiFunk (C)
+/*
+Program: PiFunk (C)
 Copyright: 2018 - 2020
-Author: D. W. a.k.a. WodoWiesel
-version = 0.1.7.8e
+Author: WodoWiesel
+version: 0.1.7.6e
 
 ----Licence----------------------------------------------------------------------------------------------
-                    GPL v3 !!
+                GPL v3 !!
 
 -----Disclaimers------------------------------------------------------------------------------------------
 - Rewritten for own purposes!
@@ -39,9 +40,9 @@ version = 0.1.7.8e
 
   more infos about GPIO electronics https://de.scribd.com/doc/101830961/GPIO-Pads-Control2
 
-- Access on ARM-System and running Linux, normaly on Raspberry Pi (my Pi Model B+ Rev. 1.2 2014)
+- Access on ARM-System and running Linux, normaly on Raspberry Pi (my Pi 1 Model B+ Rev. 1.2 2014)
 
-  and used python 3.7.4+ on original Raspbian
+  and used python 3.7.4+ on original Raspbian OS
 
 !!!!!!! program needs more testing on real pi !!!!!!!
 --------------------------------------------------------------------------------------------------------
@@ -81,10 +82,13 @@ sudo i2cdetect -y 1
 cd PiFunk // goto path
 
  generate Libs:
+ sudo gcc pifunk.c -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -O3 -o src/pifunk.s
+ sudo gcc pifunk.c -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/pifunk.i
  sudo gcc pifunk.c -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/pifunk.o
- sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -o lib/pifunk.a lib/libpifunk.lib
- sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/libpifunk.so
- sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/libpifunk.dll
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/libpifunk.a
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -O3 -o lib/libpifunk.lib
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/libpifunk.so
+ sudo gcc pifunk.o -v -g3 -ggdb3 -pg -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_C_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -fPIC -O3 -shared -o lib/libpifunk.dll
 
  program: sudo gcc pifunk.c -v -g3 -ggdb3 -pg -Q -std=gnu99 -Iinclude -Llib -L/opt/vc/lib -D_USE_MATH_DEFINES -D_GNU_SOURCE -lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile -llibpifunk -O3 -o bin/pifunk
 
@@ -190,8 +194,9 @@ make compatible arguments/funcs for py/shell scripts
 #include <cstdio> //
 #include <cstdarg>	// Handling of variable length argument lists
 #include <cstdint> // (since C++11)	fixed-size types and limits of other types
+#include <cstddef> // definitions & NULL
 #include <csignal>	// Functions and macro constants for signal management
-#include <cstring> //
+#include <cstring> //strings
 #include <cmath>	// Common mathematics functions
 #include <ctime>	// C-style time/date utilites
 #include <climits>	// limits of integral types
@@ -439,7 +444,7 @@ using namespace std; //
 #include <linux/pm_domain.h>
 #include <linux/textsearch.h>
 #include <linux/autoconf.h> // path include/generated
-//old (till kernel 2.6): config.h
+// old (till kernel 2.6): config.h
 #include <linux/sched/signal.h>
 #include <linux/regulator/consumer.h>
 #include <linux/kgdb.h>
@@ -527,7 +532,7 @@ using namespace std; //
 #include "include/pifunk.h"
 
 //------------------------------------------------------------------------------
-// preproccessor definitions
+// preproccessor definitions/macros
 #ifndef PIFUNK_C
   #define PIFUNK_C
 #endif
@@ -544,8 +549,10 @@ using namespace std; //
 
 #ifdef __ARM__
   #warning Program runs under ARM-Architecture!
-  //#pragma ARM // same as -CODE32
-  //#warning NOT ARM
+  #pragma ARM
+  // same as -CODE32
+#else
+  #warning System NOT ARM!!
 #endif
 
 #ifdef __ARM64__
@@ -563,8 +570,23 @@ using namespace std; //
 #endif
 
 #ifdef _GNU_SOURCE
+  #warning Using GNU Source Extention Macro!
   //#define basename __basename_gnu
-   #warning Using GNU Source Macro!
+#endif
+
+#ifdef __STDC_VERSION__
+  #warning Using GNU C with C99 standard version!
+  //#define _STDC_VERSION (199901L)  // -std=c99
+#endif
+
+#ifdef _POSIX
+  #warning Using POSIX standard!
+  #define _POSIX_C_SOURCE   		(200809L) // or 199309L
+#endif
+
+#ifndef _USE_MATH_DEFINES
+  #warning Not recognized math definitions!
+  #define _USE_MATH_DEFINES (1) // for math lib
 #endif
 
 #ifdef __CPLUSPLUS
@@ -575,15 +597,9 @@ using namespace std; //
   }
 #endif
 
-#ifdef _POSIX
-  #warning Using POSIX standard!
-  #define _POSIX_C_SOURCE   		(200809L) // or 199309L
-  //#define _USE_MATH_DEFINES 1 // for math lm lib
-#endif
-
-#ifdef __STDC_VERSION__
-  #warning Using GNU C with C99 standard!
-  //#define _STDC_VERSION (199901L)  // -std=c99
+#ifndef NULL
+  #warning NULL not defined, setting it to 0!
+  #define NULL   		(0) // normally in stddef
 #endif
 
 //------------------------------------------------------------------------------
@@ -637,7 +653,7 @@ volatile unsigned 										(*allof7e); //
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3)) //
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
-
+//----------------------------------------------------------------------------------
 // specific pi adresses & definitions
 // alternative old/different versions
 #ifdef  RASPBERRY || RPI// and RPI == 1
@@ -1083,10 +1099,11 @@ float timed = 1.0;
 // optional hardware
 // RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
-#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V
+#define RTC_PWR2                        (PIN_4) // dec: 104, +5 V
 #define RTC_GND                         (PIN_9) // RTC ground
 
 #define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
+#define RTC_RV_I2C_ADDRESS              (0x52) // dec: 104, Micro Crystal RV-3028-C7
 #define DS3231_TEMPERATURE_MSB          (0x11) // dec: 17
 #define DS3231_TEMPERATURE_LSB          (0x12) // dec: 18
 
@@ -1096,19 +1113,19 @@ float timed = 1.0;
 #define SLAVE_ADDR_WRITE                b(11010000) // binary -> dec:208, hex: 0xD0
 #define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
 
-// GPS ublox neo-7M pps
+// GPS Ublox Neo-8M PPS
 #define GPS_MODULE_NAME                 "GPS UBLOX NEO 8 M PPS" // module name
 #define GPS_MODULE_VERSION              (8) // revision of the ublox model from 6-8+
-
+// 10 Hz navigation rate in multi-GNSS mode, 18 Hz in GPS only
 // GND (PIN 6)
 #define GPS_GND                         (PIN_6) // ground pin
+#define GPS_I2C_BUS                     (0x42) // init address
 
 // PPS to PCM_CLK (GPIO 18, PIN 12) or alternative PIN_24 and ESP32 on PIN_19
 #define GPS_PPS                         (PIN_12) // pulse per second for locking GPS-timing
 
 // RX to UART0_TXD (GPIO 14 PIN 8) crosswired
-#define GPS_I2C_RX                      (UART0_TXD) // data in gps, receive
-
+#define GPS_I2C_RX                      (UART0_TXD) // data in gps, receive 0x42
 // TX to UART0_RXD (GPIO 15, PIN 10) crosswired
 #define GPS_I2C_TX                      (UART0_RXD) // data out in gps, send
 
@@ -1123,7 +1140,7 @@ float timed = 1.0;
 #define PWMADD2                         (0x8) // dec: 8
 
 #define ARGC_ADR                        (0x7FFFFFFFEB0C) // dec: 140737488349964
-#define NAME_ADR                        (0x7FFFFFFEC08)  // dec: 8796093017096
+#define NAME_ADR                        (0x7FFFFFFEC080)  // dec: 8796093017096
 #define FILE_ADR                        (0x7FFFFFFFEC10) // dec: 140737488350224
 #define FREQ_ADR                        (0x7FFFFFFFEC18) // dec: 140737488350232
 #define SAMPLERATE_ADR                  (0x7FFFFFFFEC20) // dec: 140737488350240
@@ -1154,7 +1171,7 @@ float timed = 1.0;
    ((a)->tv_sec CMP (b)->tv_sec))
 
 #define timeradd(a, b, result)
-    do
+    while (0)
     {
     (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;
     (result)->tv_usec = (a)->tv_usec + (b)->tv_usec;
@@ -1163,20 +1180,19 @@ float timed = 1.0;
         ++(result)->tv_sec;
         (result)->tv_usec -= (1000000);
       }
-    } while (0)
+    }
 
 #define timersub(a, b, result)
-    do
+    while (0)
     {
     (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;
     (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;
     if ((result)->tv_usec < 0)
-    {
+      {
       --(result)->tv_sec;
       (result)->tv_usec += (1000000);
+      }
     }
-    } while (0)
-
 
 // try a modprobe of i2C-BUS
  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
@@ -1263,7 +1279,7 @@ FILE wavefile;
 int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK);
 //SNDFILE *infile;
 //SNDFILE *outfile;
-//snd_output_t *output = NULL;
+//snd_output_t *output = NULL; NULL=0
 int fp; // = STDIN_FILENO;
 int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
@@ -2667,12 +2683,12 @@ int sampleselect () // char *filename, int samplerate
   if (sfinfo.samplerate == 48000) // 44 or 48 kHz needs testing
   {
     printf ("\nSamplerate is 48000! (%d) \n", sfinfo.samplerate);
-    return sfinfo.samplerate;
+    return (sfinfo.samplerate);
   }
   else if (sfinfo.samplerate == 44100)
   {
     printf ("\nSamplerate is 44100! (%d) \n", sfinfo.samplerate);
-    return sfinfo.samplerate;
+    return (sfinfo.samplerate);
   }
 	else if (sfinfo.samplerate == 22050)
 	{
@@ -2682,12 +2698,12 @@ int sampleselect () // char *filename, int samplerate
 	else if (sfinfo.samplerate == 14500)
 	{
 		printf ("\nSamplerate is 14500! (%d) \n", sfinfo.samplerate);
-		return sfinfo.samplerate;
+		return (sfinfo.samplerate);
 	}
   else if (sfinfo.samplerate == 11025)
 	{
 		printf ("\nSamplerate is 11025! (%d) \n", sfinfo.samplerate);
-		return sfinfo.samplerate;
+		return (sfinfo.samplerate);
 	}
 	else
   {
@@ -2733,6 +2749,7 @@ int sampleselect () // char *filename, int samplerate
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
 				printf ("\nb = %c \n", b);
+        return (b);
 			}
 			else if (channels == 2)
 			{

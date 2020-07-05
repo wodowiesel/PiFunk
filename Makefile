@@ -34,7 +34,7 @@ RM=rm -f ## remove files or folder
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## environment variable C_INCLUDE_PATH
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
-CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/linux/ ## kernel now 4.19.97+
+CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/ -I/usr/src/linux-headers-4.19.97+/include/linux/ ## kernel now 4.19.97+
 $(CINC)
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
@@ -150,7 +150,7 @@ libpifunk.a:	libpifunk.o
 					$(USER) ar rcs -t $@ $^
 					$(USER) ranlib libpifunk.a
 ## static library
-libpifunk.lib:	libpifunk.o libpifunk.a
+libpifunk.lib:	libpifunk.o
 						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.lib
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib libpifunk.lib
@@ -165,10 +165,10 @@ libpifunk.dll:	libpifunk.o
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib libpifunk.dll
 ## lib object list
-OBJECTS=pifunk.s pifunk.i pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
+OBJECTS=pifunk.s pifunk.i pifunk.o libpifunk.a libpifunk.lib libpifunk.so libpifunk.dll
 $(OBJECTS)
 
-## generating standard binary
+## generating standard binarys
 pifunk.out:	$(SOURCE) pifunk.h
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFFLAGS) -save-temps -o bin/pifunk.out
 ## explicit binary
