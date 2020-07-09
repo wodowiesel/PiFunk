@@ -537,13 +537,13 @@ using namespace std; //
   #define PIFUNK_C
 #endif
 
-#ifdef __LINUX__
-  #warning Program runs under LINUX!
+#ifdef __UNIX__
+  #warning Program runs under UNIX!
 	#pragma GCC dependency "pifunk.h"
 #endif
 
-#ifdef __UNIX__
-  #warning Program runs under UNIX!
+#ifdef __LINUX__
+  #warning Program runs under LINUX!
 	#pragma GCC dependency "pifunk.h"
 #endif
 
@@ -625,7 +625,7 @@ using namespace std; //
 
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
-//#define log(EULER)                    (0.4342944819)
+//#define log(EULER)                    (0.4342944819) // already defines
 #define lg(EULER)                     (1.44269504089)
 #define ln(x)                         (log(x)/log(EULER))
 #define PI                            (3.14159265358979323846) // radial constant
@@ -692,6 +692,7 @@ volatile unsigned 										(*allof7e); //
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
+
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
 #define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
 
@@ -744,16 +745,16 @@ volatile unsigned 										(*allof7e); //
 #ifdef  RASPI4 //== 4
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
-#define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
 #define BCM2838_PERI_BASE              (0x3F000000) // dec: 1056964608
-#define BCM2711_PERI_BASE              (0x3F000000) // coprocessor !!!
+#define BCM2711_PERI_BASE              (0x3F000000) // co-processor !!!
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
+#define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
 
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) // = 19200000
-#define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE 										 (4096) //
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
@@ -765,6 +766,7 @@ volatile unsigned 										(*allof7e); //
 #endif
 
 // standard & general definitions
+// for seting/checking gpiooin variable later
 #define PIN_7                           (4) // pin 4
 #define GPIO_4                          (PIN_7)
 
@@ -791,7 +793,7 @@ volatile unsigned 										(*allof7e); //
 #define PWMCLK_DIV0                     (0x5A002800) // dec: 1509959680
 #define PWMCLK_BASE_OFFSET              (0x001010A0) // dec: 1052832
 
-// the normal fm-script didn't specified that
+// the normal fm-script didn't specified that, but useful!
 #define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672 -> dma7=0x700, dma14 = 0xE00
 #define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544 -> 0x00
 
@@ -808,13 +810,14 @@ volatile unsigned 										(*allof7e); //
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
 
+//-----------
+#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA0_BASE_OFFSET) //
+
 #define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define GPIO_BASE3                      (BCM2837B0_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
 #define GPIO_BASE4                      (BCM2838_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-
-#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA0_BASE_OFFSET) //
 
 #define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
 #define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
@@ -865,7 +868,7 @@ volatile unsigned 										(*allof7e); //
 #define GPIO_PAD_28_45                  (0x30/4)  // 12
 #define GPIO_PAD_46_52                  (0x34/4)  // 13
 
-#define GPCLK_CNTL                      (0x70/4) // 112 / 4 = 28 -> 0x5A = decimal(90)
+#define GPCLK_CNTL                      (0x70/4) // 112 / 4 = 28 -> 0x5A = decimal: 90
 #define GPCLK_DIV                       (0x74/4) // 29
 
 #define CORECLK_CNTL                    (0x08/4) // 2
@@ -1052,7 +1055,7 @@ Uses 3 GPIO pins */
 #define DMA_CS_PRIORITY(x)		          ((x)&0xF<<16) // 0xF=15
 #define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF<<20) //
 
-// Requests
+// requests
 #define DREQ_PCM_TX                     (2) //
 #define DREQ_PCM_RX                     (3) //
 
@@ -1084,18 +1087,18 @@ Uses 3 GPIO pins */
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
-
-// IQ & carrier http://whiteboard.ping.se/SDR/IQ
+//----------------
+// I-Q & carrier http://whiteboard.ping.se/SDR/IQ
 float freq;
 float shift_ppm = (0.0);
 float timed = 1.0;
 #define ANGLE (PHASE*(freq+shift_ppm)*timed) //2*pi*freq*timediff
-#define I AMPLITUDE*cosf(ANGLE) // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
-#define Q AMPLITUDE*sinf(ANGLE) // Quadrature signal component
+#define I (AMPLITUDE*cosf(ANGLE)) // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
+#define Q (AMPLITUDE*sinf(ANGLE)) // Quadrature signal component
 #define ANGLE_REV (atanf(Q/I)) // arctan
 #define RF_SUM (I+Q) // sum
 #define AMPLITUDE_REV (sqrtf (((I*I)+(Q*Q))))
-
+//-----------------------
 // optional hardware
 // RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
@@ -1112,7 +1115,7 @@ float timed = 1.0;
 // the same addresses
 #define SLAVE_ADDR_WRITE                b(11010000) // binary -> dec:208, hex: 0xD0
 #define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
-
+//--------------
 // GPS Ublox Neo-8M PPS
 #define GPS_MODULE_NAME                 "GPS UBLOX NEO 8 M PPS" // module name
 #define GPS_MODULE_VERSION              (8) // revision of the ublox model from 6-8+
@@ -1134,7 +1137,9 @@ float timed = 1.0;
 #define PIN_17                          (RPI_GPIO_P17) // which is the GPIO pin 17 for led1
 #define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led2
 
-/* possibility to give argv 0-4 a specific addresses or pointers
+/*
+// possibility to give argv 0-4 a specific addresses or pointers
+// hope it doesnt conflict/overrides with other addresses atm, if not then uncommented
 #define FLOOR                           (0x0) // dec: 0
 #define PWMADD1                         (0x4) // dec: 4
 #define PWMADD2                         (0x8) // dec: 8
@@ -1145,30 +1150,47 @@ float timed = 1.0;
 #define FREQ_ADR                        (0x7FFFFFFFEC18) // dec: 140737488350232
 #define SAMPLERATE_ADR                  (0x7FFFFFFFEC20) // dec: 140737488350240
 #define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 1407374883502484
-#define CALLSIGN_ADR                    (0x7FFFFFFFEAEF) // dec: 140737488349935
+#define CALLSIGN_ADR                    (0x7FFFFFFFEAEF) // dec: 14073748834993
+
+#define POWER_ADR                       (0x7FFFFFFFEAEF) // dec:
+#define GPIOPIN_ADR                     (0x7FFFFFFFEAEF) // dec:
+#define DMACHANNEL_ADR                  (0x7FFFFFFFEAEF) // dec:
+#define BANDWIDTH_ADR                   (0x7FFFFFFFEAEF) // dec: not determined yet!
+#define TYPE_ADR                        (0x7FFFFFFFEAEF) // dec:
+#define GPS_ADR                         (0x7FFFFFFFEAEF) // dec:
 
 // Pointers
-#define ARGC_PTR                        (0x5) // dec: 5
+#define ARGC_PTR                        (0x50) // dec: 5
 #define NAME_PTR                        (0x2F) // dec: 47
 #define FILE_PTR                        (0x73) // dec: 115
 #define FREQ_PTR                        (0x31) // dec: 49, $ means is in RDS data
 #define SAMPLERATE_PTR                  (0x32) // dec: 50 $
 #define MODULATION_PTR                  (0x66) // dec: 102 $
 #define CALLSIGN_PTR                    (0x6D) // dec: 109
+
+#define POWER_PTR                      (0x7FFFFFFFEAEF) // dec:
+#define GPIOPIN_PTR                    (0x7FFFFFFFEAEF) // dec:
+#define DMACHANNEL_PTR                 (0x7FFFFFFFEAEF) // dec:
+#define BANDWIDTH_PTR                  (0x7FFFFFFFEAEF) // dec: not determined yet!
+#define TYPE_PTR                       (0x7FFFFFFFEAEF) // dec:
+#define GPS_PTR                        (0x7FFFFFFFEAEF) // dec:
+
 */
+//------------------------
 
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+//-----
 
 // sleep timer
 #define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
 #define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
 #define timercmp(a, b, CMP)
   (((a)->tv_sec == (b)->tv_sec) ?
-   ((a)->tv_usec CMP (b)->tv_usec) :
-   ((a)->tv_sec CMP (b)->tv_sec))
+  ((a)->tv_usec CMP (b)->tv_usec) :
+  ((a)->tv_sec CMP (b)->tv_sec))
 
 #define timeradd(a, b, result)
     while (0)
@@ -1233,27 +1255,27 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 // arguments
 char *filename = "sound.wav";
 float xtal_freq = (1.0/19.2E6); // LOCK_BASE
-float subfreq = (67.0);
-float ctss_freq = (67.0);
-int samplerate = abs (22050);
-int channels = 1;
+float subfreq;
+float ctss_freq;
+int samplerate; // = abs (22050);
+int channels = 1; // 2 stereo
 uint32_t Timing;
 char *mod; // = "fm"
 char *fm = "fm";
 char *am = "am";
-int power = (7);
+int power;
 int powerlevel = abs (power); // same as drive
-int DRIVESTRENGTH = (7); // drive
-int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
-char *callsign = "callsign";
-int type; // analog 1 or digital 2
+int DRIVESTRENGTH = (7); // drive highest
+int HYSTERESIS = (1); // bits: 3, fieldname: HYST, type: RW, reset: 0x1, 0=disabled / 1=enabled
+char *callsign;// = "callsign";
+int type; // = analog 1 or digital 2
 char *mod_type; // = "a"
 char *analog = "a"; // type = 1
 char *digital = "d"; // type = 2
 float bandwidth;
-int dmachannel;
-int gpiopin;
-char *gps;
+int dmachannel; // =1
+int gpiopin; // =4
+char *gps; // ="on"
 
 float divider = (PLLD_FREQ / (2000 * 228 * (1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
 uint32_t idivider = (float) divider;
@@ -1350,7 +1372,7 @@ static volatile uint32_t *dma_reg;
 int reg 	= 0; // = (gpio / 10)
 int shift = 0; // = (gpio % 10) * 3
 //gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
-
+//-------------
 // GPS-coordinates
 // default Germany-Frankfurt (Main) in decimal °grad (centigrade) -> easier value to handle
 char *position; // for live gps-module input later
@@ -1367,6 +1389,7 @@ socklen_t addressLength;
 char *localip = "127.0.0.1";
 char *host 	= "localhost";
 int port 	= (8080);
+char protocol;
 char *udp;
 char *tcp;
 
@@ -1498,11 +1521,11 @@ this will be reduced if the GPIO pins are heavily loaded or have a capacitive lo
 		char ENAB        : 1; // Enable the clock generator
 		char KILL        : 1; // 0 = no action, 1 = stop and reset the clock generator
     // This is intended for test/debug only. Using this control may cause glitch on the clock generator output.
-		char             : 1; // un-used, bit: 23-11, type: R, reset: 0
+		char             : 1; // un-used!!, bit: 23-11, type: R, reset: 0
 		char BUSY        : 1; //
 		char FLIP        : 1; //
 		char MASH        : 2; // 2 -> 3 source / ( DIVI - 1 ) source / ( DIVI + DIVF / 1024 ) source / ( DIVI + 2 )
-		unsigned int     : 13; // un-used, type: R, reset: 0
+		unsigned int     : 13; // un-used!!, type: R, reset: 0
 		char PASSWD      : 8; // bits: 31:24, Must be 0x5A when writing: Accidental write protect password, type: W, reset: 0
 };
 
@@ -1638,28 +1661,30 @@ int gpioselect ()
 {
   // how to change pin-config on boot
   // https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
-	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
+	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7, default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
   scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for transmission is %d ... \n", gpiopin);
   if (gpiopin == 4)
   {
-    printf ("\nUsing default GPIO 4 \n");
+    printf ("\nUsing default GPIO 4! \n");
     // set PIN value
+
   }
   else if (gpiopin == 21)
   {
-    printf ("\nUsing GPIO 21, mostly used for Pi 4 \n");
-    //
+    printf ("\nUsing GPIO 21, mostly used for Pi 4! \n");
+
   }
   else if (gpiopin == 20 || 29 || 32 || 34 || 38)
   {
     printf ("\nUsing alternative GPIO setup %d ... \n", gpiopin);
-    //
+
   }
   else
   {
     printf ("\nError: not recognized! Using default GPIO 4! \n");
     gpiopin = (4);
+
   }
 	return (gpiopin);
 }
@@ -3058,23 +3083,24 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:auh"; // program flags
 	//char **argv [0] = "pifunk"; // actual program-name
   char *programname = argv [0]; //
-	char *filename = "sound.wav"; // = argv [1]; n=name
-	float freq = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate = abs (22050); // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-	char *mod = "fm"; // = argv [4];
-  int power = (7); // = argv [5];
+	char *filename; // = "sound.wav"; // = argv [1]; n=name
+	float freq; // = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate; // = abs (22050); // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char *mod; // = argv [4];
+  int power; // = (7); // = argv [5];
 	char *callsign = "callsign"; // = argv [6];
-  int gpiopin = abs (4); // = argv [7];
-	int dmachannel = (14); // = argv [8];
-	float bandwidth = (12.50); // = argv [9];
-  int type = (1); // = argv [10]; analog -> default
-  char *gps = "on"; // = argv [11]; -> default: off
+  int gpiopin; // = abs (4); // = argv [7];
+	int dmachannel; // = (14); // = argv [8];
+	float bandwidth; // = (12.50); // = argv [9];
+  int type; // = (1); // = argv [10]; analog -> default
+  char *gps; // = "on"; // = argv [11]; -> default: off
   // menues
   char *a; // = argv [12];
   char *h; // = argv [13];
   char *u; // = argv [14];
-	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
-	/ atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
+	/*
+  atoll () is meant for integers & it stops parsing when it finds the first non-digit
+	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
 	fabs () for double must be constant
 	fabsf () for float
@@ -3101,7 +3127,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nChecking options: %d \n", option_index);
   printf ("\nChecking flags long: %d \n", flags);
   printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
-
+  printf ("\n-----------------\n");
   while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc == 0)
@@ -3236,6 +3262,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
   printf ("\nChecking GPS-Status: %s \n", gps);
   printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
+  //-----------------------------------------------------------------
   printf ("\nangle: %f \n", ANGLE);
   printf ("\nI-value: %f \n", I);
   printf ("\nQ-value: %f \n", Q);
@@ -3243,13 +3270,15 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
   printf ("\nAmplitude-value: %f \n", AMPLITUDE);
   printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
-
+  //-----------------------------------------------------------------
 	printf ("\n-------------------------------------------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
   printf ("\nlong_cw: %s \n", long_cw); //
-  printf ("\nChecking &Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
-	printf ("\nChecking *Pointers: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
+
+  printf ("\nChecking Arg-&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argc, &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9]);
+  printf ("\nChecking val-&Adresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &gps);
+	printf ("\nChecking val-*Pointers: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / GPS: % \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, gps);
 
 	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	//printf ("\nlocal ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
