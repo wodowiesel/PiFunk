@@ -160,7 +160,6 @@
 // I-O access via GPIO
 volatile unsigned 										(*gpio); //
 volatile unsigned 										(*allof7e); // shouuld be null in the begining
-
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7EB											(*allof7e-SUB_BASE)
 #define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
@@ -171,7 +170,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 // specific pi addresses & definitions
 // alternative old/different versions
-#ifdef  RASPBERRY || RPI// and RPI == 1
+#ifdef  RASPBERRY || RPI // and RPI == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -493,7 +492,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 // IQ & carrier http://whiteboard.ping.se/SDR/IQ
 float freq;
 float shift_ppm = (0.0);
-float timed = 1.0;
+float timed = (1.0);
 #define ANGLE (PHASE*(freq+shift_ppm)*timed) //2*pi*freq*timediff
 #define I AMPLITUDE*cosf(ANGLE) // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
 #define Q AMPLITUDE*sinf(ANGLE) // Quadrature signal component
@@ -577,7 +576,7 @@ unsigned bcm_host_get_peripheral_size (); // This returns the size of the periph
 unsigned bcm_host_get_sdram_address (); // This returns the bus address of the SDRAM.
 // arguments
 //Included sample audio was created by graham_makes and published on freesound.org
-char *filename = "sound.wav";
+char *filename;
 float xtal_freq; // LOCK_BASE
 float subfreq;
 float ctss_freq;
@@ -591,7 +590,7 @@ int power;
 int powerlevel = abs (power); // same as drive
 int DRIVESTRENGTH; // drive 1-7
 int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
-char callsign = "callsign";
+char callsign;
 int type; // analog 1 or digital 2
 char *mod_type; // = "a"
 char analog = "a"; // type = 1
@@ -992,7 +991,7 @@ int channelmodepmr () // PMR
 	}
 	else
 	{
-		type=1;
+		type=(1);
 		printf ("\nNO type could be determined, wrong input! Using %d as standard \n", type);
 	}
 	printf ("\nOn type = %d with channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
@@ -1211,9 +1210,9 @@ char callsignselect ()
 int powerselect ()
 {
 	// http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/raspberry-pi/gpio-pin-electrical-specifications
-	//-->Don't drive capacitive loads
+	// -->Don't drive capacitive loads
 	// low-output ~0.4 V -> 400 mV, high-output 2.4-2.9/3.3V -> 2900 mV => a) P=V*A=400mV*2mA=800mW b) 2900*16=mW=46.4W c)400*16=6400mW=6.4W
-	//0.1024W for all pins simultaniously -> *16 (all on 1 pin would be 1.6384 W)
+	// 0.1024 W for all pins simultaniously -> *16 (all on 1 pin would be 1.6384 W)
 	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA @0.4-3.3V): \n"); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
 	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
@@ -1392,7 +1391,6 @@ void setupio ()
 	return;
 	}
 	// Allocate MAP block
-
 	if ((gpio_mem = (char *) malloc(BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
 	{
 		printf ("\nAllocation error \n");
@@ -1482,14 +1480,14 @@ void play_fm (char *filename, int mod, float bandwidth) // char *filename, float
 	printf ("\nAllocating file to memory for wave-data ... \n");
 	// version 1
 	dma_reg = map_peripheral(DMA_VIRT_BASE, (DMA_CHANNEL_SIZE * (DMA_CHANNEL_MAX + 1)));
-	dma_reg = dma_reg + ((DMA_CHANNEL_SIZE / sizeof(int)) * (DMA_CHANNEL));
+	dma_reg = dma_reg + (DMA_CHANNEL_SIZE / (sizeof (int) * (DMA_CHANNEL)));
 	pwm_reg = map_peripheral(PWM_VIRT_BASE, PWM_LEN);
 	gpio_reg = map_peripheral(GPIO_VIRT_BASE, GPIO_LEN);
 	pcm_reg = map_peripheral(PCM_VIRT_BASE, PCM_LEN);
 	pad_reg = map_peripheral(PAD_VIRT_BASE, PAD_LEN);
 	clk_reg = map_peripheral(CLK_VIRT_BASE, CLK_LEN);
 	clk_reg[GPCLK_CNTL] = (0x5a<<24) | (1<<4) | (4);
-	clk_reg[CM_PLLA] = 0x5A00022A; // Enable PLLA_PER
+	clk_reg[CM_PLLA] = (0x5A00022A); // Enable PLLA_PER
 	pad ();
 	// version 2
 	int sz = lseek (fp, 0L, SEEK_END);
@@ -1846,7 +1844,7 @@ void ledactive ()
     // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_fm (char *filename, int mod, float bandwidth)) // char *filename, float freq, int samplerate
+		while (play_fm (char *filename,float freq, int samplerate, int mod, float bandwidth)) //
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN_17, HIGH);
@@ -1882,12 +1880,12 @@ int menu ()
 	switch (menuoption)
 	{
 		case 1: printf ("\nShell - Commandline (main): \n");
-						main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
 						break;
 		case 2: printf ("\nExiting ... \n");
 						exit (0);
 		default: printf ("\n Error: Returning back to Main (Default) \n");
-             main (int argc, char **argv);
+             int main (int argc, char **argv);
 		 				 break;
 	}
 	return (menuoption);
@@ -1948,16 +1946,16 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	float bandwidth; // = argv [9];
 	int type; // = argv [10]; analog -> default
 	// menues
-	char *a; // = argv [12];
-	char *h; // = argv [13];
-	char *u; // = argv [14];
+	char *a; // = argv [11];
+	char *h; // = argv [12];
+	char *u; // = argv [13];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
 	fabs () for double must be constant
 	fabsf () for float */
 	// for custom program-name, default is the filename itself
-	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
+	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
 	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	bcm_host_get_peripheral_address ();
@@ -1966,18 +1964,19 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	int option_index;
 	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
-	printf ("\n-----------------\n");
+	printf ("\n--------------------------\n");
 	printf ("\nChecking short_opt: %c \n", short_opt);
 	printf ("\nChecking options: %d \n", options);
 	printf ("\nChecking option_index: %d \n", option_index);
 	printf ("\nChecking flags long: %d \n", flags);
 	printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
+	//--------------------------------------
 	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
-		if (argc == 0)
+		if (argc <= 0)
 		{
-		fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-        return (-1);
+		fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]! \nThe *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+    return (-1);
 		}
 		else
 		{
@@ -2002,7 +2001,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                //break;
 		case 'p':
          				power = atoi (optarg);
-								if (power < 0 || power > 7)
+								if (power <= 0 || power > 7)
 								{
 								fprintf (stderr,"\nOutput power has to be set in range of 0 - 7 \n");
 							  }
@@ -2036,7 +2035,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 							 if (argc == 1)
 							 {
 								printf ("\nAssistant activated! \n");
-								assistant ();
+								void assistant ();
 								break;
 							 }
 							 else
@@ -2048,7 +2047,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 						if (argc == 1)
 						{
          				 printf ("\nOpening menu \n");
-         				 menu (); // extra menu for main
+         				 int menu (); // extra menu for main
          				 break;
          				}
          				else
@@ -2059,7 +2058,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>]\nThere is also an assistant [-a], menu [-u] or help [-h] The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a], menu [-u] or help [-h] The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								break;
 							 }
 							 else
@@ -2071,7 +2070,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                   printf ("\nUnknown option: %c \n", optopt);
                   break;
 		default:
-				printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type 1/2 for a/d>]\n There is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 				break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
@@ -2090,6 +2089,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
+	printf ("\n-----------------------------------------\n");
 	printf ("\nangle: %f \n", ANGLE);
 	printf ("\nI-value: %f \n", I);
 	printf ("\nQ-value: %f \n", Q);
@@ -2098,13 +2098,15 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nAmplitude-value: %f \n", AMPLITUDE);
 	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
-	printf ("\nChecking &Addresses: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %d \n", &argc, &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin);
-	printf ("\nChecking *Pointers: argc: %p / Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p / GPIO: %p \n", argc, *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin);
-	// gathering and parsing all given arguments it to player?!
+	printf ("\nargc: %d / %p , argv: %s / %p \n", argc, &argc, **argv, &&argv);
+  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [18]);
+  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type); // deref
+	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type);
+// gathering and parsing all given arguments it to player?!
 	printf ("\nTransmission starting ... \n"); // EOF
 	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type); // transmission
 	printf ("\nTransmission ended! \n");
-	terminate (int num);
+	void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return (0);
 }
