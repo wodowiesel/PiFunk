@@ -1263,11 +1263,10 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 //-----------------------------------------
 // arguments
 char *filename = "sound.wav";
-float xtal_freq = (1.0/19.2E6); // LOCK_BASE
+float xtal_freq = (1.0/19.2E6); // = 52,0833E-9 -> LOCK_BASE
 float subfreq;
-float ctss_freq;
 int samplerate; // = abs (22050);
-int channels = 1; // 2 stereo
+int channels = (1); // 2 stereo
 uint32_t Timing;
 char *mod; // = "fm"
 char *fm = "fm";
@@ -1283,8 +1282,8 @@ char *analog = "a"; // type = 1
 char *digital = "d"; // type = 2
 float bandwidth;
 int dmachannel; // =1
-int gpiopin; // =4
-char *gps; // ="on"
+int gpiopin; // = 4
+char *gps; // = "on"
 
 float divider = (PLLD_FREQ / (2000 * 228 * (1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
 uint32_t idivider = (float) divider;
@@ -1378,8 +1377,8 @@ static volatile uint32_t *pwm_reg;
 static volatile uint32_t *clk_reg;
 static volatile uint32_t *gpio_reg;
 static volatile uint32_t *dma_reg;
-int reg 	= 0; // = (gpio / 10)
-int shift = 0; // = (gpio % 10) * 3
+int reg 	= (0); // = (gpio / 10)
+int shift = (0); // = (gpio % 10) * 3
 //gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
 //-------------
 // GPS-coordinates
@@ -3280,11 +3279,11 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
   printf ("\nlong_cw: %s \n", long_cw); //
   //-----------------------------------------------------------------
-  printf ("\nargc: %d / %p , argv: %s / %p \n", argc, argc, **argv, &&argv);
-  printf ("\nChecking Arg-&Adresses: Name: %p / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9]);
+  printf ("\nChecking argc: %d / %p , argv: %s / %p \n", argc, argc, **argv, &&argv);
+  printf ("\nChecking Arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &gps); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / GPS: % \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, *gps);
-
+  printf ("\nChecking menus-&argv: assistent: %p / help: %p / menu: %p \n", &argv [12], &argv [13], &argv [14]);
 	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	//printf ("\nlocal ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 
