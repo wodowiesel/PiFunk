@@ -179,9 +179,13 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x04) // dec: 4
 #define CLOCK_BASE									   (19.2E6) //
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
 #define F_PLLD_CLK 										(500000000.0)
+#define BUFFER_TIME 									 (1000000) //
+#define PWM_WRITES_PER_SAMPLE 				 (10) //
+#define PWM_CHANNEL_RANGE 						 (32) //
 #endif
 // pi 0 zero & w
 #ifdef 	RASPI0 //== 0
@@ -193,9 +197,13 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
 #define CLOCK_BASE										 (19.2E6) // = 19200000
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
 #define F_PLLD_CLK 										(500000000.0)
+#define BUFFER_TIME 									 (1000000) //
+#define PWM_WRITES_PER_SAMPLE 				 (10) //
+#define PWM_CHANNEL_RANGE 						 (32) //
 #endif
 // pi 1 - BCM2835 -> my version
 #ifdef  RASPI1 // == 1
@@ -207,10 +215,14 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define MEM_FLAG                       (0x0C) // alternative
 #define CURBLOCK                       (0x0C) // dec: 12
 #define CLOCK_BASE										 (19.2E6) //
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
-#define F_PLLD_CLK 										(500000000.0)
+#define F_PLLD_CLK 									 	(500000000.0)
+#define BUFFER_TIME 									 (1000000) //
+#define PWM_WRITES_PER_SAMPLE 				 (10) //
+#define PWM_CHANNEL_RANGE 						 (32) //
 #endif
 // pi 2 - BCM2836/7
 #ifdef  RASPI2 //== 2
@@ -223,10 +235,14 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
 #define F_PLLD_CLK 										(500000000.0)
+#define BUFFER_TIME 									 (1000000) //
+#define PWM_WRITES_PER_SAMPLE 				 (10) //
+#define PWM_CHANNEL_RANGE 						 (32) //
 #endif
 // pi3 - BCM2837/B0
 #ifdef 	RASPI3 //== 3
@@ -239,10 +255,14 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) //
+#define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000.) //
 #define F_PLLD_CLK 										(500000000.0)
+#define BUFFER_TIME 									 (1000000) //
+#define PWM_WRITES_PER_SAMPLE 				 (10) //
+#define PWM_CHANNEL_RANGE 						 (32) //
 #endif
 // pi 4 - BCM2838
 #ifdef  RASPI4 //== 4
