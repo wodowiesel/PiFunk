@@ -1089,16 +1089,25 @@ Uses 3 GPIO pins */
 #define SAMPLES_PER_BUFFER 							(512) //
 //----------------
 // I-Q & carrier http://whiteboard.ping.se/SDR/IQ
+/*
+{RF (FileInput is a (float) Frequency, Time in nanoseconds}
+{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
+{VFO (constant frequency)}
+{IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
+{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
+*/
+
 float freq;
-float shift_ppm = (0.0);
-float timed = 1.0;
-#define ANGLE (PHASE*(freq+shift_ppm)*timed) //2*pi*freq*timediff
+float shift_ppm = (0.0); // custom freq offset
+float timed = (1.0);
+
+#define ANGLE (PHASE*(freq+shift_ppm)*timed) // 2*pi*freq*timediff
 #define I (AMPLITUDE*cosf(ANGLE)) // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
 #define Q (AMPLITUDE*sinf(ANGLE)) // Quadrature signal component
 #define ANGLE_REV (atanf(Q/I)) // arctan
 #define RF_SUM (I+Q) // sum
 #define AMPLITUDE_REV (sqrtf (((I*I)+(Q*Q))))
-//-----------------------
+//-------------------------------------
 // optional hardware
 // RTC (DS3231/DS1307 driver)
 #define RTC_PWR                         (PIN_1) // +3.3 V
@@ -1152,12 +1161,12 @@ float timed = 1.0;
 #define MODULATION_ADR                  (0x7FFFFFFFEC28) // dec: 1407374883502484
 #define CALLSIGN_ADR                    (0x7FFFFFFFEAEF) // dec: 14073748834993
 
-#define POWER_ADR                       (0x7FFFFFFFEAEF) // dec:
-#define GPIOPIN_ADR                     (0x7FFFFFFFEAEF) // dec:
-#define DMACHANNEL_ADR                  (0x7FFFFFFFEAEF) // dec:
-#define BANDWIDTH_ADR                   (0x7FFFFFFFEAEF) // dec: not determined yet!
-#define TYPE_ADR                        (0x7FFFFFFFEAEF) // dec:
-#define GPS_ADR                         (0x7FFFFFFFEAEF) // dec:
+#define POWER_ADR                       (0x?) // dec:
+#define GPIOPIN_ADR                     (0x?) // dec:
+#define DMACHANNEL_ADR                  (0x?) // dec:
+#define BANDWIDTH_ADR                   (0x?) // dec: not determined yet!
+#define TYPE_ADR                        (0x?) // dec:
+#define GPS_ADR                         (0x?) // dec:
 
 // Pointers
 #define ARGC_PTR                        (0x50) // dec: 5
@@ -1598,7 +1607,7 @@ static struct option long_opt [] =
 
 /*
 // pi4 pin fix for under 93 MHz
-class ClockOutput : public ClockDevice
+class ClockOutput:public ClockDevice
 {
         public:
         #ifndef GPIO_21
@@ -2856,11 +2865,6 @@ void modulationfm () // int argc, char **argv
 
 void modulationam () // int argc, char **argv, char
 {
-	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
-		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
-		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
-		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
-		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
 		play_am (); // actual modulation stuff here for am -> write tone? maybe better name later
 	  return;
@@ -3130,7 +3134,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\n-----------------\n");
   while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
-		if (argc == 0)
+		if (argc <= 0)
 		{
 				fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
         return (-1);
@@ -3276,17 +3280,17 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
   printf ("\nlong_cw: %s \n", long_cw); //
   //-----------------------------------------------------------------
-  printf ("\nargc: %d / %p , argv: %s / %p \n", **argv [], &argv []); //
-  printf ("\nChecking Arg-&Adresses: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9]);
+  printf ("\nargc: %d / %p , argv: %s / %p \n", argc, argc, **argv, &&argv);
+  printf ("\nChecking Arg-&Adresses: Name: %p / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &gps); // deref
-	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / GPS: % \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, gps);
+	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / GPS: % \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, *gps);
 
 	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	//printf ("\nlocal ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
 
 	// gathering and parsing all given arguments it to player?!
   printf ("\nTransmission starting ... \n"); // EOF
-	void tx (); // int argc, char **argv [] transmission
+	void tx (); // int argc, char **argv transmission
   printf ("\nTransmission ended! \n");
 
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
