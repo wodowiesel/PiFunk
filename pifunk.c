@@ -565,7 +565,7 @@ int l;
 int r;
 float e;
 char c;
-//pi memory-map peripherials:
+// pi memory-map peripherials:
 char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
@@ -575,9 +575,9 @@ unsigned bcm_host_get_peripheral_address (); // // This returns the ARM-side phy
 unsigned bcm_host_get_peripheral_size (); // This returns the size of the peripheral's space, which is (0x01000000) for all models.
 unsigned bcm_host_get_sdram_address (); // This returns the bus address of the SDRAM.
 // arguments
-//Included sample audio was created by graham_makes and published on freesound.org
+// included sample audio was created by graham_makes and published on freesound.org
 char *filename;
-float xtal_freq; // LOCK_BASE
+float xtal_freq = (1.0/19.2E6) // LOCK_BASE
 float subfreq;
 float ctss_freq;
 int samplerate;
@@ -2085,7 +2085,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking Modulation: %s \n", mod);
 	printf ("\nChecking Callsign: %s \n", callsign);
 	printf ("\nChecking Output-Power: %d \n", power);
-	printf ("\nChecking GPIO-PIN: %d \n", gpiopin);
+	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
@@ -2098,15 +2098,16 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nAmplitude-value: %f \n", AMPLITUDE);
 	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
-	printf ("\nargc: %d / %p , argv: %s / %p \n", argc, &argc, **argv, &&argv);
-  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [18]);
+	printf ("\nChecking argc: %d / %p , argv: %s / %p \n", argc, &argc, **argv, &&argv);
+  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type);
-// gathering and parsing all given arguments it to player?!
+	printf ("\nChecking assistent: %p , help: %p , menu: %p \n", &argv [11], &argv [12], &argv [13]);
+ // gathering and parsing all given arguments it to player?!
 	printf ("\nTransmission starting ... \n"); // EOF
 	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type); // transmission
 	printf ("\nTransmission ended! \n");
-	void terminate (int num);
+  void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return (0);
 }
