@@ -5,7 +5,9 @@ Author: WodoWiesel
 version: 0.1.7.6e
 
 ----Licence----------------------------------------------------------------------------------------------
-                GPL v3 !!
+
+                GPL v3.0
+                ->  see LICENSE.MD !!
 
 -----Disclaimers------------------------------------------------------------------------------------------
 - Rewritten for own purposes!
@@ -3292,7 +3294,9 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	void tx (); // int argc, char **argv transmission
   printf ("\nTransmission ended! \n");
 
-	printf ("\nEnd of Program! Closing ... \n"); // EOF
+
   static void terminate (int num); // exit
+  printf ("\nEnd of Program! Closing ... \n"); // EOF
+  
 	return (0);
 }
