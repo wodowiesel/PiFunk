@@ -1,4 +1,8 @@
-// PiFunk lite
+/* PiFunk lite
+----License-------------------------------------------------------------------
+                GPL v3.0  ->  see LICENSE.md !!
+------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
