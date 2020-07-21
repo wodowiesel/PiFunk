@@ -1227,9 +1227,6 @@ float timed = (1.0);
       }
     }
 
-// try a modprobe of i2C-BUS
- if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n")}; // ignore errors
-
 //----------------------------------
 // declaring normal variables
 
@@ -1312,7 +1309,7 @@ FILE wavefile;
 int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK);
 //SNDFILE *infile;
 //SNDFILE *outfile;
-//snd_output_t *output = NULL; NULL=0
+//snd_output_t *output = 0; NULL=0
 int fp; // = STDIN_FILENO;
 int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
@@ -2129,7 +2126,7 @@ char modulationselect ()
 
 char callsignselect ()
 {
-    //if (*callsign == NULL) {
+    //if (*callsign == 0) {
 		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
 		scanf ("%d", &callnameselect);
 		switch (callnameselect)
@@ -2344,7 +2341,7 @@ static void terminate (int num)
      //fm_mpx_close ();
      //close_control_pipe ();
 
-    if (vAddr != NULL)
+    if (vAddr != 0)
     {
         unmapmem (vAaddr, (NUM_PAGES * 4096));
       //  mem_unlock (mbox.handle, mbox.mem_ref);
@@ -2357,20 +2354,20 @@ static void terminate (int num)
 
 void usleep2 (long us)
 {
-  nanosleep ((struct timespec []) { {0, us*1000} }, NULL); //
+  nanosleep ((struct timespec []) { {0, us*1000} }, 0); //
   return;
 }
 
 void delayMicrosecondsHard (unsigned int howLong)
 {
   struct timeval tNow, tLong, tEnd;
-  gettimeofday (&tNow, NULL) ;
+  gettimeofday (&tNow, 0) ;
   tLong.tv_sec  = (howLong / 1000000);
   tLong.tv_usec = (howLong % 1000000);
   timeradd (&tNow, &tLong, &tEnd);
   while (timercmp (&tNow, &tEnd, <))
   {
-    gettimeofday (&tNow, NULL);
+    gettimeofday (&tNow, 0);
   }
   return;
 }
@@ -2392,7 +2389,7 @@ void setupio ()
   }
 
   // Allocate MAP block
-	if ((gpio_mem = malloc (BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
+	if ((gpio_mem = malloc (BLOCK_SIZE + (PAGE_SIZE-1))) == 0)
   {
 		printf ("\nAllocation error \n");
 		exit (0);
@@ -2426,7 +2423,7 @@ void setupio ()
 void setupfm ()
 {
   allof7e = (unsigned*) mmap (
-                NULL,
+                0,
                 BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
                 PROT_READ|PROT_WRITE, //
                 MAP_SHARED, //
@@ -3094,7 +3091,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	//char *argv [0] = "pifunk"; // actual program-name
   char *programname = *argv [0]; //
 	char *filename; // = "sound.wav"; // = *argv [1]; n=name
-	float freq; // = fabs (446.006250); // = strtof (*argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
+	float freq; // = fabs (446.006250); // = strtof (*argv [2], 0); // float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate; // = abs (22050); // = atof (*argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod; // = *argv [4];
   int power; // = (7); // = *argv [5];
@@ -3126,6 +3123,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   bcm_host_get_peripheral_address ();
   bcm_host_get_peripheral_size ();
   bcm_host_get_sdram_address ();
+  // try a modprobe of i2C-BUS
+  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n")}; // ignore errors
 
   int option_index = (0);
   int options = getopt (argc, argv, short_opt); // short_opt must be constant
