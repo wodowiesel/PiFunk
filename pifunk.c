@@ -2769,8 +2769,8 @@ int sampleselect () // char *filename, int samplerate
 	 // where to input the freq like in fm
 	  for (k = 0; k < nb_samples; k++)
 	  {
-		  short *b = data [k*channels];
-			printf ("\nChannel buffer b = %c \n", b);
+		  float *b = data [k*channels];
+			printf ("\nChannel buffer b = %f \n", b);
 			if (channels == (0))
 			{
 				printf ("\nError! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
@@ -2785,7 +2785,7 @@ int sampleselect () // char *filename, int samplerate
 				printf ("\nb = %c \n", b);
         return (b);
 			}
-			else if (channels == 2)
+			else if (channels == (2))
 			{
         printf ("\nFile has 2 Channels (STEREO)! maybe supported later! \n"); // >1 in stereo or dual mono with half samplerate
 
@@ -3125,7 +3125,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   bcm_host_get_peripheral_size ();
   bcm_host_get_sdram_address ();
   // try a modprobe of i2C-BUS
-  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test error! \n")} // ignore errors
+  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1))
+  {printf ("\nmodprobe test error! \n");} // ignore errors
 
   int option_index = (0);
   int options = getopt (argc, argv, short_opt); // short_opt must be constant
