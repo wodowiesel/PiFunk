@@ -2318,7 +2318,7 @@ void handSig () // exit func
 		exit (0);
 }
 
-static void terminate (int num)
+void terminate (int num) // static
 {
     // Stop outputting and generating the clock
     if (clk_reg && gpio_reg && vAddr)
@@ -3124,7 +3124,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   bcm_host_get_peripheral_size ();
   bcm_host_get_sdram_address ();
   // try a modprobe of i2C-BUS
-  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n")}; // ignore errors
+  if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test error! \n")} // ignore errors
 
   int option_index = (0);
   int options = getopt (argc, argv, short_opt); // short_opt must be constant
@@ -3298,7 +3298,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	void tx (); // int argc, char **argv transmission
   printf ("\nTransmission ended! \n");
 
-  static void terminate (int num); // exit
+  void terminate (int num); // exit
   printf ("\nEnd of Program! Closing ... \n"); // EOF
 
 	return (0);
