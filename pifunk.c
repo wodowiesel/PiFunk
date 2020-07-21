@@ -1489,7 +1489,7 @@ static const char *morsetable [] = {morse};
 // Structs
 struct tm *info;
 struct sockaddr_in localAddress;
-struct client_addr sin_addr;
+//struct client_addr sin_addr;
 //struct local sin_addr; // local.sin_addr;
 
 struct PAGEINFO // should use here bcm intern funcs -> repair p/v
@@ -1738,7 +1738,7 @@ int fileselect (char *filename)  // expected int
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
-	char *filename = (char *) malloc (128); // allocating memory for filename
+	*filename = (char *) malloc (128); // allocating memory for filename
 	sprintf (filename, "%s", "file.ft");
 	char *stdfile = "sound.wav";
 
@@ -2934,11 +2934,13 @@ void ledinactive ()
 {
 	  // check if transmitting
     printf ("\nChecking transmission status ... \n");
+    /*
 		while (!play_fm ()) // || play_am ()
 		{
-				//cm2835_gpio_write (PIN_17, LOW);
-				printf ("\nLED off - No transmission! \n");
+				m2835_gpio_write (PIN_17, LOW);
 		}
+    */
+    printf ("\nLED off - No transmission! \n");
     return;
 }
 
@@ -3017,11 +3019,13 @@ void cgimodule () //
 void tx () // int argc, char *argv []
 {
   printf ("\nPreparing for transmission ... \n");
+  /*
 	while (play_fm ()) // | play_am ())
   {
   ledactive ();
-  printf ("\nBroadcasting now! ... \n");
   }
+  */
+  printf ("\nBroadcasting now! ... \n");
 	return;
 }
 
@@ -3087,23 +3091,23 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   void title ();
   // option parameters
   const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:auh"; // program flags
-	//char **argv [0] = "pifunk"; // actual program-name
-  char *programname = argv [0]; //
-	char *filename; // = "sound.wav"; // = argv [1]; n=name
-	float freq; // = fabs (446.006250); // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate; // = abs (22050); // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-	char *mod; // = argv [4];
-  int power; // = (7); // = argv [5];
-	char *callsign = "callsign"; // = argv [6];
-  int gpiopin; // = abs (4); // = argv [7];
-	int dmachannel; // = (14); // = argv [8];
-	float bandwidth; // = (12.50); // = argv [9];
-  int type; // = (1); // = argv [10]; analog -> default
-  char *gps; // = "on"; // = argv [11]; -> default: off
+	//char *argv [0] = "pifunk"; // actual program-name
+  char *programname = *argv [0]; //
+	char *filename; // = "sound.wav"; // = *argv [1]; n=name
+	float freq; // = fabs (446.006250); // = strtof (*argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate; // = abs (22050); // = atof (*argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char *mod; // = *argv [4];
+  int power; // = (7); // = *argv [5];
+	char *callsign = "callsign"; // = *argv [6];
+  int gpiopin; // = abs (4); // = *argv [7];
+	int dmachannel; // = (14); // = *argv [8];
+	float bandwidth; // = (12.50); // = *argv [9];
+  int type; // = (1); // = *argv [10]; analog -> default
+  char *gps; // = "on"; // = *argv [11]; -> default: off
   // menues
-  char *a; // = argv [12];
-  char *h; // = argv [13];
-  char *u; // = argv [14];
+  char *a; // = *argv [12];
+  char *h; // = *argv [13];
+  char *u; // = *argv [14];
 	/*
   atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
@@ -3112,7 +3116,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	fabsf () for float
 	*/
 	// for custom program-name, default is the filename itself
-	printf ("\nArguments: %d / internal name: %s \n", argc, argv [0]);
+	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
 	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 
@@ -3282,7 +3286,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
   printf ("\nlong_cw: %s \n", long_cw); //
   //-----------------------------------------------------------------
-  printf ("\nChecking argc: %d / %p \n", argc, argc);
+  printf ("\nChecking argc: %d / %p \n", argc, &argc);
   printf ("\nChecking Arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &gps); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / GPS: % \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, *gps);
