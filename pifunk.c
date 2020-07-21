@@ -1266,6 +1266,7 @@ char *filename = "sound.wav";
 float xtal_freq = (1.0/19.2E6); // = 52,0833E-9 -> LOCK_BASE
 float subfreq;
 int samplerate; // = abs (22050);
+int halfsamplerate = (samplerate/2);
 int channels = (1); // 2 stereo
 uint32_t Timing;
 char *mod; // = "fm"
@@ -2768,14 +2769,14 @@ int sampleselect () // char *filename, int samplerate
 	 // where to input the freq like in fm
 	  for (k = 0; k < nb_samples; k++)
 	  {
-		  char *b = data [k*channels];
+		  short *b = data [k*channels];
 			printf ("\nChannel buffer b = %c \n", b);
-			if (channels == 0)
+			if (channels == (0))
 			{
 				printf ("\nError! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
         return (-1);
 			}
-			else if (channels == 1)
+			else if (channels == (1))
 			{
 				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
 				// stereo file, avg left + right --> should be mono at 22.050 kHz
@@ -2787,7 +2788,7 @@ int sampleselect () // char *filename, int samplerate
 			else if (channels == 2)
 			{
         printf ("\nFile has 2 Channels (STEREO)! maybe supported later! \n"); // >1 in stereo or dual mono with half samplerate
-        int halfsamplerate = (samplerate/2);
+
         printf ("\nUsing half of the samplerate: %d \n", halfsamplerate);
 			}
 			else
