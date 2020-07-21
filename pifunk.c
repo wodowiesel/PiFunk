@@ -670,7 +670,7 @@ volatile unsigned 										(*allof7e); //
 #define CLOCK_BASE									   (19.2E6) //
 
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ 										 (500000000.) //
+#define PLLD_FREQ 										 (500000000) //
 #endif
 
 // pi 0 zero & w
@@ -686,7 +686,7 @@ volatile unsigned 										(*allof7e); //
 #define CLOCK_BASE										 (19.2E6) // = 19200000
 
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 (500000000.) //
+#define PLLD_FREQ											 (500000000) //
 #endif
 
 // pi 1 - BCM2835 -> my version
@@ -704,7 +704,7 @@ volatile unsigned 										(*allof7e); //
 #define PAGE_SIZE                      (1024) // 4096
 
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 (500000000.) //
+#define PLLD_FREQ											 (500000000) //
 #endif
 
 // pi 2 - BCM2836/7
@@ -740,7 +740,7 @@ volatile unsigned 										(*allof7e); //
 #define PAGE_SIZE                      (1024) // 4096
 
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ 										 (500000000.) //
+#define PLLD_FREQ 										 (500000000) //
 #endif
 
 // pi 4 - BCM2838
@@ -760,7 +760,7 @@ volatile unsigned 										(*allof7e); //
 
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
-#define PLLD_FREQ 										 (750000000.) // has higher freq than pi 0-3
+#define PLLD_FREQ 										 (750000000) // has higher freq than pi 0-3
 
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -1228,14 +1228,14 @@ float timed = (1.0);
     }
 
 // try a modprobe of i2C-BUS
- if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
+ if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n")}; // ignore errors
 
 //----------------------------------
 // declaring normal variables
 
 // program version status and default device
-const char description = "experimental - WIP"; // version-stage
-const char device = "default"; // playback device
+const char *description = "experimental - WIP"; // version-stage
+const char *device = "default"; // playback device
 
 // iterators for loops
 int w = (0);
@@ -1246,7 +1246,8 @@ int j;
 int k;
 int l;
 int r;
-float e;
+int x = (1); // for ampf later
+int ex;
 char c;
 
 //pi memory-map peripherials:
@@ -1274,7 +1275,7 @@ char *mod; // = "fm"
 char *fm = "fm";
 char *am = "am";
 int power;
-int powerlevel = abs (power); // same as drive
+int powerlevel; // same as drive
 int DRIVESTRENGTH = (7); // drive highest
 int HYSTERESIS = (1); // bits: 3, fieldname: HYST, type: RW, reset: 0x1, 0=disabled / 1=enabled
 char *callsign;// = "callsign";
@@ -1362,8 +1363,8 @@ static volatile uint32_t *pad_reg1;
 static volatile uint32_t *pad_reg2;
 static volatile uint32_t *pad_val;
 
-*pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
-*pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
+//*pad_reg1 = pad_reg [GPIO_PAD_0_27]; // pi-gpio bank-row1
+//*pad_reg2 = pad_reg [GPIO_PAD_28_45]; // pi-gpio bank-row2
 /*
 pad_val = (PADGPIO + power);
 if ((pad_reg1 || pad_reg2) == pad_val) // check equality
@@ -1391,7 +1392,7 @@ char *lat_pos = "N";
 float longitude = (8.682127); // E
 float latitude = (50.110924); // N
 double elevation = (100.00); // meter
-int altitude	= fabs (elevation); // elevation in meter above see level (u.N.N.)
+int altitude; // // elevation in meter above see level (u.N.N.)
 
 // network sockets
 // custom ip/port via tcp or udp
@@ -1489,7 +1490,7 @@ static const char *morsetable [] = {morse};
 struct tm *info;
 struct sockaddr_in localAddress;
 struct client_addr sin_addr;
-struct local sin_addr; // local.sin_addr;
+//struct local sin_addr; // local.sin_addr;
 
 struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
@@ -2279,7 +2280,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		read (fp, &frameinfo, sizeof (frameinfo));
 
 		*pAddr = (void*) ((int) (frameinfo*4096));
-    fprintf ("\nCould not map memory! \n");
+    fprintf (stderr, "\nCould not map memory! \n");
     return;
 }
 
@@ -2810,8 +2811,8 @@ int sampleselect () // char *filename, int samplerate
   		ampf2 = (fabs (ampf) < 1.0f/A) ? A*fabs (ampf)/(1.0f+ln (A)):(1.0f+ln (A*fabs (ampf)))/(1.0f+ln (A)); //compand
 			printf ("\ncompand ampf2: %f \n", ampf2);
 
-			e = (int) (round (ampf2*excursion2));
-			printf ("\nnew e: %f \n", x);
+			ex = (int) (round (ampf2*excursion2));
+			printf ("\nnew e: %d \n", ex);
 
 		  factorizer = (x*excursion2*FactAmplitude);
 			printf ("\nfactorizer: %f \n", factorizer);
@@ -3137,7 +3138,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-14 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
         return (-1);
     }
 		else
@@ -3281,7 +3282,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nshort_cw: %s \n", short_cw); // morse beeps
   printf ("\nlong_cw: %s \n", long_cw); //
   //-----------------------------------------------------------------
-  printf ("\nChecking argc: %d / %p , argv: %s / %p \n", argc, argc, **argv, &&argv);
+  printf ("\nChecking argc: %d / %p \n", argc, argc);
   printf ("\nChecking Arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &gps); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / GPS: % \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, *gps);
@@ -3294,9 +3295,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	void tx (); // int argc, char **argv transmission
   printf ("\nTransmission ended! \n");
 
-
   static void terminate (int num); // exit
   printf ("\nEnd of Program! Closing ... \n"); // EOF
-  
+
 	return (0);
 }
