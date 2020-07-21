@@ -573,11 +573,9 @@ float timed = (1.0);
 		(result)->tv_usec += (1000000);
 		}
 		} while (0)
-// try a modprobe of i2C-BUS
-if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n")}; // ignore errors
 // program version status and default device
-const char description = "experimental - WIP"; // version-stage
-const char device = "default"; // playback device
+const char *description = "experimental - WIP"; // version-stage
+const char *device = "default"; // playback device
 // iterators for loops
 int w = (0);
 int m;
@@ -606,6 +604,7 @@ float xtal_freq = (1.0/19.2E6) // LOCK_BASE
 float subfreq;
 float ctss_freq;
 int samplerate;
+int halfsamplerate = (samplerate/2);
 int channels;
 int Timing;
 char *mod; // = "fm"
@@ -623,6 +622,7 @@ char digital = "d"; // type = 2
 float bandwidth;
 int dmachannel;
 int gpiopin;
+float b;
 float divider = (PLLD_FREQ / (2000 * 228 * (1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
 int idivider = (float) divider;
 int fdivider = (int) ((divider-idivider) * pow (2, 12));
@@ -644,7 +644,7 @@ FILE FileFreqTiming;
 int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK);
 //SNDFILE *infile;
 //SNDFILE *outfile;
-//snd_output_t *output = NULL;
+//snd_output_t *output = 0;
 int fp; // = STDIN_FILENO;
 int filebit = abs (16); // for now 16 until i can read the value from an audio file
 int readcount;
@@ -699,10 +699,11 @@ else
 {
   printf ("\npad_reg are NOT the same -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
 }
-*/
+
 pad_reg = pad_reg [GPIO_PAD_0_27] = 0x5A000018 + power; // pi-gpio bank-row1
 pad_reg2 = pad_reg [GPIO_PAD_28_45] = 0x5A000018 + power; // pi-gpio bank-row2
 gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
+*/
 return;
 }
 struct PAGEINFO // should use here bcm intern funcs -> repair p/v
@@ -1231,7 +1232,7 @@ char modulationselect ()
 }
 char callsignselect ()
 {
-		//if (*callsign == NULL) {
+		//if (*callsign == 0) {
 		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
 		scanf ("%d", &callnameselect);
 		switch (callnameselect)
@@ -1370,7 +1371,7 @@ void handSig () // exit func
 		printf ("\nExiting ... \n");
 		exit (0);
 }
-static void terminate (int num)
+void terminate (int num) // static
 {
 	// Stop outputting and generating the clock
 	if (clk_reg && gpio_reg && vAddr)
@@ -1390,7 +1391,7 @@ static void terminate (int num)
 	}
      //fm_mpx_close ();
      //close_control_pipe ();
-	if (vAddr != NULL)
+	if (vAddr != 0)
 	{
         unmapmem (vAaddr, (NUM_PAGES * 4096));
       //  mem_unlock (mbox.handle, mbox.mem_ref);
@@ -1402,19 +1403,19 @@ static void terminate (int num)
 }
 void usleep2 (long us)
 {
-	nanosleep ((struct timespec []) { {0, us*1000} }, NULL); //
+	nanosleep ((struct timespec []) { {0, us*1000} }, 0); //
 	return;
 }
 void delayMicrosecondsHard (unsigned int howLong)
 {
 	struct timeval tNow, tLong, tEnd;
-	gettimeofday (&tNow, NULL) ;
+	gettimeofday (&tNow, 0) ;
 	tLong.tv_sec  = (howLong / 1000000);
 	tLong.tv_usec = (howLong % 1000000);
 	timeradd (&tNow, &tLong, &tEnd);
 	while (timercmp (&tNow, &tEnd, <))
 	{
-	gettimeofday (&tNow, NULL);
+	gettimeofday (&tNow, 0);
 	}
 	return;
 }
@@ -1433,7 +1434,7 @@ void setupio ()
 	return;
 	}
 	// Allocate MAP block
-	if ((gpio_mem = (char *) malloc(BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
+	if ((gpio_mem = (char *) malloc(BLOCK_SIZE + (PAGE_SIZE-1))) == 0)
 	{
 		printf ("\nAllocation error \n");
 		exit (0);
@@ -1463,7 +1464,7 @@ void setupio ()
 void setupfm ()
 {
   allof7e = (unsigned*) mmap (
-                NULL,
+                0,
                 BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
                 PROT_READ|PROT_WRITE, //
                 MAP_SHARED, //
@@ -1744,8 +1745,8 @@ int sampleselect () // char *filename, int samplerate
 	 // where to input the freq like in fm
 	for (k = 0; k < nb_samples; k++)
 	{
-			char *b = data [k*channels];
-			printf ("\nChannel buffer b = %c \n", b);
+			b = data [k*channels];
+			printf ("\nChannel buffer b = %f \n", b);
 			if (channels == 0)
 			{
 				printf ("\nError! NO (0) channels \n"); // > 1 in stereo or dual mono with half samplerate
@@ -1756,13 +1757,12 @@ int sampleselect () // char *filename, int samplerate
 				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
 				// stereo file, avg left + right --> should be mono at 22.050 kHz
 				b += data [k*channels+1];
-				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half?
-				printf ("\nb = %c \n", b);
+				b /= 2.0; // maybe *2 to make a dual mono and not doing stereo in half?
+				printf ("\nb = %f \n", b);
 			}
 			else if (channels == 2)
 			{
 			printf ("\nFile has 2 Channels (STEREO)! maybe supported later! \n"); // >1 in stereo or dual mono with half samplerate
-			int halfsamplerate = (samplerate/2);
 			printf ("\nUsing half of the samplerate: %d \n", halfsamplerate);
 			}
 			else
@@ -1976,20 +1976,20 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	infos ();
 	// char *argv [0] = "pifunk"; // actual program-name
 	char *programname = *argv [0]; //
-	char *filename; // = argv [1]; n=name
-	float freq; // = strtof (argv [2], NULL); // float only accurate to .4 digits idk why, from 5 it will round ?!
-	int samplerate; // = atof (argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
-	char *mod; // = argv [4];
-	int power; // = argv [5];
-	char *callsign; // = argv [6];
-	int gpiopin; // = argv [7];
-	int dmachannel; // = argv [8];
-	float bandwidth; // = argv [9];
-	int type; // = argv [10]; analog -> default
+	char *filename; // = *argv [1]; n=name
+	float freq; // = strtof (*argv [2], 0); // float only accurate to .4 digits idk why, from 5 it will round ?!
+	int samplerate; // = atof (*argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
+	char *mod; // = *argv [4];
+	int power; // = *argv [5];
+	char *callsign; // = *argv [6];
+	int gpiopin; // = *argv [7];
+	int dmachannel; // = *argv [8];
+	float bandwidth; // = *argv [9];
+	int type; // = *argv [10]; analog -> default
 	// menues
-	char *a; // = argv [11];
-	char *h; // = argv [12];
-	char *u; // = argv [13];
+	char *a; // = *argv [11];
+	char *h; // = *argv [12];
+	char *u; // = *argv [13];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
@@ -2002,6 +2002,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
+	// try a modprobe of i2C-BUS
+	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	int option_index;
 	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
@@ -2148,7 +2150,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nTransmission starting ... \n"); // EOF
 	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type); // transmission
 	printf ("\nTransmission ended! \n");
-  static void terminate (int num);
+  void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return (0);
 }
