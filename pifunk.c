@@ -2769,7 +2769,7 @@ int sampleselect () // char *filename, int samplerate
 	 // where to input the freq like in fm
 	  for (k = 0; k < nb_samples; k++)
 	  {
-		  float *b = data [k*channels];
+		  float b = data [k*channels];
 			printf ("\nChannel buffer b = %f \n", b);
 			if (channels == (0))
 			{
@@ -2781,7 +2781,7 @@ int sampleselect () // char *filename, int samplerate
 				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
 				// stereo file, avg left + right --> should be mono at 22.050 kHz
 				b += data [k*channels+1];
-				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
+				b /= 2.0; // maybe *2 to make a dual mono and not doing stereo in half!
 				printf ("\nb = %f \n", b);
         return (b);
 			}
