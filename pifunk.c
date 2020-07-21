@@ -185,8 +185,8 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define CLOCK_BASE									   (19.2E6) //
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ 										 (500000000.) //
-#define F_PLLD_CLK 										(500000000.0)
+#define PLLD_FREQ 										 (500000000) //
+#define F_PLLD_CLK 										 (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -574,7 +574,7 @@ float timed = (1.0);
 		}
 		} while (0)
 // try a modprobe of i2C-BUS
-if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
+if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n")}; // ignore errors
 // program version status and default device
 const char description = "experimental - WIP"; // version-stage
 const char device = "default"; // playback device
@@ -587,7 +587,8 @@ int j;
 int k;
 int l;
 int r;
-float e;
+int x = 1; // for ampf calc later
+int ex;
 char c;
 // pi memory-map peripherials:
 char *gpio_mem;
@@ -708,9 +709,26 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
 		void *p; // physical address BCMXXXX_PERI_BASE
 		void *v; // virtual address
-		int instrPage;
-		int constPage;
-		int instrs [BUFFERINSTRUCTIONS]; // [1024]
+	//	int instrPage;
+	//	int constPage;
+	//	int instrs [BUFFERINSTRUCTIONS]; // [1024]
+};
+struct PageInfo constPage;
+struct PageInfo instrPage;
+struct PageInfo instrs[BUFFERINSTRUCTIONS];
+struct GPFSEL0_T
+{
+    char FSEL0 : 3;
+    char FSEL1 : 3;
+    char FSEL2 : 3;
+    char FSEL3 : 3;
+    char FSEL4 : 3;
+    char FSEL5 : 3;
+    char FSEL6 : 3;
+    char FSEL7 : 3;
+    char FSEL8 : 3;
+    char FSEL9 : 3;
+    char RESERVED : 2;
 };
 struct GPCTL // 9 parameters
 {
@@ -1316,7 +1334,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
 		*pAddr = (void*) ((int) (frameinfo*4096));
-		fprintf ("\nCould not map memory! \n");
+		printf ("\nCould not map memory! \n");
 		return;
 }
 void freeRealMemPage (void *vAddr)
@@ -1738,7 +1756,7 @@ int sampleselect () // char *filename, int samplerate
 				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
 				// stereo file, avg left + right --> should be mono at 22.050 kHz
 				b += data [k*channels+1];
-				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
+				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half?
 				printf ("\nb = %c \n", b);
 			}
 			else if (channels == 2)
@@ -1760,13 +1778,12 @@ int sampleselect () // char *filename, int samplerate
 			printf ("\nampf: %f \n", ampf);
 			ampf2 = (fabs (ampf) < 1.0f/A) ? A*fabs (ampf)/(1.0f+ln (A)):(1.0f+ln (A*fabs (ampf)))/(1.0f+ln (A)); // compand
 			printf ("\ncompand ampf2: %f \n", ampf2);
-			e = (int) (round (ampf2*excursion2));
-			printf ("\nnew e: %f \n", x);
-			factorizer = (x*excursion2*FactAmplitude);
+			ex = (int) (round (ampf2*excursion2));
+			printf ("\nnew e: %d \n", ex);
+			factorizer = (ex*excursion2*FactAmplitude);
 			printf ("\nfactorizer: %f \n", factorizer);
 			sampler = (1E9/samplerate); // 44.100
 			printf ("\nsampler: %f \n", sampler);
-			//return channels, ampf, ampf2, e, factorizer, sampler;
 	} // for loop
 		printf ("\nEnding readcount ... \n");
 	} // while loop
@@ -1792,7 +1809,7 @@ void play_am ()
 	printf ("\nFreq = %f, Timing = %d \n", RfSample.Frequency, RfSample.WaitForThisSample);
 	if (write (fp, &RfSample, sizeof (samplerf_t)) != sizeof (samplerf_t))
 	{
-		fprintf (stderr, "\nUnable to write sample! \n");
+		printf ("\nUnable to write sample! \n");
 	}
 	printf ("\nWriting tone in am \n");
 	return;
@@ -1999,7 +2016,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-		fprintf (stderr, "\nArgument-Error! Use Parameters 1-11 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]! \nThe *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+		fprintf (stderr, "\nArgument-Error! Use Parameters 1-13 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]! \nThe *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
     return (-1);
 		}
 		else
@@ -2122,7 +2139,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nAmplitude-value: %f \n", AMPLITUDE);
 	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
-	printf ("\nChecking argc: %d / %p , argv: %s / %p \n", argc, &argc, **argv, &&argv);
+	printf ("\nChecking argc: %d / %p \n", argc, &argc);/// **argv, &&argv);
   printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type);
@@ -2131,7 +2148,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nTransmission starting ... \n"); // EOF
 	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type); // transmission
 	printf ("\nTransmission ended! \n");
-  void terminate (int num);
+  static void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return (0);
 }
