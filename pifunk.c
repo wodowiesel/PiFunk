@@ -2782,7 +2782,7 @@ int sampleselect () // char *filename, int samplerate
 				// stereo file, avg left + right --> should be mono at 22.050 kHz
 				b += data [k*channels+1];
 				b /= 2; // maybe *2 to make a dual mono and not doing stereo in half!
-				printf ("\nb = %c \n", b);
+				printf ("\nb = %f \n", b);
         return (b);
 			}
 			else if (channels == (2))
