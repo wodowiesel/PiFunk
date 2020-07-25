@@ -2002,6 +2002,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	float bandwidth; // = *argv [9];
 	int type; // = *argv [10]; analog -> default
 	int loop; // = *argv [11];
+	bool repeat;
 	// menues
 	char *a; // = *argv [12];
 	char *h; // = *argv [13];
@@ -2092,7 +2093,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		case 'l':
 								 //loop = atof (optarg);
 								 //printf ("\nLoop is %d \n", loop);
-								 bool repeat = true;
+								 repeat = true;
 								 printf ("\nRepeat is %d  (0=false, 1=true)\n", repeat);
 								 int loopselect (bool repeat);
 								 break;
