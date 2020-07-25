@@ -2035,7 +2035,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (7/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (4/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 		return (-1);
 		}
 		else
@@ -2125,7 +2125,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (7/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (4/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 							 }
 							 else
@@ -2138,7 +2138,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                   printf ("\nUnknown option: %c \n", optopt);
                   break;
 		default:
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (7/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (4/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
@@ -2157,6 +2157,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
+	printf ("\nChecking Type: is %d \n", loop);
 	printf ("\n-----------------------------------------\n");
 	printf ("\nangle: %f \n", ANGLE);
 	printf ("\nI-value: %f \n", I);
@@ -2166,7 +2167,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nAmplitude-value: %f \n", AMPLITUDE);
 	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
-	printf ("\nChecking argc: %d / %p \n", argc, &argc);/// **argv, &&argv);
+	printf ("\nChecking argc: %d / %p \n", argc, &argc); // **argv, &&argv);
   printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, loop);
