@@ -1788,11 +1788,10 @@ int sampleselect () // char *filename, int samplerate
 		printf ("\nEnding readcount ... \n");
 	} // while loop
     // Close input and output files
-    //fclose (FileFreqTiming);
+  //fclose (FileFreqTiming);
 	close (fp);
 	printf ("\nFile closed! \n");
 	return (samplerate);
-  // return freqmode, channels, ampf, ampf2, x, factorizer, sampler;
 }
 // AM
 void play_am ()
@@ -1817,11 +1816,11 @@ void play_am ()
 void modulationfm () // int argc, char **argv
 {
   	printf ("\nPreparing for fm ... \n");
-    setupfm (); // gets filename & path or done by fileselect () func
+    void setupfm (); // gets filename & path or done by fileselect () func
 		printf ("\nSetting up DMA ... \n");
-		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
+		void setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
-    play_fm (char *filename, int mod, float bandwidth); // atof (argv [3]):22050)
+    void play_fm (char *filename, int mod, float bandwidth); // atof (argv [3]):22050)
 		return;
 }
 void modulationam () //
@@ -1832,8 +1831,22 @@ void modulationam () //
 		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
 		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
-		play_am (); // actual modulation stuff here for am -> write tone? maybe better name later
+		void play_am (); // actual modulation stuff here for am -> write tone? maybe better name later
 	  return;
+}
+int loopselect (bool repeat)
+{
+	if (repeat == true)
+	{
+		loop = 1;
+		printf ("\nWith looping soundfile infinitelly \n");
+	}
+	else
+	{
+		loop = 0;
+		printf ("\nNo loop, only playing once \n");
+	}
+	return (loop);
 }
 void modselect () // int argc, char **argv
 {
@@ -1904,7 +1917,7 @@ void ledactive ()
 	printf ("\nLED active \n");
 	return;
 }
-int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type)
+int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
   while (play_fm (char *filename, int mod, float bandwidth)) // || play_am ())
@@ -1925,7 +1938,7 @@ int menu ()
 						break;
 		case 2: printf ("\nExiting ... \n");
 						exit (0);
-		default: printf ("\n Error: Returning back to Main (Default) \n");
+		default: printf ("\nError: Returning back to Main (Default) \n");
              int main (int argc, char **argv);
 		 				 break;
 	}
@@ -1945,6 +1958,7 @@ void assistant () // assistant
 		gpioselect ();
 		dmaselect ();
 		bandwidthselect ();
+		loopselect ();
 		printf ("\nAll information gathered, parsing & going back to main! \n");
 		return;
 }
@@ -1953,7 +1967,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 // arguments for global use should be in main!
 {
 	// option parameters
-	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:auh"; // program flags
+	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:lauh"; // program flags
 	// program flag options
 	static struct option long_opt [] =
 	{
@@ -1967,6 +1981,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 			{"dmachannel",	required_argument, 0, 'd'}, // 8
 			{"bandwidth",	required_argument, 0, 'b'}, // 9
 			{"type",		required_argument, 0, 't'}, // 10
+			{"loop",	no_argument, 0, 'l'}, // 11
 			{"assistant",	no_argument,       0, 'a'}, // 12
 			{"menu",		no_argument,       0, 'u'}, // 14
 			{"help",		no_argument,       0, 'h'}, // 13
@@ -1986,10 +2001,11 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	int dmachannel; // = *argv [8];
 	float bandwidth; // = *argv [9];
 	int type; // = *argv [10]; analog -> default
+	int loop; // = *argv [11];
 	// menues
-	char *a; // = *argv [11];
-	char *h; // = *argv [12];
-	char *u; // = *argv [13];
+	char *a; // = *argv [12];
+	char *h; // = *argv [13];
+	char *u; // = *argv [14];
 	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
 	abs () for int
@@ -2003,7 +2019,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
 	// try a modprobe of i2C-BUS
-	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe test\n");} // ignore errors
+	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe-test\n");} // ignore errors
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	int option_index;
 	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
@@ -2018,8 +2034,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-		fprintf (stderr, "\nArgument-Error! Use Parameters 1-13 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]! \nThe *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-    return (-1);
+		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (7/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+		return (-1);
 		}
 		else
 		{
@@ -2029,19 +2045,19 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		case 'n':
 							 filename = optarg;
 							 printf ("\nFilename is %s \n", filename);
-							 //break;
+							 break;
 		case 'f':
 							 freq = atof (optarg);
 							 printf ("\nFrequency is %f \n", freq);
-							 //break;
+							 break;
 		case 's':
 							 samplerate = atoi (optarg);
 							 printf ("\nSamplerate is %d \n", samplerate);
-							 //break;
+							 break;
 		case 'm':
 							 mod = optarg;
                printf ("\nMod is %s \n", mod);
-               //break;
+               break;
 		case 'p':
          				power = atoi (optarg);
 								if (power <= 0 || power > 7)
@@ -2052,35 +2068,42 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
          				{
 									printf ("\nPower is %d \n", power);
 								}
-								//break;
+								break;
 		case 'c':
 							  callsign = optarg;
 							  printf ("\nCallsign is %s \n", callsign);
-							  //break;
+							  break;
 		case 'g':
 								gpiopin = atof (optarg);
 								printf ("\nGPIOPIN is %d \n", gpiopin);
-								//break;
+								break;
 		case 'd':
 								dmachannel = atof (optarg);
 								printf ("\nDMAchannel is %d \n", dmachannel);
-								//break;
+								break;
 		case 'b':
 								bandwidth = atoi (optarg);
 								printf ("\nBandwidth is %f \n", bandwidth);
-								//break;
+								break;
 		case 't':
                 type = atof (optarg);
                 printf ("\nType is %d \n", type);
-                //break;
+                break;
+		case 'l':
+								 //loop = atof (optarg);
+								 //printf ("\nLoop is %d \n", loop);
+								 bool repeat = true;
+								 printf ("\nRepeat is %d  (0=false, 1=true)\n", repeat);
+								 int loopselect (bool repeat);
+								 break;
 		// additional help functions
 		case 'a':
 							 if (argc == 1)
 							 {
-								printf ("\nAssistant activated! \n");
+								printf ("\nAssistant activated \n");
 								void assistant ();
 								break;
-							 }
+							}
 							 else
 							 {
 								printf ("\nError in -a assistant, no other arguments required \n");
@@ -2101,7 +2124,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a], menu [-u] or help [-h] The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (7/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 							 }
 							 else
@@ -2110,11 +2133,12 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 								break;
 							 }
 		case '?':
+		 							//char *unknown = optarg;
                   printf ("\nUnknown option: %c \n", optopt);
                   break;
 		default:
-				printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type 1/2 for a/d>] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
-				break;
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7)>] \n[-c <callsign>] [-g <GPIO-pin (7/21)>] [-d <DMA-channels (7/14)>] [-b <bandwidth (15)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
 	} // end of else
@@ -2142,13 +2166,13 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
 	printf ("\nChecking argc: %d / %p \n", argc, &argc);/// **argv, &&argv);
-  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
-  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type); // deref
-	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type);
-	printf ("\nChecking assistent: %p , help: %p , menu: %p \n", &argv [11], &argv [12], &argv [13]);
+  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
+  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
+	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, loop);
+	printf ("\nChecking assistent: %p , help: %p , menu: %p \n", &argv [12], &argv [13], &argv [14]);
  // gathering and parsing all given arguments it to player?!
 	printf ("\nTransmission starting ... \n"); // EOF
-	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type); // transmission
+	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type, int loop); // transmission
 	printf ("\nTransmission ended! \n");
   void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
