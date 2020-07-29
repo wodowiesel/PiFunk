@@ -3145,7 +3145,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-15 to run: [-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or for help [-h] !\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-15 to run: [-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-c <callsign>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or for help [-h] !\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
         return (-1);
     }
 		else
