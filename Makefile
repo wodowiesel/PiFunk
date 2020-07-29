@@ -39,7 +39,7 @@ $(CINC)
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
 
-CFLAGS=-std=gnu99 -O3 ## gnu extention & highest optimization level
+CFLAGS=-std=gnu99 -O2 ## gnu extention & highest optimization level
 $(CFLAGS)
 CXXFLAGS=-std=gnu++17 -O3 ## for c++
 $(CXXFLAGS)
@@ -53,7 +53,7 @@ $(LIFLAGS)
 SHFLAGS=-shared -fPIC ## make shared big libraries
 $(SHFLAGS)
 
-DEBUG=-Wall -v -g3 -ggdb3 -pg -Q
+DEBUG=-Wall -v -g3 -ggdb3 -pg ##-Q
 $(DEBUG)
 ## -pg makes profiles for object code for analysis with gprof
 ## -Wall shows all errors & warnings, -w inhibits warnings

@@ -601,9 +601,8 @@ using namespace std; //
 
 #ifndef NULL
   #warning NULL not defined, setting it to 0!
-  #define NULL   		(0) // normally in stddef
 #endif
-
+#define NULL   		(0) // normally in stddef
 //------------------------------------------------------------------------------
 // definitions & Macros
 #define VERSION 						 "0.1.7.6" // my version
@@ -1198,11 +1197,8 @@ float timed = (1.0);
 // sleep timer
 #define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
 #define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
-#define timercmp(a, b, CMP)
-  (((a)->tv_sec == (b)->tv_sec) ?
-  ((a)->tv_usec CMP (b)->tv_usec) :
-  ((a)->tv_sec CMP (b)->tv_sec))
-
+#define timercmp(a, b, CMP)     (((a)->tv_sec == (b)->tv_sec) ? ((a)->tv_usec CMP (b)->tv_usec) : ((a)->tv_sec CMP (b)->tv_sec))
+/*
 #define timeradd(a, b, result)
     while (0)
     {
@@ -1226,10 +1222,10 @@ float timed = (1.0);
       (result)->tv_usec += (1000000);
       }
     }
-
+*/
 //----------------------------------
-// declaring normal variables
 
+// declaring normal variables
 // program version status and default device
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
@@ -1266,7 +1262,7 @@ char *filename = "sound.wav";
 float xtal_freq = (1.0/19.2E6); // = 52,0833E-9 -> LOCK_BASE
 float subfreq;
 int samplerate; // = abs (22050);
-int halfsamplerate = (samplerate/2);
+int halfsamplerate = 11025; //= (22050/2);
 int channels = (1); // 2 stereo
 uint32_t Timing;
 char *mod; // = "fm"
@@ -1307,6 +1303,7 @@ time_t t;
 FILE *rfp, *wfp;
 FILE FileFreqTiming;
 FILE wavefile;
+void *vAddr, void *pAddr;
 int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK);
 //SNDFILE *infile;
 //SNDFILE *outfile;
@@ -1678,7 +1675,6 @@ int gpioselect ()
   {
     printf ("\nUsing default GPIO 4! \n");
     // set PIN value
-
   }
   else if (gpiopin == 21)
   {
@@ -1696,6 +1692,7 @@ int gpioselect ()
     gpiopin = (4);
 
   }
+  void setup_io ();
 	return (gpiopin);
 }
 
@@ -2374,7 +2371,7 @@ void delayMicrosecondsHard (unsigned int howLong)
   return;
 }
 
-void setupio ()
+void setup_io ()
 {
   printf ("\nSetting up FM ... \n");
   struct sched_param sp;
@@ -2422,7 +2419,7 @@ void setupio ()
   return;
 }
 
-void setupfm ()
+void setup_fm ()
 {
   allof7e = (unsigned*) mmap (
                 0,
@@ -2442,8 +2439,8 @@ void setupfm ()
    CLRBIT (GPFSEL0, 12);
 
   struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};
-	ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
-	ACCESS (CM_GP0CTL) = *((int*) &setupword);
+	//ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
+	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
 
   return;
 }
@@ -2689,7 +2686,7 @@ void setupDMA ()
 
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
+	//struct DMAREGS* DMA0 = struct DMAREGS* ACCESS(DMABASE) );
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	return;
@@ -2856,7 +2853,7 @@ void play_am ()
 void modulationfm () // int argc, char **argv
 {
   	printf ("\nPreparing for fm ... \n");
-    setupfm (); // gets filename & path or done by fileselect () func
+    setup_fm (); // gets filename & path or done by fileselect () func
 	  printf ("\nSetting up DMA ... \n");
 		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
