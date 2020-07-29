@@ -1114,7 +1114,7 @@ float channelmodecb () // CB
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
-			case 0:   freq=27.0450; break; // first digital channel / normal opening chan
+			 case 0:   freq=27.0450; break; // first digital channel / normal opening chan
 			 case 1:   freq=26.9650; break; // recommended Startingchannel (FM)
 			 case 2:   freq=26.9750; break; // inofficial Mountain-DX-Chan (FM)
 			 case 3:   freq=26.9850; break; //
@@ -2002,7 +2002,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	float bandwidth; // = *argv [9];
 	int type; // = *argv [10]; analog -> default
 	int loop; // = *argv [11];
-	bool repeat;
+	bool repeat; // testing for loop
 	// menues
 	char *a; // = *argv [12];
 	char *h; // = *argv [13];
@@ -2076,11 +2076,11 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 							  break;
 		case 'g':
 								gpiopin = atof (optarg);
-								printf ("\nGPIOPIN is %d \n", gpiopin);
+								printf ("\nGPIO-PIN is %d \n", gpiopin);
 								break;
 		case 'd':
 								dmachannel = atof (optarg);
-								printf ("\nDMAchannel is %d \n", dmachannel);
+								printf ("\nDMA-Channel is %d \n", dmachannel);
 								break;
 		case 'b':
 								bandwidth = atoi (optarg);
@@ -2094,7 +2094,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 								 //loop = atof (optarg);
 								 //printf ("\nLoop is %d \n", loop);
 								 repeat = true;
-								 printf ("\nRepeat is %d  (0=false, 1=true)\n", repeat);
+								 printf ("\nLoop/Repeat is %d  (0=false, 1=true)\n", repeat);
 								 int loopselect (bool repeat);
 								 break;
 		// additional help functions
@@ -2134,7 +2134,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 								break;
 							 }
 		case '?':
-		 							//char *unknown = optarg;
+		 							//char *unknown = optopt;
                   printf ("\nUnknown option: %c \n", optopt);
                   break;
 		default:
@@ -2157,15 +2157,15 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
-	printf ("\nChecking Type: is %d \n", loop);
+	printf ("\nChecking Loop: is %d \n", loop);
 	printf ("\n-----------------------------------------\n");
-	printf ("\nangle: %f \n", ANGLE);
-	printf ("\nI-value: %f \n", I);
+	printf ("\nChecking angle: %f \n", ANGLE);
+	printf ("\nChecking I-value: %f \n", I);
 	printf ("\nQ-value: %f \n", Q);
-	printf ("\nAngle-reverse: %f \n", ANGLE_REV);
-	printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
-	printf ("\nAmplitude-value: %f \n", AMPLITUDE);
-	printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
+	printf ("\nChecking Angle-reverse: %f \n", ANGLE_REV);
+	printf ("\nChecking RF-SUM (I+Q): %f \n", RF_SUM);
+	printf ("\nChecking Amplitude-value: %f \n", AMPLITUDE);
+	printf ("\nChecking Amplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
 	printf ("\nChecking argc: %d / %p \n", argc, &argc); // **argv, &&argv);
   printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);

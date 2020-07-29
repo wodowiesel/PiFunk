@@ -2,7 +2,7 @@
 ## should run with sudo or root rights
 USER=sudo
 $(USER)
-CC=gcc # gcc 8.3.0-6
+CC=gcc ## gcc 8.3.0-6
 $(CC)
 CXX=g++
 $(CXX)
@@ -63,7 +63,7 @@ $(LDLIBS)
 PFLIBS=-L$(HOME)/PiFunk/lib/
 $(PFLIBS)
 
-LDFLAGS=-lgnu -lm -lpthread -lbcm_host -lbcm2835 -lsndfile
+LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm #- -lm after snd
 $(LDFLAGS)
 PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
@@ -128,16 +128,16 @@ PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ff
 TARGET=RASPI4
 endif
 
-$(PFLAGS)
 $(TARGET)
+$(PFLAGS)
 
 #@echo Compiling PiFunk
 
 ## Generating objects in gcc specific order, -save-temps
 ## translated assembler/c-code
 pifunk.s:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm:
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal asm suffix
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal assebler suffix
 ## precompiled/processor c-code
 pifunk.i:	$(SOURCE) pifunk.h
 					$(USER) $(SOURCE) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
@@ -233,8 +233,8 @@ menu:			cd $(HOME)/PiFunk/bin/
 
 .PHONY: 	run
 run:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
+					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15 -t 0 -l 0
 
 .PHONY: 	run+
 run+:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk+ -n sound.wav -f 446.006250 -s 22050 -m fm -p 7 -c callsign
+					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15 -t 0 -l 0
