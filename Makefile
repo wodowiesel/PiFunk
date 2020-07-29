@@ -63,7 +63,7 @@ $(LDLIBS)
 PFLIBS=-L$(HOME)/PiFunk/lib/
 $(PFLIBS)
 
-LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm #- -lm after snd
+LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm ##- -lm after snd
 $(LDFLAGS)
 PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
@@ -219,10 +219,6 @@ clean:	cd $(HOME)/PiFunk/
 				$(USER) $(RM) $(OBJECTS)
 				$(USER) $(RM) $(EXECUTABLES)
 
-.PHONY: 	help
-help:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -h
-
 .PHONY: 		assistant
 assistent:	cd $(HOME)/PiFunk/bin/
 						$(USER) ./pifunk -a
@@ -231,10 +227,14 @@ assistent:	cd $(HOME)/PiFunk/bin/
 menu:			cd $(HOME)/PiFunk/bin/
 					$(USER) ./pifunk -u
 
+.PHONY: 	help
+help:			cd $(HOME)/PiFunk/bin/
+					$(USER) ./pifunk -h
+
 .PHONY: 	run
 run:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15 -t 0 -l 0
+					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -l 0
 
 .PHONY: 	run+
 run+:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15 -t 0 -l 0
+					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -l 0
