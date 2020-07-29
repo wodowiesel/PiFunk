@@ -3088,10 +3088,10 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nStarting Main-PiFunk \n");
   void title ();
   // option parameters
-  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:auh"; // program flags
+  const char *short_opt = "n:f:s:m:p:c:g:d:b:t:x:lauh"; // program flags
 	//char *argv [0] = "pifunk"; // actual program-name
   char *programname = *argv [0]; //
-	char *filename; // = "sound.wav"; // = *argv [1]; n=name
+	char *filename; // = "sound.wav"; = *argv [1]; n=name
 	float freq; // = fabs (446.006250); // = strtof (*argv [2], 0); // float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate; // = abs (22050); // = atof (*argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod; // = *argv [4];
@@ -3102,10 +3102,11 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	float bandwidth; // = (12.50); // = *argv [9];
   int type; // = (1); // = *argv [10]; analog -> default
   char *gps; // = "on"; // = *argv [11]; -> default: off
+  int loop; // playback loop = *arg [12]
   // menues
-  char *a; // = *argv [12];
-  char *h; // = *argv [13];
-  char *u; // = *argv [14];
+  char *a; // = *argv [13];
+  char *h; // = *argv [14];
+  char *u; // = *argv [15];
 	/*
   atoll () is meant for integers & it stops parsing when it finds the first non-digit
 	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
@@ -3143,7 +3144,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-				fprintf (stderr, "\nArgument-Error! Use Parameters 1-14 to run: [-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] g d b t x \n[-c <callsign (optional)>] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+				fprintf (stderr, "\nArgument-Error! Use Parameters 1-15 to run: [-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign>] [-g <gpiopin (7)>] [-d <dmachannel (14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] [-l <loop (0/1)] \nThere is also an assistant [-a] or for help [-h] or menu [-u]!\n The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
         return (-1);
     }
 		else
@@ -3206,6 +3207,17 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                printf ("\nGPS-Tracking-Status is %s \n", gps);
                //break;
 
+      case 'l':
+               loop = atof(optarg);
+               if (loop == 1)
+               {
+                 printf ("\nLoop %d test activated \n", loop);
+               }
+               else
+               {
+                 printf ("\nLoop %d test deactivated \n", loop);
+               }
+               //break;
      // additional help functions
 			case 'a':
 							 if (argc == 1)
@@ -3236,7 +3248,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 			case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq>] [-s <samplerate 22050>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <GPIO-pi (7)>] [-d <DMA-channels (14)>] [-b <bandwidth (15)>] [-t <type 1/2 for a/d>] [-x <GPS on/off>]\nThere is also an assistant [-a], menu [-u] or help [-h] The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (0-7)>] \n[-c <callsign>] [-g <gpiopin (7)>] [-d <dmachannel (14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] \nThere is also an assistant [-a], menu [-u] or help [-h] The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								break;
 							 }
 							 else
@@ -3250,7 +3262,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                   break;
 
 			default:
-								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename>] [-f <freq>] [-s <samplerate>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign (optional)>] [-g GPIO-pin] [-d DMA-channels] [-b bandwidth] [-t <type 1/2 for a/d>] [-x <GPS on/off>]\n There is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
+								printf ("\nArgument-Error! Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (0-7>] \n[-c <callsign>] [-g <gpiopin (7)] [-d <dmachannel (14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] \n There is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono \n");
 								break;
 		} // end of switch
     printf ("\nEnd of switch \n");
@@ -3274,18 +3286,17 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nChecking GPS-Status: %s \n", gps);
   printf ("\nChecking GPS-coordinates: long: %f / lat: %f / alt: %d \n", longitude, latitude, altitude);
   //-----------------------------------------------------------------
-  printf ("\nangle: %f \n", ANGLE);
-  printf ("\nI-value: %f \n", I);
-  printf ("\nQ-value: %f \n", Q);
-  printf ("\nAngle-reverse: %f \n", ANGLE_REV);
-  printf ("\nRF-SUM (I+Q): %f \n", RF_SUM);
-  printf ("\nAmplitude-value: %f \n", AMPLITUDE);
-  printf ("\nAmplitude_RV value: %f \n", AMPLITUDE_REV);
+  printf ("\nChecking angle: %f \n", ANGLE);
+  printf ("\nChecking I-value: %f \n", I);
+  printf ("\nChecking Q-value: %f \n", Q);
+  printf ("\nChecking Angle-reverse: %f \n", ANGLE_REV);
+  printf ("\nChecking RF-SUM (I+Q): %f \n", RF_SUM);
+  printf ("\nChecking Amplitude-value: %f \n", AMPLITUDE);
+  printf ("\nChecking Amplitude_RV value: %f \n", AMPLITUDE_REV);
   //-----------------------------------------------------------------
-	printf ("\n-------------------------------------------------\n");
 	printf ("\nChecking Hostname: %s, WAN/LAN-IP: %s, Port: %d \n", host, localip, port);
-  printf ("\nshort_cw: %s \n", short_cw); // morse beeps
-  printf ("\nlong_cw: %s \n", long_cw); //
+  printf ("\nChecking short_cw: %s \n", short_cw); // morse beeps
+  printf ("\nChecking long_cw: %s \n", long_cw); //
   //-----------------------------------------------------------------
   printf ("\nChecking argc: %d / %p \n", argc, &argc);
   printf ("\nChecking Arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / GPS: %s \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
@@ -3294,7 +3305,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
   printf ("\nChecking menus-&argv: assistent: %p / help: %p / menu: %p \n", &argv [12], &argv [13], &argv [14]);
 	//printf ("\nclient ip+port: %s:%d \n", inet_ntoa (client_addr.sin_addr), (int) ntohs (client_addr.sin_port));
 	//printf ("\nlocal ip+port: %s:%d \n", inet_ntoa (local.sin_addr), ntohs (local.sin_port));
-
+	printf ("\n-------------------------------------------------\n");
 	// gathering and parsing all given arguments it to player?!
   printf ("\nTransmission starting ... \n"); // EOF
 	void tx (); // int argc, char **argv transmission
