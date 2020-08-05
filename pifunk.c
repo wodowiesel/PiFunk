@@ -145,7 +145,7 @@
 #define FALSE                 (0) //
 #define TRUE                  (1) //
 // predefine if needed when not using bcm header
-#define usleep 							 [1000] //
+#define usleep 							 (1000) //
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
 //#define log(EULER)                    (0.4342944819)
@@ -604,7 +604,7 @@ float xtal_freq = (1.0/19.2E6) // LOCK_BASE
 float subfreq;
 float ctss_freq;
 int samplerate;
-int halfsamplerate = (samplerate/2);
+int halfsamplerate = (22050/2);
 int channels;
 int Timing;
 char *mod; // = "fm"
@@ -614,7 +614,6 @@ int power;
 int powerlevel = abs (power); // same as drive
 int DRIVESTRENGTH; // drive 1-7
 int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
-char callsign;
 int type; // analog 1 or digital 2
 char *mod_type; // = "a"
 char analog = "a"; // type = 1
@@ -635,7 +634,6 @@ int subchannelnumberpmr;
 int channelmode;
 int freqmode;
 int modeselect;
-int callnameselect;
 int num;
 // files
 FILE *rfp, *wfp;
@@ -809,7 +807,7 @@ void infos () // warnings and infos
     printf ("\nWelcome to the Pi-Funk! v %s %s for Raspbian/Raspberry Pi OS on ARM! \n", VERSION, description);
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi operates with square-waves (²/^2) PWM on GPIO 4 (PIN 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators or resistors if needed! \nYou can smooth it out with 1:1 balun. Do NOT shortcut, use a dummyload instead! \nCheck laws of your country! \n");
-    printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -c callsign -p 7 \n");
+    printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 100.0000 -s 22050 -m fm -p 7 \n");
 		printf ("\nDevicename: %s \n", device);
 		return;
 }
@@ -845,7 +843,7 @@ int dmaselect ()
 {
 	printf ("\nPlease choose the DMA-Channel: 7 (Pi 4) / 14 (default) / 255 (off): \n");
 	scanf ("%d", &dmachannel);
-	printf ("\nThe DMA-Channel is %d ... \n", dmachannel);
+	printf ("\nThe DMA-Channel is %d \n", dmachannel);
 	if (dmachannel == (255))
 	{
 		printf ("\nThe DMA-Channel is deactivated! \n");
@@ -1017,29 +1015,6 @@ float channelmodepmrdigital ()
 	printf ("\ndigital-freq is %f \n", freq);
 	return (freq);
 }
-// Channel-mode
-int channelmodepmr () // PMR
-{
-	printf ("\nChoose PMR-Type (1) analog / (2) digital: \n");
-	scanf ("%d", &type);
-	if (type==1)
-	{
-		printf ("\nYou chose type (1) analog \n");
-		channelmodepmranalog ();
-	}
-	else if (type==2)
-	{
-		printf ("\nYou chose type (2) digital \n");
-		channelmodepmrdigital ();
-	}
-	else
-	{
-		type=(1);
-		printf ("\nNO type could be determined, wrong input! Using %d as standard \n", type);
-	}
-	printf ("\nOn type = %d with channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
-	return (type);
-}
 float subchannelmodepmr () // Pilot-tone
 {
 	printf ("\nChoose Standard Subchannel: 0-38 / non-typical 39-50 (51 to exit): \n");
@@ -1107,6 +1082,29 @@ float subchannelmodepmr () // Pilot-tone
 	}
 	printf ("\nSubchannelnumber = %d on subfreq = %f \n", subchannelnumberpmr, subfreq);
 	return (subfreq);
+}
+// Channel-mode
+int channelmodepmr () // PMR
+{
+	printf ("\nChoose PMR-Type (1) analog / (2) digital: \n");
+	scanf ("%d", &type);
+	if (type==1)
+	{
+		printf ("\nYou chose type (1) analog \n");
+		channelmodepmranalog ();
+	}
+	else if (type==2)
+	{
+		printf ("\nYou chose type (2) digital \n");
+		channelmodepmrdigital ();
+	}
+	else
+	{
+		type=(1);
+		printf ("\nNO type could be determined, wrong input! Using %d as standard \n", type);
+	}
+	printf ("\nOn type = %d with channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
+	return (type);
 }
 float channelmodecb () // CB
 {
@@ -1229,26 +1227,6 @@ char modulationselect ()
 					break;
 	}
 	return (mod);
-}
-char callsignselect ()
-{
-		//if (*callsign == 0) {
-		printf ("\nYou don't have specified a callsign yet! \nPress (1) for custom or (2) default 'callsign': \n");
-		scanf ("%d", &callnameselect);
-		switch (callnameselect)
-		{
-		case 1: printf ("\nType in your callsign: \n");
-						 scanf  ("%s", &callsign);
-						 printf ("\nYour callsign is: %s \n", &callsign);
-						 break;
-		case 2: callsign = "callsign"; // default callsign
-						 printf ("\nUsing default callsign: %s \n", &callsign);
-						 break;
-		default: callsign = "callsign"; // default callsign
-							printf ("\nError! Using default callsign: %s \n", &callsign);
-							break;
-		}
-		return (callsign);
 }
 int powerselect ()
 {
@@ -1917,7 +1895,7 @@ void ledactive ()
 	printf ("\nLED active \n");
 	return;
 }
-int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type, int loop)
+int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
   while (play_fm (char *filename, int mod, float bandwidth)) // || play_am ())
@@ -1954,7 +1932,6 @@ void assistant () // assistant
 		modselect ();
 		typeselect ();
 		powerselect ();
-		callsignselect ();
 		gpioselect ();
 		dmaselect ();
 		bandwidthselect ();
@@ -1967,7 +1944,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 // arguments for global use should be in main!
 {
 	// option parameters
-	const char *short_opt = "n:f:s:m:p:c:g:d:b:t:lauh"; // program flags
+	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	// program flag options
 	static struct option long_opt [] =
 	{
@@ -1976,7 +1953,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 			{"samplerate", 	required_argument, 0, 's'}, // 3
 			{"mod",			required_argument, 0, 'm'}, // 4
 			{"power",		required_argument, 0, 'p'}, // 5
-			{"callsign",	required_argument, 0, 'c'}, // 6
 			{"gpiopin",		required_argument, 0, 'g'}, // 7
 			{"dmachannel",	required_argument, 0, 'd'}, // 8
 			{"bandwidth",	required_argument, 0, 'b'}, // 9
@@ -1996,7 +1972,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	int samplerate; // = atof (*argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
 	char *mod; // = *argv [4];
 	int power; // = *argv [5];
-	char *callsign; // = *argv [6];
 	int gpiopin; // = *argv [7];
 	int dmachannel; // = *argv [8];
 	float bandwidth; // = *argv [9];
@@ -2035,7 +2010,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	{
 		if (argc <= 0)
 		{
-		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-c <callsign>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 		return (-1);
 		}
 		else
@@ -2063,17 +2038,13 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
          				power = atoi (optarg);
 								if (power <= 0 || power > 7)
 								{
-								fprintf (stderr,"\nOutput power has to be set in range of 0 - 7 \n");
+								fprintf (stderr,"\nOutput power has to be set in range of 1 - 7 \n");
 							  }
 								else
          				{
 									printf ("\nPower is %d \n", power);
 								}
 								break;
-		case 'c':
-							  callsign = optarg;
-							  printf ("\nCallsign is %s \n", callsign);
-							  break;
 		case 'g':
 								gpiopin = atof (optarg);
 								printf ("\nGPIO-PIN is %d \n", gpiopin);
@@ -2125,7 +2096,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		case 'h':
 							 if (argc == 1)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-c <callsign>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 							 }
 							 else
@@ -2138,7 +2109,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
                   printf ("\nUnknown option: %c \n", optopt);
                   break;
 		default:
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-c <callsign>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (15.0)>] [-t <type (1/2) for a/d>] [-x <gps (on/off)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
@@ -2151,7 +2122,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 	printf ("\nChecking Modulation: %s \n", mod);
-	printf ("\nChecking Callsign: %s \n", callsign);
 	printf ("\nChecking Output-Power: %d \n", power);
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
@@ -2168,13 +2138,13 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking Amplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\n-------------------------------------------------\n");
 	printf ("\nChecking argc: %d / %p \n", argc, &argc); // **argv, &&argv);
-  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10], &argv [11]);
-  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Callsign: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &callsign, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
-	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Callsign: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *callsign, power, gpiopin, dmachannel, bandwidth, type, loop);
+  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
+  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
+	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, power, gpiopin, dmachannel, bandwidth, type, loop);
 	printf ("\nChecking assistent: %p , help: %p , menu: %p \n", &argv [12], &argv [13], &argv [14]);
  // gathering and parsing all given arguments it to player?!
 	printf ("\nTransmission starting ... \n"); // EOF
-	int tx (char *filename, float freq, int samplerate, char *mod, int power, char *callsign, int gpiopin, int dmachannel, float bandwidth, int type, int loop); // transmission
+	int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop); // transmission
 	printf ("\nTransmission ended! \n");
   void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
