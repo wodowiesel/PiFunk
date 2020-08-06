@@ -1745,11 +1745,6 @@ void modulationfm () // int argc, char **argv
 }
 void modulationam () //
 {
-	/* {IQ (FileInput is a mono wav contains I on left channel, Q on right channel)}
-		{IQFLOAT (FileInput is a Raw float interlaced I, Q)}
-		{RF (FileInput is a (float) Frequency, Time in nanoseconds}
-		{RFA (FileInput is a (float) Frequency, (int) Time in nanoseconds, (float) Amplitude}
-		{VFO (constant frequency)} */
 		printf ("\nam modulator starting \n");
 		void play_am (); // actual modulation stuff here for am -> write tone? maybe better name later
 	  return;
@@ -1895,13 +1890,13 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 			{"samplerate", 	required_argument, 0, 's'}, // 3
 			{"mod",			required_argument, 0, 'm'}, // 4
 			{"power",		required_argument, 0, 'p'}, // 5
-			{"gpiopin",		required_argument, 0, 'g'}, // 7
-			{"dmachannel",	required_argument, 0, 'd'}, // 8
-			{"bandwidth",	required_argument, 0, 'b'}, // 9
-			{"type",		required_argument, 0, 't'}, // 10
-			{"loop",	no_argument, 0, 'l'}, // 11
-			{"assistant",	no_argument,       0, 'a'}, // 12
-			{"menu",		no_argument,       0, 'u'}, // 14
+			{"gpiopin",		required_argument, 0, 'g'}, // 6
+			{"dmachannel",	required_argument, 0, 'd'}, // 7
+			{"bandwidth",	required_argument, 0, 'b'}, // 8
+			{"type",		required_argument, 0, 't'}, // 9
+			{"loop",	no_argument, 0, 'l'}, // 10
+			{"assistant",	no_argument,       0, 'a'}, // 11
+			{"menu",		no_argument,       0, 'u'}, // 12
 			{"help",		no_argument,       0, 'h'}, // 13
 			{0,				0,                 0,  0 }  // blank
 	};

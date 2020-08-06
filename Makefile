@@ -12,7 +12,7 @@ MAKEINFO=pifunk
 $(MAKEINFO)
 VERSION=0.1.7.6
 $(VERSION)
-STATUS=experimental
+STATUS=lite
 $(STATUS)
 
 SOURCE=pifunk.c
@@ -39,9 +39,9 @@ $(CINC)
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
 
-CFLAGS=-std=gnu99 -O3 ## gnu extention & highest optimization level
+CFLAGS=-std=gnu99 -O2 ## gnu extention & highest optimization level
 $(CFLAGS)
-CXXFLAGS=-std=gnu++17 -O3 ## for c++
+CXXFLAGS=-std=gnu++17 -O2 ## for c++
 $(CXXFLAGS)
 
 ASFLAGS=-S -CC ## upper case assembler code without linker
@@ -53,7 +53,7 @@ $(LIFLAGS)
 SHFLAGS=-shared -fPIC ## make shared big libraries
 $(SHFLAGS)
 
-DEBUG=-Wall -v -g3 -ggdb3 -pg -Q
+DEBUG=-Wall -v -g3 -ggdb3 -pg //-Q
 $(DEBUG)
 ## -pg makes profiles for object code for analysis with gprof
 ## -Wall shows all errors & warnings, -w inhibits warnings
@@ -63,7 +63,7 @@ $(LDLIBS)
 PFLIBS=-L$(HOME)/PiFunk/lib/
 $(PFLIBS)
 
-LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm ##- -lm after snd
+LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm ## -lm after snd
 $(LDFLAGS)
 PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
@@ -145,25 +145,25 @@ pifunk.i:	$(SOURCE) pifunk.h
 pifunk.o:	$(SOURCE) pifunk.h
 					$(USER) $(CC) $(DEBUG) $(SOURCE) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
 ## static archive
-libpifunk.a:	libpifunk.o
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.a
+pifunk.a:	pifunk.o
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.a
 					$(USER) ar rcs -t $@ $^
-					$(USER) ranlib libpifunk.a
+					$(USER) ranlib pifunk.a
 ## static library
-libpifunk.lib:	libpifunk.o libpifunk.a
-						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.lib
+pifunk.lib:	pifunk.o pifunk.a
+						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.lib
 						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib libpifunk.lib
+						$(USER) ranlib pifunk.lib
 ## shared object
-libpifunk.so:	libpifunk.o
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so lib/libpifunk.o
+pifunk.so:	libpifunk.o
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/pifunk.so lib/pifunk.o
 						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib libpifunk.so
+						$(USER) ranlib pifunk.so
 ## dynamic linked library
-libpifunk.dll:	libpifunk.o
-						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.dll
+pifunk.dll:	libpifunk.o
+						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.dll
 						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib libpifunk.dll
+						$(USER) ranlib pifunk.dll
 ## lib object list
 OBJECTS=pifunk.s pifunk.i pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
 $(OBJECTS)
@@ -181,10 +181,6 @@ pifunk:			$(SOURCE) pifunk.h
 #allbin: pifunk.out pifunk.bin pifunk
 EXECUTABLES=pifunk.out pifunk.bin pifunk
 $(EXECUTABLES)
-
-.PHONY:		pifunklib
-pifunk.so:	$(SOURCE)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so libpifunk.o
 
 .PHONY:		pifunk+
 pifunk+:	$(SOURCECXX) $(OBJECTS)
@@ -233,8 +229,8 @@ help:			cd $(HOME)/PiFunk/bin/
 
 .PHONY: 	run
 run:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -l 0
+					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -g 7 -d 14 -b 12.5 -t 1 -l
 
 .PHONY: 	run+
 run+:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -l 0
+					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -g 7 -d 14 -b 12.5 -t 1 -l

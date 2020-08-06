@@ -1,10 +1,10 @@
 
-include README.md INSTALL.md COPYING.md LICENSE.md SECURITY.md CODE_OF_CUNDUCT.md CONTRIBUTING.md pull_request_template.md CMakeLists.txt autorun.inf pifunk.py
+include README.md INSTALL.md COPYING.md LICENSE.md SECURITY.md CODE_OF_CUNDUCT.md CONTRIBUTING.md pull_request_template.md CMakeLists.txt autorun.inf __init__.py
 include MANIFEST
 include requirements.txt
 include Makefile
 
 recursive-include docs/*.
-recursive-include *.c *.cpp *.h *.hpp *.o *.out *.i *.a *.s *.S *.so *.lib *.html *.txt *.py *.csv *.bin *.out
+recursive-include *.c *.cpp *.h *.hpp *.o *.i *.a *.s *.S *.so *.lib *.dll *.html *.txt *.py *.csv *.bin *.out
 
 prune logs
