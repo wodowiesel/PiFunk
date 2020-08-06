@@ -62,17 +62,11 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
-// I2C & SPI support need
+// I2C need
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
-#include <linux/spi/spidev.h>
 // FW
 //#include <drm/drm_fb_cma_helper.h>
-// RTC support
-#include <linux/rtc.h>
-//#include <linux/rtc/ds1307.h>
-#include <linux/rtc/ds3231.h>
-#include "rtc/ds3231.h" // my rtc
 // broadcom arm processor for mapping phys. addresses
 #include <bcm_host.h>
 #include "opt/vc/include/bcm_host.h" // firmware stuff
@@ -145,7 +139,7 @@
 #define FALSE                 (0) //
 #define TRUE                  (1) //
 // predefine if needed when not using bcm header
-#define usleep 							 (1000) //
+#define USLEEP 							  [1000] //
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
 //#define log(EULER)                    (0.4342944819)
@@ -160,7 +154,7 @@
 #define BLOCK_SIZE                    (4*1024) // 4096
 #define BUFFER_LEN                    (8*1024) // 8192
 #define BUFFERINSTRUCTIONS            (65536) // [1024]
-#define F_XTAL    						 		  	 (19200000.0)
+#define F_XTAL    						 		  	(19200000.0)
 // I-O access via GPIO
 volatile unsigned 										(*gpio); //
 volatile unsigned 										(*allof7e); // shouuld be null in the begining
@@ -283,11 +277,13 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAGE_SIZE 										 (4096) //
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
-#define F_PLLD_CLK 											(750000000.0)
+#define F_PLLD_CLK 										 (750000000.0)
 #define PLLD_FREQ 										 (750000000.) // has higher freq than pi 0-3
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
+#define CLOCK_ALT 									   (0xFFFF8FFF) // dec: 4294938623
+#define CLOCK_BACK 										 (0xFFFFFFC7) // dec: 4294967239
 #endif
 // standard & general definitions
 #define PIN_7                           (4) // pin 4
@@ -524,18 +520,6 @@ float timed = (1.0);
 #define RF_SUM (I+Q) // sum should be 1.0
 #define AMPLITUDE_REV (sqrtf (((I*I)+(Q*Q))))
 // optional hardware
-// RTC (DS3231/DS1307 driver)
-#define RTC_PWR                         (PIN_1) // +3.3 V
-#define RTC_PWR2                        (PIN_4) // dec: 104 +5 V
-#define RTC_GND                         (PIN_9) // RTC ground
-#define RTC_DS3231_I2C_ADDRESS          (0x68) // dec: 104
-#define DS3231_TEMPERATURE_MSB          (0x11) // dec: 17
-#define DS3231_TEMPERATURE_LSB          (0x12) // dec: 18
-#define DS1307_I2C_INPUT_ADDR           (0xD0) // read dec: 208
-#define DS1307_I2C_OUTPUT_ADDR          (0xD1) // write dec: 209
-// the same addresses
-#define SLAVE_ADDR_WRITE                b(11010000) // binary -> dec:208, hex: 0xD0
-#define SLAVE_ADDR_READ                 b(11010001) // dec:209, hex: 0xD1
 // LED
 #define PIN_LED_GND                     (14) // which is the GND pin 27 for led
 #define PIN_17                          (RPI_GPIO_P17) // which is the GPIO pin 17 for led1
@@ -544,35 +528,6 @@ float timed = (1.0);
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
-// sleep timer
-#define timerisset(tvp)        ((tvp)->tv_sec || (tvp)->tv_usec)
-#define timerclear(tvp)        ((tvp)->tv_sec = (tvp)->tv_usec = 0)
-#define timercmp(a, b, CMP)
-		(((a)->tv_sec == (b)->tv_sec) ?
-		((a)->tv_usec CMP (b)->tv_usec) :
-		((a)->tv_sec CMP (b)->tv_sec))
-#define timeradd(a, b, result)
-		while (0)
-		{
-		(result)->tv_sec = (a)->tv_sec + (b)->tv_sec;
-		(result)->tv_usec = (a)->tv_usec + (b)->tv_usec;
-		if ((result)->tv_usec >= (1000000))
-		{
-		++(result)->tv_sec;
-		(result)->tv_usec -= (1000000);
-		}
-		}
-#define timersub(a, b, result)
-		do
-		{
-		(result)->tv_sec = (a)->tv_sec - (b)->tv_sec;
-		(result)->tv_usec = (a)->tv_usec - (b)->tv_usec;
-		if ((result)->tv_usec < 0)
-		{
-		--(result)->tv_sec;
-		(result)->tv_usec += (1000000);
-		}
-		} while (0)
 // program version status and default device
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
@@ -818,7 +773,7 @@ int gpioselect ()
 	// https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
 	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
 	scanf ("%d", &gpiopin);
-	printf ("\nYour GPIO for transmission is %d ... \n", gpiopin);
+	printf ("\nYour GPIO for transmission is %d \n", gpiopin);
 	if (gpiopin == 4)
 	{
 		printf ("\nUsing default GPIO 4 \n");
@@ -830,7 +785,7 @@ int gpioselect ()
 	}
 	else if (gpiopin == 20 || 29 || 32 || 34 || 38)
 	{
-		printf ("\nUsing alternative GPIO setup %d ... \n", gpiopin);
+		printf ("\nUsing alternative GPIO setup %d \n", gpiopin);
 	}
 	else
 	{
@@ -1291,8 +1246,8 @@ int modetypeselect ()
 							freqselect ();
 							break;
 		default:	printf ("\nError! Using [1] (default) Channelmode! \n");
-					channelselect ();
-					break;
+							channelselect ();
+							break;
 	}
 	return (modeselect);
 }
@@ -1384,19 +1339,6 @@ void usleep2 (long us)
 	nanosleep ((struct timespec []) { {0, us*1000} }, 0); //
 	return;
 }
-void delayMicrosecondsHard (unsigned int howLong)
-{
-	struct timeval tNow, tLong, tEnd;
-	gettimeofday (&tNow, 0) ;
-	tLong.tv_sec  = (howLong / 1000000);
-	tLong.tv_usec = (howLong % 1000000);
-	timeradd (&tNow, &tLong, &tEnd);
-	while (timercmp (&tNow, &tEnd, <))
-	{
-	gettimeofday (&tNow, 0);
-	}
-	return;
-}
 void setupio ()
 {
 	printf ("\nSetting up FM ... \n");
@@ -1468,7 +1410,7 @@ void sendByteAsk (unsigned char byte, int sleep)
 	{
 			carrierlow ();
 			delayMicrosecondsHard (sleep);
-			usleep2 (sleep);
+			//usleep2 (sleep);
 			carrierhigh ();
 			delayMicrosecondsHard (sleep);
 			//usleep2 (sleep);
@@ -1547,7 +1489,7 @@ void play_fm (char *filename, int mod, float bandwidth) // char *filename, float
         bufPtr++;
         // problem still with .v & .p endings for struct!!
         while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
-        usleep2 (1000); // leaving out sleep for faster process
+        //usleep2 (1000); // leaving out sleep for faster process
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
         bufPtr++;
