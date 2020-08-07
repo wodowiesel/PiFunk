@@ -68,9 +68,9 @@
 // FW
 //#include <drm/drm_fb_cma_helper.h>
 // broadcom arm processor for mapping phys. addresses
-#include <bcm_host.h>
+//#include <bcm_host.h>
 #include "opt/vc/include/bcm_host.h" // firmware stuff
-#include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
+//#include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 // activate for your specific system
 #include <bcm2835.h> // -lbcm2835
 #include "bcm2835/src/bcm2835.h" // pi 0/1 v1.3
@@ -632,8 +632,9 @@ int instrCnt;
 //int instrPage;
 //int constPage;
 int reg = (gpio/10);
-int shift = (gpio%10)*3;
+volatile unsigned int shift = (gpio%10)*3;
 void *vAddr;
+void *pAddr;
 static volatile uint32_t *pwm_reg;
 static volatile uint32_t *pcm_reg;
 static volatile uint32_t *clk_reg;
@@ -834,8 +835,8 @@ int fileselect (char *filename)  // expected int
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
-	char *filename = malloc (128); // (char *) allocating memory for filename
-	sprintf (filename, "%s", "file.ft");
+	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
+	sprintf (soundname, "%s", "file.ft");
 	char *stdfile = "sound.wav";
 	if (filename != stdfile)
 	{
@@ -1266,7 +1267,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		void *m = valloc (4096);
 		((int*) m) [0] = (1); // use page to force allocation
 		mlock (m, 4096); // lock into ram
-		*vAddr = *m; // we know the virtual address now
+		void *vAddr = m; // we know the virtual address now
 		int fp = open ("/proc/self/pagemap", O_RDONLY | O_NONBLOCK); // "w"
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
@@ -1274,11 +1275,11 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		printf ("\nCould not map memory! \n");
 		return;
 }
-void freeRealMemPage (void *vAddr)
+void freeRealMemPage (void vAddr)
 {
 		printf ("\nTrying to free vAddr ... \n");
-		munlock (*vAddr, 4096); // unlock ram
-		free (*vAddr); // free the ram
+		munlock (vAddr, 4096); // unlock ram
+		free (vAddr); // free the ram
 		printf ("\nvAddr is free now ... \n");
 		return;
 }
@@ -1310,7 +1311,7 @@ void handSig () // exit func
 void terminate (int num) // static
 {
 	// Stop outputting and generating the clock
-	if (clk_reg && gpio_reg && *vAddr)
+	if (clk_reg && gpio_reg && vAddr)
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
@@ -1319,7 +1320,7 @@ void terminate (int num) // static
         clk_reg [GPCLK_CNTL] = (0x5A);
         printf ("\nclk_reg is %u \n", clk_reg);
 	}
-	if (dma_reg && *vAddr)
+	if (dma_reg && vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
         printf ("\ndma_reg is %u \n", dma_reg);
@@ -1327,9 +1328,9 @@ void terminate (int num) // static
 	}
      //fm_mpx_close ();
      //close_control_pipe ();
-	if (*vAddr != 0)
+	if (vAddr != 0)
 	{
-        unmapmem (vAaddr, (NUM_PAGES * 4096));
+        unmapmem (vAddr, (NUM_PAGES*4096));
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
 	}
@@ -1441,7 +1442,7 @@ void sendStringAsk (char *string, int sleep)
   return;
 }
 // relevant features for transmitting stuff
-void play_fm (char *filename, int mod, float bandwidth) // char *filename, float freq, int samplerate
+void playfm (char *filename, int mod, float bandwidth) // char *filename, float freq, int samplerate
 {
 	printf ("\nAllocating file to memory for wave-data ... \n");
 	// version 1
@@ -1743,7 +1744,7 @@ void modulationfm () // int argc, char **argv
 		printf ("\nSetting up DMA ... \n");
 		void setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
-    void play_fm (char *filename, int mod, float bandwidth); // atof (argv [3]):22050)
+    void playfm (char *filename, int mod, float bandwidth); // atof (argv [3]):22050)
 		return;
 }
 void modulationam () //
@@ -1794,7 +1795,7 @@ void ledinactive ()
 		// check if transmitting
 		printf ("\nChecking transmission status ... \n");
 		/*
-		while (play_fm (char *filename, int mod, float bandwidth)) // || play_am ()
+		while (playfm (char *filename, int mod, float bandwidth)) // || play_am ()
 		{
 				//cm2835_gpio_write (PIN_17, LOW);
 				printf ("\nLED off - No transmission! \n");
@@ -1818,7 +1819,7 @@ void ledactive ()
     // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_fm (char *filename, float freq, int samplerate, int mod, float bandwidth)) //
+		while (playfm (char *filename, float freq, int samplerate, int mod, float bandwidth)) //
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN_17, HIGH);
@@ -1841,7 +1842,7 @@ int tx (char *filename, float freq, int samplerate, char *mod, int power, int gp
 {
   printf ("\nPreparing for transmission ... \n");
 	/*
-  while (play_fm (char *filename, int mod, float bandwidth)) // || play_am ())
+  while (playfm (char *filename, int mod, float bandwidth)) // || play_am ())
   {
   ledactive ();
   }
@@ -1870,15 +1871,15 @@ void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
 		void infos ();
-		char fileselect (char *filename);
+		int fileselect (char *filename);
 		int sampleselect (); // filename, samplerate
 		char modetypeselect ();
-		char modselect ();
+		void modselect ();
 		int typeselect ();
 		int powerselect ();
 		int gpioselect ();
 		int dmaselect ();
-		int bandwidthselect ();
+		float bandwidthselect ();
 		int loopselect (bool repeat);
 		printf ("\nAll information gathered, parsing & going back to main! \n");
 		return;
