@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdint.h>
-#include <stddef.h>
+//#include <stddef.h>
 #include <stdalign.h>
 #include <stdnoreturn.h>
 #include <stdatomic.h>
@@ -22,7 +22,7 @@
 #include <sched.h>
 #include <float.h>
 #include <locale.h>
-#include <errno.h>
+//#include <errno.h>
 #include <ctype.h>
 #include <wchar.h>
 #include <wctype.h>
@@ -32,7 +32,7 @@
 #include <signal.h>
 #include <assert.h>
 #include <setjmp.h>
-#include <limits.h>
+//#include <limits.h>
 #include <termios.h>
 #include <pthread.h>
 #include <inttypes.h>
@@ -197,7 +197,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define CLOCK_BASE										 (19.2E6) // = 19200000
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 (500000000.) //
+#define PLLD_FREQ											 (500000000) //
 #define F_PLLD_CLK 										(500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -236,7 +236,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ 										 (500000000.) //
+#define PLLD_FREQ 										 (500000000) //
 #define F_PLLD_CLK 										(500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -256,7 +256,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ 										 (500000000.) //
+#define PLLD_FREQ 										 (500000000) //
 #define F_PLLD_CLK 										(500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -278,7 +278,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
 #define F_PLLD_CLK 										 (750000000.0)
-#define PLLD_FREQ 										 (750000000.) // has higher freq than pi 0-3
+#define PLLD_FREQ 										 (750000000) // has higher freq than pi 0-3
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -291,7 +291,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PIN_40                          (40) // pin 40
 #define GPIO_21                         (PIN_40)
 #define GPIO_LEN                        (0x100) // dec: 256
-#define LENGTH                          (0x01000000) // dec: 1
+#define LENGTH                          (0x01000000) // dec:	16777216 for peripherial size
 #define SUB_BASE                        (0x7E000000) // dec: 2113929216 phys base
 #define CLKBASE                         (0x7E101000) // dec: 2114981888
 #define PWMBASE                         (0x7E20C000) // controller dec: 2116075520
@@ -555,7 +555,7 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 // arguments
 // included sample audio was created by graham_makes and published on freesound.org
 char *filename;
-float xtal_freq = (1.0/19.2E6) // LOCK_BASE
+float xtal_freq = (1.0/19.2E6); // LOCK_BASE
 float subfreq;
 float ctss_freq;
 int samplerate;
@@ -563,23 +563,24 @@ int halfsamplerate = (22050/2);
 int channels;
 int Timing;
 char *mod; // = "fm"
-char fm = "fm";
-char am = "am";
+char *fm = "fm";
+char *am = "am";
 int power;
-int powerlevel = abs (power); // same as drive
+int powerlevel; // same as drive
 int DRIVESTRENGTH; // drive 1-7
 int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabled / 1=enabled
-int type; // analog 1 or digital 2
 char *mod_type; // = "a"
-char analog = "a"; // type = 1
-char digital = "d"; // type = 2
+char *analog = "a"; // type = 1
+char *digital = "d"; // type = 2
+int gpiopin;
 float bandwidth;
 int dmachannel;
-int gpiopin;
+int type; // analog 1 or digital 2
+int loop;
 float b;
-float divider = (PLLD_FREQ / (2000 * 228 * (1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
+float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
 int idivider = (float) divider;
-int fdivider = (int) ((divider-idivider) * pow (2, 12));
+int fdivider = (int) ((divider-idivider)*pow (2, 12));
 // menu variables
 int opt;
 int menuoption;
@@ -628,11 +629,13 @@ unsigned long frameinfo;
 int instrs [BUFFERINSTRUCTIONS]; // [1024]
 int bufPtr;
 int instrCnt;
-int instrPage;
-int constPage;
-int reg = (gpio / 10);
-int shift = (gpio % 10) * 3;
+//int instrPage;
+//int constPage;
+int reg = (gpio/10);
+int shift = (gpio%10)*3;
+void *vAddr;
 static volatile uint32_t *pwm_reg;
+static volatile uint32_t *pcm_reg;
 static volatile uint32_t *clk_reg;
 static volatile uint32_t *gpio_reg;
 static volatile uint32_t *dma_reg;
@@ -831,7 +834,7 @@ int fileselect (char *filename)  // expected int
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
-	char *filename = (char *) malloc (128); // allocating memory for filename
+	char *filename = malloc (128); // (char *) allocating memory for filename
 	sprintf (filename, "%s", "file.ft");
 	char *stdfile = "sound.wav";
 	if (filename != stdfile)
@@ -1194,7 +1197,7 @@ int powerselect ()
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	power = abs (powerlevel);
 	return (power);
-	//maybe input/switch for hysteresis
+	// maybe input/switch for hysteresis
 }
 int channelselect ()
 {
@@ -1263,19 +1266,19 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		void *m = valloc (4096);
 		((int*) m) [0] = (1); // use page to force allocation
 		mlock (m, 4096); // lock into ram
-		*vAddr = m; // we know the virtual address now
+		*vAddr = *m; // we know the virtual address now
 		int fp = open ("/proc/self/pagemap", O_RDONLY | O_NONBLOCK); // "w"
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
-		*pAddr = (void*) ((int) (frameinfo*4096));
+		*pAddr = ((int) (frameinfo*4096)); // (void*)
 		printf ("\nCould not map memory! \n");
 		return;
 }
 void freeRealMemPage (void *vAddr)
 {
 		printf ("\nTrying to free vAddr ... \n");
-		munlock (vAddr, 4096); // unlock ram
-		free (vAddr); // free the ram
+		munlock (*vAddr, 4096); // unlock ram
+		free (*vAddr); // free the ram
 		printf ("\nvAddr is free now ... \n");
 		return;
 }
@@ -1307,7 +1310,7 @@ void handSig () // exit func
 void terminate (int num) // static
 {
 	// Stop outputting and generating the clock
-	if (clk_reg && gpio_reg && vAddr)
+	if (clk_reg && gpio_reg && *vAddr)
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
@@ -1316,7 +1319,7 @@ void terminate (int num) // static
         clk_reg [GPCLK_CNTL] = (0x5A);
         printf ("\nclk_reg is %u \n", clk_reg);
 	}
-	if (dma_reg && vAddr)
+	if (dma_reg && *vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
         printf ("\ndma_reg is %u \n", dma_reg);
@@ -1324,7 +1327,7 @@ void terminate (int num) // static
 	}
      //fm_mpx_close ();
      //close_control_pipe ();
-	if (vAddr != 0)
+	if (*vAddr != 0)
 	{
         unmapmem (vAaddr, (NUM_PAGES * 4096));
       //  mem_unlock (mbox.handle, mbox.mem_ref);
@@ -1790,11 +1793,13 @@ void ledinactive ()
 {
 		// check if transmitting
 		printf ("\nChecking transmission status ... \n");
-		while (!play_fm (char *filename, int mod, float bandwidth)) // || play_am ()
+		/*
+		while (play_fm (char *filename, int mod, float bandwidth)) // || play_am ()
 		{
 				//cm2835_gpio_write (PIN_17, LOW);
 				printf ("\nLED off - No transmission! \n");
 		}
+		*/
 		return;
 }
 void ledactive ()
@@ -1813,7 +1818,7 @@ void ledactive ()
     // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
   	printf ("\nBCM 2835 init done and PIN 4 activated \n");
     // LED is active during transmission
-		while (play_fm (char *filename,float freq, int samplerate, int mod, float bandwidth)) //
+		while (play_fm (char *filename, float freq, int samplerate, int mod, float bandwidth)) //
 		{
 			// Turn it on
 			bcm2835_gpio_write (PIN_17, HIGH);
@@ -1835,11 +1840,13 @@ void ledactive ()
 int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
+	/*
   while (play_fm (char *filename, int mod, float bandwidth)) // || play_am ())
   {
   ledactive ();
-  printf ("\nBroadcasting now! ... \n");
   }
+	*/
+	printf ("\nBroadcasting now! ... \n");
 	return (1);
 }
 int menu ()
@@ -1862,17 +1869,17 @@ int menu ()
 void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
-		infos ();
-		fileselect (char *filename);
-		sampleselect (); // filename, samplerate
-		modetypeselect ();
-		modselect ();
-		typeselect ();
-		powerselect ();
-		gpioselect ();
-		dmaselect ();
-		bandwidthselect ();
-		loopselect ();
+		void infos ();
+		char fileselect (char *filename);
+		int sampleselect (); // filename, samplerate
+		char modetypeselect ();
+		char modselect ();
+		int typeselect ();
+		int powerselect ();
+		int gpioselect ();
+		int dmaselect ();
+		int bandwidthselect ();
+		int loopselect (bool repeat);
 		printf ("\nAll information gathered, parsing & going back to main! \n");
 		return;
 }
