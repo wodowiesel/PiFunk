@@ -579,8 +579,8 @@ int type; // analog 1 or digital 2
 int loop;
 float b;
 float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
-int idivider = (float) divider;
-int fdivider = (int) ((divider-idivider)*pow (2, 12));
+//int idivider = (float) divider;
+//int fdivider = (int) ((divider-idivider)*pow (2, 12));
 // menu variables
 int opt;
 int menuoption;
@@ -631,7 +631,7 @@ int bufPtr;
 int instrCnt;
 //int instrPage;
 //int constPage;
-int reg = (gpio/10);
+volatile unsigned int reg = (gpio/10);
 volatile unsigned int shift = (gpio%10)*3;
 void *vAddr;
 void *pAddr;
@@ -671,8 +671,8 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 	//	int constPage;
 	//	int instrs [BUFFERINSTRUCTIONS]; // [1024]
 };
-struct PageInfo constPage;
-struct PageInfo instrPage;
+struct PageInfo constPage[BUFFERINSTRUCTIONS];
+struct PageInfo instrPag[BUFFERINSTRUCTIONS]e;
 struct PageInfo instrs[BUFFERINSTRUCTIONS];
 struct GPFSEL0_T
 {
@@ -1267,15 +1267,15 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		void *m = valloc (4096);
 		((int*) m) [0] = (1); // use page to force allocation
 		mlock (m, 4096); // lock into ram
-		void *vAddr = m; // we know the virtual address now
+		*vAddr = m; // we know the virtual address now
 		int fp = open ("/proc/self/pagemap", O_RDONLY | O_NONBLOCK); // "w"
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
-		*pAddr = ((int) (frameinfo*4096)); // (void*)
+		*pAddr = (void*) ((int) (frameinfo*4096)); //
 		printf ("\nCould not map memory! \n");
 		return;
 }
-void freeRealMemPage (void vAddr)
+void freeRealMemPage (void *vAddr)
 {
 		printf ("\nTrying to free vAddr ... \n");
 		munlock (vAddr, 4096); // unlock ram
@@ -1346,7 +1346,7 @@ void usleep2 (long us)
 void setupio ()
 {
 	printf ("\nSetting up FM ... \n");
-	struct sched_param sp;
+	struct sched_param sp[1024];
 	memset (&sp, 0, sizeof (sp));
 	sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
 	sched_setscheduler (0, SCHED_FIFO, &sp);
@@ -1873,7 +1873,7 @@ void assistant () // assistant
 		void infos ();
 		int fileselect (char *filename);
 		int sampleselect (); // filename, samplerate
-		char modetypeselect ();
+		int modetypeselect ();
 		void modselect ();
 		int typeselect ();
 		int powerselect ();
