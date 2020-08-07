@@ -1484,7 +1484,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
-				int div_val = (0x5A<<24)+((int)(divisor*pow(2.0, 12)));
+				int div_val = (0x5A<<24)+((int)(divider*pow(2.0, 12))); // divisor
 				printf ("\ndiv_val: %d \n", div_val);
         float frac = ((dval-intval)/2+0.5);
 				printf ("\nfrac: %f \n", frac);
