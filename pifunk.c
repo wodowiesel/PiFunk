@@ -1,23 +1,28 @@
 /* PiFunk lite
 ----License-------------------------------------------------------------------
                 GPL v3.0  ->  see LICENSE.md !!
-------------------------------------------------------------------------------
-*/
+------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <stdalign.h>
-#include <stdnoreturn.h>
-#include <stdatomic.h>
 #include <unistd.h>
-#include <iso646.h>
-#include <argp.h>
 #include <string.h>
 #include <getopt.h>
+#include <math.h>
+#include <iso646.h>
 #include <time.h>
+#include <malloc.h>
+#include <signal.h>
+
+/*
+//#include <stdalign.h>
+//#include <stdnoreturn.h>
+//#include <stdatomic.h>
+//#include <pthread.h>
+#include <argp.h>
 #include <utime.h>
 #include <sched.h>
 #include <float.h>
@@ -27,16 +32,12 @@
 #include <wchar.h>
 #include <wctype.h>
 #include <fcntl.h>
-#include <malloc.h>
 #include <dirent.h>
-#include <signal.h>
 #include <assert.h>
 #include <setjmp.h>
 //#include <limits.h>
 #include <termios.h>
-#include <pthread.h>
 #include <inttypes.h>
-#include <math.h>
 #include <tgmath.h>
 #include <complex.h>
 #include <features.h>
@@ -44,7 +45,6 @@
 #include <grp.h>
 #include <pwd.h>
 #include <poll.h>
-#include <argp.h>
 #include <uchar.h>
 #include <gnumake.h>
 #include <sys/cdefs.h>
@@ -57,11 +57,11 @@
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
-#include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
+*/
 // I2C need
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
@@ -76,19 +76,20 @@
 #include "bcm2835/src/bcm2835.h" // pi 0/1 v1.3
 // RPi.GPIO lib, 0.7.0 used with pi4 support
 //#include "RPI.GPIO/source/i2c.h"
-#include "RPI.GPIO/source/c_gpio.h"
-#include "RPI.GPIO/source/event_gpio.h"
+//*#include "RPI.GPIO/source/c_gpio.h"
+//*#include "RPI.GPIO/source/event_gpio.h"
 //#include "RPI.GPIO/source/py_pwm.h"
-#include "RPI.GPIO/source/soft_pwm.h"
+//*#include "RPI.GPIO/source/soft_pwm.h"
 //#include "RPI.GPIO/source/constants.h"
-#include "RPI.GPIO/source/common.h"
-#include "RPI.GPIO/source/cpuinfo.h"
+//*#include "RPI.GPIO/source/common.h"
+//*#include "RPI.GPIO/source/cpuinfo.h"
 // custom header for pifunk (definitions)
-#include "include/pifunk.h"
+//*#include "include/pifunk.h"
 // preproccessor definitions
 #ifndef PIFUNK_C
 	#define PIFUNK_C
 #endif
+/*
 #ifdef __LINUX__
 	#warning Program runs under LINUX!
 	#pragma GCC dependency "pifunk.h"
@@ -99,7 +100,8 @@
 #endif
 #ifdef __ARM__
   #warning Program runs under ARM-Architecture!
-  #pragma ARM // same as -CODE32
+  #pragma ARM
+	// same as -CODE32
 #endif
 #ifdef __ARM64__
   #warning Program runs under ARM64-Architecture!
@@ -126,7 +128,9 @@
   #warning Using GNU C with C99 standard!
   //#define _STDC_VERSION (199901L)  // -std=c99
 #endif
+*/
 // definitions & Macros
+//#define NDEBUG
 #define VERSION 						 "0.1.7.6" // my version
 #define VERSION_MAJOR        (0) //
 #define VERSION_MINOR        (1) //
@@ -139,7 +143,7 @@
 #define FALSE                 (0) //
 #define TRUE                  (1) //
 // predefine if needed when not using bcm header
-#define USLEEP 							  [1000] //
+#define USLEEP 							  [1000] // slep timer
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
 //#define log(EULER)                    (0.4342944819)
