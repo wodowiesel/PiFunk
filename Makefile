@@ -63,9 +63,9 @@ $(LDLIBS)
 PFLIBS=-L$(HOME)/PiFunk/lib/
 $(PFLIBS)
 
-LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm ## -lm after snd
+LDFLAGS=-lgnu -lbcm_host -lbcm2835 -lsndfile -lm ## -lm after snd
 $(LDFLAGS)
-PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
+PFFLAGGS=-lpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
 #AOFLAGGS=-arm-none-eabi-objdump ## objdump gnu tools
 #$(AOFLAGS)
