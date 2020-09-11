@@ -62,18 +62,18 @@
 #include <sys/wait.h>
 #include <sys/poll.h>
 */
-// I2C need
-#include <linux/i2c.h>
-#include <linux/i2c-dev.h>
+// I2C
+//#include <linux/i2c.h>
+//#include <linux/i2c-dev.h>
 // FW
 //#include <drm/drm_fb_cma_helper.h>
 // broadcom arm processor for mapping phys. addresses
 //#include <bcm_host.h>
-#include "opt/vc/include/bcm_host.h" // firmware stuff
+//#include "opt/vc/include/bcm_host.h" // firmware stuff
 //#include "opt/vc/include/interface/vcos/vcos.h" // Video Core OS Abstraction Layer
 // activate for your specific system
-#include <bcm2835.h> // -lbcm2835
-#include "bcm2835/src/bcm2835.h" // pi 0/1 v1.3
+//#include <bcm2835.h> // -lbcm2835
+//#include "bcm2835/src/bcm2835.h" // pi 0/1 v1.3
 // RPi.GPIO lib, 0.7.0 used with pi4 support
 //#include "RPI.GPIO/source/i2c.h"
 //*#include "RPI.GPIO/source/c_gpio.h"
@@ -582,10 +582,10 @@ int dmachannel;
 int type; // analog 1 or digital 2
 int loop;
 float b;
-float divider = (PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6))); // 2000*228=456000 -> previously as int
+float divider = PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228= 500000000/ 456000*(1+0/10000000) -> previously as int
 //int idivider = (float) divider;
 //int fdivider = (int) ((divider-idivider)*pow (2, 12));
-// menu variables
+// menu variable
 int opt;
 int menuoption;
 int channelnumbercb;
@@ -599,7 +599,7 @@ int num;
 FILE *rfp, *wfp;
 FILE wavefile;
 FILE FileFreqTiming;
-int MEM_FD = open ("/dev/mem", O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK);
+int MEM_FD = open ("/dev/mem"); // , O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = 0;
@@ -671,12 +671,12 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
 		void *p; // physical address BCMXXXX_PERI_BASE
 		void *v; // virtual address
-	//	int instrPage;
-	//	int constPage;
-	//	int instrs [BUFFERINSTRUCTIONS]; // [1024]
+		int instrPage;
+		int constPage;
+		int instrs [BUFFERINSTRUCTIONS]; // [1024]
 };
 struct PageInfo constPage[BUFFERINSTRUCTIONS];
-struct PageInfo instrPag[BUFFERINSTRUCTIONS]e;
+struct PageInfo instrPage[BUFFERINSTRUCTIONS];
 struct PageInfo instrs[BUFFERINSTRUCTIONS];
 struct GPFSEL0_T
 {
@@ -845,7 +845,7 @@ int fileselect (char *filename)  // expected int
 	if (filename != stdfile)
 	{
 		// http://man7.org/linux/man-pages/man2/open.2.html
-		int fp = open (filename, O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_WRONLY | O_RDWR |
+		int fp = open (filename, O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_RDONLY | O_WRONLY | O_RDWR |
 	}
 	else
 	{
@@ -1271,11 +1271,11 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		void *m = valloc (4096);
 		((int*) m) [0] = (1); // use page to force allocation
 		mlock (m, 4096); // lock into ram
-		*vAddr = m; // we know the virtual address now
-		int fp = open ("/proc/self/pagemap", O_RDONLY | O_NONBLOCK); // "w"
+		*vAddr = *m; // we know the virtual address now, error invalid use of void
+		int fp = open ("/proc/self/pagemap", O_NONBLOCK); // "w" O_RDONLY |
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		read (fp, &frameinfo, sizeof (frameinfo));
-		*pAddr = (void*) ((int) (frameinfo*4096)); //
+		*pAddr = ((int) (frameinfo*4096)); // (void*) error invalid expr voird
 		printf ("\nCould not map memory! \n");
 		return;
 }
@@ -1350,11 +1350,11 @@ void usleep2 (long us)
 void setupio ()
 {
 	printf ("\nSetting up FM ... \n");
-	struct sched_param sp[1024];
+	//struct sched_param sp[1024]; //error
 	memset (&sp, 0, sizeof (sp));
 	sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
 	sched_setscheduler (0, SCHED_FIFO, &sp);
-	mlockall (MCL_CURRENT | MCL_FUTURE);
+	//mlockall (MCL_CURRENT | MCL_FUTURE); //error
 	// open /dev/mem
 	if (MEM_FD < 0)
 	{
@@ -1375,8 +1375,8 @@ void setupio ()
 		gpio_map = (unsigned char *) mmap (
 		gpio_mem,
 		BLOCK_SIZE,
-		PROT_READ | PROT_WRITE,
-		MAP_SHARED | MAP_FIXED,
+		PROT_READ | PROT_WRITE, // error
+		MAP_SHARED | MAP_FIXED, // error
 		MEM_FD,
 		GPIO_BASE);
 	}
@@ -1394,8 +1394,8 @@ void setupfm ()
   allof7e = (unsigned*) mmap (
                 0,
                 BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
-                PROT_READ|PROT_WRITE, //
-                MAP_SHARED, //
+                PROT_READ|PROT_WRITE, // error
+                MAP_SHARED, // error
                 MEM_FD, //
                 PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
 	if ((int) allof7e == (-1))
@@ -1406,8 +1406,8 @@ void setupfm ()
 	CLRBIT (GPFSEL0, 13);
 	CLRBIT (GPFSEL0, 12);
 	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};
-	ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
-	ACCESS (CM_GP0CTL) = *((int*) &setupword);
+	//ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
+	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
   return;
 }
 void sendByteAsk (unsigned char byte, int sleep)
@@ -1601,7 +1601,7 @@ void setupDMA ()
 }
 void unsetupDMA ()
 {
-	struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
+	//struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
 	//DMA0->CS = 1<<31; // reset dma controller
 	printf ("\nUnsetting DMA done \n");
 	return;
