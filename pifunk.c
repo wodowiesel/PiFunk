@@ -587,7 +587,7 @@ int dmachannel;
 int type; // analog 1 or digital 2
 int loop;
 float b;
-float divider = PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228= 500000000/ 456000*(1+0/10000000) -> previously as int
+float divider = 10964912280.7 // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int 
 //int idivider = (float) divider;
 //int fdivider = (int) ((divider-idivider)*pow (2, 12));
 // menu variable
@@ -850,11 +850,11 @@ int fileselect (char *filename)  // expected int
 	if (filename != stdfile)
 	{
 		// http://man7.org/linux/man-pages/man2/open.2.html
-		int fp = open (filename, O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_RDONLY | O_WRONLY | O_RDWR |
+		int fp = open (filename, 0644); // O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_TRUNC | O_NONBLOCK,
 	}
 	else
 	{
-	  int fp = open ("sound.wav", O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK, 0644); // O_WRONLY | O_RDWR | sounds/sound.wav directory should be tested
+	  int fp = open ("sound.wav", 0644); // O_WRONLY | O_RDWR | , O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK sounds/sound.wav directory should be tested
 	}
 	return (fp);
 }
@@ -1339,7 +1339,7 @@ void terminate (int num) // static
      //close_control_pipe ();
 	if (vAddr != 0)
 	{
-        unmapmem (vAddr, NUM_PAGES); /*4096
+        unmapmem (vAddr, NUM_PAGES); //*4096
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
 	}
