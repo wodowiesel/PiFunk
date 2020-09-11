@@ -211,6 +211,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #ifdef  RASPI1 // == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
+#define BCM2835_PERI_BASE              (0x3F000000) //
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
 #define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824
 #define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
@@ -599,7 +600,7 @@ int num;
 FILE *rfp, *wfp;
 FILE wavefile;
 FILE FileFreqTiming;
-int MEM_FD = open ("/dev/mem"); // , O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK
+int MEM_FD;// = open ("/dev/mem"); // , O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = 0;
@@ -671,13 +672,13 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
 		void *p; // physical address BCMXXXX_PERI_BASE
 		void *v; // virtual address
-		int instrPage;
-		int constPage;
+		int instrPage[BUFFERINSTRUCTIONS];
+		int constPage[BUFFERINSTRUCTIONS];
 		int instrs [BUFFERINSTRUCTIONS]; // [1024]
 };
-struct PageInfo constPage[BUFFERINSTRUCTIONS];
-struct PageInfo instrPage[BUFFERINSTRUCTIONS];
-struct PageInfo instrs[BUFFERINSTRUCTIONS];
+//struct PageInfo instrPage[BUFFERINSTRUCTIONS];
+//struct PageInfo constPage[BUFFERINSTRUCTIONS];
+//struct PageInfo instrs[BUFFERINSTRUCTIONS];
 struct GPFSEL0_T
 {
     char FSEL0 : 3;
@@ -1271,10 +1272,10 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		void *m = valloc (4096);
 		((int*) m) [0] = (1); // use page to force allocation
 		mlock (m, 4096); // lock into ram
-		*vAddr = *m; // we know the virtual address now, error invalid use of void
-		int fp = open ("/proc/self/pagemap", O_NONBLOCK); // "w" O_RDONLY |
+		//*vAddr = *m; // we know the virtual address now, error invalid use of void
+		int fp = open ("/proc/self/pagemap"); // "w" , O_NONBLOCK | O_RDONLY |
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
-		read (fp, &frameinfo, sizeof (frameinfo));
+		//read (fp, &frameinfo, sizeof (frameinfo));
 		*pAddr = ((int) (frameinfo*4096)); // (void*) error invalid expr voird
 		printf ("\nCould not map memory! \n");
 		return;
@@ -1302,7 +1303,7 @@ void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
 	struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
-	ACCESS (CM_GP0CTL) = *((int*) &setupword);
+	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
 	while (ACCESS(CM_GP0CTL)&0x80); //
 	printf ("\nCarrier is low ... \n");
 	return;
@@ -1334,7 +1335,7 @@ void terminate (int num) // static
      //close_control_pipe ();
 	if (vAddr != 0)
 	{
-        unmapmem (vAddr, (NUM_PAGES*4096));
+        unmapmem (vAddr, NUM_PAGES); /*4096
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
 	}
@@ -1350,10 +1351,10 @@ void usleep2 (long us)
 void setupio ()
 {
 	printf ("\nSetting up FM ... \n");
-	//struct sched_param sp[1024]; //error
-	memset (&sp, 0, sizeof (sp));
-	sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
-	sched_setscheduler (0, SCHED_FIFO, &sp);
+	//struct sched_param sp[1024]; // error
+	//memset (&sp, 0, sizeof (sp));
+	//sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
+	//sched_setscheduler (0, SCHED_FIFO, &sp);
 	//mlockall (MCL_CURRENT | MCL_FUTURE); //error
 	// open /dev/mem
 	if (MEM_FD < 0)
@@ -1375,10 +1376,10 @@ void setupio ()
 		gpio_map = (unsigned char *) mmap (
 		gpio_mem,
 		BLOCK_SIZE,
-		PROT_READ | PROT_WRITE, // error
-		MAP_SHARED | MAP_FIXED, // error
+	//	PROT_READ | PROT_WRITE, // error
+		//MAP_SHARED | MAP_FIXED, // error
 		MEM_FD,
-		GPIO_BASE);
+		GPIO_BASE2);
 	}
 	if ((long) gpio_map < 0)
 	{
