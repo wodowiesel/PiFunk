@@ -587,7 +587,7 @@ int dmachannel;
 int type; // analog 1 or digital 2
 int loop;
 float b;
-float divider = 10964912280.7 // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int 
+float divider = 10964912280.7 // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int
 //int idivider = (float) divider;
 //int fdivider = (int) ((divider-idivider)*pow (2, 12));
 // menu variable
@@ -1298,8 +1298,8 @@ void carrierhigh () // enables it
 	// Added functions to enable and disable carrier GPCTL has 9 parameters but here 7 used ?
 	// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
 	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
-	ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
-	while (!(ACCESS(CM_GP0CTL)&0x80)); // Wait for busy flag to turn on.
+	//ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
+	while (!ACCESS(CM_GP0CTL)&0x80) { }; // Wait for busy flag to turn on.
 	printf ("\nCarrier is high ... \n");
 	return;
 }
@@ -1308,7 +1308,7 @@ void carrierlow () // disables it
 	printf ("\nSetting carrier low ... \n");
 	struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
-	while (ACCESS(CM_GP0CTL)&0x80); //
+	while (ACCESS(CM_GP0CTL)&0x80) { }; //
 	printf ("\nCarrier is low ... \n");
 	return;
 }
@@ -1468,12 +1468,12 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 	clk_reg[CM_PLLA] = (0x5A00022A); // Enable PLLA_PER
 	pad ();
 	// version 2
-	int sz = lseek (fp, 0L, SEEK_END);
 	*/
 	 /*lseek: repositions the file offset of the open file description
 		associated with the file descriptor fd to the argument offset
 		according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
 		SEEK_END: The file offset is set to the size of the file plus offset bytes. */
+	int sz = lseek (fp, 0L, SEEK_END);
 	short *data = (short*) malloc (sz);
 	for (r = 0; r < 22; r++) // why i less then 22?
 	{
@@ -1504,7 +1504,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
         // problem still with .v & .p endings for struct!!
-        while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr].p) ); // CURBLOCK of struct PageInfo
+        while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr]) ) { }; // CURBLOCK of struct PageInfo, [bufPtr].p
         //usleep2 (1000); // leaving out sleep for faster process
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
@@ -2070,7 +2070,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
-	} // end of else
+	 } // end of else
 	printf ("\nEnd of argument check, printing debug \n");
 	} // end of while
 	printf ("\n-----------------------------------------\n");
