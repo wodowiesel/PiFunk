@@ -587,7 +587,7 @@ int dmachannel;
 int type; // analog 1 or digital 2
 int loop;
 float b;
-float divider = 10964912280.7 // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int
+float divider = 10964912280.7; // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int
 //int idivider = (float) divider;
 //int fdivider = (int) ((divider-idivider)*pow (2, 12));
 // menu variable
@@ -1339,7 +1339,7 @@ void terminate (int num) // static
      //close_control_pipe ();
 	if (vAddr != 0)
 	{
-        unmapmem (vAddr, NUM_PAGES); //*4096
+        unmapmem (vAddr, NUM_PAGES); // *4096
       //  mem_unlock (mbox.handle, mbox.mem_ref);
       //  mem_free (mbox.handle, mbox.mem_ref);
 	}
@@ -1383,7 +1383,7 @@ void setupio ()
 	 //PROT_READ | PROT_WRITE, // error
 		//MAP_SHARED | MAP_FIXED, // error
 		MEM_FD,
-		GPIO_BASE2);
+		GPIO_BASE);
 	}
 	if ((long) gpio_map < 0)
 	{
@@ -1394,7 +1394,7 @@ void setupio ()
 	carrierhigh ();
 	return;
 }
-*/
+ // */
 void setupfm ()
 {
   allof7e = (unsigned*) mmap (
