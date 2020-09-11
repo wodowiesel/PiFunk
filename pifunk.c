@@ -499,6 +499,10 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define DREQ_SPI_SLAVE_TX               (8) //
 #define DREQ_SPI_SLAVE_RX               (9) //
 // memory
+#define PROT_WRITE (1)
+#define PROT_READ (0)
+#define MAP_SHARED (1)
+#define MAP_FIXED (0)
 #define MEM_FLAG_DISCARDABLE            (1<<0) // can be resized to 0 at any time. Use for cached data
 #define MEM_FLAG_NORMAL                 (0<<2) // normal allocating alias. Don't use from ARM
 #define MEM_FLAG_DIRECT                 (1<<2) // 0xC dec: 12 alias uncached
@@ -1276,7 +1280,7 @@ void getRealMemPage (void *vAddr, void *pAddr) // should work through bcm header
 		int fp = open ("/proc/self/pagemap"); // "w" , O_NONBLOCK | O_RDONLY |
 		lseek (fp, ((int) m)/4096*8, SEEK_SET);
 		//read (fp, &frameinfo, sizeof (frameinfo));
-		*pAddr = ((int) (frameinfo*4096)); // (void*) error invalid expr voird
+		//*pAddr = ((int) (frameinfo*4096)); // (void*) error invalid expr voird
 		printf ("\nCould not map memory! \n");
 		return;
 }
@@ -1376,7 +1380,7 @@ void setupio ()
 		gpio_map = (unsigned char *) mmap (
 		gpio_mem,
 		BLOCK_SIZE,
-	//	PROT_READ | PROT_WRITE, // error
+	 //PROT_READ | PROT_WRITE, // error
 		//MAP_SHARED | MAP_FIXED, // error
 		MEM_FD,
 		GPIO_BASE2);
@@ -1390,13 +1394,14 @@ void setupio ()
 	carrierhigh ();
 	return;
 }
+*/
 void setupfm ()
 {
   allof7e = (unsigned*) mmap (
                 0,
                 BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
-                PROT_READ|PROT_WRITE, // error
-                MAP_SHARED, // error
+              //  PROT_READ|PROT_WRITE, // error
+              //  MAP_SHARED, // error
                 MEM_FD, //
                 PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
 	if ((int) allof7e == (-1))
@@ -1411,6 +1416,7 @@ void setupfm ()
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
   return;
 }
+/*
 void sendByteAsk (unsigned char byte, int sleep)
 {
 	for (j = 0; j < 8; j++)
@@ -1463,7 +1469,8 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 	pad ();
 	// version 2
 	int sz = lseek (fp, 0L, SEEK_END);
-	/* lseek: repositions the file offset of the open file description
+	*/
+	 /*lseek: repositions the file offset of the open file description
 		associated with the file descriptor fd to the argument offset
 		according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
 		SEEK_END: The file offset is set to the size of the file plus offset bytes. */
