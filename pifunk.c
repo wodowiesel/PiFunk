@@ -269,6 +269,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #endif
 // pi 4 - BCM2838
 #ifdef  RASPI4 //== 4
+#define BCM2708_PERI_BASE 						 (0xFE000000) // 
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
