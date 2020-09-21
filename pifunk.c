@@ -136,14 +136,14 @@
 #define VERSION_MINOR        (1) //
 #define VERSION_BUILD        (7) //
 #define VERSION_PATCH        (6) //
-#define VERSION_STATUS 			 "lite" // WIP work in progress
+#define VERSION_STATUS 			 "lite" // reduced, only neccessary stuf
 // simple operators
 #define IN                    (0) //
 #define OUT                   (1) //
 #define FALSE                 (0) //
 #define TRUE                  (1) //
 // predefine if needed when not using bcm header
-#define USLEEP 							  [1000] // slep timer
+#define USLEEP 							  [1000] // sleep timer
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
 //#define log(EULER)                    (0.4342944819)
@@ -202,7 +202,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000) //
-#define F_PLLD_CLK 										(500000000.0)
+#define F_PLLD_CLK 										 (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -222,7 +222,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000.) //
-#define F_PLLD_CLK 									 	(500000000.0)
+#define F_PLLD_CLK 									   (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -242,7 +242,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000) //
-#define F_PLLD_CLK 										(500000000.0)
+#define F_PLLD_CLK 									   (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -262,14 +262,14 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000) //
-#define F_PLLD_CLK 										(500000000.0)
+#define F_PLLD_CLK										 (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
 #endif
 // pi 4 - BCM2838
 #ifdef  RASPI4 //== 4
-#define BCM2708_PERI_BASE 						 (0xFE000000) // 
+#define BCM2708_PERI_BASE 						 (0xFE000000) //
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
@@ -280,6 +280,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) // = 19200000
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
+#define F_XTAL 												 (54000000.0)
 #define PAGE_SIZE 										 (4096) //
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
