@@ -508,16 +508,12 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
 #define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
-
-// optional hardware
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
-// program version status and default device
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
-// iterators for loops
 int w = (0);
 int m;
 int n;
@@ -529,17 +525,13 @@ int r;
 int x = 1; // for ampf calc later
 int ex;
 char c;
-// pi memory-map peripherials:
 char *gpio_mem;
 char *gpio_map;
 char *spi0_mem;
 char *spi0_map;
 unsigned bcm_host_get_peripheral_address (); // // This returns the ARM-side physical address where peripherals are mapped.
-// This is (0x20000000) on the Pi Zero, Pi Zero W, and the first generation of the Raspberry Pi and Compute Module and (0x3F000000) on the Pi 2, Pi 3, 4 and Compute Module 3.
 unsigned bcm_host_get_peripheral_size (); // This returns the size of the peripheral's space, which is (0x01000000) for all models.
 unsigned bcm_host_get_sdram_address (); // This returns the bus address of the SDRAM.
-// arguments
-// included sample audio was created by graham_makes and published on freesound.org
 char *filename;
 float freq;
 float shift_ppm = (0.0);
@@ -566,10 +558,9 @@ int dmachannel;
 int type; // analog 1 or digital 2
 int loop;
 float b;
-float divider = 10964912280.7; // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int
+float divider = (10964912280.7); // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int
 //int idivider = (float) divider;
 //int fdivider = (int) ((divider-idivider)*pow (2, 12));
-// menu variable
 int opt;
 int menuoption;
 int channelnumbercb;
@@ -597,7 +588,6 @@ float data [2*BUFFER_LEN];
 float data_filtered [2*BUFFER_LEN];
 char data_name [1024];
 char buffer [80];
-// samples max. 15.75 kHz resolution for AM / 14.50 kHz FM radio can be recorded
 //SF_INFO sfinfo;
 float samp1 = (15.75);
 float samp2 = (14.50);
@@ -612,7 +602,6 @@ float ampf;
 float ampf2;
 float factorizer;
 float sampler;
-// instructor for access
 unsigned long frameinfo;
 int instrs [BUFFERINSTRUCTIONS]; // [1024]
 int bufPtr;
@@ -681,7 +670,6 @@ struct GPCTL // 9 parameters
 		char SRC         : 4; // 4 = PLLA per
 		char ENAB        : 1; // Enable the clock generator
 		char KILL        : 1; // 0 = no action, 1 = stop and reset the clock generator
-		// This is intended for test/debug only. Using this control may cause glitch on the clock generator output.
 		char             : 1; // un-used, bit: 23-11, type: R, reset: 0
 		char BUSY        : 1; //
 		char FLIP        : 1; //
@@ -713,8 +701,7 @@ struct DMAREGS
 		volatile unsigned int DEBUG;
 };
 /*
-// pi4 pin fix for under 93 MHz
-class ClockOutput : public ClockDevice
+class ClockOutput : public ClockDevice // pi4 pin fix for under 93 MHz
 {
         public:
         #ifndef GPIO_21
@@ -739,7 +726,6 @@ class ClockOutput : public ClockDevice
         }
 }
 */
-// basic functions specified one after another
 void clearscreen ()
 {
   printf ("\n\033[H\033[J\n");
@@ -758,18 +744,14 @@ void infos () // warnings and infos
 		printf ("\nDevicename: %s \n", device);
 		return;
 }
-// program functions
 int gpioselect ()
 {
-	// how to change pin-config on boot
-	// https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
 	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
 	scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for transmission is %d \n", gpiopin);
 	if (gpiopin == 4)
 	{
 		printf ("\nUsing default GPIO 4 \n");
-		// set PIN value
 	}
 	else if (gpiopin == 21)
 	{
@@ -794,20 +776,17 @@ int dmaselect ()
 	if (dmachannel == (255))
 	{
 		printf ("\nThe DMA-Channel is deactivated! \n");
-		dmachannel = (255);
-		//DMA_CHANNEL = 255;
+		dmachannel = (255); //DMA_CHANNEL = 255;
 	}
 	else if (dmachannel == (7))
 	{
 		printf ("\nThe DMA-Channel is activated! \n");
-		dmachannel = (7);
-		//DMA_CHANNEL = 7;
+		dmachannel = (7); //DMA_CHANNEL = 7;
 	}
 	else if (dmachannel == (14))
 	{
 		printf ("\nThe DMA-Channel is activated! \n");
-		dmachannel = (14);
-		//DMA_CHANNEL = 14;
+		dmachannel = (14); //DMA_CHANNEL = (14);
 	}
 	else
 	{
@@ -828,7 +807,6 @@ int fileselect (char *filename)  // expected int
 	char *stdfile = "sound.wav";
 	if (filename != stdfile)
 	{
-		// http://man7.org/linux/man-pages/man2/open.2.html
 		int fp = open (filename, 0644); // O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_TRUNC | O_NONBLOCK,
 	}
 	else
@@ -882,7 +860,6 @@ float channelmodepmranalog ()
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
-	// Analog & DMR
 	case 0: freq=446.00000; printf ("\naPMR-Chan 0 on %f \n", freq); break;	// base
 	case 1: freq=446.00625; printf ("\naPMR-Chan 1 on %f \n", freq); break;	// Standard
 	case 2: freq=446.01875; printf ("\naPMR-Chan 2 on %f \n", freq); break; // Geocaching
@@ -892,10 +869,6 @@ float channelmodepmranalog ()
 	case 6: freq=446.06875; printf ("\naPMR-Chan 6 on %f \n", freq); break; // Events
 	case 7: freq=446.08125; printf ("\naPMR-Chan 7 on %f \n", freq); break; // at 3-channel-PMR-devices it's ch. 3
 	case 8: freq=446.09375; printf ("\naPMR-Chan 8 on %f \n", freq); break; // Standard
-	// Digital only
-	// dmr (tier 1) digital new since 28.09.2016
-	// extra 8 chan
-	// 12.5 kHz steps
 	case 9:  freq=446.10312; printf ("\nDMR-Chan 9 on %f \n", freq); break;
 	case 10: freq=446.10625; printf ("\nDMR-Chan 10 on %f \n", freq); break;
 	case 11: freq=446.11875; printf ("\nDMR-Chan 11 on %f \n", freq); break;
@@ -919,8 +892,7 @@ float channelmodepmrdigital ()
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
-	// FD-PMR 6.25 kHz steps  & for DCDM devices: CC1 TG99 TS1 = Contact, CC1 TG9112 TS1 = EmCOM
-	case 0:	freq=446.000000; printf ("\ndPMR-Chan 0 on %f \n", freq); break;
+   case 0:	freq=446.000000; printf ("\ndPMR-Chan 0 on %f \n", freq); break;
 	 case 1:	freq=446.003125; printf ("\ndPMR-Chan 1 on %f \n", freq); break;
 	 case 2:	freq=446.009375; printf ("\ndPMR-Chan 2 on %f \n", freq); break;
 	 case 3:	freq=446.015625; printf ("\ndPMR-Chan 3 on %f \n", freq); break;
@@ -953,7 +925,6 @@ float channelmodepmrdigital ()
 	 case 30:	freq=446.184375; printf ("\ndPMR-Chan 30 on %f \n", freq); break;
 	 case 31:	freq=446.190625; printf ("\ndPMR-Chan 31 on %f \n", freq); break;
 	 case 32:	freq=446.196875; printf ("\ndPMR-Chan 32 on %f \n", freq); break;
-	 // normally up to 32 chan in dpmr
 	 case 33: 		printf ("\nExit ... \n"); exit (0);
 	 default:		freq=446.003125;
 					printf ("\nDefault channelnumber = 1 on freq = %f \n", freq);
@@ -968,8 +939,6 @@ float subchannelmodepmr () // Pilot-tone
 	scanf ("%d", &subchannelnumberpmr);
 	switch (subchannelnumberpmr)
 	{
-	// 38 kHz Pilottone on UKW
-	// Analog & digital standard tones
 	case 0:  subfreq=0.000;  printf ("\nCTSS-Chan 0, default base on %f (NoTone) \n", subfreq); break;	// chan 0 base -> no tone
 	case 1:  subfreq=67.000; printf ("\nCTSS-Chan 1 on %f \n", subfreq); break;	// 4.90 Hz steps, normal. 67.000
 	case 2:  subfreq=71.900; printf ("\nCTSS-Chan 2 on %f \n", subfreq); break;
@@ -1009,7 +978,6 @@ float subchannelmodepmr () // Pilot-tone
 	case 36: subfreq=233.600; printf ("\nCTSS-Chan 36 on %f \n", subfreq); break;
 	case 37: subfreq=241.800; printf ("\nCTSS-Chan 37 on %f \n", subfreq); break;
 	case 38: subfreq=250.300; printf ("\nCTSS-Chan 38 on %f \n", subfreq); break;
-	// non-typical mid-freq
 	case 39:  subfreq=69.300;  printf ("\nCTSS-Chan 39 on %f \n", subfreq); break;
 	case 40:  subfreq=159.800; printf ("\nCTSS-Chan 40 on %f \n", subfreq); break;
 	case 41:  subfreq=165.500; printf ("\nCTSS-Chan 41 on %f \n", subfreq); break;
@@ -1147,7 +1115,7 @@ float channelmodecb () // CB
 			case 79:   freq=26.9450; break;
 			case 80:   freq=26.9550; break; // free released chan for hook-up with multiple CB-devices over internet
 			case 81:   printf ("\nExit ... \n");
-					   exit (0);
+					   		 exit (0);
 			default:		freq=26.9650;
 							printf ("\nDefault CB chan = 1 on %f MHz \n", freq);
 							break;
@@ -1177,16 +1145,16 @@ char modulationselect ()
 }
 int powerselect ()
 {
-	// http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/raspberry-pi/gpio-pin-electrical-specifications
-	// -->Don't drive capacitive loads
-	// low-output ~0.4 V -> 400 mV, high-output 2.4-2.9/3.3V -> 2900 mV => a) P=V*A=400mV*2mA=800mW b) 2900*16=mW=46.4W c)400*16=6400mW=6.4W
-	// 0.1024 W for all pins simultaniously -> *16 (all on 1 pin would be 1.6384 W)
+	// low-output ~0.4 V -> 400 mV, high-output 2.4-2.9/3.3V -> 2900 mV => a) P=V*A=400mV*2mA=800mW b) 2900*16=mW=46.4W c) 400*16=6400mW=6.4W
+	// 0.1024 W for all pins simultaniously -> *16 (all on 1 pin would be 1.6384 W) --> Don't drive capacitive loads btw
 	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA @0.4-3.3V): \n"); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
 	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	power = abs (powerlevel);
+	//printf ("\n Type in Hysteresis setting (0=disabled , 1= enabled ): %d \n", HYSTERESIS);
+	//scanf ("%d", &HYSTERESIS);
+	printf ("\n Hysteresis is %d \n", HYSTERESIS);
 	return (power);
-	// maybe input/switch for hysteresis
 }
 int channelselect ()
 {
@@ -1243,7 +1211,6 @@ int modetypeselect ()
 	}
 	return (modeselect);
 }
-// Voids for modulation and memory handling
 void modulate (int l)
 {
 	printf ("\nModulate carrier ... \n");
@@ -1274,11 +1241,13 @@ void freeRealMemPage (void *vAddr)
 void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
-	// Added functions to enable and disable carrier GPCTL has 9 parameters but here 7 used ?
 	// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
 	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
-	while (!ACCESS(CM_GP0CTL)&0x80) { }; // Wait for busy flag to turn on.
+	while (!ACCESS(CM_GP0CTL)&0x80)
+	{
+		printf ("\nCarrier high yet and waiting ... \n");
+	 }; // Wait for busy flag to turn on.
 	printf ("\nCarrier is high ... \n");
 	return;
 }
@@ -1430,11 +1399,11 @@ void sendStringAsk (char *string, int sleep)
 	}
   return;
 }
-// relevant features for transmitting stuff
+*/
 void playfm (char *filename, int mod, float bandwidth) // char *filename, float freq, int samplerate
 {
 	printf ("\nAllocating file to memory for wave-data ... \n");
-	// version 1
+	/*
 	dma_reg = map_peripheral(DMA_VIRT_BASE, (DMA_CHANNEL_SIZE * (DMA_CHANNEL_MAX + 1)));
 	dma_reg = dma_reg + (DMA_CHANNEL_SIZE / (sizeof (int) * (DMA_CHANNEL)));
 	pwm_reg = map_peripheral(PWM_VIRT_BASE, PWM_LEN);
@@ -1445,12 +1414,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 	clk_reg[GPCLK_CNTL] = (0x5a<<24) | (1<<4) | (4);
 	clk_reg[CM_PLLA] = (0x5A00022A); // Enable PLLA_PER
 	pad ();
-	// version 2
 	*/
-	 /*lseek: repositions the file offset of the open file description
-		associated with the file descriptor fd to the argument offset
-		according to the directive http://man7.org/linux/man-pages/man2/lseek.2.html
-		SEEK_END: The file offset is set to the size of the file plus offset bytes. */
 	int sz = lseek (fp, 0L, SEEK_END);
 	short *data = (short*) malloc (sz);
 	for (r = 0; r < 22; r++) // why i less then 22?
@@ -1522,8 +1486,6 @@ void setupDMA ()
 	//getRealMemPage (&constPage.v, &constPage.p);
 	int centerFreqDivider = (int) ((500.000/freq) * (float) (1<<12) + 0.5);
 	printf ("\ncenterFreqDivider: %d \n", centerFreqDivider);
-	// make data page contents - its essientially 1024
-	// different commands for the DMA controller to send to the clock module at the correct time
 	for (i = 0; i < 1024; i++)
 	{
 	   // ((int*) (constPage.v))[i] = (CARRIER << 24) + centerFreqDivider - 512 + i;
@@ -1601,7 +1563,7 @@ int sampleselect () // char *filename, int samplerate
         printf ("\nNot able to open input file for sampleselect %s \n", filename);
 				printf ("\nNot able to open filepointer for sampleselct %d \n", fp);
         // Print the error message from libsndfile.
-        return (1);
+        return (-1);
 	}
 	//sfinfo.samplerate = samplerate;
 	if (sfinfo.samplerate == 48000) // 44 or 48 kHz needs testing
@@ -1632,22 +1594,18 @@ int sampleselect () // char *filename, int samplerate
 	else
 	{
 	printf ("\nInput samplerate must be at least 22.050 kHz for FM or 14.500 kHz for AM! \n");
-	return (1);
+	return (-1);
 	}
 	*/
 	// check filebits here somehow (via SFM)
 	if (filebit != 16)
 	{
 		printf ("\nError: Input must be 16 bit! \n");
-		return (1);
+		return (-1);
 	}
 	else
 	{
-		printf ("\nInput is 16 bit! \n");
-		return (0);
-	}
-	// While there are frames in the input file, read them,
-	// process them and write them to the output file
+	printf ("\nInput is 16 bit! \n");
   nb_samples = (readcount/channels);
   printf ("\nnb_samples: %d \n", nb_samples);
 	while (readcount == read (fp, data, BUFFER_LEN))
@@ -1697,10 +1655,10 @@ int sampleselect () // char *filename, int samplerate
 	} // for loop
 		printf ("\nEnding readcount ... \n");
 	} // while loop
-    // Close input and output files
   //fclose (FileFreqTiming);
 	close (fp);
 	printf ("\nFile closed! \n");
+	}
 	return (samplerate);
 }
 void playam ()
@@ -1777,14 +1735,8 @@ void modselect () // int argc, char **argv
 int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
-	/*
-  while (playfm (char *filename, int mod, float bandwidth)) // || playam ())
-  {
-  ledactive ();
-  }
-	*/
 	printf ("\nBroadcasting now! ... \n");
-	return (1);
+	return (0);
 }
 int menu ()
 {
@@ -1820,13 +1772,9 @@ void assistant () // assistant
 		printf ("\nAll information gathered, parsing & going back to main! \n");
 		return;
 }
-// MAIN
 int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
-// arguments for global use should be in main!
 {
-	// option parameters
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
-	// program flag options
 	static struct option long_opt [] =
 	{
 			{"filename",	required_argument, 0, 'n'}, // 1
@@ -1846,8 +1794,9 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	};
 	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
 	infos ();
-	// char *argv [0] = "pifunk"; // actual program-name
+	/*
 	char *programname = *argv [0]; //
+	char *argv [0] = "pifunk"; // actual program-name
 	char *filename; // = *argv [1]; n=name
 	float freq; // = strtof (*argv [2], 0); // float only accurate to .4 digits idk why, from 5 it will round ?!
 	int samplerate; // = atof (*argv [3]); // maybe check here on != 22050 on 16 bits as fixed value (eventually allow 48k)
@@ -1859,34 +1808,28 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	int type; // = *argv [10]; analog -> default
 	int loop; // = *argv [11];
 	bool repeat; // testing for loop
-	// menues
 	char *a; // = *argv [12];
 	char *h; // = *argv [13];
 	char *u; // = *argv [14];
-	/* atoll () is meant for integers & it stops parsing when it finds the first non-digit
-	atof () or strtof () is for floats. Note that strtof () requires C99 or C++11
-	abs () for int
-	fabs () for double must be constant
-	fabsf () for float */
-	// for custom program-name, default is the filename itself
+	*/
 	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
 	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
-	// try a modprobe of i2C-BUS
-	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\ni2c-modprobe-test\n");} // ignore errors
+	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1))
+	{
+		printf ("\ni2c-modprobe-test failed \n")
+	}
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	int option_index;
 	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
-	printf ("\n--------------------------\n");
 	printf ("\nChecking short_opt: %c \n", short_opt);
 	printf ("\nChecking options: %d \n", options);
 	printf ("\nChecking option_index: %d \n", option_index);
 	printf ("\nChecking flags long: %d \n", flags);
 	printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
-	//--------------------------------------
 	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc <= 0)
@@ -1949,7 +1892,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 								 printf ("\nLoop/Repeat is %d  (0=false, 1=true)\n", repeat);
 								 int loopselect (bool repeat);
 								 break;
-		// additional help functions
 		case 'a':
 							 if (argc == 1)
 							 {
@@ -1997,7 +1939,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	 } // end of else
 	printf ("\nEnd of argument check, printing debug \n");
 	} // end of while
-	printf ("\n-----------------------------------------\n");
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
@@ -2009,7 +1950,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
 	printf ("\nChecking Loop: is %d \n", loop);
-	printf ("\n-----------------------------------------\n");
 	printf ("\nChecking angle: %f \n", ANGLE);
 	printf ("\nChecking I-value: %f \n", I);
 	printf ("\nQ-value: %f \n", Q);
@@ -2017,14 +1957,12 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking RF-SUM (I+Q): %f \n", RF_SUM);
 	printf ("\nChecking Amplitude-value: %f \n", AMPLITUDE);
 	printf ("\nChecking Amplitude_RV value: %f \n", AMPLITUDE_REV);
-	printf ("\n-------------------------------------------------\n");
 	printf ("\nChecking argc: %d / %p \n", argc, &argc); // **argv, &&argv);
   printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
 	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, power, gpiopin, dmachannel, bandwidth, type, loop);
 	printf ("\nChecking assistent: %p , help: %p , menu: %p \n", &argv [12], &argv [13], &argv [14]);
- // gathering and parsing all given arguments it to player?!
-	printf ("\nTransmission starting ... \n"); // EOF
+	printf ("\nTransmission starting ... \n");
 	int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop); // transmission
 	printf ("\nTransmission ended! \n");
   void terminate (int num);
