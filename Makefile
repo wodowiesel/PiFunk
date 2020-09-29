@@ -203,7 +203,10 @@ piversion:	$(USER) $(UNAME)
 
 .PHONY: 	install
 install:	cd $(HOME)/PiFunk/
-					$(USER) install -m 0755 pifunk $(HOME)/bin/
+					$(USER) install -m 0777 pifunk $(HOME)/bin/
+					# https://askubuntu.com/questions/638796/what-is-meaning-of-755-permissions-in-samba-share
+					# file permission mode to so that the user ID, group &other bit for the owner is setuid
+					# -rwsr-xr-x (4755), -rwxr-xr-x (0755), read+write+execute (0777)
 
 .PHONY: 		uninstall
 uninstall:	$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.out

@@ -1,7 +1,4 @@
-/* PiFunk lite
-----License-------------------------------------------------------------------
-                GPL v3.0  ->  see LICENSE.md !!
-------------------------------------------------------------------------------*/
+/* PiFunk lite----License-------GPL v3.0->see LICENSE.md !!------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -16,7 +13,6 @@
 #include <time.h>
 #include <malloc.h>
 #include <signal.h>
-
 /*
 //#include <stdalign.h>
 //#include <stdnoreturn.h>
@@ -129,7 +125,7 @@
   //#define _STDC_VERSION (199901L)  // -std=c99
 #endif
 */
-// definitions & Macros
+// definitions & macros
 //#define NDEBUG
 #define VERSION 						 "0.1.7.6" // my version
 #define VERSION_MAJOR        (0) //
@@ -137,7 +133,6 @@
 #define VERSION_BUILD        (7) //
 #define VERSION_PATCH        (6) //
 #define VERSION_STATUS 			 "lite" // reduced, only neccessary stuf
-// simple operators
 #define IN                    (0) //
 #define OUT                   (1) //
 #define FALSE                 (0) //
@@ -170,8 +165,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define INP_GPIO(g)                   *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3)) // % means here Modulo-operation for remainder
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3)) //
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
-// specific pi addresses & definitions
-// alternative old/different versions
+// specific pi addresses & definitions + alternative old/different versions
 #ifdef  RASPBERRY || RPI // and RPI == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
@@ -301,6 +295,10 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define LENGTH                          (0x01000000) // dec:	16777216 for peripherial size
 #define SUB_BASE                        (0x7E000000) // dec: 2113929216 phys base
 #define CLKBASE                         (0x7E101000) // dec: 2114981888
+#define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
+#define CLK0_BASE_OFFSET 							  (0x00101070) // dec: 1052784
+#define CLK1_BASE_OFFSET                (0x00101078) // dec: 1052792
+#define CLK_LEN                         (0x1300) // dec: 4864
 #define PWMBASE                         (0x7E20C000) // controller dec: 2116075520
 #define MODULATE                        (0x4D72) // dec: 19826
 #define FIFO                            (0x18)   // dec: 24
@@ -308,35 +306,16 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define DMABASE                         (0x7E007000) // dec: 2113957888
 #define DMAREF                          (0x7F)   // dec: 127 dma base reference
 #define DMAC                            (0x0707) // dec: 1799
+#define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672 -> dma7=0x700, dma14 = 0xE00
+#define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544 -> 0x00
 #define PWMCLK_CNTL0                    (0x5A000016) // dec: 1509949462
 #define PWMCLK_DIV0                     (0x5A002800) // dec: 1509959680
 #define PWMCLK_BASE_OFFSET              (0x001010A0) // dec: 1052832
-// the normal fm-script didn't specified that
-#define DMA0_BASE_OFFSET                (0x00007000) // dec: 28672 -> dma7=0x700, dma14 = 0xE00
-#define DMA15_BASE_OFFSET 						  (0x00E05000) // dec: 14700544 -> 0x00
-#define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
 #define PWM_BASE_OFFSET                 (0x0020C000) // dec: 2146304
 #define PWM_LEN                         (0x28) // dec: 40
-#define CLK_BASE_OFFSET                 (0x00101000) // dec: 1052672
-#define CLK0_BASE_OFFSET 							  (0x00101070) // dec: 1052784
-#define CLK1_BASE_OFFSET                (0x00101078) // dec: 1052792
-#define CLK_LEN                         (0x1300) // dec: 4864
+#define TIMER_BASE_OFFSET 						  (0x00003000) // dec: 12288
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
-#define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE3                      (BCM2837B0_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define GPIO_BASE4                      (BCM2838_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
-#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA0_BASE_OFFSET) //
-#define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
-#define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
-#define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET) //
-#define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET) //
-#define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
-#define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
-#define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
-#define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
 // GPIO
 #define GPFSEL0                         (0x00/4) // p.90, dec: 0
 #define GPFSEL1                         (0x04/4) // 1
@@ -354,7 +333,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define GPPUDCLK0                       (0x98/4) // 38
 #define GPPUDCLK1                       (0x9C/4) // 39
 // PADS
-// Ref: https://www.scribd.com/doc/101830961/GPIO-Pads-Control2
 #define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
 #define PAD_LEN                         (0x40/4) // 0x10 = dec: 16,  0x64 = dec: 100
 #define PADGPIO                         (0x5A000018) // dec: 1509949464
@@ -424,8 +402,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PWM_RNG2                        (0x20/4) // 8
 #define PWMDMAC_ENAB                    (1<<31)  // shift bit to left
 #define PWMDMAC_THRSHLD                 ((15<<8)|(15<<0)) // this means it requests as soon as there is one free slot in the FIFO
-// we want this as burst DMA would mess up our timing
-// The deviation specifies the bandwidth of the signal: ~20.0 for WBFM (broadcasts) and ~3.5 for NBFM (walkie-talkie)
 #define DEVIATION                       (12.50) // in kHz, a-pmr width normal analog
 #define DEVIATION2                      (6.25)  // d-pmr width digital
 #define DEVIATION3                      (10.00) // CB width
@@ -458,7 +434,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PCM_INT_STC_A                   (0x1C/4) // 7
 #define PCM_GRAY                        (0x20/4) // 8
 // DMA
-// technically 2708 is the family-chipname, and 2835/6/7 is a specific implementation for arm
 #define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000)
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
@@ -475,7 +450,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define BCM2708_DMA_PER_MAP(x)          ((x)<<16) //
 #define BCM2708_DMA_PRIORITY(x)         ((x)&0xF<<16) //
 #define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF<<20) //
-// more DMA stuff
 #define DMA_CHANNEL                     (14) //
 #define DMA_CHANNEL_MAX                 (14) //
 #define DMA_CHANNEL_SIZE                (0x100) // 256
@@ -501,10 +475,10 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define DREQ_SPI_SLAVE_TX               (8) //
 #define DREQ_SPI_SLAVE_RX               (9) //
 // memory
-#define PROT_WRITE (1)
-#define PROT_READ (0)
-#define MAP_SHARED (1)
-#define MAP_FIXED (0)
+#define PROT_WRITE											(1) //
+#define PROT_READ 											(0) //
+#define MAP_SHARED 											(1) //
+#define MAP_FIXED 											(0) //
 #define MEM_FLAG_DISCARDABLE            (1<<0) // can be resized to 0 at any time. Use for cached data
 #define MEM_FLAG_NORMAL                 (0<<2) // normal allocating alias. Don't use from ARM
 #define MEM_FLAG_DIRECT                 (1<<2) // 0xC dec: 12 alias uncached
@@ -520,21 +494,22 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define SUBSIZE                         (1) //
 #define DATA_SIZE                       (1000) //
 #define SAMPLES_PER_BUFFER 							(512) //
-// IQ & carrier http://whiteboard.ping.se/SDR/IQ
-float freq;
-float shift_ppm = (0.0);
-float timed = (1.0);
-#define ANGLE (PHASE*(freq+shift_ppm)*timed) //2*pi*freq*timediff
-#define I AMPLITUDE*cosf(ANGLE) // real! In-Phase signal component, A*cos(2*pi*(freq+phaseshift))
-#define Q AMPLITUDE*sinf(ANGLE) // Quadrature signal component
-#define ANGLE_REV (atanf(Q/I)) // arctan
-#define RF_SUM (I+Q) // sum should be 1.0
-#define AMPLITUDE_REV (sqrtf (((I*I)+(Q*Q))))
+#define GPIO_BASE                       (BCM2835_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE1                      (BCM2836_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE2                      (BCM2837_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE3                      (BCM2837B0_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_BASE4                      (BCM2838_PERI_BASE + PERIPH_VIRT_BASE) // hex: 0x5F000000 dec: 1593835520
+#define GPIO_VIRT_BASE                  (PERIPH_VIRT_BASE + GPIO_BASE_OFFSET) //
+#define GPIO_PHYS_BASE                  (PERIPH_PHYS_BASE + GPIO_BASE_OFFSET) //
+#define DMA_VIRT_BASE                   (PERIPH_VIRT_BASE + DMA0_BASE_OFFSET) //
+#define PWM_VIRT_BASE                   (PERIPH_VIRT_BASE + PWM_BASE_OFFSET) //
+#define PWM_PHYS_BASE                   (PERIPH_PHYS_BASE + PWM_BASE_OFFSET) //
+#define CLK_VIRT_BASE                   (PERIPH_VIRT_BASE + CLK_BASE_OFFSET) //
+#define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
+#define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
+#define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
+
 // optional hardware
-// LED
-#define PIN_LED_GND                     (14) // which is the GND pin 27 for led
-#define PIN_17                          (RPI_GPIO_P17) // which is the GPIO pin 17 for led1
-#define PIN_27                          (RPI_GPIO_P27) // which is the GPIO pin 27 for led2
 #define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
@@ -566,6 +541,8 @@ unsigned bcm_host_get_sdram_address (); // This returns the bus address of the S
 // arguments
 // included sample audio was created by graham_makes and published on freesound.org
 char *filename;
+float freq;
+float shift_ppm = (0.0);
 float xtal_freq = (1.0/19.2E6); // LOCK_BASE
 float subfreq;
 float ctss_freq;
@@ -1396,7 +1373,6 @@ void setupio ()
 	carrierhigh ();
 	return;
 }
- // */
 void setupfm ()
 {
   allof7e = (unsigned*) mmap (
@@ -1616,10 +1592,6 @@ void unsetupDMA ()
 	printf ("\nUnsetting DMA done \n");
 	return;
 }
-// sample funcs
-// all subch. -> base/default case 0 -> channel 0
-// if subchannels is 0 = all ch. then check special stuff -> maybe scan func ?
-// squelch/treshhold to build in maybe -> scan function till signal?
 int sampleselect () // char *filename, int samplerate
 {
 	printf ("\nSamplerate/bit select starting \n");
@@ -1731,8 +1703,7 @@ int sampleselect () // char *filename, int samplerate
 	printf ("\nFile closed! \n");
 	return (samplerate);
 }
-// AM
-void play_am ()
+void playam ()
 {
 	float Frequencies = freq;
 	typedef struct
@@ -1764,7 +1735,7 @@ void modulationfm () // int argc, char **argv
 void modulationam () //
 {
 		printf ("\nam modulator starting \n");
-		void play_am (); // actual modulation stuff here for am -> write tone? maybe better name later
+		void playam (); // actual modulation stuff here for am -> write tone? maybe better name later
 	  return;
 }
 int loopselect (bool repeat)
@@ -1803,60 +1774,11 @@ void modselect () // int argc, char **argv
 	}
  	return;
 }
-// turn on LED (with 100 kOhm pullup resistor while transmitting
-void ledinactive ()
-{
-		// check if transmitting
-		printf ("\nChecking transmission status ... \n");
-		/*
-		while (playfm (char *filename, int mod, float bandwidth)) // || play_am ()
-		{
-				//cm2835_gpio_write (PIN_17, LOW);
-				printf ("\nLED off - No transmission! \n");
-		}
-		*/
-		return;
-}
-void ledactive ()
-{
-  // initialize bcm
-  /*
-  bcm2835_set_debug (1);
-  if (!bcm2835_init ())
-	{
-		printf ("\nBCM 2835 init failed! \n");
-  	return (1);
-	}
-	else if (1)
-	{
-    // Set the pin to be an outputannels
-    // bcm2835_gpio_fsel (PIN_17, BCM2835_GPIO_FSEL_OUTP);
-  	printf ("\nBCM 2835 init done and PIN 4 activated \n");
-    // LED is active during transmission
-		while (playfm (char *filename, float freq, int samplerate, int mod, float bandwidth)) //
-		{
-			// Turn it on
-			bcm2835_gpio_write (PIN_17, HIGH);
-			printf ("\nLED on - transmission ... \n");
-			// wait a bit
-			bcm2835_delay (100);
-		}
-	}
-	else // if no transmission than turn it off // (ledactive != 0)
-  {
-		cm2835_gpio_write (PIN_17, LOW);
-		printf ("\nLED off - No transmission \n");
-	}
-   // bcm2835_close ();
-	*/
-	printf ("\nLED active \n");
-	return;
-}
 int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
 	/*
-  while (playfm (char *filename, int mod, float bandwidth)) // || play_am ())
+  while (playfm (char *filename, int mod, float bandwidth)) // || playam ())
   {
   ledactive ();
   }
@@ -1954,7 +1876,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
 	// try a modprobe of i2C-BUS
-	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\nmodprobe-test\n");} // ignore errors
+	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1)) {printf ("\ni2c-modprobe-test\n");} // ignore errors
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	int option_index;
 	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
