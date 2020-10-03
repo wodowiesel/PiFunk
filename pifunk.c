@@ -609,8 +609,8 @@ int bufPtr;
 int instrCnt;
 //int instrPage;
 //int constPage;
-int reg = (gpio/10); // volatile unsigned
-int shift = (gpio%10)*3; // volatile unsigned int shift
+int reg; // = (gpio/10); // volatile unsigned
+int shift; // = (gpio%10)*3; // volatile unsigned int shift
 void *vAddr;
 void *pAddr;
 static volatile uint32_t *pwm_reg;
