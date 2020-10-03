@@ -557,6 +557,7 @@ float bandwidth;
 int dmachannel;
 int type; // analog 1 or digital 2
 int loop;
+bool repeat; // testing for loop
 float b;
 float divider = (10964912280.7); // PLLD_FREQ/(2000*228*(1.+shift_ppm/1.E6)); // 2000*228-> 500000000/ 456000*(1+0/10000000) -> 1E-7 ,=> Pll/ 0.0456= 10964912280.7, previously as int
 //int idivider = (float) divider;
@@ -574,7 +575,7 @@ int num;
 FILE *rfp, *wfp;
 FILE wavefile;
 FILE FileFreqTiming;
-int MEM_FD;// = open ("/dev/mem"); // , O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK
+int MEM_FD; // = open ("/dev/mem"); // , O_RDWR | O_SYNC | O_CREAT | O_TRUNC | O_NONBLOCK
 //SNDFILE *infile;
 //SNDFILE *outfile;
 //snd_output_t *output = 0;
@@ -608,8 +609,8 @@ int bufPtr;
 int instrCnt;
 //int instrPage;
 //int constPage;
-volatile unsigned int reg = (gpio/10);
-volatile unsigned int shift = (gpio%10)*3;
+int reg = (gpio/10); // volatile unsigned
+int shift = (gpio%10)*3; // volatile unsigned int shift
 void *vAddr;
 void *pAddr;
 static volatile uint32_t *pwm_reg;
@@ -633,7 +634,6 @@ else
 {
   printf ("\npad_reg are NOT the same -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
 }
-
 pad_reg = pad_reg [GPIO_PAD_0_27] = 0x5A000018 + power; // pi-gpio bank-row1
 pad_reg2 = pad_reg [GPIO_PAD_28_45] = 0x5A000018 + power; // pi-gpio bank-row2
 gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
@@ -1287,9 +1287,9 @@ void terminate (int num) // static
      //close_control_pipe ();
 	if (vAddr != 0)
 	{
-        unmapmem (vAddr, NUM_PAGES); // *4096
-      //  mem_unlock (mbox.handle, mbox.mem_ref);
-      //  mem_free (mbox.handle, mbox.mem_ref);
+      // unmapmem (vAddr, NUM_PAGES); // *4096
+      // mem_unlock (mbox.handle, mbox.mem_ref);
+      // mem_free (mbox.handle, mbox.mem_ref);
 	}
     printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exiting \n");
     return (num);
@@ -1794,8 +1794,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	};
 	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
 	infos ();
-	/*
 	char *programname = *argv [0]; //
+	/*
 	char *argv [0] = "pifunk"; // actual program-name
 	char *filename; // = *argv [1]; n=name
 	float freq; // = strtof (*argv [2], 0); // float only accurate to .4 digits idk why, from 5 it will round ?!
@@ -1807,7 +1807,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	float bandwidth; // = *argv [9];
 	int type; // = *argv [10]; analog -> default
 	int loop; // = *argv [11];
-	bool repeat; // testing for loop
 	char *a; // = *argv [12];
 	char *h; // = *argv [13];
 	char *u; // = *argv [14];
@@ -1820,7 +1819,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	bcm_host_get_sdram_address ();
 	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1))
 	{
-		printf ("\ni2c-modprobe-test failed \n")
+		printf ("\ni2c-modprobe-test failed \n");
 	}
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	int option_index;
@@ -1950,13 +1949,6 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
 	printf ("\nChecking Loop: is %d \n", loop);
-	printf ("\nChecking angle: %f \n", ANGLE);
-	printf ("\nChecking I-value: %f \n", I);
-	printf ("\nQ-value: %f \n", Q);
-	printf ("\nChecking Angle-reverse: %f \n", ANGLE_REV);
-	printf ("\nChecking RF-SUM (I+Q): %f \n", RF_SUM);
-	printf ("\nChecking Amplitude-value: %f \n", AMPLITUDE);
-	printf ("\nChecking Amplitude_RV value: %f \n", AMPLITUDE_REV);
 	printf ("\nChecking argc: %d / %p \n", argc, &argc); // **argv, &&argv);
   printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
   printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
