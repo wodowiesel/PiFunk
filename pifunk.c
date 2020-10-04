@@ -1775,25 +1775,7 @@ void assistant () // assistant
 int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 {
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
-	static struct option long_opt [] =
-	{
-			{"filename",	required_argument, 0, 'n'}, // 1
-			{"freqency",   	required_argument, 0, 'f'}, // 2
-			{"samplerate", 	required_argument, 0, 's'}, // 3
-			{"mod",			required_argument, 0, 'm'}, // 4
-			{"power",		required_argument, 0, 'p'}, // 5
-			{"gpiopin",		required_argument, 0, 'g'}, // 6
-			{"dmachannel",	required_argument, 0, 'd'}, // 7
-			{"bandwidth",	required_argument, 0, 'b'}, // 8
-			{"type",		required_argument, 0, 't'}, // 9
-			{"loop",	no_argument, 0, 'l'}, // 10
-			{"assistant",	no_argument,       0, 'a'}, // 11
-			{"menu",		no_argument,       0, 'u'}, // 12
-			{"help",		no_argument,       0, 'h'}, // 13
-			{0,				0,                 0,  0 }  // blank
-	};
 	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
-	infos ();
 	char *programname = *argv [0]; //
 	/*
 	char *argv [0] = "pifunk"; // actual program-name
@@ -1814,6 +1796,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
 	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
+	infos ();
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
@@ -1822,13 +1805,8 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 		printf ("\ni2c-modprobe-test failed \n");
 	}
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
-	int option_index;
-	int flags = getopt_long (argc, argv, short_opt, long_opt, &option_index);
 	printf ("\nChecking short_opt: %c \n", short_opt);
 	printf ("\nChecking options: %d \n", options);
-	printf ("\nChecking option_index: %d \n", option_index);
-	printf ("\nChecking flags long: %d \n", flags);
-	printf ("\nChecking long_opt: %s \n", long_opt[option_index].name);
 	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc <= 0)
