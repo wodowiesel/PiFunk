@@ -1772,10 +1772,10 @@ void assistant () // assistant
 		printf ("\nAll information gathered, parsing & going back to main! \n");
 		return;
 }
-int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
+int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
-	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
+	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	char *programname = *argv [0]; //
 	/*
 	char *argv [0] = "pifunk"; // actual program-name
@@ -1794,7 +1794,7 @@ int main (int argc, char **argv) // , const char *short_opt, *argv []=**argv
 	char *u; // = *argv [14];
 	*/
 	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
-	printf ("\nProgram name is %s, FILE: %s \n", programname, __FILE__);
+	printf ("\nProgramname is %s, FILE: %s \n", programname, __FILE__);
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	infos ();
 	bcm_host_get_peripheral_address ();
