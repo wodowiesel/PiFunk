@@ -1776,12 +1776,11 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
 	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	char *programname = *argv [0]; //
-	printf ("\nProgramname is %s, FILE: %s \n", programname, __FILE__);
+	printf ("\nFILE: %s \n", __FILE__);
 	void infos ();
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
-	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking short_opt: %s \n", short_opt);
+	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
 	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
 	/*
@@ -1800,16 +1799,13 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	char *h; // = *argv [13];
 	char *u; // = *argv [14];
 	*/
-
-
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
-	if (system ("/sbin/modprobe i2c_dev" || "/sbin/modprobe i2c_bcm2835") == (-1))
+	if (system ("/sbin/modprobe i2c_bcm2835") == -1) // "/sbin/modprobe i2c_dev" ||
 	{
 		printf ("\ni2c-modprobe-test failed \n");
 	}
-
 	while (options != 0) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc <= 0)
