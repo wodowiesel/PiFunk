@@ -166,7 +166,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define OUT_GPIO(g)                   *(gpio+((g)/10)) |=  (1<<(((g)%10)*3)) //
 #define SET_GPIO_ALT(g, a)            *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 // specific pi addresses & definitions + alternative old/different versions
-#ifdef  RASPBERRY || RPI // and RPI == 1
+#ifdef  RPI // old RPIs meant here
 #define PERIPH_VIRT_BASE               (0x20000000) // dec:536870912
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec:536870912
 #define BCM2835_VIRT_BASE              (0x20000000) // dec:536870912
@@ -1120,8 +1120,8 @@ float channelmodecb () // CB
 							printf ("\nDefault CB chan = 1 on %f MHz \n", freq);
 							break;
 	printf ("\nUsing channel = %d on freq = %f \n", channelnumbercb, freq);
-	return (freq);
 	}
+	return (freq);
 }
 char modulationselect ()
 {
@@ -1807,7 +1807,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking short_opt: %c \n", short_opt);
 	printf ("\nChecking options: %d \n", options);
-	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
+	while (options !=  0) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc <= 0)
 		{
@@ -1916,7 +1916,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	 } // end of else
 	printf ("\nEnd of argument check, printing debug \n");
 	} // end of while
-	printf ("\nChecking File: %s \n", filename);
+	printf ("\nChecking File: %s \n", &filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
@@ -1928,9 +1928,9 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking Type: is %d \n", type);  // 1/analog, 2/digital:
 	printf ("\nChecking Loop: is %d \n", loop);
 	printf ("\nChecking argc: %d / %p \n", argc, &argc); // **argv, &&argv);
-  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
-  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
-	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, power, gpiopin, dmachannel, bandwidth, type, loop);
+  //printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
+  //printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
+	//printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, power, gpiopin, dmachannel, bandwidth, type, loop);
 	printf ("\nChecking assistent: %p , help: %p , menu: %p \n", &argv [12], &argv [13], &argv [14]);
 	printf ("\nTransmission starting ... \n");
 	int tx (char *filename, float freq, int samplerate, char *mod, int power, int gpiopin, int dmachannel, float bandwidth, int type, int loop); // transmission

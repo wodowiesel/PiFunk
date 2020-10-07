@@ -39,9 +39,9 @@ $(CINC) # -I/usr/include/linux/
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
 
-CFLAGS=-std=gnu99 -O2 ## gnu extention & highest optimization level
+CFLAGS=-std=gnu99 -O3 ## gnu extention & highest optimization level
 $(CFLAGS)
-CXXFLAGS=-std=gnu++17 -O2 ## for c++
+CXXFLAGS=-std=gnu++17 -O3 ## for c++
 $(CXXFLAGS)
 
 ASFLAGS=-S -CC ## upper case assembler code without linker
