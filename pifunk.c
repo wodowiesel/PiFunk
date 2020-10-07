@@ -803,7 +803,7 @@ int fileselect (char *filename)  // expected int
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
 	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
-	sprintf (soundname, "%s", "file.ft");
+	//sprintf (soundname, "%s", "file.ft");
 	char *stdfile = "sound.wav";
 	if (filename != stdfile)
 	{
@@ -1775,8 +1775,15 @@ void assistant () // assistant
 int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
 	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
-	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
+	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
 	char *programname = *argv [0]; //
+	printf ("\nProgramname is %s, FILE: %s \n", programname, __FILE__);
+	void infos ();
+	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
+	int options = getopt (argc, argv, short_opt); // short_opt must be constant
+	printf ("\nChecking short_opt: %s \n", short_opt);
+	printf ("\nChecking options: %d \n", options);
+	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
 	/*
 	char *argv [0] = "pifunk"; // actual program-name
 	char *filename; // = *argv [1]; n=name
@@ -1793,10 +1800,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	char *h; // = *argv [13];
 	char *u; // = *argv [14];
 	*/
-	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
-	printf ("\nProgramname is %s, FILE: %s \n", programname, __FILE__);
-	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	infos ();
+
+
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
@@ -1804,10 +1809,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	{
 		printf ("\ni2c-modprobe-test failed \n");
 	}
-	int options = getopt (argc, argv, short_opt); // short_opt must be constant
-	printf ("\nChecking short_opt: %c \n", short_opt);
-	printf ("\nChecking options: %d \n", options);
-	while (options !=  0) // if -1 then all flags were read, if ? then unknown
+
+	while (options != 0) // if -1 then all flags were read, if ? then unknown
 	{
 		if (argc <= 0)
 		{
