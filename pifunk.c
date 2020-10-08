@@ -1774,15 +1774,15 @@ void assistant () // assistant
 }
 int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
-	printf ("\nStarting Main in PiFunk! \nBeginning initializations ... \n");
+	printf ("\nStarting Main in PiFunk lite! \n\nBeginning initializations ... \n");
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	printf ("\nFILE: %s \n", __FILE__);
+	printf ("\nFILE: %s, internal name: %d \n", __FILE__, *argv [0]); //
 	void infos ();
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
-	printf ("\nArguments: %d / internal name: %s \n", argc, *argv [0]);
+	printf ("\nArguments: %d \n", argc);
 	/*
 	char *argv [0] = "pifunk"; // actual program-name
 	char *filename; // = *argv [1]; n=name
