@@ -1776,7 +1776,22 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
 	printf ("\nStarting Main in PiFunk lite! \n\nBeginning initializations ... \n");
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	printf ("\nFILE: %s, internal name: %s \n", __FILE__, &argv [0]); //
+	printf ("\nFILE: %s, internal name: %s \n", __FILE__, &&argv [0]); //
+	bcm_host_get_peripheral_address ();
+	bcm_host_get_peripheral_size ();
+	bcm_host_get_sdram_address ();
+	if (system ("/sbin/modprobe i2c_bcm2835") == -1)
+	{
+		printf ("\ni2c-modprobe-test BCM ailed \n");
+	}
+	else if (system ("/sbin/modprobe i2c_dev") == -1)
+	{
+		printf ("\ni2c-modprobe-test DEV failed \n");
+	}
+	else
+	{
+		printf ("\ni2c-modprobe-test BCM & DEV successful \n");
+	}
 	void infos ();
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	printf ("\nChecking short_opt: %s \n", short_opt);
@@ -1799,27 +1814,12 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	char *h; // = *argv [13];
 	char *u; // = *argv [14];
 	*/
-	bcm_host_get_peripheral_address ();
-	bcm_host_get_peripheral_size ();
-	bcm_host_get_sdram_address ();
-	if (system ("/sbin/modprobe i2c_bcm2835") == -1)
-	{
-		printf ("\ni2c-modprobe-test BCM ailed \n");
-	}
-	else if (system ("/sbin/modprobe i2c_dev") == -1)
-	{
-		printf ("\ni2c-modprobe-test DEV failed \n");
-	}
-	else
-	{
-		printf ("\ni2c-modprobe-test BCM & DEV successful \n");
-	}
-	if (argc || options <= 0)
+	if (argcs <= 0) // || options
 	{
 	fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
 	}
-	else if (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown , while
+	else if (argc || options > 0) // if -1 then all flags were read, if ? then unknown , while
 	{
 		switch (options)
 		{
@@ -1875,7 +1875,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								 int loopselect (bool repeat);
 								 break;
 		case 'a':
-							 if (argc == 1)
+							 if (argc == 2)
 							 {
 								printf ("\nAssistant activated \n");
 								void assistant ();
@@ -1887,7 +1887,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								break;
 							 }
 		case 'u':
-						if (argc == 1)
+						if (argc == 2)
 						{
          				 printf ("\nOpening menu \n");
          				 int menu (); // extra menu for main
@@ -1899,7 +1899,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
          					break;
          				}
 		case 'h':
-							 if (argc == 1)
+							 if (argc == 2)
 							 {
 								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
