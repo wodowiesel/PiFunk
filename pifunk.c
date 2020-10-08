@@ -1776,7 +1776,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
 	printf ("\nStarting Main in PiFunk lite! \n\nBeginning initializations ... \n");
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	printf ("\nFILE: %s, internal name: %s \n", __FILE__, &&argv [0]); //
+	printf ("\nFILE: %s \n", __FILE__); //
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
@@ -1792,7 +1792,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	{
 		printf ("\ni2c-modprobe-test BCM & DEV successful \n");
 	}
-	void infos ();
+	infos ();
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
