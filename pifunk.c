@@ -1878,7 +1878,7 @@ int main (int argc, char **argv, const char *short_opt) // *argv []=**argv
 							 if (argc == 2)
 							 {
 								printf ("\nAssistant activated \n");
-								void assistant ();
+								assistant ();
 								break;
 							}
 							 else
@@ -1890,7 +1890,7 @@ int main (int argc, char **argv, const char *short_opt) // *argv []=**argv
 						if (argc == 2)
 						{
          				 printf ("\nOpening menu \n");
-         				 int menu (); // extra menu for main
+         				 menu (); // extra menu for main
          				 break;
          				}
          				else
