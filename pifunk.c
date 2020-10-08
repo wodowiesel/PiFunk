@@ -1814,7 +1814,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	char *h; // = *argv [13];
 	char *u; // = *argv [14];
 	*/
-	if (argcs <= 0) // || options
+	if (argc <= 0) // || options
 	{
 	fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
