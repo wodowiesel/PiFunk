@@ -1776,7 +1776,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 {
 	printf ("\nStarting Main in PiFunk lite! \n\nBeginning initializations ... \n");
 	printf ("\nProgram was processed on %s at %s \n", __DATE__, __TIME__);
-	printf ("\nFILE: %s, internal name: %d \n", __FILE__, *argv [0]); //
+	printf ("\nFILE: %s, internal name: %s \n", __FILE__, &argv [0]); //
 	void infos ();
 	const char *short_opt = "n:f:s:m:p:g:d:b:t:lauh"; // program flags
 	printf ("\nChecking short_opt: %s \n", short_opt);
@@ -1806,16 +1806,20 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	{
 		printf ("\ni2c-modprobe-test BCM ailed \n");
 	}
-	if (system ("/sbin/modprobe i2c_dev") == -1)
+	else if (system ("/sbin/modprobe i2c_dev") == -1)
 	{
 		printf ("\ni2c-modprobe-test DEV failed \n");
 	}
-	if (argc <= 0)
+	else
+	{
+		printf ("\ni2c-modprobe-test BCM & DEV successful \n");
+	}
+	if (argc || options <= 0)
 	{
 	fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
 	}
-	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
+	else if (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown , while
 	{
 		switch (options)
 		{
@@ -1915,8 +1919,12 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		} // end of switch
 		printf ("\nEnd of switch \n");
 	  // } end of else
+	} // end of while/if
+	else
+	{
+		printf ("\nArgument/Option Errors! \n");
+	}
 	printf ("\nEnd of argument check, printing debug \n");
-	} // end of while
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
