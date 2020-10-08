@@ -1802,19 +1802,21 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	bcm_host_get_peripheral_address ();
 	bcm_host_get_peripheral_size ();
 	bcm_host_get_sdram_address ();
-	if (system ("/sbin/modprobe i2c_bcm2835") == -1) // "/sbin/modprobe i2c_dev" ||
+	if (system ("/sbin/modprobe i2c_bcm2835") == -1)
 	{
-		printf ("\ni2c-modprobe-test failed \n");
+		printf ("\ni2c-modprobe-test BCM ailed \n");
 	}
-	while (options != 0) // if -1 then all flags were read, if ? then unknown
+	if (system ("/sbin/modprobe i2c_dev") == -1)
 	{
-		if (argc <= 0)
-		{
-		fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
-		return (-1);
-		}
-		else
-		{
+		printf ("\ni2c-modprobe-test DEV failed \n");
+	}
+	if (argc <= 0)
+	{
+	fprintf (stderr, "\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-p <power (1-7>] \n[-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-b <bandwidth (12.5)>] [-t <type (1/2) for a/d>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+	return (-1);
+	}
+	while (options != (-1 || 0)) // if -1 then all flags were read, if ? then unknown
+	{
 		switch (options)
 		{
 		printf ("\nArgument-Switch \n");
@@ -1912,10 +1914,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
-	 } // end of else
+	  // } end of else
 	printf ("\nEnd of argument check, printing debug \n");
 	} // end of while
-	printf ("\nChecking File: %s \n", &filename);
+	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
