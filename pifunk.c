@@ -930,7 +930,7 @@ char channelmodepmr () // PMR
 	}
 	else
 	{
-		type=(1);
+		type="a";
 		printf ("\nNO type could be determined, wrong input! Using %d as standard \n", type);
 	}
 	printf ("\nOn type = %d with channelnumber = %d on freq = %f \n", type, channelnumberpmr, freq);
