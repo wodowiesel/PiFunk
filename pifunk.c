@@ -552,7 +552,7 @@ int HYSTERESIS = (1); // bits: 3, Fieldname: HYST, type: RW, reset 0x1, 0=disabl
 int gpiopin;
 float bandwidth;
 int dmachannel;
-char type; // a/d
+char *type; // a/d
 char *mod_type; //
 int loop;
 bool repeat; // testing for loop
@@ -1265,8 +1265,8 @@ void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
 	struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
-	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
-	while (ACCESS(CM_GP0CTL)&0x80) { // wait };
+	ACCESS (CM_GP0CTL) = *((int*) &setupword);
+	while (ACCESS(CM_GP0CTL)&0x80) {  }; // wait
 	printf ("\nCarrier is low ... \n");
 	return;
 }
@@ -1290,7 +1290,7 @@ void terminate (int num) // static
 	if (dma_reg && vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
-        printf ("\ndma_reg is %u \n", dma_reg);
+        printf ("\ndma_reg is %lu \n", dma_reg);
         //udelay (10);
 	}
      //fm_mpx_close ();
@@ -1302,7 +1302,7 @@ void terminate (int num) // static
       // mem_free (mbox.handle, mbox.mem_ref);
 	}
     printf ("\nTerminating: cleanly deactivated the DMA engine and killed the carrier. Exiting \n");
-    return (num);
+    return;
 }
 void setupio ()
 {
@@ -1728,7 +1728,7 @@ void modselect () //
 	}
  	return;
 }
-int tx (char *filename, float freq, int samplerate, char *mod, int type, float bandwidth, int power, int gpiopin, int dmachannel, int loop)
+int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
 	printf ("\nBroadcasting now! ... \n");
@@ -1922,7 +1922,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	//printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, power, gpiopin, dmachannel, bandwidth, type, loop);
 	printf ("\nChecking extras... assistent: %p, help: %p, menu: %p \n", &argv [12], &argv [13], &argv [14]);
 	printf ("\nTransmission starting ... \n");
-	int tx (char *filename, float freq, int samplerate, char *mod, int type, float bandwidth, int power, int gpiopin, int dmachannel, int loop); // transmission
+	int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop); // transmission
 	printf ("\nTransmission ended! \n");
   void terminate (int num);
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
