@@ -34,8 +34,9 @@ RM=rm -f ## remove files or folder
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## environment variable C_INCLUDE_PATH
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
-CINC:=-Iinclude -I/opt/vc/include/ -I/usr/src/linux-headers-4.19.97+/include/linux/ ## kernel now 4.19.97+
-$(CINC) # -I/usr/include/linux/
+CINC:=-Iinclude -I/opt/vc/include/ ## kernel now 4.19.97+
+## -I/usr/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/linux/ 
+$(CINC) #
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
 
@@ -63,7 +64,7 @@ $(LDLIBS)
 PFLIBS=-L$(HOME)/PiFunk/lib/
 $(PFLIBS)
 
-LDFLAGS=-lbcm_host -lbcm2835 -lsndfile -lm -pthread ## -lm after snd, -lgnu
+LDFLAGS=-lbcm_host -lbcm2835 -lsndfile -lm -pthread ## -lm after -lsnd, -lgnu
 $(LDFLAGS)
 PFFLAGGS=-lpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)

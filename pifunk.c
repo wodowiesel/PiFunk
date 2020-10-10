@@ -9,31 +9,30 @@
 #include <string.h>
 #include <getopt.h>
 #include <math.h>
+#include <float.h>
 #include <iso646.h>
 #include <time.h>
 #include <malloc.h>
 #include <signal.h>
 #include <ctype.h>
-
 #include <gnumake.h>
 #include <pthread.h>
-#include <float.h>
+#include <sys/mman.h>
 /*
-//#include <stdalign.h>
-//#include <stdnoreturn.h>
-//#include <stdatomic.h>
+#include <stdalign.h>
+#include <stdnoreturn.h>
+#include <stdatomic.h>
 #include <argp.h>
 #include <utime.h>
 #include <sched.h>
 #include <locale.h>
-//#include <errno.h>
+#include <errno.h>
 #include <wchar.h>
 #include <wctype.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <assert.h>
 #include <setjmp.h>
-//#include <limits.h>
 #include <termios.h>
 #include <inttypes.h>
 #include <tgmath.h>
@@ -44,13 +43,13 @@
 #include <pwd.h>
 #include <poll.h>
 #include <uchar.h>
+//#include <limits.h>
 #include <sys/cdefs.h>
 #include <sys/time.h>
 #include <sys/timex.h>
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/mman.h>
 #include <sys/select.h>
 #include <sys/file.h>
 #include <sys/sysmacros.h>
@@ -106,6 +105,7 @@
 #ifdef __GNUC__ // gcc
   #warning Using GNU C with ANSI ISO C99 as GNU99!
   //#pragma GCC system_header
+	#pragma GCC push(visibility)
   #pragma GCC visibility pop
   #define EXPORT __attribute__((visibility("default")))
   #define EXPORT_HIDDEN __attribute__((visibility("hidden")))
@@ -744,7 +744,7 @@ void infos () // warnings and infos
 int fileselect (char *filename)  // expected int
 {
 	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
-	scanf ("%s", &filename);
+	scanf ("%s", filename);
 	printf ("\nTrying to play %s ... \n", filename);
 	printf ("\nOpening file ... \n");
 	printf ("\nAllocating filename memory ... \n");
@@ -917,7 +917,7 @@ float subchannelmodepmr () // Pilot-tone
 char channelmodepmr () // PMR
 {
 	printf ("\nChoose PMR-Type a for analog / d for digital: \n");
-	scanf ("%s", &type);
+	scanf ("%s", type);
 	if (type=="a")
 	{
 		printf ("\nYou chose type analog \n");
@@ -933,7 +933,7 @@ char channelmodepmr () // PMR
 		type="a";
 		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", type);
 	}
-	printf ("\nOn type = %s with channelnumber = %s on freq = %f \n", type, channelnumberpmr, freq);
+	printf ("\nOn type = %s with channelnumberpmr = %d on freq = %f \n", type, channelnumberpmr, freq);
 	return (type);
 }
 float channelmodecb () // CB
@@ -1282,15 +1282,15 @@ void terminate (int num) // static
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
-        printf ("\ngpio_reg is %u \n", gpio_reg);
+        printf ("\ngpio_reg is % \n", gpio_reg);
         // Disable the clock generator
         clk_reg [GPCLK_CNTL] = (0x5A);
-        printf ("\nclk_reg is %u \n", clk_reg);
+        printf ("\nclk_reg is % \n", clk_reg); // u or lu?
 	}
 	if (dma_reg && vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
-        printf ("\ndma_reg is %lu \n", dma_reg);
+        printf ("\ndma_reg is % \n", dma_reg);
         //udelay (10);
 	}
      //fm_mpx_close ();
@@ -1456,7 +1456,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
         // problem still with .v & .p endings for struct!!
-        while (ACCESS (DMABASE + CURBLOCK & ~ DMAREF) == (int) (instrs [bufPtr]) ) { }; // CURBLOCK of struct PageInfo, [bufPtr].p
+        while (ACCESS ((DMABASE + CURBLOCK) & ~ DMAREF) == (int) (instrs [bufPtr]) ) { }; // CURBLOCK of struct PageInfo, [bufPtr].p
         //usleep2 (1000); // leaving out sleep for faster process
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
@@ -1486,7 +1486,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 void setupDMA ()
 {
 	printf ("\nSetup of DMA starting ... \n");
-	printf ("\ndma_reg is %u \n", dma_reg);
+	//printf ("\ndma_reg is %u \n", dma_reg);
 	//atexit (unsetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
