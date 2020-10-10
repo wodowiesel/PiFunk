@@ -914,7 +914,7 @@ float subchannelmodepmr () // Pilot-tone
 	return (subfreq);
 }
 // Channel-mode
-int channelmodepmr () // PMR
+char channelmodepmr () // PMR
 {
 	printf ("\nChoose PMR-Type a for analog / d for digital: \n");
 	scanf ("%s", &type);
@@ -1265,7 +1265,7 @@ void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
 	struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
-	ACCESS (CM_GP0CTL) = *((int*) &setupword);
+	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
 	while (ACCESS(CM_GP0CTL)&0x80) {  }; // wait
 	printf ("\nCarrier is low ... \n");
 	return;
