@@ -105,8 +105,8 @@
 #ifdef __GNUC__ // gcc
   #warning Using GNU C with ANSI ISO C99 as GNU99!
   //#pragma GCC system_header
-	#pragma GCC push(visibility)
-  #pragma GCC visibility pop
+	//#pragma GCC push(visibility)
+  //#pragma GCC visibility pop
   #define EXPORT __attribute__((visibility("default")))
   #define EXPORT_HIDDEN __attribute__((visibility("hidden")))
   #define IMPORT
@@ -1254,7 +1254,7 @@ void carrierhigh () // enables it
 	// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
 	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
-	while (!ACCESS(CM_GP0CTL)&0x80)
+	while (!(ACCESS(CM_GP0CTL) &0x80)
 	{
 		printf ("\nCarrier high yet and waiting ... \n");
 	 }; // Wait for busy flag to turn on.
@@ -1282,15 +1282,15 @@ void terminate (int num) // static
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
-        printf ("\ngpio_reg is % \n", gpio_reg);
+        printf ("\ngpio_reg is %x \n", gpio_reg);
         // Disable the clock generator
         clk_reg [GPCLK_CNTL] = (0x5A);
-        printf ("\nclk_reg is % \n", clk_reg); // u or lu?
+        printf ("\nclk_reg is %x \n", clk_reg); // u or lu?
 	}
 	if (dma_reg && vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
-        printf ("\ndma_reg is % \n", dma_reg);
+        printf ("\ndma_reg is %x \n", dma_reg);
         //udelay (10);
 	}
      //fm_mpx_close ();
@@ -1332,8 +1332,8 @@ void setupio ()
 		gpio_map = (unsigned char *) mmap (
 		gpio_mem,
 		BLOCK_SIZE,
-	 //PROT_READ | PROT_WRITE, // error
-		//MAP_SHARED | MAP_FIXED, // error
+	  PROT_READ | PROT_WRITE, // error
+		MAP_SHARED | MAP_FIXED, // error
 		MEM_FD,
 		GPIO_BASE);
 	}
@@ -1357,8 +1357,8 @@ void setupfm ()
   allof7e = (unsigned*) mmap (
                 0,
                 BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
-              //  PROT_READ|PROT_WRITE, // error
-              //  MAP_SHARED, // error
+                PROT_READ | PROT_WRITE, // error
+                MAP_SHARED, // error
                 MEM_FD, //
                 PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
 	if ((int) allof7e == (-1))
@@ -1486,7 +1486,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 void setupDMA ()
 {
 	printf ("\nSetup of DMA starting ... \n");
-	//printf ("\ndma_reg is %u \n", dma_reg);
+	printf ("\ndma_reg is %x \n", dma_reg);
 	//atexit (unsetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
