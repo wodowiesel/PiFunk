@@ -1254,10 +1254,10 @@ void carrierhigh () // enables it
 	// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
 	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
-	while (!(ACCESS(CM_GP0CTL) &0x80)
+	while (!(ACCESS(CM_GP0CTL) &0x80))
 	{
 		printf ("\nCarrier high yet and waiting ... \n");
-	 }; // Wait for busy flag to turn on.
+	 }; // Wait for busy flag to turn on
 	printf ("\nCarrier is high ... \n");
 	return;
 }
