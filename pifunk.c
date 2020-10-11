@@ -507,7 +507,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
 #define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
-#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472
+#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472, ~means negotiation/complementary 8inversion)
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
@@ -620,24 +620,6 @@ static volatile uint32_t *pad_reg;
 static volatile uint32_t *pad_reg1;
 static volatile uint32_t *pad_reg2;
 static volatile uint32_t *pad_val;
-void pad ()
-{
-/*
-pad_val = (PADGPIO + power);
-if ((pad_reg1 || pad_reg2) == pad_val) // check equality
-{
-  printf ("\npad_reg1 & pad_reg2 = pad_val -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
-}
-else
-{
-  printf ("\npad_reg are NOT the same -> %u / %u / %u \n", pad_reg1, pad_reg2, pad_val);
-}
-pad_reg = pad_reg [GPIO_PAD_0_27] = 0x5A000018 + power; // pi-gpio bank-row1
-pad_reg2 = pad_reg [GPIO_PAD_28_45] = 0x5A000018 + power; // pi-gpio bank-row2
-gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
-*/
-return;
-}
 struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 {
 		void *p; // physical address BCMXXXX_PERI_BASE
@@ -1272,6 +1254,24 @@ void carrierlow () // disables it
 	printf ("\nCarrier is low ... \n");
 	return;
 }
+void pad ()
+{
+/*
+pad_val = (PADGPIO + power);
+if ((pad_reg1 || pad_reg2) == pad_val) // check equality
+{
+  printf ("\npad_reg1 & pad_reg2 = pad_val -> %p / %p / %p \n", pad_reg1, pad_reg2, pad_val);
+}
+else
+{
+  printf ("\npad_reg are NOT the same -> %p / %p / %p \n", pad_reg1, pad_reg2, pad_val);
+}
+pad_reg = pad_reg [GPIO_PAD_0_27] = 0x5A000018 + power; // pi-gpio bank-row1
+pad_reg2 = pad_reg [GPIO_PAD_28_45] = 0x5A000018 + power; // pi-gpio bank-row2
+gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
+*/
+return;
+}
 void handSig () // exit func
 {
 		printf ("\nExiting ... \n");
@@ -1284,17 +1284,17 @@ void terminate () // static
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
-        printf ("\ngpio_reg is %d \n", gpio_reg);
+        printf ("\ngpio_reg is %ld \n", gpio_reg);
+				printf ("\n%"PRIu32"\n", gpio_reg);
 				printf ("\ngpio_reg address is %p \n", gpio_reg);
-				printf ("\ngpio_reg is %" PRIu32 " \n", gpio_reg);
         // Disable the clock generator
         clk_reg [GPCLK_CNTL] = (0x5A);
-        printf ("\nclk_reg is %d \n", clk_reg); // u or lu?
+        printf ("\nclk_reg is %p \n", clk_reg); // u or lu?
 	}
 	if (dma_reg && vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
-        printf ("\ndma_reg is %d \n", dma_reg);
+        printf ("\ndma_reg is %p \n", dma_reg);
 
         //udelay (10);
 	}
@@ -1461,7 +1461,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
         // problem still with .v & .p endings for struct!!
-        while (ACCESS ((DMABASE + CURBLOCK) & ~ DMAREF) == (int) (instrs [bufPtr]) ) { }; // CURBLOCK of struct PageInfo, [bufPtr].p
+        while (ACCESS ((DMABASE + CURBLOCK) & (~DMAREF)) == (int) (instrs [bufPtr]) ) { }; // CURBLOCK of struct PageInfo, [bufPtr].p
         //usleep2 (1000); // leaving out sleep for faster process
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
@@ -1491,7 +1491,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 void setupDMA ()
 {
 	printf ("\nSetup of DMA starting ... \n");
-	printf ("\ndma_reg is %d \n", dma_reg);
+	printf ("\ndma_reg is %p \n", dma_reg);
 	//atexit (unsetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
