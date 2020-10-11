@@ -15,6 +15,7 @@
 #include <malloc.h>
 #include <signal.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include <gnumake.h>
 #include <pthread.h>
 #include <sys/mman.h>
@@ -34,7 +35,6 @@
 #include <assert.h>
 #include <setjmp.h>
 #include <termios.h>
-#include <inttypes.h>
 #include <tgmath.h>
 #include <complex.h>
 #include <features.h>
@@ -1284,15 +1284,18 @@ void terminate () // static
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
-        printf ("\ngpio_reg is %x \n", gpio_reg);
+        printf ("\ngpio_reg is %d \n", gpio_reg);
+				printf ("\ngpio_reg address is %p \n", gpio_reg);
+				printf ("\ngpio_reg is %" PRIu32 " \n", gpio_reg);
         // Disable the clock generator
         clk_reg [GPCLK_CNTL] = (0x5A);
-        printf ("\nclk_reg is %x \n", clk_reg); // u or lu?
+        printf ("\nclk_reg is %d \n", clk_reg); // u or lu?
 	}
 	if (dma_reg && vAddr)
 	{
         dma_reg [DMA_CS] = BCM2708_DMA_RESET;
-        printf ("\ndma_reg is %x \n", dma_reg);
+        printf ("\ndma_reg is %d \n", dma_reg);
+
         //udelay (10);
 	}
      //fm_mpx_close ();
@@ -1488,7 +1491,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 void setupDMA ()
 {
 	printf ("\nSetup of DMA starting ... \n");
-	printf ("\ndma_reg is %x \n", dma_reg);
+	printf ("\ndma_reg is %d \n", dma_reg);
 	//atexit (unsetupDMA);
 	signal (SIGINT,  handSig);
 	signal (SIGTERM, handSig);
@@ -1794,7 +1797,9 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		printf ("\ni2c-modprobe-test BCM & DEV successful \n");
 	}
 	printf ("\nDevicename: %s \n", device);
-	printf ("\nChecking Arguments argc: %d, Address: %p \n", argc, &argc); // max argument-count=20+1(dash)
+	printf ("\nChecking arguments argc: %d, Address: %p \n", argc, &argc);
+	int parametercount=((argc/2)-1); // max is 10 , + 3 extra assistent, menu &help
+	printf ("\nChecking parametercount: %d \n", parametercount);
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
@@ -1803,10 +1808,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	fprintf (stderr, "\nError! HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
 	}
-	else if (argc > 0) // if -1 then all flags were read, if ? then unknown , while
+	else if (argc > 0) // if -1 then all flags were read, if ? then unknown, parametercount=(argc/2)-1 =10
 	{
-		printf ("\nReading givenarguments \n");
-		while (options != -1)
+		printf ("\nReading given arguments \n");
+		while (options != parametercount ) // != -1
 		{
 		printf ("\nArgument switch loop \n");
 		switch (options)
