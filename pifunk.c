@@ -720,14 +720,14 @@ void infos () // warnings and infos
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi operates with square-waves (²/^2) PWM on GPIO 4 (PIN 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators or resistors if needed! \nYou can smooth it out with 1:1 balun. Do NOT shortcut, use a dummyload instead! \nCheck laws of your country! \n");
 		printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
-		printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 4 -d 14 -l 1 \n");
+		printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 4 -d 14 -l 0 \n");
 		return;
 }
-int fileselect ()  // expected int, char *filename
+int fileselect ()  // expected int for opening, char *filename
 {
 	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: ");
 	scanf ("%s", filename);
-	printf ("\nOpening file %s ... \n", filename);
+	printf ("\nOpening file %s ... \n", &filename);
 	printf ("\nAllocating filename memory ... \n");
 	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
 	//sprintf (soundname, "%s", "file.ft");
@@ -740,7 +740,7 @@ int fileselect ()  // expected int, char *filename
 	{
 	  int fp = open ("sound.wav", 0644); // O_WRONLY | O_RDWR | , O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK sounds/sound.wav directory should be tested
 	}
-		printf ("\n File %s opend ... \n", filename);
+		printf ("\nFile %s opened ... \n", &filename);
 	return (fp);
 }
 float freqselect () // gets freq by typing in
@@ -1075,6 +1075,31 @@ char modulationselect ()
 							break;
 	}
 	return (*mod);
+}
+int samplerateselect ()
+{
+	printf ("\nPlease choose the samplerate [Hz]: 11025 / 22050 (default) / 44100 : ");
+	scanf ("%d", &samplerate);
+	printf ("\nThe samplerate is %d \n", samplerate);
+	if (samplerate == (11025))
+	{
+		printf ("\nThe samplerate is low \n");
+	}
+	else if (samplerate == (22050))
+	{
+		printf ("\nThe samplerate is good!! \n");
+		samplerate = (7); //DMA_CHANNEL = 7;
+	}
+	else if (samplerate == (44100))
+	{
+		printf ("\nThe samplerate is activated! \n");
+	}
+	else
+	{
+		printf ("\nThe DMA-Channel not recognized, using default 22050! \n");
+		samplerate = (22050);
+	}
+	return (samplerate);
 }
 char typeselect ()
 {
@@ -1735,6 +1760,7 @@ int tx (char *filename, float freq, int samplerate, char *mod, char *type, float
 {
   printf ("\nPreparing for transmission ... \n");
 	// here the apropiate transmission function
+	//sampleselect (); // later for internal sample calculations
 	printf ("\nBroadcasting now! ... \n");
 	return (0);
 }
@@ -1743,9 +1769,9 @@ void assistant () // assistant
 		printf ("\nStarting assistant for setting parameters! \n");
 		infos ();
 		fileselect ();
-		sampleselect (); // filename, samplerate
-		modselect ();
-		modetypeselect ();
+		modetypeselect ();	// for freq identifications
+		samplerateselect ();
+		modulationselect ();
 		typeselect ();
 		bandwidthselect ();
 		powerselect ();
