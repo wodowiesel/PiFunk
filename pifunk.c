@@ -728,7 +728,7 @@ int fileselect ()  // expected int, char *filename
 {
 	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: ");
 	scanf ("%s", filename);
-	printf ("\nOpening file ... \n", filename);
+	printf ("\nOpening file %s ... \n", filename);
 	printf ("\nAllocating filename memory ... \n");
 	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
 	//sprintf (soundname, "%s", "file.ft");
@@ -917,7 +917,7 @@ char channelmodepmr () // PMR
 		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", type);
 	}
 	printf ("\nOn type = %s with channelnumberpmr = %d on freq = %f \n", type, channelnumberpmr, freq);
-	return (type);
+	return (*type);
 }
 float channelmodecb () // CB
 {
@@ -1075,7 +1075,7 @@ char modulationselect ()
 							mod = "fm";
 							break;
 	}
-	return (mod);
+	return (*mod);
 }
 char typeselect ()
 {
@@ -1266,8 +1266,8 @@ else
 {
   printf ("\npad_reg are NOT the same -> %p / %p / %p \n", pad_reg1, pad_reg2, pad_val);
 }
-pad_reg = pad_reg [GPIO_PAD_0_27] = 0x5A000018 + power; // pi-gpio bank-row1
-pad_reg2 = pad_reg [GPIO_PAD_28_45] = 0x5A000018 + power; // pi-gpio bank-row2
+pad_reg = pad_reg [GPIO_PAD_0_27] = (PADGPIO) + power; // pi-gpio bank-row1
+pad_reg2 = pad_reg [GPIO_PAD_28_45] = (PADGPIO) + power; // pi-gpio bank-row2
 gpio_reg [reg] = (gpio_reg [reg] & ~(7 << shift)); // alternative regshifter
 */
 return;
@@ -1285,7 +1285,7 @@ void terminate () // static
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
         printf ("\ngpio_reg is %p \n", gpio_reg);
-				printf ("\n%PRIu32\n", gpio_reg);
+				//printf ("\n%PRIu32\n", gpio_reg);
         // Disable the clock generator
         clk_reg [GPCLK_CNTL] = (0x5A);
         printf ("\nclk_reg is %p \n", clk_reg); // u or lu?
