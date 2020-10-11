@@ -1284,9 +1284,8 @@ void terminate () // static
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
         gpio_reg [GPFSEL0] = (gpio_reg [GPFSEL0] & ~(7 << 12)) | (1 << 12);
-        printf ("\ngpio_reg is %ld \n", gpio_reg);
-				printf ("\n%"PRIu32"\n", gpio_reg);
-				printf ("\ngpio_reg address is %p \n", gpio_reg);
+        printf ("\ngpio_reg is %p \n", gpio_reg);
+				printf ("\n%PRIu32\n", gpio_reg);
         // Disable the clock generator
         clk_reg [GPCLK_CNTL] = (0x5A);
         printf ("\nclk_reg is %p \n", clk_reg); // u or lu?
