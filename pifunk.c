@@ -742,7 +742,7 @@ void infos () // warnings and infos
 		printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 4 -d 14 -l 1 \n");
 		return;
 }
-int fileselect (char *filename)  // expected int
+int fileselect ()  // expected int, char *filename
 {
 	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
 	scanf ("%s", filename);
@@ -1277,7 +1277,7 @@ void handSig () // exit func
 		printf ("\nExiting ... \n");
 		exit (0);
 }
-void terminate (int num) // static
+void terminate () // static
 {
 	printf("\nStop outputting and generating the clock");
 	if (clk_reg && gpio_reg && vAddr)
@@ -1741,7 +1741,7 @@ void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
 		infos ();
-		fileselect (char *filename);
+		fileselect ();
 		sampleselect (); // filename, samplerate
 		modselect ();
 		modetypeselect ();
