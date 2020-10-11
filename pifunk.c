@@ -1808,7 +1808,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		printf ("\nReading givenarguments \n");
 		while (options != -1)
 		{
-		printf ("\nArgument switch loop \n")
+		printf ("\nArgument switch loop \n");
 		switch (options)
 		{
 		case 'n':
