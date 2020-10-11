@@ -1925,10 +1925,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Repeat: is %d \n", repeat);
 	printf ("\nChecking Loop: is %d \n", loop);
-  printf ("\nChecking arg-&Adresses: Dash -: %p, Name: %p / Dash -: %p, File: %p / Dash -: %p, Freq: %f \nDash -: %p, Samplerate: %p / Dash -: %p, Modulation: %p / Dash -: %p, Type: %p / Dash -: %p, Bandwidth: %p / Dash -: %p, Power: %p \nDash -: %p, GPIO: %p / Dash -: %p, DMA: %p / Dash -: %p, Loop: is %p \n",
+  printf ("\nChecking arg-&Adresses: Name: %p / Dash -: %p, Filename: %p / Dash -: %p, Freq: %f \nDash -: %p, Samplerate: %p / Dash -: %p, Modulation: %p / Dash -: %p, Type: %p / Dash -: %p, Bandwidth: %p / Dash -: %p, Power: %p \nDash -: %p, GPIO: %p / Dash -: %p, DMA: %p / Dash -: %p, Loop: is %p \n",
 	argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], &argv [7], argv [8], argv [9], argv [10], &argv [11], &argv [12], &argv [13], &argv [11], &argv [12], &argv [13], &argv [14], &argv [15], &argv [16], &argv [17], &argv [18], &argv [19], &argv [20], &argv [21]);
-  //printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d  / Loop: is %d \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
-	//printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Type: is %p / Bandwidth: %p / Power: %p / nGPIO: %p / DMA: %p / Loop: is %p \n", &argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); //pointeradd
+  //printf ("\nChecking val-&Adresses: Name: %s / Filename: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d  / Loop: is %d \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
+	//printf ("\nChecking val-*Pointers: Name: %p / Filename: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Type: is %p / Bandwidth: %p / Power: %p / nGPIO: %p / DMA: %p / Loop: is %p \n", &argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); //pointeradd
 	printf ("\nTransmission starting ... \n");
 	int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop); // transmission
 	printf ("\nTransmission ended! \n");
