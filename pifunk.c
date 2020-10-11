@@ -513,7 +513,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
-const char *short_opt = "n:f:s:m:t:b:p:g:d:lauh"; // program flags
+const char *short_opt = "n:f:s:m:t:b:p:g:d:l:auh"; // program flags
 int w = (0);
 int m;
 int n;
@@ -1196,12 +1196,12 @@ int loopselect ()
 	if (repeat == true)
 	{
 		loop = (1);
-		printf ("\nWith looping soundfile infinitelly \n");
+		printf ("\nTWith looping true soundfile infinitelly \n");
 	}
 	else
 	{
 		loop = (0);
-		printf ("\nNo loop, only playing once \n");
+		printf ("\nFalse loop, only playing once \n");
 	}
 	return (loop);
 }
@@ -1836,15 +1836,15 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 					     printf ("\nType is %s \n", type);
 					   	 //break;
 		case 'b':
-					 		 bandwidth = atoi (optarg);
+					 		 bandwidth = atof (optarg); // atoi?
 					 		 printf ("\nBandwidth is %f \n", bandwidth);
 					 		 //break;
 		case 'p':
          				power = atoi (optarg);
 								if (power <= 0 || power > 7)
 								{
-								fprintf (stderr, "\nOutput power has to be set in range of 1-7, setting default 1 \n");
-								power = (1);
+								fprintf (stderr, "\nOutput power has to be set in range of 1-7, setting default 7! \n");
+								power = (7);
 							  }
 								else
          				{
@@ -1860,8 +1860,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								printf ("\nDMA-Channel is %d \n", dmachannel);
 								//break;
 		case 'l':
-								 repeat = optarg; // true
-								 printf ("\nLoop/Repeat is %d  (0=false, 1=true)\n", repeat);
+								 loop = optarg; // true
+								 printf ("\nLoop is %d (0=false, 1=true) \n", loop);
 								 loopselect ();
 								 //break;
 		case 'a':
@@ -1918,17 +1918,17 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 	printf ("\nChecking Modulation: %s \n", mod);
-	printf ("\nChecking Type: is %s \n", type);  // analog, digital:
+	printf ("\nChecking Type: %s \n", type);  // analog, digital:
 	printf ("\nChecking Bandwidth: %f [Hz] \n", bandwidth);
 	printf ("\nChecking Output-Power: %d \n", power);
 	printf ("\nChecking GPIO-Pin: %d \n", gpiopin);
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
-	printf ("\nChecking Repeat: is %d \n", repeat);
-	printf ("\nChecking Loop: is %d \n", loop);
+	printf ("\nChecking Loop: %d \n", loop);
+	printf ("\nChecking Repeat: %d \n", repeat);
   //printf ("\nChecking arg-Adresses: Name: %p / Dash -: %p, Filename: %p / Dash -: %p, Freq: %f \nDash -: %p, Samplerate: %p / Dash -: %p, Modulation: %p / Dash -: %p, Type: %p / Dash -: %p, Bandwidth: %p / Dash -: %p, Power: %p \nDash -: %p, GPIO: %p / Dash -: %p, DMA: %p / Dash -: %p, Loop: is %p \n",
 	//argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], argv [7], argv [8], argv [9], argv [10], argv [11], argv [12], argv [13], argv [14], argv [15], argv [16], argv [17], argv [18], argv [19], argv [20]);
   //printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
-	printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], argv [2], argv [3], argv [6], argv [4], argv [6], argv [12], argv [14], argv [16], argv [18], argv [20]); //
+	printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f / Samplerate: %d \nModulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], argv [2], argv [4], argv [6], argv [8], argv [10], argv [12], argv [14], argv [16], argv [18], argv [20]); //
 	printf ("\nTrying to start transmission ... \n");
 	tx ((char *) filename, (float) freq, (int) samplerate, (char *) mod, (char *) type, (float) bandwidth, (int) power, (int) gpiopin, (int) dmachannel, (int) loop); // transmission
 	printf ("\nTransmission ended! \n");
