@@ -744,10 +744,9 @@ void infos () // warnings and infos
 }
 int fileselect ()  // expected int, char *filename
 {
-	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: \n");
+	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: ");
 	scanf ("%s", filename);
-	printf ("\nTrying to play %s ... \n", filename);
-	printf ("\nOpening file ... \n");
+	printf ("\nOpening file ... \n", filename);
 	printf ("\nAllocating filename memory ... \n");
 	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
 	//sprintf (soundname, "%s", "file.ft");
@@ -760,6 +759,7 @@ int fileselect ()  // expected int, char *filename
 	{
 	  int fp = open ("sound.wav", 0644); // O_WRONLY | O_RDWR | , O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK sounds/sound.wav directory should be tested
 	}
+		printf ("\n File %s opend ... \n", filename);
 	return (fp);
 }
 float freqselect () // gets freq by typing in
@@ -772,7 +772,7 @@ float freqselect () // gets freq by typing in
 }
 float channelmodepmranalog ()
 {
-	printf ("\nChoose analog PMR-Channel 1-17 (18 to exit): \n");
+	printf ("\nChoose analog PMR-Channel 1-17 (18 to exit): ");
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
@@ -804,7 +804,7 @@ float channelmodepmranalog ()
 }
 float channelmodepmrdigital ()
 {
-	printf ("\nChoose ditigal PMR-Channel 1-32 (33 to exit): \n");
+	printf ("\nChoose ditigal PMR-Channel 1-32 (33 to exit): ");
 	scanf ("%d", &channelnumberpmr);
 	switch (channelnumberpmr)
 	{
@@ -851,7 +851,7 @@ float channelmodepmrdigital ()
 }
 float subchannelmodepmr () // Pilot-tone
 {
-	printf ("\nChoose Standard Subchannel: 0-38 / non-typical 39-50 (51 to exit): \n");
+	printf ("\nChoose Standard Subchannel: 0-38 / non-typical 39-50 (51 to exit): ");
 	scanf ("%d", &subchannelnumberpmr);
 	switch (subchannelnumberpmr)
 	{
@@ -917,7 +917,7 @@ float subchannelmodepmr () // Pilot-tone
 // Channel-mode
 char channelmodepmr () // PMR
 {
-	printf ("\nChoose PMR-Type a for analog / d for digital: \n");
+	printf ("\nChoose PMR-Type a for analog / d for digital: ");
 	scanf ("%s", type);
 	if (type=="a")
 	{
@@ -939,7 +939,7 @@ char channelmodepmr () // PMR
 }
 float channelmodecb () // CB
 {
-	printf ("\nChoose CB-Channel 0-80 (81 to exit): \n");
+	printf ("\nChoose CB-Channel 0-80 (81 to exit): ");
 	scanf ("%d", &channelnumbercb);
 	switch (channelnumbercb)
 	{
@@ -1041,7 +1041,7 @@ float channelmodecb () // CB
 int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
-	printf ("\nChoose your Band: [1] PMR // [2] CB \n");
+	printf ("\nChoose your Band: [1] PMR // [2] CB ");
 	scanf  ("%d", &channelmode);
 	switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
 	{
@@ -1059,7 +1059,7 @@ int channelselect ()
 }
 int modetypeselect ()
 {
-	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode \n");
+	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode ");
 	scanf ("%d", &modeselect);
 	switch (modeselect)
 	{
@@ -1077,7 +1077,7 @@ int modetypeselect ()
 }
 char modulationselect ()
 {
-	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : \n");
+	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : ");
 	scanf ("%d", &freqmode);
 	switch (freqmode)
 	{
@@ -1115,7 +1115,7 @@ char typeselect ()
 }
 float bandwidthselect ()
 {
-	printf ("\nChoose Bandwidth-Steps: 6.25 / 10.00 / 12.50 (default) / 20.00 / 25.00 kHz: \n");
+	printf ("\nChoose Bandwidth-Steps: 6.25 / 10.00 / 12.50 (default) / 20.00 / 25.00 kHz: ");
 	scanf ("%f", &bandwidth);
 	if (bandwidth==6.25)
 	{
@@ -1148,7 +1148,7 @@ int powerselect ()
 {
 	// low-output ~0.4 V -> 400 mV, high-output 2.4-2.9/3.3V -> 2900 mV => a) P=V*A=400mV*2mA=800mW b) 2900*16=mW=46.4W c) 400*16=6400mW=6.4W
 	// 0.1024 W for all pins simultaniously -> *16 (all on 1 pin would be 1.6384 W) --> Don't drive capacitive loads btw
-	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA @0.4-3.3V): \n"); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
+	printf ("\nType in powerlevel (DRIVE: 0=2mA, 1=4mA, 2=6mA, 3=8mA, 4=10mA, 5=12mA, 6=14mA, 7=16mA @0.4-3.3V): "); // bits: 2:0, Fieldname: drive, type: RW, reset 0x3
 	scanf ("%d", &powerlevel);
 	printf ("\nPowerlevel was set to: %d \n", powerlevel);
 	power = abs (powerlevel);
@@ -1159,7 +1159,7 @@ int powerselect ()
 }
 int gpioselect ()
 {
-	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended) \n");
+	printf ("\nPlease choose GPIO-Pin (GPIO 4 = PIN 7 default) or GPIO 21 = PIN 40, alternatives: 20, 29, 32, 34, 38 (not recommended): ");
 	scanf ("%d", &gpiopin);
 	printf ("\nYour GPIO for transmission is %d \n", gpiopin);
 	if (gpiopin == 4)
@@ -1183,7 +1183,7 @@ int gpioselect ()
 }
 int dmaselect ()
 {
-	printf ("\nPlease choose the DMA-Channel: 7 (Pi 4) / 14 (default) / 255 (off): \n");
+	printf ("\nPlease choose the DMA-Channel: 7 (Pi 4) / 14 (default) / 255 (off): ");
 	scanf ("%d", &dmachannel);
 	printf ("\nThe DMA-Channel is %d \n", dmachannel);
 	if (dmachannel == (255))
@@ -1279,7 +1279,7 @@ void handSig () // exit func
 }
 void terminate () // static
 {
-	printf("\nStop outputting and generating the clock\n");
+	printf("\nStop outputting and generating the clock \n");
 	if (clk_reg && gpio_reg && vAddr)
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
@@ -1634,7 +1634,7 @@ int sampleselect () // char *filename, int samplerate
 			}
 			else if (channels == 1)
 			{
-				printf ("\n File has %d channel (MONO)! \nReading ... \n", channels);
+				printf ("\n File has %d channel (MONO)! \n", channels);
 				// stereo file, avg left + right --> should be mono at 22.050 kHz
 				b += data [k*channels+1];
 				b /= 2.0; // maybe *2 to make a dual mono and not doing stereo in half?
@@ -1713,19 +1713,19 @@ void modselect () //
 	printf ("\nOpening Modulator-Selection ... \n");
 	if (strcmp (mod, "fm"))
 	{
-    printf ("\nYou selected 1 for fm! \n");
+    printf ("\nYou selected fm! \n");
     printf ("\nPushing arguments to fm Modulator ... \n");
 		modulationfm ();
 	}
 	else if (strcmp (mod, "am"))
 	{
-    printf ("\nYou selected 2 for am! \n");
+    printf ("\nYou selected am! \n");
     printf ("\nPushing arguments to am Modulator ... \n");
 		modulationam ();
 	}
 	else
 	{
-    printf ("\nError in -m selecting modulation! Using daefault fm \n");
+    printf ("\nError in -m selecting modulation! Using default fm \n");
     modulationfm ();
 	}
  	return;
