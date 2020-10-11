@@ -1093,7 +1093,7 @@ char typeselect ()
 	{
 		printf ("\nError in -t type \n");
 	}
-	return (type);
+	return (*type);
 }
 float bandwidthselect ()
 {
@@ -1810,35 +1810,35 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	else if (argc > 0) // if -1 then all flags were read, if ? then unknown, parametercount=(argc/2)-1 =10
 	{
 		printf ("\nReading given arguments \n");
-		while (options != parametercount ) // != -1
-		{
+		//while (parametercount != -1) // options != -1
+		//{
 		printf ("\nArgument switch loop \n");
 		switch (options)
 		{
 		case 'n':
 							 filename = optarg;
 							 printf ("\nFilename is %s \n", filename);
-							 break;
+							 //break;
 		case 'f':
 							 freq = atof (optarg);
 							 printf ("\nFrequency is %f \n", freq);
-							 break;
+							 //break;
 		case 's':
 							 samplerate = atoi (optarg);
 							 printf ("\nSamplerate is %d \n", samplerate);
-							 break;
+							 //break;
 		case 'm':
 							 mod = optarg;
                printf ("\nMod is %s \n", mod);
-               break;
+               //break;
 		case 't':
 					     type = optarg;
 					     printf ("\nType is %s \n", type);
-					   	 break;
+					   	 //break;
 		case 'b':
 					 		 bandwidth = atoi (optarg);
 					 		 printf ("\nBandwidth is %f \n", bandwidth);
-					 		 break;
+					 		 //break;
 		case 'p':
          				power = atoi (optarg);
 								if (power <= 0 || power > 7)
@@ -1850,11 +1850,11 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
          				{
 									printf ("\nPower is %d \n", power);
 								}
-								break;
+								//break;
 		case 'g':
 								gpiopin = atof (optarg);
 								printf ("\nGPIO-PIN is %d \n", gpiopin);
-								break;
+								//break;
 		case 'd':
 								dmachannel = atof (optarg);
 								printf ("\nDMA-Channel is %d \n", dmachannel);
@@ -1863,31 +1863,29 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								 repeat = optarg; // true
 								 printf ("\nLoop/Repeat is %d  (0=false, 1=true)\n", repeat);
 								 loopselect ();
-								 break;
+								 //break;
 		case 'a':
 							 if (argc == 2)
 							 {
 								printf ("\nAssistant activated \n");
 								assistant ();
-								break;
-							}
+							 }
 							 else
 							 {
 								printf ("\nError in -a assistant, no other arguments required \n");
-								break;
 							 }
+							 break;
 		case 'u':
-								if (argc == 2)
-								{
-         				 printf ("\nOpening menu \n");
-         				 menu (); // extra menu for main
-         				 break;
-         				}
-         				else
-         				{
-         					printf ("\nError in -u menu \n");
-         					break;
-         				}
+							 if (argc == 2)
+							 {
+         				printf ("\nOpening menu \n");
+         				menu (); // extra menu for main
+         			 }
+         			 else
+         			 {
+         				printf ("\nError in -u menu \n");
+         			 }
+								break;
 		case 'h':
 							 if (argc == 2)
 							 {
@@ -1908,7 +1906,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
-	  } // end of while
+	  //} // end of while
 	} // end of if
 	else
 	{
@@ -1927,10 +1925,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Repeat: is %d \n", repeat);
 	printf ("\nChecking Loop: is %d \n", loop);
-  //printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
-  //printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Power: %d \nGPIO: %d / DMA: %d / Bandwidth: %f / Type: is %d / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &power, &gpiopin, &dmachannel, &bandwidth, &type, &loop); // deref
-	//printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, power, gpiopin, dmachannel, bandwidth, type, loop);
-	printf ("\nChecking extras... assistent: %p, help: %p, menu: %p \n", &argv [12], &argv [13], &argv [14]);
+  printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d  / Loop: is %d \n", &argv [0], &argv [1], &argv [2], &argv [3], &argv [4], &argv [5], &argv [6], &argv [7], &argv [8], &argv [9], &argv [10]);
+  printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d  / Loop: is %d \n", &argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
+	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", *argv [0], *filename, freq, samplerate, *mod, *type, bandwidth, power, gpiopin, dmachannel, loop); //pointeradd
+	printf ("\nChecking extras: argv assistent: %p, help: %p, menu: %p \n", &argv [11], &argv [12], &argv [13]);
 	printf ("\nTransmission starting ... \n");
 	int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop); // transmission
 	printf ("\nTransmission ended! \n");
