@@ -726,7 +726,7 @@ void infos () // warnings and infos
 int fileselect ()  // expected int for opening, char *filename
 {
 	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: ");
-	scanf ("%s", &filename);
+	scanf ("%s", filename);
 	printf ("\nOpening file %s ... \n", filename);
 	printf ("\nAllocating filename memory ... \n");
 	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
@@ -1784,7 +1784,7 @@ void assistant () // assistant
 }
 int menu ()
 {
-	printf ("\nChoose menu: [1] CMD // [2] Exit: ");
+	printf ("\nChoose menu: [1] CMD / [2] Exit: ");
  	scanf ("%d", &menuoption);
 	switch (menuoption)
 	{
