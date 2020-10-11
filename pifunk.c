@@ -1818,27 +1818,27 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		case 'n':
 							 filename = optarg;
 							 printf ("\nFilename is %s \n", filename);
-							 //break;
+							 break;
 		case 'f':
 							 freq = strtof (optarg, NULL); // string to float conversion
 							 printf ("\nFrequency is %f \n", freq);
-							 //break;
+							 break;
 		case 's':
 							 samplerate = atoi (optarg);
 							 printf ("\nSamplerate is %d \n", samplerate);
-							 //break;
+							 break;
 		case 'm':
 							 mod = optarg;
                printf ("\nMod is %s \n", mod);
-               //break;
+               break;
 		case 't':
 					     type = optarg;
 					     printf ("\nType is %s \n", type);
-					   	 //break;
+					   	 break;
 		case 'b':
 					 		 bandwidth = strtof (optarg, NULL);
 					 		 printf ("\nBandwidth is %f \n", bandwidth);
-					 		 //break;
+					 		 break;
 		case 'p':
          				power = atoi (optarg);
 								if (power <= 0 || power > 7)
@@ -1850,20 +1850,20 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
          				{
 									printf ("\nPower is %d \n", power);
 								}
-								//break;
+								break;
 		case 'g':
 								gpiopin = atoi (optarg);
 								printf ("\nGPIO-PIN is %d \n", gpiopin);
-								//break;
+								break;
 		case 'd':
 								dmachannel = atoi (optarg);
 								printf ("\nDMA-Channel is %d \n", dmachannel);
-								//break;
+								break;
 		case 'l':
 								 loop = atoi (optarg); // true
 								 printf ("\nLoop is %d (0=false, 1=true) \n", loop);
 								 loopselect ();
-								 //break;
+								 break;
 		case 'a':
 							 if (argc == 2)
 							 {
@@ -1874,7 +1874,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 							 {
 								printf ("\nError in -a assistant, no other arguments required \n");
 							 }
-							 break;
+							 return (-1);
 		case 'u':
 							 if (argc == 2)
 							 {
@@ -1885,18 +1885,17 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
          			 {
          				printf ("\nError in -u menu \n");
          			 }
-								break;
+							 return (-1);
 		case 'h':
 							 if (argc == 2)
 							 {
 								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
-								break;
 							 }
 							 else
 							 {
 								printf ("\nError in -h help \n");
-								break;
 							 }
+							 return (-1);
 		case '?':
 		 						//char *unknown = optopt;
                 printf ("\nUnknown option: %c \n", optopt);
