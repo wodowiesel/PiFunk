@@ -1820,7 +1820,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 							 printf ("\nFilename is %s \n", filename);
 							 //break;
 		case 'f':
-							 freq = strtof (optarg);  // string to float conversion
+							 freq = strtof (optarg, NULL); // string to float conversion
 							 printf ("\nFrequency is %f \n", freq);
 							 //break;
 		case 's':
@@ -1836,7 +1836,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 					     printf ("\nType is %s \n", type);
 					   	 //break;
 		case 'b':
-					 		 bandwidth = strtof (optarg);
+					 		 bandwidth = strtof (optarg, NULL);
 					 		 printf ("\nBandwidth is %f \n", bandwidth);
 					 		 //break;
 		case 'p':
