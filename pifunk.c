@@ -1279,7 +1279,7 @@ void handSig () // exit func
 }
 void terminate () // static
 {
-	printf("\nStop outputting and generating the clock");
+	printf("\nStop outputting and generating the clock\n");
 	if (clk_reg && gpio_reg && vAddr)
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
@@ -1794,10 +1794,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		printf ("\ni2c-modprobe-test BCM & DEV successful \n");
 	}
 	printf ("\nDevicename: %s \n", device);
+	printf ("\nChecking Arguments argc: %d, Address: %p \n", argc, &argc); // max argument-count=20+1(dash)
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
-	printf ("\nChecking Arguments argc: %d, Address: %p \n", argc, &argc); // **argv, &&argv);
 	if (argc <= 0) // || options
 	{
 	fprintf (stderr, "\nError! HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
@@ -1805,7 +1805,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	}
 	else if (argc > 0) // if -1 then all flags were read, if ? then unknown , while
 	{
-		printf ("\nArgument-Switch \n");
+		printf ("\nReading givenarguments \n");
+		while (options != -1)
+		{
+		printf ("\nArgument switch loop \n")
 		switch (options)
 		{
 		case 'n':
@@ -1901,8 +1904,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
-	  // } end of else
-	} // end of while/if
+	  } // end of while
+	} // end of if
 	else
 	{
 		printf ("\nArgument/Option Errors! \n");
