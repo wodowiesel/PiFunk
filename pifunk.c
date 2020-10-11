@@ -738,7 +738,7 @@ void infos () // warnings and infos
     printf ("\nWelcome to the PiFunk lite! v %s %s for Raspbian/Raspberry Pi OS on ARM! \n", VERSION, description);
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi operates with square-waves (²/^2) PWM on GPIO 4 (PIN 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators or resistors if needed! \nYou can smooth it out with 1:1 balun. Do NOT shortcut, use a dummyload instead! \nCheck laws of your country! \n");
-		printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n [-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+		printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 		printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 4 -d 14 -l 1 \n");
 		return;
 }
@@ -1208,8 +1208,9 @@ int dmaselect ()
 	}
 	return (dmachannel);
 }
-int loopselect (bool repeat)
+int loopselect ()
 {
+	printf ("\nChecking loop/repeat \n");
 	if (repeat == true)
 	{
 		loop = (1);
@@ -1278,7 +1279,7 @@ void handSig () // exit func
 }
 void terminate (int num) // static
 {
-	// Stop outputting and generating the clock
+	printf("\nStop outputting and generating the clock");
 	if (clk_reg && gpio_reg && vAddr)
 	{
         // Set GPIO4 to be an output (instead of ALT FUNC 0, which is the clock)
@@ -1740,7 +1741,7 @@ void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
 		infos ();
-		int fileselect (char *filename);
+		fileselect (char *filename);
 		sampleselect (); // filename, samplerate
 		modselect ();
 		modetypeselect ();
@@ -1749,17 +1750,17 @@ void assistant () // assistant
 		powerselect ();
 		gpioselect ();
 		dmaselect ();
-		int loopselect (bool repeat);
+		loopselect ();
 		printf ("\nAll information gathered, parsing & going back to main! \n");
 		return;
 }
 int menu ()
 {
-	printf ("\nChoose menu: [1] CMD // [2] Exit: \n");
+	printf ("\nChoose menu: [1] CMD // [2] Exit: ");
  	scanf ("%d", &menuoption);
 	switch (menuoption)
 	{
-		case 1:  printf ("\nShell - Commandline (main): \n");
+		case 1:  printf ("\nShell - Commandline (main) \n");
 						 int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
 						 break;
 		case 2:  printf ("\nExiting ... \n");
@@ -1799,14 +1800,14 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking Arguments argc: %d, Address: %p \n", argc, &argc); // **argv, &&argv);
 	if (argc <= 0) // || options
 	{
-	fprintf (stderr, "\nError! HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n [-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+	fprintf (stderr, "\nError! HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
 	}
 	else if (argc > 0) // if -1 then all flags were read, if ? then unknown , while
 	{
+		printf ("\nArgument-Switch \n");
 		switch (options)
 		{
-		printf ("\nArgument-Switch \n");
 		case 'n':
 							 filename = optarg;
 							 printf ("\nFilename is %s \n", filename);
@@ -1854,7 +1855,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		case 'l':
 								 repeat = optarg; // true
 								 printf ("\nLoop/Repeat is %d  (0=false, 1=true)\n", repeat);
-								 int loopselect (bool repeat);
+								 loopselect ();
 								 break;
 		case 'a':
 							 if (argc == 2)
@@ -1883,7 +1884,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		case 'h':
 							 if (argc == 2)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n [-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 							 }
 							 else
@@ -1896,7 +1897,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
                 printf ("\nUnknown option: %c \n", optopt);
                 break;
 		default:
-								printf ("\nDefault-fallback: HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n [-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nDefault-fallback: HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								break;
 		} // end of switch
 		printf ("\nEnd of switch \n");
@@ -1926,7 +1927,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nTransmission starting ... \n");
 	int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop); // transmission
 	printf ("\nTransmission ended! \n");
-  void terminate (int num);
+  terminate ();
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return (0);
 }
