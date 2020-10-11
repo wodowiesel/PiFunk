@@ -1760,9 +1760,10 @@ void modselect () //
 int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop)
 {
   printf ("\nPreparing for transmission ... \n");
-	// here the apropiate transmission function
 	//sampleselect (); // later for internal sample calculations
 	printf ("\nBroadcasting now! ... \n");
+	// here the appropiate transmission function
+	printf ("\nTransmission ended ... \n");
 	return (0);
 }
 void assistant () // assistant
@@ -1829,15 +1830,15 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
-	if (argc <= 0) // || options
+	if (argc <= 1) //
 	{
 	fprintf (stderr, "\nError! HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
 	}
-	else if (argc > 0) // if -1 then all flags were read, if ? then unknown, parametercount=(argc/2)-1 =10
+	else if (argc >= 2 && argc < 21)
 	{
 		printf ("\nReading given arguments \n");
-		while (options != -1) // options != -1
+		while (options != -1) // // if -1 then all flags were read, if ? then unknown
 		{
 		printf ("\nArgument switch loop \n");
 		switch (options)
@@ -1956,8 +1957,14 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
   //printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
 	printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f / Samplerate: %d \nModulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], argv [2], argv [4], argv [6], argv [8], argv [10], argv [12], argv [14], argv [16], argv [18], argv [20]); //
 	printf ("\nTrying to start transmission ... \n");
+	if (argc = 20)
+	{
 	tx ((char *) filename, (float) freq, (int) samplerate, (char *) mod, (char *) type, (float) bandwidth, (int) power, (int) gpiopin, (int) dmachannel, (int) loop); // transmission
-	printf ("\nTransmission ended! \n");
+	}
+	else
+	{
+	printf ("\nNo Transmission! \n");
+	}
   terminate ();
 	printf ("\nEnd of Program! Closing ... \n"); // EOF
 	return (0);
