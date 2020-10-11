@@ -1820,7 +1820,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 							 printf ("\nFilename is %s \n", filename);
 							 //break;
 		case 'f':
-							 freq = atof (optarg);
+							 freq = strtof (optarg);  // string to float conversion
 							 printf ("\nFrequency is %f \n", freq);
 							 //break;
 		case 's':
@@ -1836,7 +1836,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 					     printf ("\nType is %s \n", type);
 					   	 //break;
 		case 'b':
-					 		 bandwidth = atof (optarg); // atoi?
+					 		 bandwidth = strtof (optarg);
 					 		 printf ("\nBandwidth is %f \n", bandwidth);
 					 		 //break;
 		case 'p':
@@ -1852,15 +1852,15 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								}
 								//break;
 		case 'g':
-								gpiopin = atof (optarg);
+								gpiopin = atoi (optarg);
 								printf ("\nGPIO-PIN is %d \n", gpiopin);
 								//break;
 		case 'd':
-								dmachannel = atof (optarg);
+								dmachannel = atoi (optarg);
 								printf ("\nDMA-Channel is %d \n", dmachannel);
 								//break;
 		case 'l':
-								 loop = optarg; // true
+								 loop = atoi (optarg); // true
 								 printf ("\nLoop is %d (0=false, 1=true) \n", loop);
 								 loopselect ();
 								 //break;
