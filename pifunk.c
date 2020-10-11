@@ -726,8 +726,8 @@ void infos () // warnings and infos
 int fileselect ()  // expected int for opening, char *filename
 {
 	printf ("\nPlease enter the full path including name of the *.wav-file you want to use: ");
-	scanf ("%s", filename);
-	printf ("\nOpening file %s ... \n", &filename);
+	scanf ("%s", &filename);
+	printf ("\nOpening file %s ... \n", filename);
 	printf ("\nAllocating filename memory ... \n");
 	char *soundname = (char *) malloc (sizeof(filename)); // (char *) allocating memory for filename 128
 	//sprintf (soundname, "%s", "file.ft");
@@ -740,7 +740,7 @@ int fileselect ()  // expected int for opening, char *filename
 	{
 	  int fp = open ("sound.wav", 0644); // O_WRONLY | O_RDWR | , O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK sounds/sound.wav directory should be tested
 	}
-		printf ("\nFile %s opened ... \n", &filename);
+		printf ("\nFile %s opened ... \n", filename);
 	return (fp);
 }
 float freqselect () // gets freq by typing in
@@ -899,7 +899,7 @@ float subchannelmodepmr () // Pilot-tone
 char channelmodepmr () // PMR
 {
 	printf ("\nChoose PMR-Type a for analog / d for digital: ");
-	scanf ("%s", type);
+	scanf ("%s", &type);
 	if (strcmp (type, "a"))
 	{
 		printf ("\nYou chose type analog \n");
@@ -914,6 +914,7 @@ char channelmodepmr () // PMR
 	{
 		type="a";
 		printf ("\nNO type could be determined, wrong input! Using %s as standard \n", type);
+		channelmodepmranalog ();
 	}
 	printf ("\nOn type = %s with channelnumberpmr = %d on freq = %f \n", type, channelnumberpmr, freq);
 	return (*type);
@@ -1022,7 +1023,7 @@ float channelmodecb () // CB
 int channelselect ()
 {
 	printf ("\nYou selected 1 for Channel-Mode \n");
-	printf ("\nChoose your Band: [1] PMR // [2] CB ");
+	printf ("\nChoose your Band: [1] PMR / [2] CB ");
 	scanf  ("%d", &channelmode);
 	switch (channelmode) // from here collecting infos and run it step by step, same for freq-mode
 	{
@@ -1040,7 +1041,7 @@ int channelselect ()
 }
 int modetypeselect ()
 {
-	printf ("\nChoose Mode: [1] Channelmode // [2] Frequencymode ");
+	printf ("\nChoose Mode: [1] Channelmode / [2] Frequencymode ");
 	scanf ("%d", &modeselect);
 	switch (modeselect)
 	{
@@ -1058,7 +1059,7 @@ int modetypeselect ()
 }
 char modulationselect ()
 {
-	printf ("\nChoose your Modulation [1] FM // [2] AM // [3] Exit : ");
+	printf ("\nChoose your Modulation [1] FM / [2] AM / [3] Exit : ");
 	scanf ("%d", &freqmode);
 	switch (freqmode)
 	{
