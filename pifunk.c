@@ -513,7 +513,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
-const char *short_opt = "n:f:s:m:t:b:p:g:d:l:auh"; // program flags
 int w = (0);
 int m;
 int n;
@@ -1799,6 +1798,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking arguments argc: %d, Address: %p \n", argc, &argc);
 	int parametercount=((argc/2)); // max is 10 , + 3 extra assistent, menu &help
 	printf ("\nChecking parametercount: %d \n", parametercount);
+	const char *short_opt = "n:f:s:m:t:b:p:g:d:l:auh"; // program flags
 	printf ("\nChecking short_opt: %s \n", short_opt);
 	int options = getopt (argc, argv, short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
@@ -1810,8 +1810,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	else if (argc > 0) // if -1 then all flags were read, if ? then unknown, parametercount=(argc/2)-1 =10
 	{
 		printf ("\nReading given arguments \n");
-		//while (parametercount != -1) // options != -1
-		//{
+		while (options != -1) // options != -1
+		{
 		printf ("\nArgument switch loop \n");
 		switch (options)
 		{
@@ -1900,13 +1900,13 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		case '?':
 		 						//char *unknown = optopt;
                 printf ("\nUnknown option: %c \n", optopt);
-                break;
+                return (-1);
 		default:
 								printf ("\nDefault-fallback: HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
-								break;
+								return (-1);
 		} // end of switch
-		printf ("\nEnd of switch \n");
-	  //} // end of while
+	  } // end of while
+			printf ("\nEnd of switch \n");
 	} // end of if
 	else
 	{
