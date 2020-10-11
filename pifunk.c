@@ -1927,7 +1927,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking Loop: is %d \n", loop);
   //printf ("\nChecking arg-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d  / Loop: is %d \n", argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], &argv [7], argv [8], argv [9], argv [10]);
   //printf ("\nChecking val-&Adresses: Name: %s / File: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d  / Loop: is %d \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
-	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Power: %p \nGPIO: %p / DMA: %p / Bandwidth: %p / Type: is %p / Loop: is %p \n", argv [0], filename, freq, samplerate, mod, type, bandwidth, power, gpiopin, dmachannel, loop); //pointeradd
+	printf ("\nChecking val-*Pointers: Name: %p / File: %p / Freq: %p \nSamplerate: %p / Modulation: %p / Type: is %p / Bandwidth: %p / Power: %p / nGPIO: %p / DMA: %p / Loop: is %p \n", &argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); //pointeradd
 	printf ("\nChecking extras: argv assistent: %p, help: %p, menu: %p \n", &argv [11], &argv [12], &argv [13]);
 	printf ("\nTransmission starting ... \n");
 	int tx (char *filename, float freq, int samplerate, char *mod, char *type, float bandwidth, int power, int gpiopin, int dmachannel, int loop); // transmission
