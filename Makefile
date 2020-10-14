@@ -1,4 +1,4 @@
-## pifunk Makefile
+## pifunklite Makefile
 ## should run with sudo or root rights
 USER=sudo
 $(USER)
@@ -8,16 +8,16 @@ CXX=g++
 $(CXX)
 
 ## general infos
-MAKEINFO=pifunk
+MAKEINFO=pifunklite
 $(MAKEINFO)
 VERSION=0.1.7.6
 $(VERSION)
 STATUS=lite
 $(STATUS)
 
-SOURCE=pifunk.c
+SOURCE=pifunklite.c
 $(SOURCE)
-SOURCECXX=pifunk.cpp
+SOURCECXX=pifunklite.cpp
 $(SOURCECXX)
 
 ## default paths
@@ -34,7 +34,7 @@ RM=rm -f ## remove files or folder
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## environment variable C_INCLUDE_PATH
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
-CINC:=-Iinclude -I/opt/vc/include/ ## kernel now 4.19.97+
+CINC:=-Iinclude -I/opt/vc/include/ ## kernel
 # -I/usr/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/linux/
 $(CINC) #
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
@@ -61,7 +61,7 @@ $(DEBUG)
 
 LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
 $(LDLIBS)
-PFLIBS=-L$(HOME)/PiFunk/lib/
+PFLIBS=-L$(HOME)/PiFunklite/lib/
 $(PFLIBS)
 
 LDFLAGS=-lbcm_host -lbcm2835 -lgcc -lsndfile -lm -pthread ## -lm after -lsnd, -lgnu
@@ -136,61 +136,61 @@ $(PFLAGS)
 
 ## Generating objects in gcc specific order, -save-temps
 ## translated assembler/c-code
-pifunk.s:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal assebler suffix
+pifunklite.s:	$(SOURCE) pifunk.h
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunklite.s ## for arm
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunklite.asm ## normal assebler suffix
 ## precompiled/processor c-code
-pifunk.i:	$(SOURCE) pifunk.h
-					$(USER) $(SOURCE) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
+pifunklite.i:	$(SOURCE) pifunk.h
+					$(USER) $(SOURCE) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunklite.i
 ## precompiled object/machine-code
-pifunk.o:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(DEBUG) $(SOURCE) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
+pifunklite.o:	$(SOURCE) pifunk.h
+					$(USER) $(CC) $(DEBUG) $(SOURCE) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.o
 ## static archive
-pifunk.a:	pifunk.o
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.a
+pifunklite.a:	pifunklite.o
+					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.a
 					$(USER) ar rcs -t $@ $^
-					$(USER) ranlib pifunk.a
+					$(USER) ranlib pifunklite.a
 ## static library
-pifunk.lib:	pifunk.o pifunk.a
-						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.lib
+pifunklite.lib:	pifunklite.o pifunklite.a
+						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.lib
 						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib pifunk.lib
+						$(USER) ranlib pifunklite.lib
 ## shared object
-pifunk.so:	libpifunk.o
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/pifunk.so lib/pifunk.o
+pifunklite.so:	pifunklite.o
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/pifunklite.so lib/pifunklite.o
 						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib pifunk.so
+						$(USER) ranlib pifunklite.so
 ## dynamic linked library
-pifunk.dll:	libpifunk.o
-						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.dll
+pifunklite.dll:	pifunk.o
+						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.dll
 						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib pifunk.dll
+						$(USER) ranlib pifunklite.dll
 ## lib object list
-OBJECTS=pifunk.s pifunk.i pifunk.o pifunk.a pifunk.lib pifunk.so pifunk.dll
+OBJECTS=pifunklite.s pifunklite.i pifunklite.o pifunklite.a pifunklite.lib pifunklite.so pifunklite.dll
 $(OBJECTS)
 
 ## generating standard binary
-pifunk.out:	$(SOURCE) pifunk.h
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFFLAGS) -save-temps -o bin/pifunk.out
+pifunklite.out:	$(SOURCE) pifunk.h
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFFLAGS) -save-temps -o bin/pifunklite.out
 ## explicit binary
-pifunk.bin: $(SOURCE) pifunk.h
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk.bin
+pifunklite.bin: $(SOURCE) pifunk.h
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunklite.bin
 ## normal binary
-pifunk:			$(SOURCE) pifunk.h
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk
+pifunklite:			$(SOURCE) pifunk.h
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunklite
 ## executable list
-#allbin: pifunk.out pifunk.bin pifunk
-EXECUTABLES=pifunk.out pifunk.bin pifunk
+#allbin: pifunklite.out pifunklite.bin pifunklite
+EXECUTABLES=pifunklite.out pifunklite.bin pifunklite
 $(EXECUTABLES)
 
-.PHONY:		pifunk+
+.PHONY:		pifunklite+
 pifunk+:	$(SOURCECXX) $(OBJECTS)
-					$(USER) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk+
+					$(USER) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -o bin/pifunklite+
 
 ## generate info file
 .PHONY: 	info
-info: 		pifunk.info
-pifunk.info: pifunk.texi
+info: 		pifunklite.info
+pifunk.info: pifunklite.texi
 						 $(MAKEINFO)
 
 .PHONY: 		piversion
@@ -203,38 +203,38 @@ piversion:	$(USER) $(UNAME)
 						$(USER) $(PCPUI)
 
 .PHONY: 	install
-install:	cd $(HOME)/PiFunk/
-					$(USER) install -m 0777 pifunk $(HOME)/bin/
+install:	cd $(HOME)/PiFunklite/
+					$(USER) install -m 0777 pifunklite $(HOME)/bin/
 					# https://askubuntu.com/questions/638796/what-is-meaning-of-755-permissions-in-samba-share
 					# file permission mode to so that the user ID, group &other bit for the owner is setuid
 					# -rwsr-xr-x (4755), -rwxr-xr-x (0755), read+write+execute (0777)
 
 .PHONY: 		uninstall
-uninstall:	$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.out
-						$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.bin
-						$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk
+uninstall:	$(USER) $(RM) $(HOME)/PiFunklite/bin/pifunklite.out
+						$(USER) $(RM) $(HOME)/PiFunklite/bin/pifunklite.bin
+						$(USER) $(RM) $(HOME)/PiFunklite/bin/pifunklite
 
 .PHONY:	clean
-clean:	cd $(HOME)/PiFunk/
+clean:	cd $(HOME)/PiFunklite/
 				$(USER) $(RM) $(OBJECTS)
 				$(USER) $(RM) $(EXECUTABLES)
 
 .PHONY: 		assistant
-assistent:	cd $(HOME)/PiFunk/bin/
-						$(USER) ./pifunk -a
+assistent:	cd $(HOME)/PiFunklite/bin/
+						$(USER) ./pifunklite -a
 
 .PHONY: 	menu
-menu:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -u
+menu:			cd $(HOME)/PiFunklite/bin/
+					$(USER) ./pifunklite -u
 
 .PHONY: 	help
-help:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -h
+help:			cd $(HOME)/PiFunklite/bin/
+					$(USER) ./pifunklite -h
 
 .PHONY: 	run
-run:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -g 7 -d 14 -b 12.5 -t 1 -l
+run:			cd $(HOME)/PiFunklite/bin/
+					$(USER) ./pifunklite -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 7 -d 14 -l 0
 
 .PHONY: 	run+
-run+:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -g 7 -d 14 -b 12.5 -t 1 -l
+run+:			cd $(HOME)/PiFunklite/bin
+					$(USER) ./pifunklite+ -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 7 -d 14 -l 0

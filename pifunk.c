@@ -1790,12 +1790,12 @@ int menu ()
 	switch (menuoption)
 	{
 		case 1:  printf ("\nShell - Commandline (main) \n");
-						 int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
+						 imain ((int) argc, (char **) argv); //, const char *short_opt); // go back to cmd if you want
 						 break;
 		case 2:  printf ("\nExiting ... \n");
 					 	 exit (0);
 		default: printf ("\nError: Returning back to Main (Default) \n");
-             int main (int argc, char **argv);
+             main ((int) argc, (char **) argv);
 		 				 break;
 	}
 	return (menuoption);
@@ -1838,8 +1838,11 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	else if (argc == (2 || 21))
 	{
 		printf ("\nReading given arguments \n");
-		while (options != -1) // // if -1 then all flags were read, if ? then unknown
+		for (int s = 0; s <= 21; s++)
 		{
+			printf ("\ns = % d \n", s);
+		//while (options != -1) // // if -1 then all flags were read, if ? then unknown
+		//	{
 		printf ("\nArgument switch loop \n");
 		switch (options)
 		{
@@ -1932,8 +1935,9 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								printf ("\nDefault-fallback: HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 								return (-1);
 		} // end of switch
-	  } // end of while
-			printf ("\nEnd of switch \n");
+	  //} // end of while
+			//printf ("\nEnd of switch \n");
+		}
 	} // end of if
 	else
 	{
