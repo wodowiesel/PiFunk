@@ -1,6 +1,6 @@
 [Autorun]
 UseAutoplay=1
-open=pifunk
-ShellExecute=pifunk
+open=pifunklite
+ShellExecute=pifunklite
 icon=docs/favicon.ico
-label=PiFunk
+label=PiFunklite

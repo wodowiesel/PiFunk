@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=pifunk
-Exec=pifunk
+Name=pifunklite
+Exec=pifunklite
 StartupNotify=true
 Terminal=true

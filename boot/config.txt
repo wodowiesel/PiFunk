@@ -51,8 +51,8 @@ dtparam=i2c_arm_baudrate=100000
 dtoverlay=gpiopin=4,pullup=0 #w1-gpio,
 
 ## realtime-hw clock & gps sync-clock
-dtoverlay=i2c-rtc,ds3231 ## /dev/rtc0
-dtoverlay=pps-gpio,gpiopin=18
+#dtoverlay=i2c-rtc,ds3231 ## /dev/rtc0
+#dtoverlay=pps-gpio,gpiopin=18
 
 ## list w1-devices
 ls /sys/bus/w1/devices/

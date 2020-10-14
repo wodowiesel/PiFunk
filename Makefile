@@ -66,7 +66,7 @@ $(PFLIBS)
 
 LDFLAGS=-lbcm_host -lbcm2835 -lgcc -lsndfile -lm -pthread ## -lm after -lsnd, -lgnu
 $(LDFLAGS)
-PFFLAGGS=-lpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
+PFFLAGGS=-lpifunklite ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
 #AOFLAGGS=-arm-none-eabi-objdump ## objdump gnu tools
 #$(AOFLAGS)
@@ -161,7 +161,7 @@ pifunklite.so:	pifunklite.o
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib pifunklite.so
 ## dynamic linked library
-pifunklite.dll:	pifunk.o
+pifunklite.dll:	pifunklite.o
 						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.dll
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib pifunklite.dll

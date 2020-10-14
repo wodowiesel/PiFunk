@@ -48,12 +48,12 @@
 
    </style>
 
-  <title>PiFunk PMR/CB Transmitter with FM/AM-Modulation</title>
+  <title>PiFunk lite PMR/CB Transmitter with FM/AM-Modulation</title>
   </head>
   <body>
  <header>
     <img src="../docs/favicon.png" alt="logo">
-    <h2>PiFunk PMR/CB Transmitter with FM/AM-Modulation</h2>
+    <h2>PiFunk lite PMR/CB Transmitter with FM/AM-Modulation</h2>
   </header>
 <main>
 <article>
@@ -109,7 +109,7 @@ for installation of the program:<br>
 sudo apt-get install libsndfile-dev<br>
 then go to directory:<br>
 
-cd PiFunk<br>
+cd PiFunklite<br>
 
 compile with:<br>
 
@@ -121,7 +121,7 @@ compile with:<br>
 
 sometimes -std=gnu99 <br>
 
-gcc -lm -g -std=c99 -lsndfile pifunk.c -o pifunk pifunk.o pifunk.a<br>
+sudo gcc -std=gnu99 -v -ggdb3 -g3 -O3 -pg -Wall -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/ -L/usr/src/lib/ -lgcc -lbcm_host -lbcm2835 -lsndfile -lm -lpthread -D_USE_MATH_DEFINES -D_GNU_SOURCE -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1 --save-temps -o bin/pifunklite
 
 make clean<br>
 
@@ -131,7 +131,7 @@ make install<br>
 
 run with admin/root permissions:<br>
 
-arguments: [filename (*.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)] [callsign (optional)]<br>
+arguments: [filename (*.wav)] [freq (MHz)] [samplerate (kHz)] [modulation (fm/am)]<br>
 
 extra single arguments:<br>
 
@@ -139,7 +139,8 @@ extra single arguments:<br>
 
 [help] for more infos and arguments<br>
 
-default: sudo pifunk sound.wav 100.0000 22050 fm callsign<br>
+default: sudo gcc -std=gnu99 -v -ggdb3 -g3 -O3 -pg -Wall -Iinclude -I/opt/vc/include -Llib -L/opt/vc/lib/ -L/usr/src/lib/ -lgcc -lbcm_host -lbcm2835 -lsndfile -lm -lpthread -D_USE_MATH_DEFINES -D_GNU_SOURCE -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1 --save-temps -o bin/pifunklite
+<br>
 
 Radio works with *.wav-file with 16-bit @ 22050.0 [Hz] mono / 1-700 [MHz] range.<br>
 
@@ -154,7 +155,7 @@ Pi operates with square-waves (^2) PWM on GPIO 4/Pin 7 @ ~500 mA!<br>
     <h2>Links:</h2>
     <ul>
       <li><a href="../ctsspmr.csv">CTSS-tones in CSV-file</a></li>
-      <li><a href="../bin/pifunk">Client (standalone)</a></li>
+      <li><a href="../bin/pifunklite">Client (standalone)</a></li>
       <li><a href="server.html">maybe Server in the future</a></li>
 	  <li><a href="german-srd-law.txt">German SRD law</a></li>
 	  <li><a href="morsecodeCW.txt">Morse Code Table</a></li>

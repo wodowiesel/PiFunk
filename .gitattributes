@@ -10,12 +10,15 @@
 *.h diff=astextplain
 *.hpp diff=astextplain
 *.s diff=astextplain
+*.S diff=astextplain
+*.asm diff=astextplain
 *.i diff=astextplain
 *.o diff=astextplain
-*.so diff=astextplain
-*.dll diff=astextplain
 *.a diff=astextplain
 *.lib diff=astextplain
+*.so diff=astextplain
+*.dll diff=astextplain
+
 
 *.py diff=astextplain
 *.sh diff=astextplain
