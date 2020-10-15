@@ -1790,7 +1790,7 @@ int menu ()
 	switch (menuoption)
 	{
 		case 1:  printf ("\nShell - Commandline (main) \n");
-						 imain ((int) argc, (char **) argv); //, const char *short_opt); // go back to cmd if you want
+						 main ((int) argc, (char **) argv); //, const char *short_opt); // go back to cmd if you want
 						 break;
 		case 2:  printf ("\nExiting ... \n");
 					 	 exit (0);
