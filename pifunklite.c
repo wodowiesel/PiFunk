@@ -1920,7 +1920,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		case 'h':
 							 if (argc == 2)
 							 {
-								printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
+								printf ("\nHELP: Use Parameters to run: \n./pifunklite [-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 							 }
 							 else
 							 {
@@ -1943,7 +1943,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	{
 		printf ("\nArgument/Option Errors! \n");
 	}
-	printf ("\nEnd of argument check, printing debug \n");
+	printf ("\n-------------------------------------------------- \n");
+	printf ("\nEnd of argument check, printing debug: \n");
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
 	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
@@ -1956,9 +1957,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Loop: %d \n", loop);
 	printf ("\nChecking Repeat: %d \n", repeat);
+	printf ("\nChecking argv[1]: %u \n", argv [1]);
   //printf ("\nChecking arg-Adresses: Name: %p / Dash -: %p, Filename: %p / Dash -: %p, Freq: %f \nDash -: %p, Samplerate: %p / Dash -: %p, Modulation: %p / Dash -: %p, Type: %p / Dash -: %p, Bandwidth: %p / Dash -: %p, Power: %p \nDash -: %p, GPIO: %p / Dash -: %p, DMA: %p / Dash -: %p, Loop: is %p \n",
 	//argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], argv [7], argv [8], argv [9], argv [10], argv [11], argv [12], argv [13], argv [14], argv [15], argv [16], argv [17], argv [18], argv [19], argv [20]);
-  //printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f \nSamplerate: %d / Modulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
+  printf ("\nChecking addresses: Name: %p / Filename: %p / Freq: %p / Samplerate: %p \nModulation: %p / Type: %p / Bandwidth: %p / Power: %p \nGPIO: %p / DMA: %p / Loop: is %p \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
 	printf ("\nChecking values: Name: %s / Filename: %s / Freq: %f / Samplerate: %d \nModulation: %s / Type: %s / Bandwidth: %f / Power: %d \nGPIO: %d / DMA: %d / Loop: is %d \n", argv [0], argv [2], argv [4], argv [6], argv [8], argv [10], argv [12], argv [14], argv [16], argv [18], argv [20]); //
 	printf ("\nTrying to start transmission ... \n");
 	if (argc == 21)
