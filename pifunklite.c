@@ -720,7 +720,7 @@ void infos () // warnings and infos
    	printf ("\nRadio works with *.wav-file with 16-bit @ 22050 [Hz] Mono / 1-700.00000 MHz frequency \nUse '. dot' as decimal-comma seperator! \n");
     printf ("\nPi operates with square-waves (²/^2) PWM on GPIO 4 (PIN 7 @ ~500 mA & max. +3.3 V). \nUse power supply with enough specs only! \n=> Use Low-/Highpassfilters and/or ~10 uF-cap, isolators or resistors if needed! \nYou can smooth it out with 1:1 balun. Do NOT shortcut, use a dummyload instead! \nCheck laws of your country! \n");
 		printf ("\nHELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
-		printf ("\nFor testing (default settings) run: sudo ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 4 -d 14 -l 0 \n");
+		printf ("\nFor testing (default settings) run: sudo ./pifunklite -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 4 -d 14 -l 0 \n");
 		return;
 }
 int fileselect ()  // expected int for opening, char *filename
@@ -1069,9 +1069,9 @@ char modulationselect ()
 		case 2:		printf ("\nYou selected 2 for AM! \n");
 							mod = "am";
 							break;
-		case 3:		printf ("\nExiting... \n");
+		case 3:		printf ("\nExiting ... \n");
 							exit (0);
-		default:	printf ("\n Default = 1 (FM) \n");
+		default:	printf ("\nDefault = 1 (FM) \n");
 							mod = "fm";
 							break;
 	}
@@ -1281,6 +1281,7 @@ void carrierlow () // disables it
 }
 void pad ()
 {
+	printf ("\nSetting GPIO Pad values ... \n");
 /*
 pad_val = (PADGPIO + power);
 if ((pad_reg1 || pad_reg2) == pad_val) // check equality
@@ -1726,7 +1727,7 @@ void modulationfm () // int argc, char **argv
 		printf ("\nSetting up DMA ... \n");
 		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
-    void playfm (char *filename, int mod, float bandwidth); // atof (argv [3]):22050)
+    playfm ((char *) filename, (int) mod, (float) bandwidth); // atof (argv [3]):22050)
 		return;
 }
 void modulationam () //
@@ -1761,15 +1762,14 @@ int tx (char *filename, float freq, int samplerate, char *mod, char *type, float
 {
   printf ("\nPreparing for transmission ... \n");
 	//sampleselect (); // later for internal sample calculations
-	printf ("\nBroadcasting now! ... \n");
 	// here the appropiate transmission function
+	//printf ("\nBroadcasting now! ... \n");
 	printf ("\nTransmission ended ... \n");
 	return (0);
 }
 void assistant () // assistant
 {
 		printf ("\nStarting assistant for setting parameters! \n");
-		infos ();
 		fileselect ();
 		modetypeselect ();	// for freq identifications
 		samplerateselect ();
