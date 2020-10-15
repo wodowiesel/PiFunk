@@ -1840,7 +1840,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		printf ("\nReading given arguments \n");
 		for (int s = 0; s <= 21; s++)
 		{
-			printf ("\ns = % d \n", s);
+			printf ("\ns = %d \n", s);
 		//while (options != -1) // // if -1 then all flags were read, if ? then unknown
 		//	{
 		printf ("\nArgument switch loop \n");
@@ -1942,6 +1942,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	else
 	{
 		printf ("\nArgument/Option Errors! \n");
+		return (-1);
 	}
 	printf ("\n-------------------------------------------------- \n");
 	printf ("\nEnd of argument check, printing debug: \n");
@@ -1957,7 +1958,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking DMA-channel: %d \n", dmachannel);
 	printf ("\nChecking Loop: %d \n", loop);
 	printf ("\nChecking Repeat: %d \n", repeat);
-	printf ("\nChecking argv [1]: %s \n", argv [1]);
+	printf ("\nChecking argv numbers: %s \n", argv [4]);
   //printf ("\nChecking arg-Adresses: Name: %p / Dash -: %p, Filename: %p / Dash -: %p, Freq: %f \nDash -: %p, Samplerate: %p / Dash -: %p, Modulation: %p / Dash -: %p, Type: %p / Dash -: %p, Bandwidth: %p / Dash -: %p, Power: %p \nDash -: %p, GPIO: %p / Dash -: %p, DMA: %p / Dash -: %p, Loop: %p \n",
 	//argv [0], argv [1], argv [2], argv [3], argv [4], argv [5], argv [6], argv [7], argv [8], argv [9], argv [10], argv [11], argv [12], argv [13], argv [14], argv [15], argv [16], argv [17], argv [18], argv [19], argv [20]);
   printf ("\nChecking addresses: Name: %p / Filename: %p / Freq: %p / Samplerate: %p \nModulation: %p / Type: %p / Bandwidth: %p / Power: %p \nGPIO: %p / DMA: %p / Loop: %p \n", argv [0], &filename, &freq, &samplerate, &mod, &type, &bandwidth, &power, &gpiopin, &dmachannel, &loop); // deref
