@@ -1,0 +1,55 @@
+# TO-DO LIST
+# ----------------------------------------------------------------------
+# 1 different files for chan, imp, funcs (working on it)
+# & implement tactical Alphabet spelling incl. spelling with wave-files
+# morsecode as txt and map it to interpreter for print
+# 2 Split Frequency Ranges (incl. files)* done
+# Input (from 0 MHz to 700 MHz) or multiple freq (look it up for different pis)
+# supported for min. and max. Freq by RPi-1-B+ and other types
+#
+# 3 (see 1) selecting by tree or dropdown /case ?! -> using case for now * done
+# -----------------------------------------------------------------------
+# Functions/ processes: *= working on it
+# supports UKW radio fm*/am* , ltp , 433*, emg, cb*, pmr*, vhf,  etc.
+# 3 AM/FM switch where needed (cb/ham)* (done)
+# DMA-controller needs to be implemented/ fixed
+# offline file player: mp3/wave-files + playlists from a directory
+# 5 Microphone (usb&jack) / VOX - double mono from devices via py (jack-cable)*
+# 6 Squelch (treshhold) noisegate (can be tricky)
+# & Volume -> compare system-controls
+# 7 Recording possibilities -> check with codec & implement ffmpeg or other
+# add save-ability (saving last window-radio settings too / memory-mode?)
+# add optional identification-code (nick/user-name) or callsign (done) maybe RDS later*
+# add RTC realtime clock compatibility* work in progress
+#
+#### in the far future!
+# 8 add Internet capabilities like
+# host, ip, port (client/server/standalone)
+# aprs / gps etc. or gathering infos from internet
+# web-ui support: host connection, music playlist, YT
+# 3rd party support for automation RDS, ts2/3, echolink
+# text2speech: eng & de
+# (small .txt-logger maybe for func debugging incl. args etc)
+#----------------------------------------------------------------------------------------------
+# 9 GPIO 1, 4 (8 TXD special) -> Watch-Monitoring (mVolt & mAmpere & mWatt) + core-temp
+#
+# Build: check and combine code
+# test "make" and make install command
+#
+# 10 update readme:
+# add (own) infos mostly done
+# and contributing helpful sources & copyright & licenses
+#
+# 11 test & release
+# 12 (+ later GUI GTK+/QT)
+#
+# 13 exception & bug-handling (difficult) and progress-versions
+# 14 buy hardware
+# display (need one with buttons), temp (have one) + humidity, PCBs & Pins
+# gps-module ublox neo 7M / HAT to buy (amazon)
+#
+# NEED LOW/HIGH-PASS-FILTER !!!!-> hardware (but look software-wise too)
+# checkout buffer stuff
+#
+# warning: squarewave-output on: input and 3, 7, 14
+#
