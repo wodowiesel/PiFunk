@@ -104,7 +104,8 @@ notifications:
 
 # command to run tests +scripts
 before_script:
- - git clone git://github.com/wodowiesel/PiFunk --single branch lite
+ #- git clone git://github.com/wodowiesel/PiFunk --single branch lite
+ - git clone https://github.com/wodowiesel/PiFunk --branch lite --single-branch lite
  # - qemu-system-arm -kernel raspberry-qemu/kernel-qemu -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net user,hostfwd=tcp::10022-:22 -net nic -display none -hda 2015-11-21-raspbian-jessie-lite.img
  # - before-script-linux.sh
  # fast_finish: true
