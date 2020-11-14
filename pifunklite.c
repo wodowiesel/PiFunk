@@ -1,10 +1,11 @@
-/* PiFunk lite----License-------GPL v3.0->see LICENSE.md !!------------------*/
+/*---PiFunk-lite----License-------GPL-v3.0->see-LICENSE.md!!------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdnoreturn.h>
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
@@ -18,10 +19,10 @@
 #include <inttypes.h>
 #include <gnumake.h>
 #include <pthread.h>
+#include <assert.h>
 #include <sys/mman.h>
 /*
 #include <stdalign.h>
-#include <stdnoreturn.h>
 #include <stdatomic.h>
 #include <argp.h>
 #include <utime.h>
@@ -32,7 +33,6 @@
 #include <wctype.h>
 #include <fcntl.h>
 #include <dirent.h>
-#include <assert.h>
 #include <setjmp.h>
 #include <termios.h>
 #include <tgmath.h>
@@ -899,7 +899,7 @@ float subchannelmodepmr () // Pilot-tone
 char channelmodepmr () // PMR
 {
 	printf ("\nChoose PMR-Type a for analog / d for digital: ");
-	scanf ("%s", &type);
+	scanf ("%s", type);
 	if (strcmp (type, "a"))
 	{
 		printf ("\nYou chose type analog \n");
@@ -1826,24 +1826,24 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nChecking arguments argc: %d, Address: %p \n", argc, &argc);
 	int parametercount=((argc/2)); // max is 10 , + 3 extra assistent, menu &help
 	printf ("\nChecking parametercount: %d \n", parametercount);
-	const char *short_opt = "n:f:s:m:t:b:p:g:d:l:auh"; // program flags
+	const char *short_opt = "n:f:s:m:t:b:p:g:d:l:"; // program flags, auh
 	printf ("\nChecking short_opt: %s \n", short_opt);
-	int options = getopt (argc, argv, short_opt); // short_opt must be constant
+	int options = getopt (argc, **argv, *short_opt); // short_opt must be constant
 	printf ("\nChecking options: %d \n", options);
 	if (argc <= 1) //
 	{
 	fprintf (stderr, "\nError! HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
 	return (-1);
 	}
-	else if (argc == (2 || 21))
+	else if (argc >= 2 && argc <=23) //== (2 || 21))
 	{
 		printf ("\nReading given arguments \n");
-		for (int s = 0; s <= 21; s++)
+		//for (int s = 0; s < 21; s++)	{
+		//printf ("\ns = %d \n", s);
+		while (options != -1) // // if -1 then all flags were read, if ? then unknown
 		{
-			printf ("\ns = %d \n", s);
-		//while (options != -1) // // if -1 then all flags were read, if ? then unknown
-		//	{
-		printf ("\nArgument switch loop \n");
+		//printf ("\nArgument switch loop \n");
+		printf ("\nChecking options: %d \n", options);
 		switch (options)
 		{
 		case 'n':
@@ -1905,7 +1905,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 							 {
 								printf ("\nError in -a assistant, no other arguments required \n");
 							 }
-							 return (-1);
+							 break;
 		case 'u':
 							 if (argc == 2)
 							 {
@@ -1930,10 +1930,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 		case '?':
 		 						//char *unknown = optopt;
                 printf ("\nUnknown option: %c \n", optopt);
-                return (-1);
+                break;
 		default:
 								printf ("\nDefault-fallback: HELP: Use Parameters to run: \n[-n <filename (*.wav)>] [-f <freq (26.9650)>] [-s <samplerate (22050)>] [-m <mod (fm/am)>] [-t <type (a/d)>] \n[-b <bandwidth (12.5)>] [-p <power (1-7)>] [-g <gpiopin (4/21)>] [-d <dmachannel (7/14)>] [-l <loop (0/1)] \nThere is also an assistant [-a], menu [-u] or help [-h]! The *.wav-file must be 16-bit @ 22050 [Hz] Mono. \n");
-								return (-1);
+								break;
 		} // end of switch
 	  //} // end of while
 			//printf ("\nEnd of switch \n");
@@ -1942,13 +1942,13 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	else
 	{
 		printf ("\nArgument/Option Errors! \n");
-		return (-1);
+		//return (-1);
 	}
 	printf ("\n-------------------------------------------------- \n");
 	printf ("\nEnd of argument check, printing debug: \n");
 	printf ("\nChecking File: %s \n", filename);
 	printf ("\nChecking Freq: %f [MHz] \n", freq);
-	printf ("\nChecking xtal_freq: %f \n", xtal_freq);
+	//printf ("\nChecking xtal_freq: %f \n", xtal_freq);
 	printf ("\nChecking Samplerate: %d [Hz] \n", samplerate);
 	printf ("\nChecking Modulation: %s \n", mod);
 	printf ("\nChecking Type: %s \n", type);  // analog, digital:
