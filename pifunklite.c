@@ -21,6 +21,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <sys/mman.h>
+#include <sys/sysmacros.h>
 /*
 #include <stdalign.h>
 #include <stdatomic.h>
@@ -52,7 +53,6 @@
 #include <sys/stat.h>
 #include <sys/select.h>
 #include <sys/file.h>
-#include <sys/sysmacros.h>
 #include <sys/ioctl.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
