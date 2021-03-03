@@ -262,18 +262,18 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #endif
 // pi 4 - BCM2838
 #ifdef  RASPI4 //== 4
-#define BCM2708_PERI_BASE 						 (0xFE000000) //
+#define BCM2708_PERI_BASE 						 (0xFE000000) // 4261412864
+#define BCM2711_PERI_BASE              (0x3F000000) // 1056964608, coprocessor!
+#define BCM2838_PERI_BASE              (0x3F000000) // dec: 1056964608
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
-#define BCM2838_PERI_BASE              (0x3F000000) // dec: 1056964608
-#define BCM2711_PERI_BASE              (0x3F000000) // coprocessor !!!
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define CLOCK_BASE									   (19.2E6) // = 19200000
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
-#define F_XTAL 												 (54000000.0)
+#define F_XTAL 												 (54000000.0) //
 #define PAGE_SIZE 										 (4096) //
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
@@ -319,26 +319,29 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define GPFSEL0                         (0x00/4) // p.90, dec: 0
 #define GPFSEL1                         (0x04/4) // 1
 #define GPFSEL2                         (0x08/4) // 2
-#define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368
+#define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368 same as GPIO_BUS_BASE
 #define CM_GP0CTL                       (0x7E101070) // p.107 dec: 2114982000
 #define CM_GP0DIV                       (0x7E101074) // p.108 dec: 2114982004
-#define CM_GP1CTL                       (0x7E101078) //
-#define CM_GP1DIV                       (0x7E10107C) //
-#define CM_GP2CTL                       (0x7E101080) //
-#define CM_GP2DIV                       (0x7E101084) //
-#define CM_UART_CTL                     (0x7E1010F0)
-#define CM_UART_DIV                     (0x7E1010F4)
+#define CM_GP1CTL                       (0x7E101078) // 2114982008
+#define CM_GP1DIV                       (0x7E10107C) // 2114982012
+#define CM_GP2CTL                       (0x7E101080) // 2114982016
+#define CM_GP2DIV                       (0x7E101084) // 2114982020
+#define CM_UART_CTL                     (0x7E1010F0) // 2114982128
+#define CM_UART_DIV                     (0x7E1010F4) // 2114982132
 #define GPPUD                           (0x94/4) // 37
 #define GPPUDCLK0                       (0x98/4) // 38
 #define GPPUDCLK1                       (0x9C/4) // 39
+#define GPIO_SET_BASE 									(0x7E20001C) // 2116026396
+#define GPIO_CLR_BASE 									(0x7E200028) // 2116026408
 // PADS
 #define PAD_BASE_OFFSET                 (0x00100000) // dec: 1048576
 #define PAD_LEN                         (0x40/4) // 0x10 = dec: 16,  0x64 = dec: 100
 #define PADGPIO                         (0x5A000018) // dec: 1509949464
 #define GPIO_PAD_0_27                   (0x2C/4)  // 11
+#define PADS_GPIO_0_27_BUS  						(0x7E10002C) // 2114977836
 #define GPIO_PAD_28_45                  (0x30/4)  // 12
 #define GPIO_PAD_46_52                  (0x34/4)  // 13
-#define GPCLK_CNTL                      (0x70/4) // 112 / 4 = 28 -> 0x5A = decimal(90)
+#define GPCLK_CNTL                      (0x70/4) // 112 / 4 = 28 -> 0x5A = decimal: 90
 #define GPCLK_DIV                       (0x74/4) // 29
 #define CORECLK_CNTL                    (0x08/4) // 2
 #define CORECLK_DIV                     (0x0C/4) // 3
@@ -433,7 +436,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PCM_INT_STC_A                   (0x1C/4) // 7
 #define PCM_GRAY                        (0x20/4) // 8
 // DMA
-#define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000)
+#define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000) // 16777216
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
 #define BCM2708_DMA_INT                 (1<<2) //
