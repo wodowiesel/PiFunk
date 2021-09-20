@@ -1,4 +1,5 @@
-/*---PiFunk-lite----License-------GPL-v3.0->see-LICENSE.md!!------------------*/
+/*---PiFunk-lite
+----License-------GPL-v3.0-->see-LICENSE.md!!------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -268,9 +269,9 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PERIPH_VIRT_BASE               (0xFE000000) // dec: 4261412864
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
 #define GPIO_BASE_OFFSET               (0x7E215000) // GPIO register base address
-#define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
-#define MEM_FLAG                       (0x04) // dec: 4
-#define CURBLOCK                       (0x04) // dec: 4 memflag
+#define DRAM_PHYS_BASE                 (0x40000000) // dec: 1073741824, old: 0xC
+#define MEM_FLAG                       (0x0C) // dec: 12
+#define CURBLOCK                       (0x04) // dec: 4, like memflag
 #define CLOCK_BASE									   (19.2E6) // = 19200000
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define F_XTAL 												 (54000000.0) //
