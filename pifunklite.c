@@ -746,7 +746,7 @@ int fileselect ()  // expected int for opening, char *filename
 	}
 	else
 	{
-	  int fp = open ("sound.wav", 0644); // O_WRONLY | O_RDWR | , O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK sounds/sound.wav directory should be tested
+	  int fp = open ("sound.wav", 0644); // O_WRONLY | O_RDWR | O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK sounds/sound.wav directory should be tested
 	}
 		printf ("\nFile %s opened ... \n", filename);
 	return (fp);
