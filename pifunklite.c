@@ -1,5 +1,5 @@
-/*---PiFunk-lite
-----License-------GPL-v3.0-->see-LICENSE.md!!------------------*/
+///---PiFunk-lite
+//----License-------GPL-v3.0-->see-LICENSE.md!!------------------
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -62,6 +62,10 @@
 // I2C
 //#include <linux/i2c.h>
 //#include <linux/i2c-dev.h>
+// direct driver kernellevel
+//#include <linux/kernel.h>
+//#include <linux/init.h>
+//#include <linux/module.h>
 // FW
 //#include <drm/drm_fb_cma_helper.h>
 // broadcom arm processor for mapping phys. addresses
@@ -127,17 +131,16 @@
 #endif
 // definitions & macros
 //#define NDEBUG
-#define VERSION 											"0.1.7.6" // my version
+#define VERSION 											"0.1.7.8" // my version
 #define VERSION_MAJOR        					(0) //
 #define VERSION_MINOR        					(1) //
 #define VERSION_BUILD        					(7) //
-#define VERSION_PATCH        					(6) //
+#define VERSION_PATCH        					(8) //
 #define VERSION_STATUS 			 					"lite" // reduced, only neccessary stuf
 #define IN                    				(0) //
 #define OUT                   				(1) //
 #define FALSE               					(0) //
 #define TRUE                 					(1) //
-// predefine if needed when not using bcm header
 #define USLEEP 							  				[1000] // sleep timer
 // mathematical stuff
 #define EULER                         (2.718281828459045235360287471352f) // log e(EULER) = 0.4342944819
@@ -156,7 +159,7 @@
 #define F_XTAL    						 		  	(19200000.0)
 // I-O access via GPIO
 volatile unsigned 										(*gpio); //
-volatile unsigned 										(*allof7e); // shouuld be null in the begining
+volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 // GPIO setup macros: Always use INP_GPIO (x) before using OUT_GPIO (x) or SET_GPIO_ALT (x, y)
 #define ALLOF7EB											(*allof7e-SUB_BASE)
 #define GPIO_SET 											*(gpio+7)  // setsbits which are 1 ignores bits which are 0
@@ -178,7 +181,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000) //
-#define F_PLLD_CLK 										 (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -196,7 +198,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ											 (500000000) //
-#define F_PLLD_CLK 										 (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -215,8 +216,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
-#define PLLD_FREQ											 (500000000.) //
-#define F_PLLD_CLK 									   (500000000.0)
+#define PLLD_FREQ											 (500000000) //
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -236,7 +236,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000) //
-#define F_PLLD_CLK 									   (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -249,14 +248,16 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define BCM2837B0_PERI_BASE            (0x3F000000) // 3B+ and 3A+
 #define DRAM_PHYS_BASE                 (0xC0000000) // dec: 3221225472
 #define GPIO_BASE_OFFSET               (0x00200000) // dec: 2097152
+#define ALT_VCLK                       (0x01) // dec: 2
+#define MEM_VCLK                       (0x02) // dec: 2
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
+#define OFF_VCLK                       (0x08) // dec: 2
 #define CLOCK_BASE									   (19.2E6) //
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
 #define PLLD_FREQ 										 (500000000) //
-#define F_PLLD_CLK										 (500000000.0)
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
@@ -278,7 +279,6 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAGE_SIZE 										 (4096) //
 #define DMA_CHANNEL                    (14) // 4A
 #define DMA_CHANNELB                   (7) // BCM2711 (Pi 4 B only)  chan=7
-#define F_PLLD_CLK 										 (750000000.0)
 #define PLLD_FREQ 										 (750000000) // has higher freq than pi 0-3
 #define BUFFER_TIME 									 (1000000) //
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
@@ -300,9 +300,10 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define CLK1_BASE_OFFSET                (0x00101078) // dec: 1052792
 #define CLK_LEN                         (0x1300) // dec: 4864
 #define PWMBASE                         (0x7E20C000) // controller dec: 2116075520
-#define MODULATE                        (0x4D72) // dec: 19826
+#define MODULATOR                       (0x4D72) // dec: 19826
 #define FIFO                            (0x18)   // dec: 24
 #define CARRIER                         (0x5A)   // dec: 90
+#define PLL_AC		                      (0x5A00022A)   // dec: 1509949994
 #define DMABASE                         (0x7E007000) // dec: 2113957888
 #define DMAREF                          (0x7F)   // dec: 127 dma base reference
 #define DMAC                            (0x0707) // dec: 1799
@@ -317,11 +318,12 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PCM_BASE_OFFSET                 (0x00203000) // dec: 2109440
 #define PCM_LEN                         (0x24) // dec: 36
 // GPIO
-#define GPFSEL0                         (0x00/4) // p.90, dec: 0
-#define GPFSEL1                         (0x04/4) // 1
-#define GPFSEL2                         (0x08/4) // 2
-#define GPFSEL3                         (0x7E200000) // p.90 dec: 2116026368 same as GPIO_BUS_BASE
+#define GPFSEL0                        	(0x7E200000) // p.90 dec: 2116026368 same as GPIO_BUS_BASE
+#define GPFSEL1                         (0x00/4) // p.90, dec: 0
+#define GPFSEL2                         (0x04/4) // 1
+#define GPFSEL3                         (0x08/4) // 2
 #define CM_GP0CTL                       (0x7E101070) // p.107 dec: 2114982000
+#define CM_GP0H		                      (0x80) // dec: 128
 #define CM_GP0DIV                       (0x7E101074) // p.108 dec: 2114982004
 #define CM_GP1CTL                       (0x7E101078) // 2114982008
 #define CM_GP1DIV                       (0x7E10107C) // 2114982012
@@ -344,6 +346,7 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define GPIO_PAD_46_52                  (0x34/4)  // 13
 #define GPCLK_CNTL                      (0x70/4) // 112 / 4 = 28 -> 0x5A = decimal: 90
 #define GPCLK_DIV                       (0x74/4) // 29
+#define GPCLK_STEP 										 	(0x08/4) // 2
 #define CORECLK_CNTL                    (0x08/4) // 2
 #define CORECLK_DIV                     (0x0C/4) // 3
 #define EMMCCLK_CNTL                    (0x1C0/4) // 112
@@ -437,6 +440,22 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PCM_INT_STC_A                   (0x1C/4) // 7
 #define PCM_GRAY                        (0x20/4) // 8
 // DMA
+#define DMA_BASE			               		(0xF) // dec: 15
+#define DMA_CHANNEL                     (14) //
+#define DMA_CHANNEL_MAX                 (14) //
+#define DMA_CHANNEL_SIZE                (0x100) // 256
+#define DMA_CONBLK_AD                   (0x04/4) // 1
+#define DMA_DEBUG                       (0x20/4) // 8
+#define DMA_CS                          (0x00/4) // 0
+#define DMA_CS_RESET		                (1<<31) //
+#define DMA_CS_ABORT			              (1<<30) //
+#define DMA_CS_DISDEBUG		              (1<<29) //
+#define DMA_CS_WAIT_FOR_WRITES          (1<<28) //
+#define DMA_CS_INT			                (1<<2) //
+#define DMA_CS_ACTIVE			              (1<<0) //
+#define DMA_CS_END			                (1<<1) //
+#define DMA_CS_PRIORITY(x)		          ((x)&DMA_BASE<<16) //
+#define DMA_CS_PANIC_PRIORITY(x)	      ((x)&DMA_BASE<<20) //
 #define BCM_HOST_GET_PERIPHERAL_SIZE    (0x01000000) // 16777216
 #define BCM2708_DMA_ACTIVE              (1<<0) //
 #define BCM2708_DMA_END                 (1<<1) //
@@ -451,23 +470,8 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define BCM2708_DMA_ABORT               (1<<30) //
 #define BCM2708_DMA_RESET               (1<<31) //
 #define BCM2708_DMA_PER_MAP(x)          ((x)<<16) //
-#define BCM2708_DMA_PRIORITY(x)         ((x)&0xF<<16) //
-#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&0xF<<20) //
-#define DMA_CHANNEL                     (14) //
-#define DMA_CHANNEL_MAX                 (14) //
-#define DMA_CHANNEL_SIZE                (0x100) // 256
-#define DMA_CONBLK_AD                   (0x04/4) // 1
-#define DMA_DEBUG                       (0x20/4) // 8
-#define DMA_CS                          (0x00/4) // 0
-#define DMA_CS_RESET		                (1<<31) //
-#define DMA_CS_ABORT			              (1<<30) //
-#define DMA_CS_DISDEBUG		              (1<<29) //
-#define DMA_CS_WAIT_FOR_WRITES          (1<<28) //
-#define DMA_CS_INT			                (1<<2) //
-#define DMA_CS_ACTIVE			              (1<<0) //
-#define DMA_CS_END			                (1<<1) //
-#define DMA_CS_PRIORITY(x)		          ((x)&0xF<<16) // 0xF=15
-#define DMA_CS_PANIC_PRIORITY(x)	      ((x)&0xF<<20) //
+#define BCM2708_DMA_PRIORITY(x)         ((x)&DMA_BASE<<16) //
+#define BCM2708_DMA_PANIC_PRIORITY(x)   ((x)&DMA_BASE<<20) //
 // Requests
 #define DREQ_PCM_TX                     (2) //
 #define DREQ_PCM_RX                     (3) //
@@ -511,10 +515,11 @@ volatile unsigned 										(*allof7e); // shouuld be null in the begining
 #define PAD_VIRT_BASE                   (PERIPH_VIRT_BASE + PAD_BASE_OFFSET) //
 #define PCM_VIRT_BASE                   (PERIPH_VIRT_BASE + PCM_BASE_OFFSET) //
 #define PCM_PHYS_BASE                   (PERIPH_PHYS_BASE + PCM_BASE_OFFSET) //
-#define BUS_TO_PHYS(x)                  ((x)&~0xC0000000) // dec: 3221225472, ~means negotiation/complementary 8inversion)
+#define BUS_TO_PHYS(x)                  ((x)&~DRAM_PHYS_BASE) // dec: 3221225472, ~means negotiation/complementary 8inversion)
 #define ACCESS(PERIPH_VIRT_BASE)        (PERIPH_VIRT_BASE+ALLOF7EB) // volatile + int* volatile unsigned*
 #define SETBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) || 1<<bit // |=
 #define CLRBIT(PERIPH_VIRT_BASE, bit)   ACCESS(PERIPH_VIRT_BASE) == ~(1<<bit) // &=
+// variables
 const char *description = "experimental - WIP"; // version-stage
 const char *device = "default"; // playback device
 int w = (0);
@@ -525,7 +530,7 @@ int j;
 int k;
 int l;
 int r;
-int x = 1; // for ampf calc later
+int x = (1); // for ampf calc later
 int ex;
 char c;
 char *gpio_mem;
@@ -632,8 +637,8 @@ struct PAGEINFO // should use here bcm intern funcs -> repair p/v
 		int instrs [BUFFERINSTRUCTIONS]; // [1024]
 };
 //struct PageInfo instrPage[BUFFERINSTRUCTIONS];
-//struct PageInfo constPage[BUFFERINSTRUCTIONS];
 //struct PageInfo instrs[BUFFERINSTRUCTIONS];
+//struct PageInfo constPage[BUFFERINSTRUCTIONS];
 struct GPFSEL0_T
 {
     char FSEL0 : 3;
@@ -650,7 +655,7 @@ struct GPFSEL0_T
 };
 struct GPCTL // 9 parameters
 {
-		char SRC         : 4; // 4 = PLLA per
+		char SRC         : 4; // 4 = PLLA_PER
 		char ENAB        : 1; // Enable the clock generator
 		char KILL        : 1; // 0 = no action, 1 = stop and reset the clock generator
 		char             : 1; // un-used, bit: 23-11, type: R, reset: 0
@@ -673,38 +678,37 @@ struct CB // control blocks
 };
 struct DMAREGS
 {
-		volatile unsigned int CS;
-		volatile unsigned int CONBLK_AD;
 		volatile unsigned int TI;
 		volatile unsigned int SOURCE_AD;
 		volatile unsigned int DEST_AD;
 		volatile unsigned int TXFR_LEN;
 		volatile unsigned int STRIDE;
 		volatile unsigned int NEXTCONBK;
+		volatile unsigned int CS;
 		volatile unsigned int DEBUG;
 };
 /*
-class ClockOutput : public ClockDevice // pi4 pin fix for under 93 MHz
+class ClockOutput : public ClockDevice // PI4 pin fix for under 93 MHz
 {
         public:
         #ifndef GPIO_21
         ClockOutput (unsigned divisor) : ClockDevice (CLK0_BASE_OFFSET, divisor)
         {
             output = reinterpret_cast<int *> (peripherals->GetVirtualAddress (GPIO_BASE_OFFSET));
-            *output = (*output & 0xFFFF8FFF) | (0x04 << 12);
+            *output = (*output & CLOCK_ALT) | (CURBLOCK << 12);
         #else
         ClockOutput (unsigned divisor) : ClockDevice (CLK1_BASE_OFFSET, divisor)
         {
-            output = reinterpret_cast<int *> (peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + 0x08));
-            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
+            output = reinterpret_cast<int *> (peripherals->GetVirtualAddress (GPIO_BASE_OFFSET + OFF_VCLK ));
+            *output = (*output & CLOCK_BACK) | (MEM_VCLK << 3);
         #endif
         }
         virtual ~ClockOutput ()
         {
         #ifndef GPIO_21
-            *output = (*output & 0xFFFF8FFF) | (0x01 << 12);
+            *output = (*output & CLOCK_ALT) | (ALT_VCLK  << 12);
         #else
-            *output = (*output & 0xFFFFFFC7) | (0x02 << 3);
+            *output = (*output & CLOCK_BACK) | (MEM_VCLK  << 3);
         #endif
         }
 }
@@ -1265,9 +1269,9 @@ void carrierhigh () // enables it
 {
 	printf ("\nSetting carrier high ... \n");
 	// Set CM_GP0CTL.ENABLE to 1 HIGH (2nd number) as 0x5A -> CARRIER dec: 90
-	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A}; // set clock to 1 = HIGH
+	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, CARRIER}; // set clock to 1 = HIGH
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword); // setting cm
-	while (!(ACCESS(CM_GP0CTL) &0x80))
+	while (!(ACCESS(CM_GP0CTL) &CM_GP0H))
 	{
 		printf ("\nCarrier high yet and waiting ... \n");
 	 }; // Wait for busy flag to turn on
@@ -1277,9 +1281,9 @@ void carrierhigh () // enables it
 void carrierlow () // disables it
 {
 	printf ("\nSetting carrier low ... \n");
-	struct GPCTL setupword = {6, 0, 0, 0, 0, 1, 0x5A}; // 6 = "SRC", set it to 0 = LOW
+	struct GPCTL setupword = {6, 0, 0, 0, 0, 1, CARRIER}; // set it to 0 = LOW
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
-	while (ACCESS(CM_GP0CTL)&0x80) {  }; // wait
+	while (ACCESS(CM_GP0CTL) &CM_GP0H) { /*wait*/ };
 	printf ("\nCarrier is low ... \n");
 	return;
 }
@@ -1317,7 +1321,7 @@ void terminate () // static
         printf ("\ngpio_reg is %p \n", gpio_reg);
 				//printf ("\n%PRIu32\n", gpio_reg);
         // Disable the clock generator
-        clk_reg [GPCLK_CNTL] = (0x5A);
+        clk_reg [GPCLK_CNTL] = (CARRIER);
         printf ("\nclk_reg is %p \n", clk_reg); // u or lu?
 	}
 	if (dma_reg && vAddr)
@@ -1383,27 +1387,27 @@ void setupio ()
 void modulate (int l)
 {
 	printf ("\nModulate carrier ... \n");
-	ACCESS(CM_GP0DIV) == ((CARRIER << 24) + (MODULATE + l));  //
+	ACCESS(CM_GP0DIV) == ((CARRIER << 24) + MODULATOR + l);  //
 	return;
 }
 void setupfm ()
 {
   allof7e = (unsigned*) mmap (
-                0,
+                NULL,
                 BCM_HOST_GET_PERIPHERAL_SIZE, // Peripherial LENGTH
                 PROT_READ | PROT_WRITE, // error
                 MAP_SHARED, // error
                 MEM_FD, //
-                PERIPH_VIRT_BASE); // PERIPH_VIRT_BASE, std = 0x20000000
+                PERIPH_VIRT_BASE);
 	if ((int) allof7e == (-1))
 	{
-		exit (0);
+		exit (-1); //
 	}
 	SETBIT (GPFSEL0, 14);
 	CLRBIT (GPFSEL0, 13);
 	CLRBIT (GPFSEL0, 12);
-	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, 0x5A};
-	//ACCESS (CM_GP0DIV) = (0x5A << 24) + divider;
+	struct GPCTL setupword = {6, 1, 0, 0, 0, 1, CARRIER};
+	//ACCESS (CM_GP0DIV) = (CARRIER << 24) + divider;
 	//ACCESS (CM_GP0CTL) = *((int*) &setupword);
   return;
 }
@@ -1455,8 +1459,10 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 	pcm_reg = map_peripheral(PCM_VIRT_BASE, PCM_LEN);
 	pad_reg = map_peripheral(PAD_VIRT_BASE, PAD_LEN);
 	clk_reg = map_peripheral(CLK_VIRT_BASE, CLK_LEN);
-	clk_reg[GPCLK_CNTL] = (0x5a<<24) | (1<<4) | (4);
-	clk_reg[CM_PLLA] = (0x5A00022A); // Enable PLLA_PER
+	clk_reg[GPCLK_CNTL] = (CARRIER<<24) | (1<<4) | (4);
+	clk_reg[CM_PLLA] = (PLL_AC); // Enable PLLA_PER
+	clk_reg[GPCLK_CNTL + GPCLK_STEP*1] = CARRIER;
+  clk_reg[GPCLK_CNTL + GPCLK_STEP*2] = CARRIER;
 	pad ();
 	*/
 	int sz = lseek (fp, 0L, SEEK_END);
@@ -1482,7 +1488,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 				printf ("\ndval: %f \n", dval);
         int intval = (int) (round (dval)); // integer component
 				printf ("\nintval: %d \n", intval);
-				int div_val = (0x5A<<24)+((int)(divider*pow(2.0, 12))); // divisor
+				int div_val = (CARRIER<<24)+((int)(divider*pow(2.0, 12))); // divisor
 				printf ("\ndiv_val: %d \n", div_val);
         float frac = ((dval-intval)/2+0.5);
 				printf ("\nfrac: %f \n", frac);
@@ -1490,21 +1496,21 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 				printf ("\nfracval: %d \n", fracval);
         bufPtr++;
         // problem still with .v & .p endings for struct!!
-        while (ACCESS ((DMABASE + CURBLOCK) & (~DMAREF)) == (int) (instrs [bufPtr]) ) { }; // CURBLOCK of struct PageInfo, [bufPtr].p
+        while (ACCESS ((DMABASE + CURBLOCK) & (~DMAREF)) == (int) (instrs [bufPtr]) ) { /*wait*/ }; // CURBLOCK of struct PageInfo, [bufPtr].p
         //usleep2 (1000); // leaving out sleep for faster process
         // Create DMA command to set clock controller to output FM signal for PWM "LOW" time
         //(struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4 - 4);
         bufPtr++;
-        //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
+        //while (ACCESS (DMABASE + CURBLOCK) == (int) (instrs [bufPtr].p));
         //usleep2 (1000);
         // Create DMA command to delay using serializer module for suitable time
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = clocksPerSample-fracval;
         bufPtr++;
-        //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
+        //while (ACCESS (DMABASE + CURBLOCK) == (int) (instrs [bufPtr].p));
         //usleep2 (1000);
         // Create DMA command to set clock controller to output FM signal for PWM "HIGH" time.
         //((struct CB*) (instrs [bufPtr].v))->SOURCE_AD = ((int) constPage.p + 2048 + intval*4+4);
-        //while (ACCESS (DMABASE + 0x04) == (int) (instrs [bufPtr].p));
+        //while (ACCESS (DMABASE + CURBLOCK) == (int) (instrs [bufPtr].p));
         //usleep2 (1000);
         // Create DMA command for more delay.
         //((struct CB*) (instrs [bufPtr].v))->TXFR_LEN = fracval;
@@ -1875,8 +1881,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 					 		 printf ("\nBandwidth is %f \n", bandwidth);
 					 		 break;
 		case 'p':
-         				power = atoi (optarg);
-								if (power <= 0 || power > 7)
+         			 power = atoi (optarg);
+							 if (power <= 0 || power > 7)
 								{
 								fprintf (stderr, "\nOutput power has to be set in range of 1-7, setting default 7! \n");
 								power = (7);
@@ -1885,7 +1891,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
          				{
 									printf ("\nPower is %d \n", power);
 								}
-								break;
+							 break;
 		case 'g':
 								gpiopin = atoi (optarg);
 								printf ("\nGPIO-PIN is %d \n", gpiopin);
@@ -1895,10 +1901,10 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 								printf ("\nDMA-Channel is %d \n", dmachannel);
 								break;
 		case 'l':
-								 loop = atoi (optarg); // true
-								 printf ("\nLoop is %d (0=false, 1=true) \n", loop);
-								 loopselect ();
-								 break;
+								loop = atoi (optarg); // true
+								printf ("\nLoop is %d (0=false, 1=true) \n", loop);
+								loopselect ();
+								break;
 		case 'a':
 							 if (argc == 2)
 							 {
@@ -1920,7 +1926,8 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
          			 {
          				printf ("\nError in -u menu \n");
          			 }
-							 return (-1);
+							 break;
+							 //return (-1);
 		case 'h':
 							 if (argc == 2)
 							 {
@@ -1946,7 +1953,7 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	else
 	{
 		printf ("\nArgument/Option Errors! \n");
-		//return (-1);
+		return (-1);
 	}
 	printf ("\n-------------------------------------------------- \n");
 	printf ("\nEnd of argument check, printing debug: \n");
@@ -1977,6 +1984,6 @@ int main (int argc, char **argv) // *argv []=**argv, const char *short_opt
 	printf ("\nNo Transmission! \n");
 	}
   terminate ();
-	printf ("\nEnd of Program! Closing ... \n"); // EOF
+	printf ("\nEnd of Program! Closing ... \n");
 	return (0);
-}
+} // EOF
