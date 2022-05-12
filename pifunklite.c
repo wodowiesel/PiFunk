@@ -253,7 +253,7 @@ volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define OFF_VCLK                       (0x08) // dec: 2
-#define CLOCK_BASE									   (19.2E6) //
+#define CLOCK_BASE									   (19.2E6) // 
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
