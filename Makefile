@@ -77,6 +77,8 @@ $(PFFLAGS)
 ##-DMODULE: This symbol tells the header files to give the appropriate definitions for a kernel module.
 
 ## Determine the hardware/software platform
+LSCPU:=$(shell lscpu | grep "Model name" | awk '{print $$3}')
+$(UNAME)
 UNAME:=$(shell uname -m) ## processor: armv6l
 $(UNAME)
 KERNEL:=$(shell uname -a) ## kernel: Linux raspberrypi 4.19.97+ #1294 Thu Jan 30 13:10:54 GMT 2020 armv6l GNU/Linux
@@ -89,50 +91,70 @@ OSVERSION:=$(shell cat /etc/rpi-issue) ## os Date, http://github.com/RPi-Distro/
 $(OSVERSION)
 RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\sModel\s[A-Z]\sPlus" | grep -a -o "Rev\s[0-9].[0-9]" : Raspberry Pi Model B Plus Rev 1.2
 $(RPIVERSION)
+PIV:= $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4)
+$(PIV)
 PCPUI:=$(shell cat /proc/cpuinfo) ## cpuinfos my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
 $(PCPUI)
 
 ## Enable ARM-specific options only
 ## old/special pi versions
 ifeq ($(UNAME), armv5)
-PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
-TARGET=RPI ## alternative1
+	PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
+	TARGET=RPI ## alternative1
 endif
 
 ifeq ($(UNAME), armv5l)
-PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET=RASPBERRY ## alternative2
+	PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
+	TARGET=RASPBERRY ## alternative2
 endif
 
 ifeq ($(UNAME), armv6)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
-TARGET=RASPI0 ## & Pi W
+	PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
+	TARGET=RASPI0 ## & Pi W
 endif
 
 ifeq ($(UNAME), armv6l)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
-TARGET=RASPI1
+	PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+	TARGET=RASPI1
 endif
 
 ifeq ($(UNAME), armv7l)
-PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
-TARGET=RASPI2
+	ifeq
+		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
+		TARGET=RASPI2
+	else
+		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=4
+		TARGET = RASPI4L
 endif
 
 ifeq ($(UNAME), armv8l)
-PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
-TARGET=RASPI3
+	PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
+	TARGET=RASPI3
 endif
 
-ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
-PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
-TARGET=RASPI4
+ifeq ($(UNAME), armv8l)
+	PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
+	TARGET=RASPI4
+endif
+
+ifeq ($(UNAME), armv8l && $(PIV), 1)
+	PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
+	TARGET=RASPI4
+endif
+
+ifeq ($(UNAME), aarch64)
+	ifeq ($(PCPUI), 14)
+		PFLAGS=-march=armv8-a -ffast-math -DRASPI=4A
+		TARGET=RASPI4A
+	else ifeq ($(LSCPU), Cortex-A72)
+		PFLAGS=-march=armv8-a -mtune=cortex-a72 -ffast-math -DRASPI=4C
+		TARGET=RASPI4C
 endif
 
 $(TARGET)
 $(PFLAGS)
 
-#@echo Compiling PiFunk
+@echo "Compiling PiFunk"
 
 ## Generating objects in gcc specific order, -save-temps
 ## translated assembler/c-code

@@ -185,7 +185,7 @@ volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
 #endif
-// pi 0 zero & w
+// pi0 zero & w
 #ifdef 	RASPI0 //== 0
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
@@ -202,7 +202,7 @@ volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
 #endif
-// pi 1 - BCM2835 -> my version
+// pi1 - BCM2835 -> my version
 #ifdef  RASPI1 // == 1
 #define PERIPH_VIRT_BASE               (0x20000000) // base=GPIO_offset dec: 2 virtual base
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
@@ -221,7 +221,7 @@ volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
 #endif
-// pi 2 - BCM2836/7
+// pi2 - BCM2836/7
 #ifdef  RASPI2 //== 2
 #define PERIPH_VIRT_BASE               (0x3F000000) // dec: 1056964608
 #define PERIPH_PHYS_BASE               (0x7E000000) // dec: 2113929216
@@ -253,7 +253,7 @@ volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 #define MEM_FLAG                       (0x04) // dec: 4
 #define CURBLOCK                       (0x04) // dec: 4 memflag
 #define OFF_VCLK                       (0x08) // dec: 2
-#define CLOCK_BASE									   (19.2E6) // 
+#define CLOCK_BASE									   (19.2E6) //
 #define XTAL_CLOCK                     (54.0E6) // = 54000000
 #define PAGE_SIZE                      (1024) // 4096
 #define DMA_CHANNEL										 (14) //
@@ -262,7 +262,7 @@ volatile unsigned 										(*allof7e); // shouuld be NULL in the begining
 #define PWM_WRITES_PER_SAMPLE 				 (10) //
 #define PWM_CHANNEL_RANGE 						 (32) //
 #endif
-// pi 4 - BCM2838
+// pi4 - BCM2838
 #ifdef  RASPI4 //== 4
 #define BCM2708_PERI_BASE 						 (0xFE000000) // 4261412864
 #define BCM2711_PERI_BASE              (0x3F000000) // 1056964608, coprocessor!

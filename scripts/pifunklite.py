@@ -270,8 +270,9 @@ def logger ():
 
 ##------------------------------------------------------------------------------
 if __name__ == "__main__":
-  print ("\nStarting Program!\n")
-  (int (sys.argv [1])
+ print ("\nStarting Program!\n")
+ datetime.now().strftime("\n%d-%m-%Y, %H:%M:%S \n")
+ (int(sys.argv[1])
 
 ## run another py-script from shell-terminal (holds main script)
 ## selecting a individual band:
@@ -292,26 +293,27 @@ if __name__ == "__main__":
 
 ##------------------------------------------------------------------------------
 ## main program
-__init__ ()
-datetime.now().strftime("\n%d-%m-%Y, %H:%M:%S \n")
+try:
+ __init__ ()
+
 #print (datetime.datetime.now ())
 #current_time = datetime.datetime.now ()
 #str (datetime.now ())
 #current_time.isoformat ()
 
 ## here a menu with switchcase
-logger ()
-csv_reader ()
+ logger ()
+ csv_reader ()
 
 ## if args not specified, else so to play
-soundfile ()
-frequency ()
-sampler ()
-channels ()
-modulation ()
-callsign ()
+ soundfile ()
+ frequency ()
+ sampler ()
+ channels ()
+ modulation ()
+ callsign ()
 
-c_arg_parser ()
+ c_arg_parser ()
 
 try:
 ## if all args are parsed so to transmission mode
@@ -328,7 +330,11 @@ try:
 except KeyboardInterrupt:
  GPIO.cleanup()       ## clean up GPIO on CTRL+C exit
 
-GPIO.cleanup()           ## clean up GPIO on normal exit
+ GPIO.cleanup()           ## clean up GPIO on normal exit
+
+except:
+ print("\nERROR\n")
+ pass
 ##------------------------------------------------------------------------------
 
 ## test-area
