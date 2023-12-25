@@ -328,16 +328,16 @@ try:
  play_mic ()
 
 except KeyboardInterrupt:
- GPIO.cleanup()       ## clean up GPIO on CTRL+C exit
-
- GPIO.cleanup()           ## clean up GPIO on normal exit
+ GPIO.cleanup ()       ## clean up GPIO on CTRL+C exit
 
 except:
- print("\nERROR\n")
+ print ("\nERROR\n")
  pass
+
+GPIO.cleanup ()        ## clean up GPIO on normal exit
+
 ##------------------------------------------------------------------------------
 
 ## test-area
-#nosetests
 
 print ("\nEnd of script!\n")
