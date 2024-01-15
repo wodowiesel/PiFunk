@@ -1448,7 +1448,7 @@ void sendStringAsk (char *string, int sleep)
   return;
 }
 */
-void playfm (char *filename, int mod, float bandwidth) // char *filename, float freq, int samplerate
+void playfm (char *filename) // char *filename, float freq, int samplerate, char *mod, float bandwidth
 {
 	printf ("\nAllocating file to memory for wave-data ... \n");
 	/*
@@ -1467,10 +1467,10 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
 	*/
 	int sz = lseek (fp, 0L, SEEK_END);
 	short *data = (short*) malloc (sz);
-	for (r = 0; r < 22; r++) // why i less then 22?
+	for (r = 0; r < 22; r++) // why i less then 22? probably for 22050?
 	{
         read (fp, &data, 2); // read past header (or sz instead on 2 ?)
-        printf ("\nReading fp .. \n");
+        printf ("\nReading fp ... \n");
 	}
 	while (readBytes == read (fp, &data, 1024))
 	{
@@ -1520,7 +1520,7 @@ void playfm (char *filename, int mod, float bandwidth) // char *filename, float 
         printf ("\nReading bytes from fp ... \n");
 	}
 	close (fp);
-	printf ("\nClosing file \n");
+	printf ("\nClosing file! \n");
 	return;
 }
 void setupDMA ()
@@ -1601,12 +1601,12 @@ void unsetupDMA ()
 {
 	//struct DMAREGS* DMA0 = (struct DMAREGS* ACCESS(DMABASE) );
 	//DMA0->CS = 1<<31; // reset dma controller
-	printf ("\nUnsetting DMA done \n");
+	printf ("\nUnsetting DMA done! \n");
 	return;
 }
 int sampleselect () // char *filename, int samplerate
 {
-	printf ("\nSamplerate/bit select starting \n");
+	printf ("\nsamplerate/bit select starting ... \n");
 	/*
 	if (!(fp = open (filename, SFM_READ, &sfinfo))) // check what SFM and  sfinfo do!?
 	{   // Open failed so print an error message.
@@ -1727,7 +1727,7 @@ void playam ()
 	{
 		printf ("\nUnable to write sample! \n");
 	}
-	printf ("\nWriting tone in am \n");
+	printf ("\nWriting tone in am! \n");
 	return;
 }
 void modulationfm () // int argc, char **argv
@@ -1737,28 +1737,28 @@ void modulationfm () // int argc, char **argv
 		printf ("\nSetting up DMA ... \n");
 		setupDMA (); // (argc>2 ? atof (argv [2]):100.00000); // default freq
     printf ("\nfm modulator starting ... \n");
-    playfm ((char *) filename, (int) mod, (float) bandwidth); // atof (argv [3]):22050)
+    playfm ((char *) filename); // atof (argv [3]):22050), (float) bandwidth
 		return;
 }
 void modulationam () //
 {
-		printf ("\nam modulator starting \n");
+		printf ("\nam modulator starting ...v \n");
 		playam (); // actual modulation stuff here for am -> write tone? maybe better name later
 	  return;
 }
-void modselect () //
+void modselect (char *mod) //
 {
 	printf ("\nOpening Modulator-Selection ... \n");
 	if (strcmp (mod, "fm"))
 	{
     printf ("\nYou selected fm! \n");
-    printf ("\nPushing arguments to fm Modulator ... \n");
+    printf ("\nPushing arguments to fm-Modulator ... \n");
 		modulationfm ();
 	}
 	else if (strcmp (mod, "am"))
 	{
     printf ("\nYou selected am! \n");
-    printf ("\nPushing arguments to am Modulator ... \n");
+    printf ("\nPushing arguments to am-Modulator ... \n");
 		modulationam ();
 	}
 	else
@@ -1800,12 +1800,12 @@ int menu ()
 	switch (menuoption)
 	{
 		case 1:  printf ("\nShell - Commandline (main) \n");
-						int main (int argc, char ** argv); //, const char *short_opt); // go back to cmd if you want
+						int main (int argc, char **argv); //, const char *short_opt); // go back to cmd if you want
 						 break;
 		case 2:  printf ("\nExiting ... \n");
 					 	 exit (0);
 		default: printf ("\nError: Returning back to Main (Default) \n");
-             int main (int argc, char ** argv);
+             int main (int argc, char **argv);
 		 				 break;
 	}
 	return (menuoption);
