@@ -14,7 +14,7 @@ ___
 
 0. Download Linux-Pi-Distribution
 
-[Raspbian Buster lastest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.97+
+[Raspbian Buster latest (Full)](https://downloads.raspberrypi.org/raspbian_full_latest) >= v4.19.97+
 
 or use the extra provided imager and extract and load bootable image on SD-card via Rufus
 
@@ -339,6 +339,7 @@ e) For handling overheating of the Pi's processor use cooling-ribs with fan (+5 
 
 you can overclock the Pi if you want to on own risk but it's not recommended
 
+Optional modules:
 f) RTC: Module DS3231 uses
 
 +3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO 1 on I2C) & GND (PIN 9)
@@ -346,8 +347,6 @@ f) RTC: Module DS3231 uses
 -> need to activate I2C in pi config!
 
 ![RTC](docs/RTC-bottom.png)
-
-![RTC](docs/RTC-top.jpg)
 
 g) GPS Module: Ublox Neo 8M (best one so far)
 
@@ -361,13 +360,11 @@ it prints in NMEA format so change config `ttyAMA0` to `tty1`
 
 ![GPS](docs/GPS-Neo-8M-bottom.jpg)
 
-![GPS](docs/GPS-Neo-8M-top.jpg)
-
 h) Morse-code-table:
 
-Will be implemented later!
+Maybe implemented later!
 
-![Morsecode](docs/morsecodeCW.jpg)
+![Morsecode/CW](docs/morsecodeCW.jpg)
 
 ___
 

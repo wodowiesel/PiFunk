@@ -123,8 +123,8 @@ ifeq ($(UNAME), armv7l)
 		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
 		TARGET=RASPI2
 	else
-		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=4
-		TARGET = RASPI4L
+		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
+		TARGET=RASPI4L
 endif
 
 ifeq ($(UNAME), armv8l)
@@ -133,7 +133,7 @@ ifeq ($(UNAME), armv8l)
 endif
 
 ifeq ($(UNAME), armv8l)
-	PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
+	PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI4
 	TARGET=RASPI4
 endif
 
@@ -144,11 +144,14 @@ endif
 
 ifeq ($(UNAME), aarch64)
 	ifeq ($(PCPUI), 14)
-		PFLAGS=-march=armv8-a -ffast-math -DRASPI=4A
+		PFLAGS=-march=armv8-a -ffast-math -DRASPI4A
 		TARGET=RASPI4A
 	else ifeq ($(LSCPU), Cortex-A72)
-		PFLAGS=-march=armv8-a -mtune=cortex-a72 -ffast-math -DRASPI=4C
+		PFLAGS=-march=armv8-a -mtune=cortex-a72 -ffast-math -DRASPI4C
 		TARGET=RASPI4C
+	else ifeq ($(LSCPU), Cortex-A76)
+		PFLAGS=-march=armv8-a -mtune=cortex-a72 -ffast-math -DRASPI5
+		TARGET=RASPI5
 endif
 
 $(TARGET)
