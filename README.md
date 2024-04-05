@@ -333,13 +333,14 @@ You can compare the different materials for specific frequencies:
 
 [Datasheet](https://www.funkamateur.de/tl_files/downloads/hefte/2008/FA-BE-Info_Amidon-FT.pdf)
 
-- Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
+-> Dummy-load: 1-100 W @ 50 Ohm "cement" or similar (aluminium case) with cooler for testing
 
 e) For handling overheating of the Pi's processor use cooling-ribs with fan (+5 V DC/0.2 A - 20x20 mm)
 
 you can overclock the Pi if you want to on own risk but it's not recommended
 
-Optional modules:
+- Optional modules:
+
 f) RTC: Module DS3231 uses
 
 +3.3 V (PIN 1), SDA0 (PIN 3, GPIO0 on I2C), SCL0 (PIN 5, GPIO 1 on I2C) & GND (PIN 9)
