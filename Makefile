@@ -2,6 +2,8 @@
 ## should run with sudo or root rights
 USER=sudo
 $(USER)
+USER2=pi
+$(USER2)
 CC=gcc ## gcc 8.3.0-6
 $(CC)
 CXX=g++
@@ -28,15 +30,15 @@ $(HOME)
 KERNEL_DIR:=/lib/modules/$(shell uname -r)/build/
 $(KERNEL_DIR)
 
-RM=rm -f ## remove files or folder
-#$(RM)
+RM=rm -f ## remove files or folder for clean
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## environment variable C_INCLUDE_PATH
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
 CINC:=-Iinclude -I/opt/vc/include/ ## kernel
 # -I/usr/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/linux/
-$(CINC) #
+$(CINC)
+## -D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
 CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
 $(CMA)
 
@@ -68,14 +70,11 @@ LDFLAGS=-lbcm_host -lbcm2835 -lgcc -lsndfile -lm -pthread ## -lm after -lsnd, -l
 $(LDFLAGS)
 PFFLAGGS=-lpifunklite ## own pifunk library, gcc assumes lib beginns with prefix "lib"
 $(PFFLAGS)
-#AOFLAGGS=-arm-none-eabi-objdump ## objdump gnu tools
-#$(AOFLAGS)
+AOFLAGGS=-arm-none-eabi-objdump ## objdump gnu tools
+$(AOFLAGS)
 
 ## other optional macros if necessary
-##-isystem $(KERNEL_DIR) : You must use the kernel headers of the kernel you're compiling against. Using the default /usr/include/linux won't work.
-##-D__KERNEL__ : Defining this symbol tells the header files that the code will be run in kernel mode, not as a user process.
-##-DMODULE: This symbol tells the header files to give the appropriate definitions for a kernel module.
-
+## -isystem $(KERNEL_DIR) : You must use the kernel headers of the kernel you're compiling against. Using the default /usr/include/linux won't work.
 ## Determine the hardware/software platform
 LSCPU:=$(shell lscpu | grep "Model name" | awk '{print $$3}')
 $(UNAME)
@@ -96,21 +95,28 @@ $(PIV)
 PCPUI:=$(shell cat /proc/cpuinfo) ## cpuinfos my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
 $(PCPUI)
 
+ARCH_PROMPT:="Select the architecture (1 for armv6l, 2 for armv7l, 3 for aarch64): "
+#ARCH_CHOICE:=$(shell read -p $(ARCH_PROMPT) arch && echo $$arch)
+#$(ARCH_CHOICE)
+#ifeq ($(ARCH_CHOICE), 3)
+
 ## Enable ARM-specific options only
-## old/special pi versions
+## targets pi versions
+## -DMODULE: This symbol tells the header files to give the appropriate definitions for a kernel module.
+
 ifeq ($(UNAME), armv5)
 	PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
-	TARGET=RPI ## alternative1
+	TARGET=RPI ## old version
 endif
 
 ifeq ($(UNAME), armv5l)
-	PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
-	TARGET=RASPBERRY ## alternative2
+	PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRPIL
+	TARGET=RPIL ## old special
 endif
 
 ifeq ($(UNAME), armv6)
-	PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
-	TARGET=RASPI0 ## & Pi W
+	PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0W
+	TARGET=RASPI0W ## & Pi W
 endif
 
 ifeq ($(UNAME), armv6l)
@@ -119,12 +125,11 @@ ifeq ($(UNAME), armv6l)
 endif
 
 ifeq ($(UNAME), armv7l)
-	ifeq
-		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
-		TARGET=RASPI2
-	else
-		PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4
-		TARGET=RASPI4L
+	PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
+	TARGET=RASPI2
+else
+	PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI4L
+	TARGET=RASPI4L
 endif
 
 ifeq ($(UNAME), armv8l)
@@ -138,58 +143,75 @@ ifeq ($(UNAME), armv8l)
 endif
 
 ifeq ($(UNAME), armv8l && $(PIV), 1)
-	PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
-	TARGET=RASPI4
+	PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4C
+	TARGET=RASPI4C
+endif
+
+ifeq ($(PCPUI), 14)
+	PFLAGS=-march=armv8-a -mtune=cortex-a53 -ffast-math -DRASPI4A
+	TARGET=RASPI4A
 endif
 
 ifeq ($(UNAME), aarch64)
-	ifeq ($(PCPUI), 14)
-		PFLAGS=-march=armv8-a -ffast-math -DRASPI4A
+ ifeq ($(LSCPU), Cortex-A53)
+		PFLAGS=-march=armv8-a -mtune=cortex-a53 -ffast-math -DRASPI4A
 		TARGET=RASPI4A
-	else ifeq ($(LSCPU), Cortex-A72)
-		PFLAGS=-march=armv8-a -mtune=cortex-a72 -ffast-math -DRASPI4C
-		TARGET=RASPI4C
-	else ifeq ($(LSCPU), Cortex-A76)
-		PFLAGS=-march=armv8-a -mtune=cortex-a72 -ffast-math -DRASPI5
+ else ifeq ($(LSCPU), Cortex-A72)
+		PFLAGS=-march=armv8-a -mtune=cortex-a72 -fstack-protector-strong -fno-plt -ffast-math -DRASPI4P
+		TARGET=RASPI4P
+ else ifeq ($(LSCPU), Cortex-A76)
+		PFLAGS=-march=armv8-a -mtune=cortex-a76 -ffast-math -pipe -DRASPI5
 		TARGET=RASPI5
+else	@echo "Error: Platform not recognized!"
 endif
 
+TARGET_PRINT:="Your Target is: "
+$(TARGET_PRINT)
 $(TARGET)
+PFLAGS_PRINT:="Your PFLAGS are: "
+$(PFLAGS_PRINT)
 $(PFLAGS)
 
 @echo "Compiling PiFunk"
-
+## verbose output!
 ## Generating objects in gcc specific order, -save-temps
 ## translated assembler/c-code
 pifunklite.s:	$(SOURCE) pifunk.h
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunklite.s ## for arm
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunklite.asm ## normal assebler suffix
+
 ## precompiled/processor c-code
 pifunklite.i:	$(SOURCE) pifunk.h
 					$(USER) $(SOURCE) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunklite.i
+
 ## precompiled object/machine-code
 pifunklite.o:	$(SOURCE) pifunk.h
 					$(USER) $(CC) $(DEBUG) $(SOURCE) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.o
+
 ## static archive
 pifunklite.a:	pifunklite.o
 					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.a
 					$(USER) ar rcs -t $@ $^
 					$(USER) ranlib pifunklite.a
+
 ## static library
 pifunklite.lib:	pifunklite.o pifunklite.a
 						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.lib
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib pifunklite.lib
+
 ## shared object
-pifunklite.so:	pifunklite.o
+pifunklite.so:	pifunklite.so
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/pifunklite.so lib/pifunklite.o
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib pifunklite.so
+
 ## dynamic linked library
 pifunklite.dll:	pifunklite.o
 						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunklite.dll
 						$(USER) ar rcs -t $@ $^
 						$(USER) ranlib pifunklite.dll
+
 ## lib object list
 OBJECTS=pifunklite.s pifunklite.i pifunklite.o pifunklite.a pifunklite.lib pifunklite.so pifunklite.dll
 $(OBJECTS)
@@ -197,12 +219,15 @@ $(OBJECTS)
 ## generating standard binary
 pifunklite.out:	$(SOURCE) pifunk.h
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFFLAGS) -save-temps -o bin/pifunklite.out
+
 ## explicit binary
 pifunklite.bin: $(SOURCE) pifunk.h
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunklite.bin
+
 ## normal binary
 pifunklite:			$(SOURCE) pifunk.h
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunklite
+
 ## executable list
 #allbin: pifunklite.out pifunklite.bin pifunklite
 EXECUTABLES=pifunklite.out pifunklite.bin pifunklite
@@ -263,3 +288,4 @@ run:			cd $(HOME)/PiFunklite/bin/
 .PHONY: 	run+
 run+:			cd $(HOME)/PiFunklite/bin
 					$(USER) ./pifunklite+ -n sound.wav -f 26.9650 -s 22050 -m fm -t a -b 12.5 -p 7 -g 7 -d 14 -l 0
+##EOF
