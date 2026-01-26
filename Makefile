@@ -84,7 +84,7 @@ RVERSION:=$(shell uname -r) ## vervion number: 4.19.97+
 $(RVERSION)
 VCGVERSION:=$(shell vcgencmd version) ## vcg firmware: version 53a54c778c493957d99bf49762dfabc4eee80e45
 $(VCGVERSION)
-OSVERSION:=$(shell cat /etc/rpi-issue) ## os Date, http://github.com/RPi-Distro/pi-gen, MD5, stage5
+OSVERSION:=$(shell cat /etc/rpi-issue) ## os Date, https://github.com/RPi-Distro/pi-gen, MD5, stage5
 $(OSVERSION)
 RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\sModel\s[A-Z]\sPlus" | grep -a -o "Rev\s[0-9].[0-9]" : Raspberry Pi Model B Plus Rev 1.2
 $(RPIVERSION)
@@ -94,38 +94,63 @@ $(PCPUI)
 ## Enable ARM-specific options only
 ## old/special pi versions
 ifeq ($(UNAME), armv5)
-PFLAGS=-march=native -mtune=native -mfloat-abi=soft -mfpu=vfp -ffast-math -DRPI
-TARGET=RPI ## alternative1
+PFLAGS=-march=native -mcpu=arm926ej-s -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRPI
+TARGET=RPI ## alternative1 historic
 endif
 
-ifeq ($(UNAME), armv5l)
-PFLAGS=-march=native -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPBERRY
+ifeq ($(UNAME), armv5l || armv5b)
+PFLAGS=-march=armv5te -mcpu=arm926ej-s -mtune=arm926ej-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
 TARGET=RASPBERRY ## alternative2
 endif
 
+ifeq ($(UNAME), armv5l)
+PFLAGS=-march=armv5te -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
+TARGET=RASPI ## alternative3
+endif
+
 ifeq ($(UNAME), armv6)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
+PFLAGS=-march=armv6t2e -mcpu=arm11 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
 TARGET=RASPI0 ## & Pi W
 endif
 
-ifeq ($(UNAME), armv6l)
-PFLAGS=-march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
+ifeq ($(UNAME), armv6l) # Thumb t + enhanced DSP active
+PFLAGS=-march=armv6t2e -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 TARGET=RASPI1
 endif
 
 ifeq ($(UNAME), armv7l)
-PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
+PFLAGS=-march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -fstack-protector-strong -fno-plt -ffast-math -pipe -DRASPI2W
+TARGET=RASPI2W
+endif
+
+ifeq ($(UNAME), armv7l)
+PFLAGS=-march=armv7-a -mcpu=cortex-a7 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
 TARGET=RASPI2
 endif
 
-ifeq ($(UNAME), armv8l)
-PFLAGS=-march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
+ifeq ($(UNAME), armv7l)
+PFLAGS=-march=armv7-a -mcpu=cortex-a53 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2R
+TARGET=RASPI2R
+endif
+
+ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 3), 1)
+PFLAGS=-march=armv7-a -mcpu=cortex-a53 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
 TARGET=RASPI3
 endif
 
 ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
-PFLAGS=-march=armv8-a -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
+PFLAGS=-march=armv8-a -mcpu=cortex-a72 -mtune=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
 TARGET=RASPI4
+endif
+
+ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
+PFLAGS=-march=armv8-a -mcpu=cortex-a72 -mtune=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI400 #cortex-a53
+TARGET=RASPI400
+endif
+
+ifeq ($(UNAME), aarch64)
+PFLAGS=-march=armv8-a -mcpu=cortex-a53 -pipe -fstack-protector-strong -fno-plt -ffast-math -DAARCH64
+TARGET=AARCH64
 endif
 
 $(TARGET)
