@@ -10,15 +10,20 @@ $(CXX)
 ## general infos
 MAKEINFO=pifunk
 $(MAKEINFO)
-VERSION=0.1.7.6
+VERSION=0.1.7.7
 $(VERSION)
 STATUS=experimental
 $(STATUS)
 
-SOURCE=pifunk.c
-$(SOURCE)
-SOURCECXX=pifunk.cpp
-$(SOURCECXX)
+SRC=pifunk.c
+$(SRC)
+SRCXX=pifunk++.cpp
+$(SRCXX)
+
+HC=pifunk.h
+$(HC)
+HXX=pifunk++.hpp
+$(HXX)
 
 ## default paths
 INIT=/bin/sh ## init-shell
@@ -160,60 +165,82 @@ $(PFLAGS)
 
 ## Generating objects in gcc specific order, -save-temps
 ## translated assembler/c-code
-pifunk.s:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal assembler suffix
+src/pifunk.s:	$(SRC) $(HC)
+					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.s ## for arm
+
+src/pifunk.asm: $(SRC) $(HC)
+					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal assembler suffix
+
 ## precompiled/processor c-code
-pifunk.i:	$(SOURCE) pifunk.h
-					$(USER) $(SOURCE) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
+lib/pifunk.i:	$(SRC) $(HC)
+					$(USER) $(SRC) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
+
+lib/pifunk++.ii:	$(SRCXX) $(HXX)
+					$(USER) $(SRCXX) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk++.ii
+					            															#$(PFLIBS) $(PFFLAGS) 
 ## precompiled object/machine-code
-pifunk.o:	$(SOURCE) pifunk.h
-					$(USER) $(CC) $(DEBUG) $(SOURCE) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
+lib/pifunk.o:	$(SRC) $(HC)
+					$(USER) $(CC) $(DEBUG) $(SRC) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
+
 ## static archive
-libpifunk.a:	libpifunk.o
-					$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.a
-					$(USER) ar rcs -t $@ $^
+lib/libpifunk.a:	libpifunk.o
+					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.a
+					$(USER) ar rcs $@ $^
 					$(USER) ranlib libpifunk.a
+
 ## static library
-libpifunk.lib:	libpifunk.o
-						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.lib
-						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib libpifunk.lib
+lib/libpifunk.lib:	libpifunk.o
+						$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.lib
+						$(USER) ar rcs $@ $^
+						#$(USER) ranlib libpifunk.lib
+
 ## shared object
-libpifunk.so:	libpifunk.o
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so lib/libpifunk.o
-						$(USER) ar rcs -t $@ $^
-						$(USER) ranlib libpifunk.so
+lib/libpifunk.so:	libpifunk.o
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so
+						$(USER) ar rcs $@ $^
+						#$(USER) ranlib libpifunk.so
+
 ## dynamic linked library
-libpifunk.dll:	libpifunk.o
-						$(USER) $(CC) $(SOURCE) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.dll
-						$(USER) ar rcs -t $@ $^
+lib/libpifunk.dll:	libpifunk.o
+						$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.dll
+						$(USER) ar rcs $@ $^
 						$(USER) ranlib libpifunk.dll
+
 ## lib object list
-OBJECTS=pifunk.s pifunk.i pifunk.o libpifunk.a libpifunk.lib libpifunk.so libpifunk.dll
+OBJECTS=pifunk.s pifunk.asm pifunk.i pifunk.o libpifunk.a libpifunk.lib libpifunk.so libpifunk.dll
 $(OBJECTS)
 
-## generating standard binarys
-pifunk.out:	$(SOURCE) pifunk.h
+OBJECTSXX=pifunk++.s pifunk++.asm pifunk++.ii pifunk++.o libpifunk++.a libpifunk++.lib libpifunk++.so libpifunk++.dll
+$(OBJECTSXX)
+
+## generating standard binaries
+bin/pifunk.out:	$(SRC) $(HC)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFFLAGS) -save-temps -o bin/pifunk.out
+
 ## explicit binary
-pifunk.bin: $(SOURCE) pifunk.h
+bin/pifunk.bin: $(SRC) $(HC)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk.bin
+
 ## normal binary
-pifunk:			$(SOURCE) pifunk.h
+bin/pifunk:			$(SRC) $(HC)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk
+
 ## executable list
-#allbin: pifunk.out pifunk.bin pifunk
 EXECUTABLES=pifunk.out pifunk.bin pifunk
 $(EXECUTABLES)
 
-.PHONY:		pifunklib
-pifunk.so:	$(SOURCE)
-						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(SHFLAGS) -o lib/libpifunk.so libpifunk.o
+## executable list g++
+EXECUTABLES=pifunk++.out pifunk++.bin pifunk++
+$(EXECUTABLESXX)
 
-.PHONY:		pifunk+
-pifunk+:	$(SOURCECXX) $(OBJECTS)
-					$(USER) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -o bin/pifunk+
+.PHONY:		pifunklib
+lib/pifunk.so:	$(SRC)
+						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(SHFLAGS) $(CMA) -o lib/libpifunk.so
+
+## your own cpp&hpp file (not provided)
+.PHONY:		pifunk++
+bin/pifunk++:	$(SRCXX) $(HXX)
+						 $(USER) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(PFLIBS) $(PFFLAGS) $(PFLAGS) $(CMA) -o bin/pifunk++
 
 ## generate info file
 .PHONY: 	info
@@ -255,10 +282,11 @@ menu:			cd $(HOME)/PiFunk/bin/
 .PHONY: 	help
 help:			cd $(HOME)/PiFunk/bin/
 					$(USER) ./pifunk -h
+
 .PHONY: 	run
 run:			cd $(HOME)/PiFunk/bin/
 					$(USER) ./pifunk -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -x off -l 0
 
 .PHONY: 	run+
-run+:			cd $(HOME)/PiFunk/bin/
-					$(USER) ./pifunk+ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -x off -l 0
+run++:			cd $(HOME)/PiFunk/bin/
+					$(USER) ./pifunk++ -n sound.wav -f 26.9650 -s 22050 -m fm -p 7 -c callsign -g 7 -d 14 -b 15.0 -t 1 -x off -l 0
