@@ -1,78 +1,78 @@
 ## PiFunk Makefile
 ## should run with sudo or root rights
-USER=sudo
-$(USER)
-CC=gcc ## gcc 8.3.0-6
-$(CC)
-CXX=g++
-$(CXX)
+USER:=sudo
+#$(USER)
+CC:=gcc ## gcc 8.3.0-6
+#$(CC)
+CXX:=g++
+#$(CXX)
 
 ## general infos
-MAKEINFO=pifunk
-$(MAKEINFO)
-VERSION=0.1.7.7
-$(VERSION)
-STATUS=experimental
-$(STATUS)
+MAKEINFO:=pifunk
+#$(MAKEINFO)
+VERSION:=0.1.7.7
+#$(VERSION)
+STATUS:=experimental
+#$(STATUS)
 
-SRC=pifunk.c
-$(SRC)
-SRCXX=pifunk++.cpp
-$(SRCXX)
+SRC:=pifunk.c
+#$(SRC)
+SRCXX:=pifunk++.cpp
+#$(SRCXX)
 
-HC=pifunk.h
-$(HC)
-HXX=pifunk++.hpp
-$(HXX)
+HC:=pifunk.h
+#$(HC)
+HXX:=pifunk++.hpp
+#$(HXX)
 
 ## default paths
-INIT=/bin/sh ## init-shell
-$(INIT)
-HOME=/home/pi ## std-path
-$(HOME)
+INIT:=/bin/sh ## init-shell
+#$(INIT)
+HOME:=/home/pi ## std-path
+#$(HOME)
 KERNEL_DIR:=/lib/modules/$(shell uname -r)/build/
-$(KERNEL_DIR)
+#$(KERNEL_DIR)
 
-RM=rm -f ## remove files or folder
+RM:=rm -f ## remove files or folder
 #$(RM)
 
 ## use gnu c compiler, -std=gnu99 is c99 -std=iso9899:1999 with extra gnu extentions, flags see below
 ## environment variable C_INCLUDE_PATH
 ## https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/options/index
 CINC:=-Iinclude -I/opt/vc/include/ -I/usr/include/linux/ -I/usr/src/include/linux/ -I/usr/src/linux-headers-4.19.97+/include/ -I/usr/src/linux-headers-4.19.97+/include/linux/ ## kernel now 4.19.97+
-$(CINC)
-CMA=-D_USE_MATH_DEFINES -D_GNU_SOURCE
-$(CMA)
+#$(CINC)
+CMA:=-D_USE_MATH_DEFINES -D_GNU_SOURCE
+#$(CMA)
 
-CFLAGS=-std=gnu99 -O2 ## gnu extention & highest optimization level
-$(CFLAGS)
-CXXFLAGS=-std=gnu++17 -O3 ## for c++
-$(CXXFLAGS)
+CFLAGS:=-std=gnu99 -O2 ## gnu extention & highest optimization level
+#$(CFLAGS)
+CXXFLAGS:=-std=gnu++17 -O3 ## for c++
+#$(CXXFLAGS)
 
-ASFLAGS=-S -CC ## upper case assembler code without linker
-$(ASFLAGS)
-PPFLAGS=-E -CC ## c-preproccessor, -C or CC keeps the comments in preprocessor
-$(PPFLAGS)
-LIFLAGS=-c ## no linker used
-$(LIFLAGS)
-SHFLAGS=-shared -fPIC ## make shared big libraries
-$(SHFLAGS)
+ASFLAGS:=-S -CC ## upper case assembler code without linker
+#$(ASFLAGS)
+PPFLAGS:=-E -CC ## c-preproccessor, -C or CC keeps the comments in preprocessor
+#$(PPFLAGS)
+LIFLAGS:=-c ## no linker used
+#$(LIFLAGS)
+SHFLAGS:=-shared -fPIC ## make shared big libraries
+#$(SHFLAGS)
 
-DEBUG=-Wall -v -g3 -ggdb3 -pg ##-Q
-$(DEBUG)
+DEBUG:=-Wall -v -g3 -ggdb3 -pg ##-Q
+#$(DEBUG)
 ## -pg makes profiles for object code for analysis with gprof
 ## -Wall shows all errors & warnings, -w inhibits warnings
 
-LDLIBS=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
-$(LDLIBS)
-PFLIBS=-L$(HOME)/PiFunk/lib/
-$(PFLIBS)
+LDLIBS:=-Llib -L/opt/vc/lib/ -L/usr/src/lib/
+#$(LDLIBS)
+PFLIBS:=-L$(HOME)/PiFunk/lib/
+#$(PFLIBS)
 
-LDFLAGS=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm
-$(LDFLAGS)
-PFFLAGGS=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
-$(PFFLAGS)
-#AOFLAGGS=-arm-none-eabi-objdump ## objdump gnu tools
+LDFLAGS:=-lgnu -lpthread -lbcm_host -lbcm2835 -lsndfile -lm
+#$(LDFLAGS)
+PFFLAGS:=-llibpifunk ## own pifunk library, gcc assumes lib beginns with prefix "lib"
+#$(PFFLAGS)
+AOFLAGS:=-arm-none-eabi-objdump ## objdump gnu tools
 #$(AOFLAGS)
 
 ## other optional macros if necessary
@@ -82,84 +82,84 @@ $(PFFLAGS)
 
 ## Determine the hardware/software platform
 UNAME:=$(shell uname -m) ## processor: armv6l
-$(UNAME)
+#$(UNAME)
 KERNEL:=$(shell uname -a) ## kernel: Linux raspberrypi 4.19.97+ #1294 Thu Jan 30 13:10:54 GMT 2020 armv6l GNU/Linux
-$(KERNEL)
+#$(KERNEL)
 RVERSION:=$(shell uname -r) ## vervion number: 4.19.97+
-$(RVERSION)
+#$(RVERSION)
 VCGVERSION:=$(shell vcgencmd version) ## vcg firmware: version 53a54c778c493957d99bf49762dfabc4eee80e45
-$(VCGVERSION)
+#$(VCGVERSION)
 OSVERSION:=$(shell cat /etc/rpi-issue) ## os Date, https://github.com/RPi-Distro/pi-gen, MD5, stage5
-$(OSVERSION)
+#$(OSVERSION)
 RPIVERSION:=$(shell cat /proc/device-tree/model) ## grab revision: | grep -a -o "Raspberry\sPi\sModel\s[A-Z]\sPlus" | grep -a -o "Rev\s[0-9].[0-9]" : Raspberry Pi Model B Plus Rev 1.2
-$(RPIVERSION)
+#$(RPIVERSION)
 PCPUI:=$(shell cat /proc/cpuinfo) ## cpuinfos my rev: 0010 -> 1.2 B+: | grep Revision | cut -c16-
-$(PCPUI)
+#$(PCPUI)
 
 ## Enable ARM-specific options only
 ## old/special pi versions
 ifeq ($(UNAME), armv5)
-PFLAGS=-march=native -mcpu=arm926ej-s -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRPI
-TARGET=RPI ## alternative1 historic
+TARGET:=RASPIH ## alternative1 historic
+PFLAGS:=-march=native -mcpu=arm926ej-s -mtune=native -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPIH
 endif
 
 ifeq ($(UNAME), armv5l || armv5b)
-PFLAGS=-march=armv5te -mcpu=arm926ej-s -mtune=arm926ej-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPBERRY
-TARGET=RASPBERRY ## alternative2
+TARGET:=RASPIH2 ## alternative2
+PFLAGS:=-march=armv5te -mcpu=arm926ej-s -mtune=arm926ej-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPIH2
 endif
 
 ifeq ($(UNAME), armv5l)
-PFLAGS=-march=armv5te -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI
-TARGET=RASPI ## alternative3
+TARGET:=RASPIH3 ## alternative3
+PFLAGS:=-march=armv5te -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPIH3
 endif
 
 ifeq ($(UNAME), armv6)
-PFLAGS=-march=armv6t2e -mcpu=arm11 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
-TARGET=RASPI0 ## & Pi W
+TARGET:=RASPI0
+PFLAGS:=-march=armv6t2e -mcpu=arm11 -mtune=arm1176jzf-s -mfloat-abi=softfp -mfpu=vfp -ffast-math -DRASPI0
 endif
 
 ifeq ($(UNAME), armv6l) # Thumb t + enhanced DSP active
-PFLAGS=-march=armv6t2e -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
-TARGET=RASPI1
+TARGET:=RASPI1
+PFLAGS:=-march=armv6t2e -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI1
 endif
 
 ifeq ($(UNAME), armv7l)
-PFLAGS=-march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -fstack-protector-strong -fno-plt -ffast-math -pipe -DRASPI2W
-TARGET=RASPI2W
+TARGET:=RASPI2W
+PFLAGS:=-march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -fstack-protector-strong -fno-plt -ffast-math -pipe -DRASPI2W
 endif
 
 ifeq ($(UNAME), armv7l)
-PFLAGS=-march=armv7-a -mcpu=cortex-a7 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
-TARGET=RASPI2
+TARGET:=RASPI2
+PFLAGS:=-march=armv7-a -mcpu=cortex-a7 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2
 endif
 
 ifeq ($(UNAME), armv7l)
-PFLAGS=-march=armv7-a -mcpu=cortex-a53 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2R
-TARGET=RASPI2R
+TARGET:=RASPI2R
+PFLAGS:=-march=armv7-a -mcpu=cortex-a53 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI2R
 endif
 
 ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 3), 1)
-PFLAGS=-march=armv7-a -mcpu=cortex-a53 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
-TARGET=RASPI3
+TARGET:=RASPI3
+PFLAGS:=-march=armv7-a -mcpu=cortex-a53 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=neon-vfpv4 -ffast-math -DRASPI3
 endif
 
 ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
-PFLAGS=-march=armv8-a -mcpu=cortex-a72 -mtune=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
-TARGET=RASPI4
+TARGET:=RASPI4
+PFLAGS:=-march=armv8-a -mcpu=cortex-a72 -mtune=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI4
 endif
 
 ifeq ($(UNAME), armv8l && $(shell expr $(RPIVERSION) | grep -a -o "Raspberry\sPi\sModel\s[A-Z]" | grep -o "[0-9]" = 4), 1)
-PFLAGS=-march=armv8-a -mcpu=cortex-a72 -mtune=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI400 #cortex-a53
-TARGET=RASPI400
+TARGET:=RASPI400
+PFLAGS:=-march=armv8-a -mcpu=cortex-a72 -mtune=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -ffast-math -DRASPI400 #cortex-a53
 endif
 
 ifeq ($(UNAME), aarch64)
-PFLAGS=-march=armv8-a -mcpu=cortex-a53 -pipe -fstack-protector-strong -fno-plt -ffast-math -DAARCH64
-TARGET=AARCH64
+TARGET:=AARCH64
+PFLAGS:=-march=armv8-a -mcpu=cortex-a53 -pipe -fstack-protector-strong -fno-plt -ffast-math -DAARCH64
 endif
 
-$(TARGET)
-$(PFLAGS)
+#$(TARGET)
+#$(PFLAGS)
 
 #@echo Compiling PiFunk
 
@@ -172,15 +172,15 @@ src/pifunk.asm: $(SRC) $(HC)
 					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(ASFLAGS) $(LIFLAGS) -o src/pifunk.asm ## normal assembler suffix
 
 ## precompiled/processor c-code
-lib/pifunk.i:	$(SRC) $(HC)
-					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
+src/pifunk.i:	$(SRC) $(HC)
+					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o src/pifunk.i
 
-lib/pifunk++.ii:	$(SRCXX) $(HXX)
-					$(USER) $(CXX) $(SRCXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk++.ii #$(PFLIBS) $(PFFLAGS) not sure what flag is crrect
+src/pifunk++.ii:	$(SRCXX) $(HXX)
+					$(USER) $(CXX) $(SRCXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PFLIBS) $(PPFLAGS) -o src/pifunk++.ii 
 
 ## precompiled object/machine-code
-lib/pifunk.o:	$(SRC) $(HC)
-					$(USER) $(CC) $(DEBUG) $(SRC) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
+src/pifunk.o:	$(SRC) $(HC)
+					$(USER) $(CC) $(DEBUG) $(SRC) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o src/pifunk.o
 
 ## static archive
 lib/libpifunk.a:	libpifunk.o
@@ -207,11 +207,11 @@ lib/libpifunk.dll:	libpifunk.o
 						#$(USER) ranlib libpifunk.dll
 
 ## lib object list
-OBJECTS=pifunk.s pifunk.asm pifunk.i pifunk.o libpifunk.a libpifunk.lib libpifunk.so libpifunk.dll
-$(OBJECTS)
+OBJECTS:=pifunk.s pifunk.asm pifunk.i pifunk.o libpifunk.a libpifunk.lib libpifunk.so libpifunk.dll
+#$(OBJECTS)
 
-OBJECTSXX=pifunk++.s pifunk++.asm pifunk++.ii pifunk++.o libpifunk++.a libpifunk++.lib libpifunk++.so libpifunk++.dll
-$(OBJECTSXX)
+OBJECTSXX:=pifunk++.s pifunk++.asm pifunk++.ii pifunk++.o libpifunk++.a libpifunk++.lib libpifunk++.so libpifunk++.dll
+#$(OBJECTSXX)
 
 ## generating standard binaries
 bin/pifunk.out:	$(SRC) $(HC)
@@ -222,16 +222,16 @@ bin/pifunk.bin: $(SRC) $(HC)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk.bin
 
 ## normal binary
-bin/pifunk:			$(SRC) $(HC)
+bin/pifunk:	$(SRC) $(HC)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(PFLIBS) $(LDFLAGS) $(PFFLAGS) $(CMA) $(PFLAGS) -save-temps -o bin/pifunk
 
 ## executable list
-EXECUTABLES=pifunk.out pifunk.bin pifunk
-$(EXECUTABLES)
+EXECUTABLES:=pifunk.out pifunk.bin pifunk
+#$(EXECUTABLES)
 
 ## executable list g++
-EXECUTABLES=pifunk++.out pifunk++.bin pifunk++
-$(EXECUTABLESXX)
+EXECUTABLESXX:=pifunk++.out pifunk++.bin pifunk++
+#$(EXECUTABLESXX)
 
 .PHONY:		libpifunk
 lib/pifunk.so:	$(SRC)
@@ -246,7 +246,7 @@ bin/pifunk++:	$(SRCXX) $(HXX)
 .PHONY: 	info
 info: 		pifunk.info
 pifunk.info: pifunk.texi
-						 $(MAKEINFO)
+						 #$(MAKEINFO)
 
 .PHONY: 	piversion
 piversion:	$(USER) $(UNAME)
