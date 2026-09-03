@@ -173,11 +173,11 @@ src/pifunk.asm: $(SRC) $(HC)
 
 ## precompiled/processor c-code
 lib/pifunk.i:	$(SRC) $(HC)
-					$(USER) $(SRC) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
+					$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk.i
 
 lib/pifunk++.ii:	$(SRCXX) $(HXX)
-					$(USER) $(SRCXX) $(CXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk++.ii
-					            															#$(PFLIBS) $(PFFLAGS) 
+					$(USER) $(CXX) $(SRCXX) $(DEBUG) $(CXXFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(PPFLAGS) -o lib/pifunk++.ii #$(PFLIBS) $(PFFLAGS) not sure what flag is crrect
+
 ## precompiled object/machine-code
 lib/pifunk.o:	$(SRC) $(HC)
 					$(USER) $(CC) $(DEBUG) $(SRC) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/pifunk.o
@@ -204,7 +204,7 @@ lib/libpifunk.so:	libpifunk.o
 lib/libpifunk.dll:	libpifunk.o
 						$(USER) $(CC) $(SRC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(CMA) $(PFLAGS) $(LIFLAGS) -o lib/libpifunk.dll
 						$(USER) ar rcs $@ $^
-						$(USER) ranlib libpifunk.dll
+						#$(USER) ranlib libpifunk.dll
 
 ## lib object list
 OBJECTS=pifunk.s pifunk.asm pifunk.i pifunk.o libpifunk.a libpifunk.lib libpifunk.so libpifunk.dll
@@ -233,7 +233,7 @@ $(EXECUTABLES)
 EXECUTABLES=pifunk++.out pifunk++.bin pifunk++
 $(EXECUTABLESXX)
 
-.PHONY:		pifunklib
+.PHONY:		libpifunk
 lib/pifunk.so:	$(SRC)
 						$(USER) $(CC) $(DEBUG) $(CFLAGS) $(CINC) $(LDLIBS) $(LDFLAGS) $(PFLAGS) $(SHFLAGS) $(CMA) -o lib/libpifunk.so
 
@@ -248,7 +248,7 @@ info: 		pifunk.info
 pifunk.info: pifunk.texi
 						 $(MAKEINFO)
 
-.PHONY: 		piversion
+.PHONY: 	piversion
 piversion:	$(USER) $(UNAME)
 						$(USER) $(KERNEL)
 						$(USER) $(RVERSION)
@@ -261,7 +261,7 @@ piversion:	$(USER) $(UNAME)
 install:	cd $(HOME)/PiFunk/
 					$(USER) install -m 0755 pifunk $(HOME)/bin/
 
-.PHONY: 		uninstall
+.PHONY: 	uninstall
 uninstall:	$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.out
 						$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk.bin
 						$(USER) $(RM) $(HOME)/PiFunk/bin/pifunk
